@@ -2,29 +2,23 @@
 
 namespace Functional\Fleet\Providers;
 
-use Functional\Fleet\Database\Seeders\FleetSeeder;
+use Functional\Fleet\Access\Controls\MachineControl;
+use Lomkit\Access\Access;
 use Xefi\LaravelOSDD\LayerServiceProvider;
 
 class FleetServiceProvider extends LayerServiceProvider
 {
     public function boot(): void
     {
-        if ($this->app->runningInConsole()) {
-            $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
-            $this->loadSeeders([FleetSeeder::class]);
-        }
+        $this->loadMigrationsFrom(__DIR__.'/../../database/migrations');
+        $this->loadTranslationsFrom(__DIR__.'/../../resources/lang', 'fleet');
+        $this->loadViewsFrom(__DIR__.'/../../resources/views', 'fleet');
+
+        (new Access())->addControls([new MachineControl()]);
 
         $this->withRouting(
-            web: __DIR__ . '/../../routes/web.php',
-            api: __DIR__ . '/../../routes/api.php',
-            commands: __DIR__ . '/../../routes/console.php',
-            channels: __DIR__ . '/../../routes/channels.php',
+            web: __DIR__.'/../../routes/web.php',
+            channels: __DIR__.'/../../routes/channels.php',
         );
-        $this->loadSeeders([\Functional\Fleet\Database\Seeders\FleetSeeder::class]);
-    }
-
-    public function register(): void
-    {
-        //
     }
 }

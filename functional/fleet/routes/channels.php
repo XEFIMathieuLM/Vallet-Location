@@ -1,6 +1,6 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Support\Facades\Broadcast;
 
-// Define broadcast channels here, e.g.:
-// Broadcast::channel('App.Models.User.{id}', fn($user, $id) => (int) $user->id === (int) $id);
+Broadcast::channel('fleet', fn (User $user): bool => $user->can('reservations.manage'));

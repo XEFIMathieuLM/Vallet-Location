@@ -26,7 +26,7 @@ Avant T001 :
 2. la branche `003-transmission-facturation` est mise à jour par-dessus ;
 3. `./vendor/bin/sail artisan test` passe sur la branche mise à jour.
 
-Le registre des actions d'un dégât (T050) modifie `inspection` : si la session de la 002 l'a déjà ajouté, cocher T050 et adapter T052 à son API.
+Le registre des actions d'un dégât est livré par la 002 (sa T052, commit `d0f2213` sur `002-photos-qr-code`) : la 003 ne modifie plus `inspection`. T050 se limite à vérifier ce registre.
 
 ## Format: `[ID] [P?] [Story] Description`
 
@@ -167,13 +167,13 @@ Lire `design-patterns:state` avant T016.
 ### Tests for User Story 3
 
 - [ ] T048 [P] [US3] Écrire `layers/billing/tests/Feature/DamageBillingTest.php` : scénarios 1 à 5 de l'US3 (refacturé 450 € « remplacement capot » → transmis avec vue et commentaire ; location déjà transmise → seul le dégât part ; « usure normale » → non refacturé, rien transmis ; motif vide → refus ; modification d'un dégât réglé → refus) ; montant nul ou négatif → refus ; dégât déjà traité → `DamageAlreadySettledException` ; un dégât réglé n'apparaît plus dans `DamagesList` ; un dégât d'une réservation rendue avant `billing.go_live_date` peut être refacturé et transmis
-- [ ] T049 [P] [US3] Écrire `layers/inspection/tests/Feature/DamageActionsRegistryTest.php` : sans action enregistrée, `DamagesList` affiche « Marquer traité » ; avec une action enregistrée, il affiche cette action et plus « Marquer traité »
+- [ ] T049 [P] [US3] Écrire `layers/billing/tests/Feature/DamageBillingActionsScreensTest.php` : avec `billing` installé, les **deux** écrans de la 002 qui rendent la vue partielle `inspection::partials.damage-actions` (« Dégâts à traiter » `/degats` et « Comparaison » `/reservations/{id}/photos`) affichent « Refacturer » et « Ne pas refacturer » et n'affichent plus « Marquer traité » ; refacturer depuis la comparaison produit le même `DamageSettlement` et la même transmission que depuis la liste
 
 ### Implementation for User Story 3
 
-- [ ] T050 [US3] Créer le registre `DamageActions` (`register(string $livewireComponent, int $position)`, `all()` trié, `isEmpty()`) dans `layers/inspection/src/Support/DamageActions.php`, lié dans le service provider d'`inspection` ; dans la vue de `layers/inspection/src/Livewire/DamagesList.php`, rendre pour chaque dégât les actions enregistrées via `<livewire:dynamic-component :component="…" :damage="$damage" :key="…" />`, et l'action « Marquer traité » uniquement si le registre est vide ; faire passer T049 (modifie la 002)
+- [ ] T050 [US3] Vérifier le registre livré par la 002 dans `layers/inspection/src/Support/DamageActions.php` : singleton lié dans le service provider d'`inspection`, API `register(string $livewireComponent, int $position)`, `all()` trié, `isEmpty()` ; composants rendus avec `:damage="$damage"` par `inspection::partials.damage-actions` sur « Dégâts à traiter » et « Comparaison » ; `ResolveDamage` publique et refusant un dégât déjà traité. Aucun code à écrire si c'est conforme ; sinon, signaler l'écart à la session de la 002 avant d'adapter T052
 - [ ] T051 [US3] Implémenter les actions `BillDamage` (montant HT en centimes « obligatoire et > 0 », libellé « obligatoire ») et `WaiveDamage` (motif « obligatoire ») dans `layers/billing/src/Actions/`, avec `DamageAlreadySettledException` : transaction, `lockForUpdate()` sur le dégât, refus si `resolved_at` est renseigné ou si un `DamageSettlement` existe ; crée le `DamageSettlement` ; appelle `ResolveDamage` d'`inspection` ; `BillDamage` crée aussi la `Transmission` et dispatche `SendTransmissionJob` (depends on T024, T014)
-- [ ] T052 [US3] Créer le composant Livewire `DamageBillingActions` dans `layers/billing/src/Livewire/DamageBillingActions.php` et sa vue : « Refacturer » (montant en euros converti en centimes, libellé) et « Ne pas refacturer » (motif), erreurs de validation affichées ; l'enregistrer dans `DamageActions` depuis le service provider de `billing` (depends on T050, T051)
+- [ ] T052 [US3] Créer le composant Livewire `DamageBillingActions` dans `layers/billing/src/Livewire/DamageBillingActions.php` et sa vue : « Refacturer » (montant en euros converti en centimes, libellé) et « Ne pas refacturer » (motif), erreurs de validation affichées ; le composant ne reçoit que `$damage` et ne suppose rien de l'écran hôte (liste ou comparaison) ; après règlement, il émet un événement Livewire pour que l'écran hôte se recharge ; l'enregistrer dans `DamageActions` depuis le service provider de `billing` ; faire passer T049 (depends on T050, T051)
 - [ ] T053 [US3] Étendre `ReservationBillingSection` (`layers/billing/src/Livewire/ReservationBillingSection.php`) avec les dégâts de la réservation : refacturé (montant, libellé, état de la transmission) ou non refacturé (motif, auteur, date) (depends on T034, T051)
 - [ ] T054 [P] [US3] Ajouter les textes de l'US3 dans `layers/billing/resources/lang/fr/damages.php`
 
@@ -276,6 +276,6 @@ Développeur B : T048 → T054 (US3 : registre d'actions, chiffrage des dégâts
 
 ## Notes
 
-- T050 modifie le layer `inspection` de la 002 : le faire relire par la personne qui a implémenté la 002.
+- La 003 ne modifie aucun fichier d'`inspection`, `booking` ni `fleet` : elle s'enregistre dans les registres qu'ils exposent.
 - Sans T063, la feature est complète et testée mais ne parle qu'au faux logiciel ; la mise en production attend le client.
 - Aucun commit avant validation de chaque phase.

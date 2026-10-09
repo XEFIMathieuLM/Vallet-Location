@@ -36,7 +36,7 @@ Approche : un nouveau layer OSDD **`billing`** au-dessus de `inspection`, `booki
 
 Dépôt unique : l'application Laravel à la racine du dépôt (pas de `repos.yml`, comme pour la 001 et la 002). Aucun autre dépôt touché.
 
-**Dépendances** : cette feature s'appuie sur le code de la 001 (`Reservation`, `ReservationChanged`) et de la 002 (`Damage`, `ResolveDamage`, registre des sections du détail de réservation). Elle ajoute un point d'extension dans `inspection` (registre des actions d'un dégât, B7). Son implémentation démarre **après** que la 001 et la 002 sont commitées et que cette branche est mise à jour par-dessus.
+**Dépendances** : cette feature s'appuie sur le code de la 001 (`Reservation`, `ReservationChanged`) et de la 002 (`Damage`, `ResolveDamage`, registre des sections du détail de réservation, registre `DamageActions` des actions d'un dégât, B7). Elle ne modifie aucun fichier de ces deux features. Son implémentation démarre **après** que la 001 et la 002 sont commitées et que cette branche est mise à jour par-dessus.
 
 ## Constitution Check
 
@@ -90,10 +90,6 @@ specs/003-transmission-facturation/
 app/
 └── resources/views/…/layout       # + bandeau d'alerte billing (modifié)
 layers/
-├── inspection/                    # 002, modifié
-│   └── src/
-│       ├── Support/               # registre des actions d'un dégât (nouveau)
-│       └── Livewire/              # liste des dégâts : rend les actions enregistrées
 └── billing/                       # nouveau
     ├── composer.json              # LayerManifest, dépend de inspection, booking, fleet
     ├── config/billing.php         # go_live_date, gateway, délais, seuils, disque
@@ -119,7 +115,7 @@ layers/
 config/filesystems.php             # + disque billing-exports
 ```
 
-**Structure Decision**: un layer `billing` dans le même dépôt que la 001 et la 002. `booking` n'est pas modifié : la période finale est créée par un listener sur `ReservationChanged`, et la section « Facturation » passe par le registre des sections du détail ajouté par la 002. `inspection` gagne un seul point d'extension générique (actions d'un dégât) pour que le chiffrage remplace « Marquer traité » sans qu'`inspection` connaisse `billing`. Le layout de `app/` inclut le bandeau d'alerte, puisque `app/` est la colle entre les layers.
+**Structure Decision**: un layer `billing` dans le même dépôt que la 001 et la 002. `booking` n'est pas modifié : la période finale est créée par un listener sur `ReservationChanged`, et la section « Facturation » passe par le registre des sections du détail ajouté par la 002. `inspection` n'est pas modifié non plus : le chiffrage remplace « Marquer traité » en s'enregistrant dans le registre `DamageActions` livré par la 002, sans qu'`inspection` connaisse `billing`. Le layout de `app/` inclut le bandeau d'alerte, puisque `app/` est la colle entre les layers.
 
 ## Complexity Tracking
 

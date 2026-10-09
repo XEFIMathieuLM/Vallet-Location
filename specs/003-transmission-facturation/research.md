@@ -63,10 +63,10 @@ Les décisions de la 001 (R1–R11) et de la 002 (P1–P12) restent valables : L
 ## B7 — Chiffrage des dégâts sans modifier le modèle d'`inspection`
 
 - **Decision**: `billing` possède une table `damage_settlements` (une par dégât au plus) : issue `billed` (montant HT en centimes, libellé) ou `waived` (motif). Le règlement d'un dégât crée le `DamageSettlement`, crée la `Transmission` si `billed`, et appelle l'action `ResolveDamage` d'`inspection` pour renseigner `resolved_at`. La notion « à refacturer » de la 002 reste donc juste sans changement.
-- **Point d'extension dans `inspection`** : la liste des dégâts à traiter (002) rend les actions d'un dégât depuis un registre, sur le modèle des sections du détail de réservation (P3 de la 002). Quand `billing` enregistre ses actions (« Refacturer », « Ne pas refacturer »), l'action par défaut « Marquer traité » n'est plus proposée. FR-016 de la 003 remplace FR-022 de la 002.
+- **Point d'extension dans `inspection`** (livré par la 002, sa T052) : le registre `DamageActions`, rendu par la vue partielle `inspection::partials.damage-actions` sur les deux écrans qui permettent de clore un dégât, « Dégâts à traiter » et « Comparaison ». Quand `billing` enregistre ses actions (« Refacturer », « Ne pas refacturer »), l'action par défaut « Marquer traité » disparaît des deux écrans. FR-016 de la 003 remplace FR-022 de la 002, qui renvoie désormais à la 003.
 - **Rationale**: `inspection` ne connaît pas `billing`, le sens de dépendance est respecté. Montant en centimes entiers : pas d'erreur d'arrondi.
 - **Alternatives considered**: ajouter montant et motif sur `damages` (une migration de `billing` modifierait une table d'`inspection`) ; un écran de refacturation séparé en laissant « Marquer traité » actif (un dégât pourrait être clos sans être ni facturé ni justifié, ce qui contredit SC-006).
-- **Coordination** : le registre d'actions est une petite modification de la 002. À signaler à la session de la 002 ; à défaut, ajouté par la 003.
+- **Coordination** : réglée avec la session de la 002 le 2026-10-09 (commit `d0f2213` sur `002-photos-qr-code`). Les actions de `billing` doivent fonctionner dans les deux écrans hôtes : elles ne reçoivent que le dégât.
 
 ## B8 — Identifiant client du logiciel de facturation
 

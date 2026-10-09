@@ -78,7 +78,7 @@ specs/001-reservation-machines/
 app/                              # colle : User, layout, providers, routes web
 ├── Models/User.php
 └── Livewire/Users/               # écran Salariés
-layers/
+functional/                       # layers métier (convention xefi/laravel-osdd)
 ├── fleet/
 │   ├── composer.json             # LayerManifest
 │   ├── src/

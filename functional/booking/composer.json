@@ -1,0 +1,25 @@
+{
+    "name": "functional/booking",
+    "description": "",
+    "type": "layer",
+    "version": "1.0.0",
+    "require": {
+        "xefi/laravel-osdd": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Functional\\Booking\\": "src/",
+            "Functional\\Booking\\Database\\Seeders\\": "database/seeders/",
+            "Functional\\Booking\\Database\\Factories\\": "database/factories/"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Functional\\Booking\\Providers\\BookingServiceProvider"
+            ]
+        }
+    }
+}

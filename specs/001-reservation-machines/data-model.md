@@ -20,9 +20,9 @@ Noms de code en anglais, libellés d'interface en français (fichiers de traduct
 |-------|------|--------|
 | id | identifiant | |
 | name | texte | obligatoire, unique (ex. « Nacelle ») |
-| requires_vgp | booléen | si vrai, toutes les machines de la catégorie sont soumises à VGP |
+| is_vgp_required | booléen | si vrai, toutes les machines de la catégorie sont soumises à VGP |
 
-La catégorie « Nacelle » est créée avec `requires_vgp = true`.
+La catégorie « Nacelle » est créée avec `is_vgp_required = true`.
 
 ### Machine
 
@@ -33,8 +33,8 @@ La catégorie « Nacelle » est créée avec `requires_vgp = true`.
 | machine_category_id | référence → MachineCategory | obligatoire |
 | agency_id | référence → Agency | obligatoire (agence de rattachement) |
 | status | `MachineStatus` | défaut `available` |
-| subject_to_vgp | booléen | forcé à vrai si la catégorie a `requires_vgp` |
-| vgp_due_date | date | facultative ; si `subject_to_vgp` et vide → VGP non à jour |
+| is_subject_to_vgp | booléen | forcé à vrai si la catégorie a `is_vgp_required` |
+| vgp_due_date | date | facultative ; si `is_subject_to_vgp` et vide → VGP non à jour |
 
 **Règle VGP** (FR-011, FR-014) : une machine est conforme pour une période `[début, fin]` si elle n'est pas soumise à VGP, ou si `vgp_due_date >= fin`.
 

@@ -1,0 +1,20 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+    - vendor/nesbot/carbon/extension.neon
+    - vendor/xefi/phpstan-xefi-rules/extension.neon
+
+parameters:
+    paths:
+        - app/
+        - bootstrap/app.php
+        - config/
+        - database/
+        - routes/
+        - functional/fleet/src/
+        - functional/fleet/database/
+        - functional/fleet/routes/
+        - functional/booking/src/
+        - functional/booking/database/
+        - functional/booking/routes/
+
+    level: 7

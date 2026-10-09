@@ -137,7 +137,7 @@ Un salarié définit, pour chaque catégorie de machine, la liste des vues à ph
 - **FR-019**: Le système DOIT présenter, pour une réservation, chaque vue avec ses photos de départ et de retour côte à côte, avec la date et l'auteur de chaque prise.
 - **FR-020**: Le système DOIT permettre de signaler un ou plusieurs dégâts sur une réservation dont les photos de retour ont été prises, chacun portant la vue concernée, un commentaire obligatoire, l'auteur et la date.
 - **FR-021**: Une réservation portant au moins un dégât non traité DOIT être marquée « à refacturer » et apparaître dans une liste des dégâts à traiter, consultable depuis toutes les agences.
-- **FR-022**: Le système DOIT permettre de marquer un dégât « traité » ; une réservation dont tous les dégâts sont traités n'est plus marquée « à refacturer ».
+- **FR-022**: Le système DOIT permettre de marquer un dégât « traité » ; une réservation dont tous les dégâts sont traités n'est plus marquée « à refacturer ». L'issue finale d'un dégât (refacturé, ou non refacturé avec motif) est définie par la feature 003 (FR-016 de la 003) ; « Marquer traité » reste l'action par défaut tant que la 003 n'est pas installée, et disparaît de tous les écrans dès qu'elle l'est.
 
 **Rétention et traçabilité**
 
@@ -166,7 +166,7 @@ Un salarié définit, pour chaque catégorie de machine, la liste des vues à ph
 
 ## Out of Scope
 
-- Chiffrage du dégât et transmission à la facturation (spec de connexion au logiciel de facturation).
+- Chiffrage du dégât, issue « refacturé / non refacturé » et transmission à la facturation (feature 003, `specs/003-transmission-facturation/`).
 - Caution des particuliers.
 - Envoi de l'attestation VGP par e-mail.
 - Application mobile native à installer.

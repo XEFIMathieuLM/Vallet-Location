@@ -98,6 +98,7 @@ layers/
     │   ├── Enums/                    # InspectionStep, RevocationReason
     │   ├── Actions/                  # OpenPhotoSession, StorePhoto, DeletePhoto, ReportDamage, ResolveDamage, FreezeReservationViews
     │   ├── Guards/                   # PhotosCompleteGuard
+    │   ├── Support/                  # registre DamageActions (point d'extension pour la 003)
     │   ├── Exceptions/               # MissingPhotosException, PhotoSessionUnavailableException, StepAlreadyValidatedException
     │   ├── Events/                   # PhotoChanged, PhotoSessionChanged, DamageChanged
     │   ├── Listeners/                # révocation des sessions sur ReservationChanged
@@ -113,7 +114,7 @@ config/filesystems.php                # + disque photos
 docker-compose.yml                    # + MinIO (S3 local), facultatif
 ```
 
-**Structure Decision**: un layer `inspection` dans le même dépôt que la 001. Le layer `fleet` n'est pas modifié : l'écran des vues par catégorie appartient à `inspection` et a sa propre entrée de menu. `booking` gagne deux points d'extension génériques (guards de transition, sections du détail) qu'`inspection` remplit depuis son service provider. Ces points d'extension resserviront à la caution (guard de départ) sans nouvelle modification de `booking`.
+**Structure Decision**: un layer `inspection` dans le même dépôt que la 001. `inspection` expose à son tour le registre `DamageActions` (P13), que la feature 003 remplira pour remplacer « Marquer traité ». Le layer `fleet` n'est pas modifié : l'écran des vues par catégorie appartient à `inspection` et a sa propre entrée de menu. `booking` gagne deux points d'extension génériques (guards de transition, sections du détail) qu'`inspection` remplit depuis son service provider. Ces points d'extension resserviront à la caution (guard de départ) sans nouvelle modification de `booking`.
 
 ## Complexity Tracking
 

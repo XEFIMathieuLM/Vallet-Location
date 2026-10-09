@@ -71,6 +71,12 @@ Décisions techniques prises pour [plan.md](plan.md). Elles prolongent celles de
 - **Rationale**: un indicateur stocké peut se désynchroniser du détail des dégâts. Un dégât n'a que deux états et une transition : un pattern State serait disproportionné.
 - **Alternatives considered**: colonne `to_reinvoice` sur la réservation (modifie la table de `booking` et peut diverger).
 
+## P13 — Actions sur un dégât, extensibles par la feature 003
+
+- **Decision**: `inspection` expose un registre `DamageActions` (`register(string $livewireComponent, int $position)`, `all()` trié, `isEmpty()`). L'écran « Dégâts à traiter » **et** l'écran « Comparaison » rendent, pour chaque dégât non traité, les composants enregistrés en leur passant le dégât ; le bouton « Marquer traité » ne s'affiche que si le registre est vide. `ResolveDamage` reste une action publique appelable depuis un autre layer.
+- **Rationale**: la feature 003 (`billing`) remplace « Marquer traité » par « refacturé » ou « non refacturé avec motif », sans que `inspection` dépende de `billing`. Même principe que P3. Le registre s'applique aux deux écrans, sinon la comparaison permettrait de clôturer un dégât sans issue tracée.
+- **Alternatives considered**: laisser la 003 modifier les vues d'`inspection` (dépendance inversée) ; garder « Marquer traité » à côté des actions de la 003 (contournement de la refacturation).
+
 ## P12 — Droits
 
 - **Decision**: deux nouvelles permissions sur le rôle « salarié » : `damages.manage` (signaler, traiter) et `inspection_views.manage` (paramétrer les vues). La prise de photos relève de `reservations.manage` (existante).

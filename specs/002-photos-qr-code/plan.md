@@ -1,0 +1,120 @@
+# Implementation Plan: Photos de départ et de retour via QR code
+
+**Branch**: `002-photos-qr-code` | **Date**: 2026-10-09 | **Spec**: [spec.md](spec.md)
+
+**Input**: Feature specification from `specs/002-photos-qr-code/spec.md`
+
+## Summary
+
+Le poste d'agence affiche un QR code ; le salarié le scanne avec son téléphone et photographie les vues imposées de la machine. Les photos arrivent en direct dans la réservation. La sortie et la clôture sont refusées par le serveur tant qu'une vue n'a pas sa photo. Au retour, le salarié compare départ et retour vue par vue et signale les dégâts, qui alimentent une liste « à refacturer ».
+
+Approche : un nouveau layer OSDD **`inspection`** au-dessus de `booking` et `fleet` (feature 001). Le blocage passe par un **point d'extension** ajouté à `booking` (guards de transition), pour que `booking` ne dépende jamais d'`inspection`. Le lien du QR code est un jeton aléatoire haché, révocable, valable 30 min. Les photos sont réduites dans le navigateur du téléphone, stockées par `spatie/laravel-medialibrary` sur un disque privé, et diffusées en temps réel par Soketi sur un canal par réservation.
+
+## Technical Context
+
+**Language/Version**: PHP 8.4, Laravel 13, Livewire 4 + Flux (identique à la 001)
+
+**Primary Dependencies**: existantes (001) + `spatie/laravel-medialibrary` (nouveau), `bacon/bacon-qr-code` (déjà installé par Fortify), Alpine (fourni par Livewire) pour la réduction des photos côté téléphone
+
+**Storage**: PostgreSQL (6 nouvelles tables : 5 pour `inspection`, plus `media` de la médiathèque) ; fichiers sur un disque privé `photos` (local en dev, S3-compatible en production)
+
+**Testing**: PHPUnit — un test Feature par scénario d'acceptation, tests Unit pour la complétude des vues et la validité du jeton. Larastan niveau ≥ 7 avec `xefi/phpstan-xefi-rules`.
+
+**Target Platform**: serveur Linux (conteneurs) ; postes d'agence (navigateur) ; smartphones iOS et Android (navigateur ; l'appareil photo passe par un champ d'envoi de fichier, qui fonctionne aussi en HTTP ; HTTPS en production)
+
+**Project Type**: application web monolithique (rendu serveur + Livewire), une page publique mobile
+
+**Performance Goals**: photo visible sur le poste moins de 5 s après la prise (SC-004) ; prise des 5 vues de départ en moins de 3 min (SC-003)
+
+**Constraints**: blocage garanti côté serveur, pas seulement par un bouton désactivé. Le jeton ne doit donner accès à rien d'autre que l'ajout de photos sur une réservation et une étape. Pas d'observers, pas de `try/catch`, pas de cascade en base (règles Xefi).
+
+**Scale/Scope**: environ 400 machines, 2 étapes × 5 vues par location, environ 600 Ko par photo réduite ; 5 écrans (panneau photos, comparaison, dégâts, vues par catégorie, page téléphone)
+
+## Affected Repos
+
+Dépôt unique : l'application Laravel à la racine du dépôt (pas de `repos.yml`, comme pour la 001). Aucun autre dépôt touché.
+
+**Dépendance** : cette feature modifie le layer `booking` de la 001 (point d'extension, voir P2 et P3 de [research.md](research.md)). Son implémentation démarre **après** que le code de la 001 est commité et que cette branche est mise à jour par-dessus.
+
+## Constitution Check
+
+*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+
+`.specify/memory/constitution.md` est toujours le modèle vide. Comme pour la 001, les conventions Xefi servent de portes :
+
+| Porte | Statut |
+|-------|--------|
+| Stack et layout OSDD de la 001, nouveau domaine = nouveau layer | ✅ P1 |
+| Sens de dépendance des layers respecté (`inspection → booking → fleet`) | ✅ P2, P3 (points d'extension) |
+| Packages recommandés plutôt que code maison (médias, QR code, audit) | ✅ P5, P7, data-model |
+| Contrôles par permission, jamais par nom de rôle | ✅ P12 |
+| Cycles de vie : State seulement si plusieurs états et transitions ; ici états dérivés ou à une transition | ✅ data-model (`PhotoSession`, `Damage`) |
+| Pas d'observers ; réactions par listeners (révocation à l'annulation) | ✅ data-model |
+| Rétention par `Prunable` (pas `MassPrunable`, fichiers à supprimer) | ✅ P9 |
+| Pas de cascade en base | ✅ data-model |
+| Garanties portées par le serveur (guard dans la transaction de sortie / retour) | ✅ P2 |
+| Données exposées publiquement réduites au strict nécessaire | ✅ [phone-link.md](contracts/phone-link.md) |
+| Fichiers de code < 200 lignes, code en anglais, textes traduits | à vérifier pendant l'implémentation |
+
+**Résultat** : aucune violation. La 001 recommandait `/speckit-constitution` avant la 2e feature : toujours pas fait. Non bloquant, mais c'est le bon moment pour inscrire ces principes.
+
+**Re-check post-design** : le modèle de données et les contrats respectent toutes les portes.
+
+## Project Structure
+
+### Documentation (this feature)
+
+```text
+specs/002-photos-qr-code/
+├── spec.md
+├── plan.md              # ce fichier
+├── research.md          # décisions P1–P12
+├── data-model.md        # entités, règles, purge
+├── quickstart.md        # guide de vérification
+├── contracts/
+│   ├── screens.md           # écrans poste et téléphone
+│   ├── phone-link.md        # jeton du QR code
+│   └── broadcast-events.md  # temps réel
+├── checklists/
+│   └── requirements.md
+└── tasks.md             # /speckit-tasks
+```
+
+### Source Code (repository root)
+
+```text
+layers/
+├── booking/                          # 001, modifié
+│   └── src/
+│       ├── Contracts/                # ReservationTransitionGuard (nouveau)
+│       ├── Support/                  # registres : guards, sections du détail (nouveau)
+│       ├── Actions/                  # DepartReservation, ReturnReservation : appellent les guards
+│       └── Livewire/                 # détail de réservation : rend les sections enregistrées
+└── inspection/                       # nouveau
+    ├── composer.json                 # LayerManifest, dépend de booking et fleet
+    ├── config/inspection.php         # vues par défaut, durée du jeton, taille max
+    ├── src/
+    │   ├── Models/                   # CategoryView, ReservationView, PhotoSession, Photo, Damage
+    │   ├── Enums/                    # InspectionStep, RevocationReason
+    │   ├── Actions/                  # OpenPhotoSession, StorePhoto, DeletePhoto, ReportDamage, ResolveDamage, FreezeReservationViews
+    │   ├── Guards/                   # PhotosCompleteGuard
+    │   ├── Exceptions/               # MissingPhotosException, PhotoSessionUnavailableException, StepAlreadyValidatedException
+    │   ├── Events/                   # PhotoChanged, PhotoSessionChanged, DamageChanged
+    │   ├── Listeners/                # révocation des sessions sur ReservationChanged
+    │   ├── Controls/                 # PhotoControl, DamageControl, CategoryViewControl
+    │   ├── Http/Middleware/          # en-têtes noindex / no-referrer sur /photos/*
+    │   └── Livewire/                 # PhotosPanel, PhoneCapture, Comparison, DamagesList, CategoryViews
+    ├── database/{migrations,factories,seeders}/
+    ├── resources/{views,js,lang/fr}/ # js : réduction des photos (Alpine)
+    ├── routes/web.php                # /photos/{token} (public), écrans poste
+    └── tests/{Feature,Unit}/
+routes/channels.php                   # + canal privé reservation.{id}
+config/filesystems.php                # + disque photos
+docker-compose.yml                    # + MinIO (S3 local), facultatif
+```
+
+**Structure Decision**: un layer `inspection` dans le même dépôt que la 001. Le layer `fleet` n'est pas modifié : l'écran des vues par catégorie appartient à `inspection` et a sa propre entrée de menu. `booking` gagne deux points d'extension génériques (guards de transition, sections du détail) qu'`inspection` remplit depuis son service provider. Ces points d'extension resserviront à la caution (guard de départ) sans nouvelle modification de `booking`.
+
+## Complexity Tracking
+
+Aucune violation à justifier.

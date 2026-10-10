@@ -38,7 +38,7 @@ Dépôt unique : l'application Laravel à la racine (pas de `repos.yml`, comme p
 
 **Dépendances** (prérequis à commiter avant l'implémentation, branche rebasée par-dessus) :
 
-- **001** (7423fc9) : `ReservationTransitionGuards` / `ReservationTransitionGuard` ; `ReservationDetailSections::register(name, position, ReservationTransition ...$guarded)` et readiness par section (`reservation-transition-readiness` avec `step`, `section`, `is_ready` ; une gardienne muette bloque) ; `RefusalException` et `AssertsRefusals` ; contrat `Functional\Fleet\Contracts\AgencyMember` (plus de `App\Models\User` dans les layers) et trait de test `CreatesUsers` ; permissions en enum par layer, seeders de layer qui créent seulement, attribution au rôle dans `database/seeders/PermissionSeeder.php` ; trait `RecordsAuthorAgency` (`author_agency_id`) ; composants `x-empty-state`, `x-loading-hint`, `flux:modal`, `Flux::toast`.
+- **001** (7423fc9) : `ReservationTransitionGuards` / `ReservationTransitionGuard` ; `ReservationDetailSections::register(name, position, ReservationTransition ...$guarded)` et readiness par section (`reservation-transition-readiness` avec `step`, `section`, `is_ready` ; une gardienne muette bloque) ; `RefusalException` et `AssertsRefusals` ; contrat `Functional\Fleet\Contracts\AgencyMember` (plus de `App\Models\User` dans les layers) et trait de test `CreatesUsers` ; permissions en enum par layer, seeders de layer qui créent seulement, appelés par `DatabaseSeeder` avant `PermissionSeeder` qui donne toutes les permissions au rôle salarié ; trait `RecordsAuthorAgency` (`author_agency_id`) ; composants `x-empty-state`, `x-loading-hint`, `flux:modal`, `Flux::toast`.
 - **003** : `CustomerBillingAccount` (identifiant de facturation), `BillableLine`, `MakeBillableLine`, export de secours, `FakeBillingGateway`. À rebaser sur sa refonte (`Money`, suppression de `Support/`).
 - **004** : type de client (particulier / professionnel / à renseigner), action unique d'écriture du client `Functional\Booking\Actions\UpdateCustomer` (une méthode par changement), événement `Functional\Booking\Events\CustomerChanged` (`ShouldDispatchAfterCommit`), registre `CustomerChangeGuards` appelé par la qualification du type. Écran de qualification du type.
 - **007** : modifie aussi `BillableLine` (sources de transmission) : à fusionner au rebase.
@@ -55,7 +55,7 @@ Portes tirées de la constitution v1.0.1 :
 | II. Garanties en base et serveur | unicité `key_accounts.customer_id` et `reservation_purchase_orders.reservation_id` ; CHECK de longueur du numéro ; refus de sortie dans la transaction de `DepartReservation` ; saisie sous `lockForUpdate()` de la réservation ; désignation sous verrou du client ; pas de cascade ; badges et liste en une requête | ✅ G3, G7, G9, data-model |
 | III. Cycles de vie explicites | aucun nouveau cycle de vie : l'état de la section est dérivé (justifié dans data-model) ; aucun montant ; dates en heure de Paris pour la mise en évidence | ✅ data-model |
 | IV. Effets de bord et erreurs typées | aucun observer ; refus par exceptions typées héritant de `RefusalException` ; logiciel de facturation toujours derrière `BillingGateway` ; numéro fourni par un port avec implémentation par défaut | ✅ G3, G6, G8 |
-| V. Accès par permission | enum `AccountsPermission` (`key_accounts.manage`, `purchase_orders.manage`), attribuées au rôle salarié dans `PermissionSeeder` ; contrôles `lomkit` ; aucun nom de rôle | ✅ G10 |
+| V. Accès par permission | enum `AccountsPermission` (`key_accounts.manage`, `purchase_orders.manage`), attribuées au rôle salarié par `PermissionSeeder` (toutes les permissions existantes, non modifié) ; contrôles `lomkit` ; aucun nom de rôle | ✅ G10 |
 | VI. Tests par scénario | un test Feature par scénario d'acceptation, écrit d'abord ; faux logiciel ; Larastan à zéro erreur ; suite complète verte | ✅ tasks.md |
 | VII. Code simple et lisible | aucun nouveau package ; code en anglais, textes traduits ; fichiers < 200 lignes, sans commentaire | à vérifier pendant l'implémentation |
 
@@ -86,8 +86,7 @@ specs/006-grands-comptes/
 ### Source Code (repository root)
 
 ```text
-composer.json, phpunit.xml, phpstan.neon, database/seeders/DatabaseSeeder.php   # enregistrement du layer (modifiés)
-database/seeders/PermissionSeeder.php                                          # + AccountsPermission au rôle salarié (modifié)
+composer.json, phpunit.xml, phpstan.neon, database/seeders/DatabaseSeeder.php   # enregistrement du layer, appel d'AccountsPermissionSeeder avant PermissionSeeder (modifiés)
 resources/views/layouts/app/sidebar.blade.php                                  # + entrées Grands comptes, Bons de commande (modifié)
 functional/
 ├── booking/                                   # points d'extension (ajouts)
@@ -103,7 +102,7 @@ functional/
 │       ├── ValueObjects/BillableLine.php      # + purchaseOrderNumber (modifié)
 │       ├── Actions/MakeBillableLine.php       # + lecture du port (modifié)
 │       └── Providers/BillingServiceProvider.php  # + liaison par défaut (modifié)
-│       # + colonne d'export là où vit le formatage après rebase de la 003
+│       ├── Exports/ExportLineFormatter.php    # + colonne purchase_order_number (modifié, emplacement après correction de la 003)
 └── accounts/                                  # nouveau layer
     ├── composer.json                          # LayerManifest, dépend de billing, inspection, booking, fleet
     ├── config/accounts.php                    # highlight_days_before_departure, purchase_order_max_length

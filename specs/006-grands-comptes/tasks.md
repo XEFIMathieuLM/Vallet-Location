@@ -17,7 +17,7 @@ description: "Task list for feature 006-grands-comptes"
 
 Cette feature s'appuie sur :
 
-- la **001** jusqu'à `7423fc9` : `RefusalException` (message technique anglais, clé de traduction, `userMessage()`, factories nommées), `AssertsRefusals`, enum `ReservationTransition`, `ReservationTransitionGuards`, `ReservationDetailSections::register(name, position, ReservationTransition ...$guarded)` et la readiness par section (`reservation-transition-readiness` avec `step`, `section`, `is_ready` ; une gardienne muette bloque), contrat `Functional\Fleet\Contracts\AgencyMember` et trait de test `CreatesUsers`, permissions en enum par layer (attribution au rôle dans `database/seeders/PermissionSeeder.php`), trait `RecordsAuthorAgency`, composants `x-empty-state`, `x-loading-hint`, `flux:modal`, `Flux::toast` ;
+- la **001** jusqu'à `7423fc9` : `RefusalException` (message technique anglais, clé de traduction, `userMessage()`, factories nommées), `AssertsRefusals`, enum `ReservationTransition`, `ReservationTransitionGuards`, `ReservationDetailSections::register(name, position, ReservationTransition ...$guarded)` et la readiness par section (`reservation-transition-readiness` avec `step`, `section`, `is_ready` ; une gardienne muette bloque), contrat `Functional\Fleet\Contracts\AgencyMember` et trait de test `CreatesUsers`, permissions en enum par layer (seeders de layer qui créent seulement ; `PermissionSeeder` donne toutes les permissions au rôle salarié), trait `RecordsAuthorAgency`, composants `x-empty-state`, `x-loading-hint`, `flux:modal`, `Flux::toast` ;
 - la **003** avec sa refonte (`Money`, suppression de `Support/`) : `CustomerBillingAccount`, `BillableLine`, `MakeBillableLine`, l'export de secours, `FakeBillingGateway` ;
 - la **004** : type de client (particulier / professionnel / à renseigner), action unique d'écriture du client `Functional\Booking\Actions\UpdateCustomer`, événement `Functional\Booking\Events\CustomerChanged` (`ShouldDispatchAfterCommit`) et registre `CustomerChangeGuards` appelé par la qualification du type.
 
@@ -25,7 +25,7 @@ Avant T001 :
 
 1. la 001, la 003 et la 004 sont implémentées et commitées (et la 007 si elle a déjà modifié `BillableLine`) ;
 2. la branche `006-grands-comptes` est rebasée par-dessus ;
-3. les noms provisoires de ce document sont remplacés par les noms livrés : `CustomerType::Professional` et la colonne `customers.type` (004), la méthode de qualification du type de `UpdateCustomer` et le registre `CustomerChangeGuards` (004), l'emplacement du formatage de l'export (003) ; les noms de la 001 sont déjà définitifs (7423fc9) : vérifier qu'ils n'ont pas bougé ;
+3. les noms provisoires de ce document sont remplacés par les noms livrés : `CustomerType::Professional` et la colonne `customers.type` (004), la méthode de qualification du type de `UpdateCustomer` et le registre `CustomerChangeGuards` (004) ; les noms de la 001 (7423fc9) et l'emplacement du formatage d'export de la 003 (`Functional\Billing\Exports\ExportLineFormatter`) sont déjà définitifs : vérifier qu'ils n'ont pas bougé ;
 4. `docker compose exec -u sail laravel.test php artisan test` passe sur la branche rebasée ;
 5. la coordination a donné son feu vert pour `speckit-implement`.
 
@@ -63,7 +63,7 @@ Celles de la 001 s'appliquent sans changement ([tasks.md de la 001](../001-reser
 
 - [ ] T001 Créer le layer OSDD `functional/accounts/` avec les commandes `osdd:*` (`composer.json` LayerManifest déclarant la dépendance à `billing`, `inspection`, `booking` et `fleet`, namespace PSR-4 `Functional\\Accounts\\`, `AccountsServiceProvider`, dossiers `src/`, `config/`, `database/migrations/`, `database/factories/`, `database/seeders/`, `resources/views/`, `resources/lang/fr/`, `routes/`, `tests/Feature/`, `tests/Unit/`) ; le déclarer dans le `require` du `composer.json` racine et dans l'`autoload-dev` (`Functional\\Accounts\\Tests\\`), mettre à jour `composer.lock` ; ajouter `functional/accounts/src` à `phpstan.neon` et à la `<source>` de `phpunit.xml`
 - [ ] T002 [P] Créer `functional/accounts/config/accounts.php` : `highlight_days_before_departure` = 3, `purchase_order_max_length` = 50 ; le charger depuis `AccountsServiceProvider`
-- [ ] T003 [P] Créer l'enum `functional/accounts/src/Access/AccountsPermission.php` (`ManageKeyAccounts = 'key_accounts.manage'`, `ManagePurchaseOrders = 'purchase_orders.manage'`) et `functional/accounts/database/seeders/AccountsPermissionSeeder.php` (même forme que `BookingPermissionSeeder` : crée seulement les permissions) ; dans `database/seeders/PermissionSeeder.php`, appeler ce seeder et ajouter `AccountsPermission::cases()` aux permissions du rôle `EMPLOYEE_ROLE`
+- [ ] T003 [P] Créer l'enum `functional/accounts/src/Access/AccountsPermission.php` (`ManageKeyAccounts = 'key_accounts.manage'`, `ManagePurchaseOrders = 'purchase_orders.manage'`) et `functional/accounts/database/seeders/AccountsPermissionSeeder.php` (même forme que `BookingPermissionSeeder` : crée seulement les permissions) ; l'appeler depuis `database/seeders/DatabaseSeeder.php` dans la liste des seeders de permissions des layers, avant `PermissionSeeder` ; **ne pas modifier** `database/seeders/PermissionSeeder.php` (le rôle salarié reçoit `Permission::all()`)
 
 ---
 
@@ -170,7 +170,7 @@ Celles de la 001 s'appliquent sans changement ([tasks.md de la 001](../001-reser
 
 - [ ] T045 [US3] Ajouter le port dans `billing` selon [contracts/billing-purchase-order.md](contracts/billing-purchase-order.md) : `functional/billing/src/Contracts/PurchaseOrderNumbers.php` (`forReservation(int): ?string`, `forReservations(list<int>): array<int, string>`) et `NullPurchaseOrderNumbers` (emplacement repris de la structure de `billing` après rebase de la 003), liée par défaut avec `bindIf` dans `BillingServiceProvider::register()`
 - [ ] T046 [US3] Ajouter `?string $purchaseOrderNumber` à `functional/billing/src/ValueObjects/BillableLine.php` (`purchase_order_number` dans `toArray()`) et le renseigner dans `functional/billing/src/Actions/MakeBillableLine.php` pour les périodes et les dégâts via `PurchaseOrderNumbers::forReservation` (depends on T045)
-- [ ] T047 [US3] Ajouter la colonne `purchase_order_number` en dernière position de l'export de secours (formatage de ligne et en-tête de `CreateBillingExport`, emplacement repris après rebase de la 003), avec préchargement par `forReservations` pour toutes les transmissions exportées ; non-régression : `php artisan test functional/billing/tests` vert après T045 à T047 (depends on T046)
+- [ ] T047 [US3] Ajouter la colonne `purchase_order_number` en dernière position de l'export de secours (`functional/billing/src/Exports/ExportLineFormatter.php` et en-tête de l'export), avec préchargement par `forReservations` pour toutes les transmissions exportées ; non-régression : `php artisan test functional/billing/tests` vert après T045 à T047 (depends on T046)
 - [ ] T048 [US3] Créer `functional/accounts/src/Billing/KeyAccountPurchaseOrderNumbers.php` (lecture de `reservation_purchase_orders.number`, unitaire et groupée) et le lier à `PurchaseOrderNumbers` avec `bind` dans `AccountsServiceProvider::register()` (l'emporte sur le `bindIf` de `billing` quel que soit l'ordre des providers) (depends on T045)
 - [ ] T049 [US3] Vérifier que `FakeBillingGateway` conserve `purchase_order_number` dans les lignes reçues (`billing:fake-gateway --received`) ; l'ajouter à l'affichage de la commande si nécessaire, dans `functional/billing/src/Console/FakeGatewayCommand.php`
 
@@ -268,5 +268,5 @@ Un commit par phase validée, messages sans mention d'outil d'IA, aucun push san
 
 ## Notes
 
-- Les noms provisoires (type de client, méthode de `UpdateCustomer`, `CustomerChangeGuards`, emplacement du formatage de l'export) sont remplacés au rebase, avant T001 ; ceux de la 001 sont définitifs (7423fc9).
+- Les noms provisoires (type de client, méthode de `UpdateCustomer`, `CustomerChangeGuards`) sont remplacés au rebase, avant T001 ; ceux de la 001 sont définitifs (7423fc9).
 - Toute découverte qui remet en cause le plan pendant l'implémentation : s'arrêter et revenir au plan, ne pas improviser.

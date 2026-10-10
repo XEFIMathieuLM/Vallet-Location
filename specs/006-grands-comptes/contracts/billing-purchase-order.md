@@ -40,4 +40,4 @@ interface PurchaseOrderNumbers
 
 ## Rebase
 
-La 007 modifie aussi `BillableLine` et remplace la construction des lignes par des sources de transmission (`BillableSource::line()`) : le numéro est alors renseigné par chaque source de location et de dégât et la 003 introduit `Money` et supprime `Support/` (dont `ExportLineFormatter`). Le champ et la colonne sont ajoutés là où ces éléments se trouvent après rebase ; le contrat ci-dessus ne change pas.
+La 007 modifie aussi `BillableLine` et remplace la construction des lignes par des sources de transmission (`BillableSource::line()`) : le numéro est alors renseigné par chaque source de location et de dégât et la 003 introduit `Money` et déplace le formatage de ligne d'export dans `Functional\Billing\Exports\ExportLineFormatter` (`functional/billing/src/Exports/ExportLineFormatter.php`), où la colonne est ajoutée. Le champ et la colonne sont ajoutés là où ces éléments se trouvent après rebase ; le contrat ci-dessus ne change pas.

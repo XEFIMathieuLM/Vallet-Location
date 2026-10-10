@@ -97,13 +97,12 @@ resources/views/layouts/
 ├── app.blade.php                  # + bandeau d'alerte certification (modifié)
 └── app/sidebar.blade.php          # + entrées « Rapports VGP » et « Attestations à traiter » (modifié)
 composer.json, phpunit.xml, phpstan.neon, database/seeders/DatabaseSeeder.php  # enregistrement du layer (modifiés)
-config/filesystems.php             # + disque privé vgp-reports
 functional/
 ├── booking/                       # phase 0 : fichiers nouveaux uniquement
 │   └── src/Actions/UpdateCustomer.php (méthode changeEmail() ajoutée à la classe de la 004), src/Exceptions/InvalidCustomerEmailException.php
 └── certification/                 # nouveau
     ├── composer.json              # LayerManifest, dépend de booking et fleet
-    ├── config/certification.php   # go_live_date, délais de relance, seuil d'alerte, formats et taille, disque
+    ├── config/{certification.php, filesystems.php}   # disque privé vgp-reports + go_live_date, délais de relance, seuil d'alerte, formats et taille, disque
     ├── src/
     │   ├── Models/                # VgpReport, ReservationCertificate, CertificateDispatch
     │   ├── Enums/                 # CertificateStatus, DispatchChannel, DispatchOutcome, DispatchFailureReason
@@ -115,7 +114,9 @@ functional/
     │   ├── Listeners/             # OpenCertificateOnReservationChanged, ResolveCertificatesOnReportDeposited, ResolveCertificatesOnCustomerChanged
     │   ├── Events/                # VgpReportDeposited, CertificateChanged (diffusé sur le canal privé fleet)
     │   ├── Guards/                # CertificateDeliveredGuard
-    │   ├── Support/               # CertificationCalendar (mise en service), CertificationHistory, DispatchFailureClassifier
+    │   ├── Calendar/              # CertificationCalendar (mise en service)
+    │   ├── History/               # CertificationHistory (+ enum CertificationHistoryEvent)
+    │   ├── Dispatches/            # DispatchFailureClassifier
     │   ├── Queries/               # CertificatesToHandle
     │   ├── Console/               # certification:reconcile
     │   ├── Exceptions/            # CertificateNotDeliveredException, InvalidVgpReportException, CertificateNotResendableException, HandDeliveryRefusedException, IllegalCertificateTransitionException, MissingGoLiveDateException

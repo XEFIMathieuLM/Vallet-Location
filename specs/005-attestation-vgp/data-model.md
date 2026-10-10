@@ -95,7 +95,7 @@ Une tentative d'envoi par e-mail ou une remise en main propre ; journal immuable
 
 ## Historique
 
-`CertificationHistory::record($subject, $event, $author, $details)` sur le modèle d'`InspectionHistory`, journal `certification` :
+`CertificationHistory::record($subject, CertificationHistoryEvent $event, $details)` sur le modèle de `BillingHistory` (auteur lu par `Auth::user()`), journal `certification` :
 
 | Sujet | Événement | Détails |
 |---|---|---|
@@ -117,6 +117,6 @@ Chaque écriture d'historique se fait dans la transaction de l'action qui la pro
 | `alert_after_minutes` | `60` | seuil d'apparition d'une attestation `pending` dans la liste |
 | `accepted_mimes` | `['pdf', 'jpg', 'jpeg', 'png']` | formats de rapport |
 | `max_report_kilobytes` | `10240` | taille maximale d'un rapport |
-| `reports_disk` | `vgp-reports` | disque privé (déclaré dans `config/filesystems.php`) |
+| `reports_disk` | `vgp-reports` | disque privé (déclaré dans `functional/certification/config/filesystems.php`) |
 
 L'adresse d'expédition et de réponse vient de `mail.from` (configuration standard de Laravel), à fournir par le client avant la mise en production.

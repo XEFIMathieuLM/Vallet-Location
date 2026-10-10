@@ -10,6 +10,7 @@ use Functional\Certification\Calendar\CertificationCalendar;
 use Functional\Certification\Enums\CertificateStatus;
 use Functional\Certification\Jobs\SendCertificateJob;
 use Functional\Certification\Models\ReservationCertificate;
+use Functional\Certification\Queries\ReportInForce;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -21,7 +22,7 @@ final class ReconcileCommand extends Command
 
     protected $description = 'Open the missing VGP certificates and resend the pending ones that are due';
 
-    public function handle(CertificationCalendar $certificationCalendar, OpenReservationCertificate $openReservationCertificate): int
+    public function handle(CertificationCalendar $certificationCalendar, OpenReservationCertificate $openReservationCertificate, ReportInForce $reportInForce): int
     {
         $certificationCalendar->goLiveDate();
 
@@ -37,9 +38,10 @@ final class ReconcileCommand extends Command
                 ->from('reservation_certificates')
                 ->whereColumn('reservation_certificates.reservation_id', 'reservations.id'))
             ->with(['machine', 'customer'])
-            ->chunkById(100, fn (Collection $reservations) => $reservations->each(
-                fn (Reservation $reservation) => $openReservationCertificate->handle($reservation),
-            ));
+            ->chunkById(100, function (Collection $reservations) use ($openReservationCertificate, $reportInForce): void {
+                $reportsInForce = $reportInForce->forMachines($reservations->pluck('machine_id'));
+                $reservations->each(fn (Reservation $reservation) => $openReservationCertificate->handleWithReport($reservation, $reportsInForce->get($reservation->machine_id)));
+            });
 
         ReservationCertificate::query()
             ->where('status', CertificateStatus::Pending)

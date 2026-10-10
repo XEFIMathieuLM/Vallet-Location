@@ -22,6 +22,6 @@ final class ResolveCertificatesOnReportDeposited
                 ->where('status', ReservationStatus::Confirmed))
             ->with(['reservation.machine', 'reservation.customer'])
             ->get()
-            ->each(fn (ReservationCertificate $certificate) => $this->resolveCertificateReadiness->resolve($certificate));
+            ->each(fn (ReservationCertificate $certificate) => $this->resolveCertificateReadiness->resolve($certificate, $vgpReportDeposited->report));
     }
 }

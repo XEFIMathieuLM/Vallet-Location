@@ -7,6 +7,7 @@ use Functional\Certification\Certificates\CertificateLifecycle;
 use Functional\Certification\Enums\CertificateStatus;
 use Functional\Certification\Jobs\SendCertificateJob;
 use Functional\Certification\Models\ReservationCertificate;
+use Functional\Certification\Models\VgpReport;
 use Functional\Certification\Queries\ReportInForce;
 
 final class ResolveCertificateReadiness
@@ -18,7 +19,12 @@ final class ResolveCertificateReadiness
 
     public function targetStatusFor(Reservation $reservation): CertificateStatus
     {
-        if ($this->reportInForce->for($reservation->machine) === null) {
+        return $this->targetStatusGiven($reservation, $this->reportInForce->for($reservation->machine));
+    }
+
+    public function targetStatusGiven(Reservation $reservation, ?VgpReport $reportInForce): CertificateStatus
+    {
+        if ($reportInForce === null) {
             return CertificateStatus::AwaitingReport;
         }
 
@@ -29,9 +35,9 @@ final class ResolveCertificateReadiness
         return CertificateStatus::Pending;
     }
 
-    public function resolve(ReservationCertificate $certificate): void
+    public function resolve(ReservationCertificate $certificate, ?VgpReport $reportInForce): void
     {
-        $targetStatus = $this->targetStatusFor($certificate->reservation);
+        $targetStatus = $this->targetStatusGiven($certificate->reservation, $reportInForce);
         $currentState = $certificate->state();
 
         $nextState = match (true) {

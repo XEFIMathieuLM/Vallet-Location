@@ -8,12 +8,15 @@ use Functional\Booking\Models\Reservation;
 use Functional\Certification\Calendar\CertificationCalendar;
 use Functional\Certification\Events\CertificateChanged;
 use Functional\Certification\Models\ReservationCertificate;
+use Functional\Certification\Models\VgpReport;
+use Functional\Certification\Queries\ReportInForce;
 
 final class OpenReservationCertificate
 {
     public function __construct(
         private readonly CertificationCalendar $certificationCalendar,
         private readonly ResolveCertificateReadiness $resolveCertificateReadiness,
+        private readonly ReportInForce $reportInForce,
     ) {}
 
     public function handle(Reservation $reservation): ?ReservationCertificate
@@ -22,9 +25,23 @@ final class OpenReservationCertificate
             return null;
         }
 
+        return $this->open($reservation, $this->reportInForce->for($reservation->machine));
+    }
+
+    public function handleWithReport(Reservation $reservation, ?VgpReport $reportInForce): ?ReservationCertificate
+    {
+        if (! $this->certificationCalendar->isLive() || ! $this->isConcerned($reservation)) {
+            return null;
+        }
+
+        return $this->open($reservation, $reportInForce);
+    }
+
+    private function open(Reservation $reservation, ?VgpReport $reportInForce): ReservationCertificate
+    {
         $certificate = ReservationCertificate::query()->createOrFirst(
             ['reservation_id' => $reservation->id],
-            ['status' => $this->resolveCertificateReadiness->targetStatusFor($reservation), 'status_changed_at' => CarbonImmutable::now()],
+            ['status' => $this->resolveCertificateReadiness->targetStatusGiven($reservation, $reportInForce), 'status_changed_at' => CarbonImmutable::now()],
         );
 
         if ($certificate->wasRecentlyCreated) {

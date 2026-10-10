@@ -6,7 +6,7 @@ Transport : Soketi (protocole Pusher), consommé par Laravel Echo dans les compo
 
 | Canal | Type | Autorisation |
 |-------|------|--------------|
-| `fleet` | privé | tout utilisateur connecté ayant la permission `reservations.manage` |
+| `fleet` | privé | tout utilisateur connecté ayant la permission `fleet.view` (donnée au rôle « salarié ») |
 
 ## Événements
 

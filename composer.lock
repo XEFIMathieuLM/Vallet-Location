@@ -1058,7 +1058,7 @@
             "dist": {
                 "type": "path",
                 "url": "./functional/certification",
-                "reference": "c042675b0500176f9f85d5a8ffca753d9417bbde"
+                "reference": "b1430ea8dd86be925719cd7115be18516308f5d8"
             },
             "require": {
                 "functional/booking": "*",
@@ -1070,6 +1070,11 @@
                 "laravel": {
                     "providers": [
                         "Functional\\Certification\\Providers\\CertificationServiceProvider"
+                    ]
+                },
+                "faker": {
+                    "providers": [
+                        "Functional\\Certification\\Faker\\CertificationFakerServiceProvider"
                     ]
                 }
             },

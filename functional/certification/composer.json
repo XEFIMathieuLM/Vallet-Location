@@ -22,6 +22,11 @@
             "providers": [
                 "Functional\\Certification\\Providers\\CertificationServiceProvider"
             ]
+        },
+        "faker": {
+            "providers": [
+                "Functional\\Certification\\Faker\\CertificationFakerServiceProvider"
+            ]
         }
     }
 }

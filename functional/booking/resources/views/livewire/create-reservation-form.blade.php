@@ -31,10 +31,18 @@
                 <flux:select wire:model="customerId" :label="__('booking::reservations.fields.customer')">
                     <flux:select.option value="">{{ __('booking::reservations.form.choose_customer') }}</flux:select.option>
                     @foreach ($this->customers as $customer)
-                        <flux:select.option :value="$customer->id">{{ $customer->name }}</flux:select.option>
+                        <flux:select.option :value="$customer->id">{{ collect($this->customerBadges[$customer->id] ?? [])->pluck('label')->prepend($customer->name)->implode(' — ') }}</flux:select.option>
                     @endforeach
                 </flux:select>
             </div>
+            @foreach ($customerId !== null ? $this->customerBadges[$customerId] ?? [] : [] as $badge)
+                <div class="flex items-center gap-2">
+                    <flux:badge size="sm" :color="$badge->color" :href="$badge->url">{{ $badge->label }}</flux:badge>
+                    @if ($badge->description !== null)
+                        <flux:text size="sm">{{ $badge->description }}</flux:text>
+                    @endif
+                </div>
+            @endforeach
         @endif
 
         <div class="flex gap-2">

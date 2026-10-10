@@ -55,6 +55,14 @@
                     </flux:sidebar.group>
                 @endcan
 
+                @can(\Functional\Accounts\Access\AccountsPermission::ManageKeyAccounts->value)
+                    <flux:sidebar.group :heading="__('accounts::key_accounts.navigation.heading')" class="grid">
+                        <flux:sidebar.item icon="building-office-2" :href="route('accounts.key-accounts')" :current="request()->routeIs('accounts.key-accounts')" wire:navigate>
+                            {{ __('accounts::key_accounts.navigation.key_accounts') }}
+                        </flux:sidebar.item>
+                    </flux:sidebar.group>
+                @endcan
+
                 @can(\Functional\Fleet\Access\FleetPermission::ManageMachines->value)
                     <flux:sidebar.group :heading="__('fleet::machines.navigation.fleet')" class="grid">
                         <flux:sidebar.item icon="truck" :href="route('machines.index')" :current="request()->routeIs('machines.*')" wire:navigate>

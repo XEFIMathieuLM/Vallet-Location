@@ -4,6 +4,7 @@ namespace Functional\Booking\Providers;
 
 use Functional\Booking\Access\Controls\ReservationControl;
 use Functional\Booking\Console\FlagLateReturns;
+use Functional\Booking\Extensions\CustomerBadges;
 use Functional\Booking\Extensions\CustomerChangeGuards;
 use Functional\Booking\Extensions\ReservationDetailSections;
 use Functional\Booking\Extensions\ReservationTransitionGuards;
@@ -22,6 +23,7 @@ class BookingServiceProvider extends LayerServiceProvider
         $this->app->singleton(ReservationTransitionGuards::class);
         $this->app->singleton(ReservationDetailSections::class);
         $this->app->singleton(CustomerChangeGuards::class);
+        $this->app->singleton(CustomerBadges::class);
         $this->app->bind(MachineRetirementGuard::class, ActiveReservationsRetirementGuard::class);
     }
 

@@ -9,7 +9,7 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^8.3",
+        "php": "^8.5",
         "functional/booking": "*",
         "functional/fleet": "*",
         "functional/inspection": "*",
@@ -29,7 +29,6 @@
         "xefi/laravel-osdd": "^2.0"
     },
     "require-dev": {
-        "fakerphp/faker": "^1.24",
         "larastan/larastan": "^3.9",
         "laravel/boost": "^2.10",
         "laravel/pail": "^1.2.5",
@@ -40,6 +39,7 @@
         "nunomaduro/collision": "^8.9.3",
         "phpunit/phpunit": "^12.5.23",
         "xefi/faker-php-laravel": "^1.2",
+        "xefi/faker-php-locales-fr-fr": "^1.1",
         "xefi/phpstan-xefi-rules": "^1.1"
     },
     "autoload": {

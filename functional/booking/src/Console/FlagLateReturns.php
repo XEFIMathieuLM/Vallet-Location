@@ -28,7 +28,7 @@ final class FlagLateReturns extends Command
 
         $refreshReservationConflicts->handleMachines($overdueMachines);
 
-        $this->info(trans_choice('booking::reservations.late_returns.flagged', $overdueMachines->count()));
+        $this->info("Checked the upcoming reservations of {$overdueMachines->count()} overdue machine(s).");
 
         return self::SUCCESS;
     }

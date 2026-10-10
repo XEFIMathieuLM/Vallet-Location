@@ -20,6 +20,11 @@
             "providers": [
                 "Functional\\Booking\\Providers\\BookingServiceProvider"
             ]
+        },
+        "faker": {
+            "providers": [
+                "Functional\\Booking\\Faker\\BookingFakerServiceProvider"
+            ]
         }
     }
 }

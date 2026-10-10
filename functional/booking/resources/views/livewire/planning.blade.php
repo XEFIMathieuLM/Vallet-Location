@@ -1,5 +1,5 @@
 <div class="flex flex-col gap-6">
-    <flux:heading size="xl" level="1">{{ __('booking::reservations.planning.title') }}</flux:heading>
+    <x-page-heading :title="__('booking::reservations.planning.title')" />
 
     <div class="grid gap-4 md:grid-cols-4">
         <flux:select wire:model.live="categoryId" :label="__('booking::reservations.fields.category')">
@@ -34,18 +34,18 @@
             <table class="min-w-full border-collapse text-sm">
                 <thead>
                     <tr>
-                        <th class="sticky left-0 bg-white px-3 py-2 text-left dark:bg-zinc-800">{{ __('booking::reservations.fields.reference') }}</th>
+                        <th class="sticky left-0 bg-white px-4 py-2 text-left dark:bg-zinc-800">{{ __('booking::reservations.fields.reference') }}</th>
                         @foreach ($grid->days as $day)
-                            <th class="px-1 py-2 text-center font-normal text-zinc-500 dark:text-zinc-400">{{ $day->format('d/m') }}</th>
+                            <th class="px-2 py-2 text-center font-normal text-zinc-600 dark:text-zinc-300">{{ $day->format('d/m') }}</th>
                         @endforeach
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($grid->rows as $row)
                         <tr wire:key="planning-{{ $row->machine->id }}" class="border-t border-zinc-200 dark:border-zinc-700">
-                            <th class="sticky left-0 bg-white px-3 py-1 text-left font-medium whitespace-nowrap dark:bg-zinc-800">
+                            <th class="sticky left-0 bg-white px-4 py-2 text-left font-medium whitespace-nowrap dark:bg-zinc-800">
                                 {{ $row->machine->reference }}
-                                <span class="block text-xs font-normal text-zinc-500">{{ $row->machine->category->name }} · {{ $row->machine->agency->name }}</span>
+                                <span class="block text-xs font-normal text-zinc-600 dark:text-zinc-300">{{ $row->machine->category->name }} · {{ $row->machine->agency->name }}</span>
                             </th>
                             @foreach ($row->cells as $date => $cell)
                                 <td class="h-8 min-w-8 border-l border-zinc-100 p-0.5 dark:border-zinc-700" title="{{ $cell->label() }}">

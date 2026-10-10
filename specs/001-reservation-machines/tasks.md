@@ -220,6 +220,61 @@ description: "Task list for feature 001-reservation-machines"
 - [X] T078 Dérouler les vérifications manuelles 1 à 8 de [quickstart.md](quickstart.md) et corriger les écarts
 - [X] T085 [P] Mesurer la recherche de disponibilité (`AvailableMachinesQuery`) sur un parc de 400 machines : moins d'1 s (Performance Goals du plan) — mesuré le 2026-10-10 : ~16 ms pour 443 machines et 300 réservations (requête filtrée par catégorie, période de 5 jours)
 
+
+---
+
+## Phase 9: Conformité aux skills Xefi (audit du 2026-10-10)
+
+**Ordre** : T094 (séparation message utilisateur / message technique des refus) et T106 d'abord, car la 002 et la 003 en dépendent ; puis les autres tâches.
+
+**Purpose**: Corriger les écarts HAUTS, MOYENS et UI relevés par l'audit des skills Xefi (plugins laravel, global, design-patterns, design) sur fleet, booking, `app/` et le socle partagé, avant la fusion des PR. Décisions utilisateur : pas d'API REST lomkit ; dépendance des layers à `User` coupée par contrats + config d'auth ; paquet `xefi/faker-php-locales-fr-fr` ajouté ; brief déplacé dans `specs/` ; skills Boost des paquets installés. Lire le `SKILL.md` concerné avant chaque tâche ; tests d'abord quand le comportement change.
+
+### Données de démonstration (HAUTE)
+
+- [ ] T086 [seed-new-features, seeder-conventions] Réécrire `functional/fleet/database/seeders/FleetSeeder.php` avec les factories (états `MachineFactory` : `workshop`, `outOfOrder`, `rentedOut`, `retired`, VGP expirée / non renseignée) au lieu de `Model::create`, `sprintf` et listes en dur ; créer `functional/booking/database/seeders/CustomerSeeder.php` et `functional/booking/database/seeders/ReservationSeeder.php` (réservations `confirmed`, `in_progress`, `closed`, `cancelled` et les 3 `ConflictReason`) ; `database/seeders/DatabaseSeeder.php` sans nom ni e-mail en dur (salariés par factory, un par agence), qui affiche en fin de seed les comptes créés ; `quickstart.md` indique où trouver ces comptes
+
+### Frontières des layers (MOYENNE)
+
+- [ ] T087 [osdd, prefer-manifests] Compléter les manifests : `functional/booking/composer.json` déclare `functional/fleet` ; `functional/fleet/composer.json` et `functional/booking/composer.json` déclarent les paquets qu'ils utilisent (`livewire/livewire`, `livewire/flux`, `lomkit/laravel-access-control`, `spatie/laravel-permission`, `spatie/laravel-activitylog`, `spatie/simple-excel` pour fleet)
+- [ ] T088 [osdd] Casser le cycle `app` ↔ layers des seeders : `FleetPermissionSeeder` et `BookingPermissionSeeder` créent seulement leurs permissions ; `database/seeders/PermissionSeeder.php` les attribue au rôle `salarie`
+- [ ] T089 [osdd] Couper la dépendance des layers à `App\Models\User` : contrat `functional/fleet/src/Contracts/AgencyMember.php` (`agencyId(): int`) implémenté par `app/Models/User.php` ; `booking` type ses paramètres en `AgencyMember` / `Authenticatable` et ses relations `belongsTo` lisent `config('auth.providers.users.model')` (`Reservation::author()`, `ReservationFactory`) ; `functional/fleet/routes/channels.php` type en `Authorizable` ; les tests des layers créent l'utilisateur via le modèle configuré
+- [ ] T090 [permissions-for-access-only] `functional/fleet/routes/channels.php` : le canal `fleet` est autorisé par une permission de fleet (`fleet.view`, nouvelle, donnée au rôle `salarie`) et non plus par `reservations.manage`
+
+### Requêtes et constantes (MOYENNE)
+
+- [ ] T091 [always-use-models] Remplacer `->from('reservations')` par des sous-requêtes Eloquent (`whereExists(Reservation::query()…)`) dans `functional/booking/src/Queries/AvailableMachinesQuery.php` et `functional/booking/src/Console/FlagLateReturns.php`
+- [ ] T092 [no-magic-strings] Clés étrangères en chaîne → `whereBelongsTo` / relations dans `functional/booking/src/` et `functional/fleet/src/Livewire/MachineIndex.php` ; permissions en enums par layer (`functional/fleet/src/Access/FleetPermission.php`, `functional/booking/src/Access/BookingPermission.php`, `app/Access/AppPermission.php`) utilisés par seeders, Controls, routes, canal et navigation ; `abort(403)` de `MachineIndex` remplacé par une exception typée
+- [ ] T093 [prefer-relation-accessors] `functional/booking/src/Actions/DepartReservation.php` et `ReturnReservation.php` verrouillent la machine via la relation `machine()` au lieu de `findOrFail($reservation->machine_id)`
+
+### Exceptions et langue du code (MOYENNE)
+
+- [X] T094 [no-generic-exceptions, code-in-english, no-hardcoded-user-text] Les exceptions de refus portent un message développeur en anglais ; le texte affiché (clé de traduction + paramètres) est exposé par `RefusalException::userMessage()` et rendu par `DisplaysRefusals` ; `app/Exceptions/SelfDeactivationException.php` a une fabrique nommée ; la sortie console de `functional/booking/src/Console/FlagLateReturns.php` passe par les traductions de la console en anglais
+
+### Factories et tests (MOYENNE)
+
+- [X] T095 [no-fakerphp, custom-faker-extensions, faker-extensions] Retirer `fakerphp/faker` de `composer.json` ; `database/factories/UserFactory.php` utilise `faker()` ; extension faker du layer fleet (`functional/fleet/src/Faker/FleetFakerExtension.php`, enregistrée via `extra.faker`) pour les noms d'agence, de catégorie et les références machine, et du layer booking (`functional/booking/src/Faker/BookingFakerExtension.php`, téléphone client : celui du paquet fr-FR produit des numéros de longueur variable) ; providers déclarés dans le `composer.json` de chaque layer (`extra.faker.providers`) puis `composer update functional/<layer>` ; `xefi/faker-php-locales-fr-fr` en dev et `faker_locale` `fr_FR` dans `config/app.php` et `.env.example`
+- [ ] T096 [automated-tests] `functional/fleet/tests/Unit/MachineStateTest.php`, `functional/booking/tests/Unit/ReservationStateTest.php` étendent `PHPUnit\Framework\TestCase` ; `functional/fleet/tests/Unit/MachineVgpComplianceTest.php` devient un vrai test Unit ou passe en Feature
+
+### Transactions, traçabilité, socle (MOYENNE)
+
+- [ ] T097 [transaction-boundaries] Retirer la transaction du composant `functional/booking/src/Livewire/CreateReservationForm.php` (création du client inline portée par l'action) et celle, inutile, de `functional/fleet/src/Actions/ImportFleet.php`
+- [ ] T098 [FR-022] Tracer l'agence de l'auteur dans l'historique des changements de machine et de réservation (`Machine` et `Reservation`, `tapActivity`) ; `functional/booking/tests/Feature/ActivityLogTest.php` l'affirme
+- [X] T099 [retention-via-prunable, layer-owned-config, latest-stable-versions, boost] Point d'enregistrement commun des modèles prunables des layers pour `model:prune` : clé `prunable.models` de `config/prunable.php`, remplie par chaque layer depuis son service provider (`config()->push('prunable.models', Model::class)`), lue par l'unique `Schedule::command('model:prune', ['--model' => …])->daily()` de `routes/console.php` ; `composer.json` `"php": "^8.5"` ; installer les skills Boost de `xefi/laravel-osdd` et `lomkit/laravel-access-control` (`boost.json`, `.claude/skills/`)
+- [X] T100 [no-project-docs] Déplacer `spec.md.txt` dans `specs/brief-client.md`
+
+### Interface (skills design)
+
+- [ ] T101 [accessibility] `functional/booking/resources/views/livewire/planning.blade.php` : nom accessible des liens de cellule, état de cellule lisible sans la couleur (motif ou texte), contraste en mode sombre
+- [ ] T102 [buttons] Un seul bouton primaire par contexte : actions de ligne en boutons secondaires de taille `xs` (`availability-search`, `reservation-list`, `machine-index`, `user-index`) ; dans `reservation-detail`, la sortie / le retour ne sont plus en concurrence avec un primaire de section
+- [ ] T103 [screen-states] États vides avec issue (`machine-index`, `planning`, `availability-search` propose d'élargir la période), `wire:loading` sur les filtres `wire:model.live`, messages de succès après changement de statut machine, sortie, retour, annulation, changement d'agence ou d'activation d'un salarié
+- [X] T104 [foundations, spacing] Composant commun de titres d'écran (`resources/views/components/page-heading.blade.php`, H1 32 px, sections 24 px) utilisé par tous les écrans 001 et réutilisable par 002/003 ; espacements multiples de 8 px (plus de 12 px ni de padding < 8 px), champs de formulaire espacés de 16 px
+- [ ] T105 [ux-writing] Confirmations `wire:confirm` remplacées par des modales Flux aux libellés explicites (annulation de réservation, retrait de machine, désactivation de salarié) ; le refus « référence en double » dit quoi faire
+
+### Contrat des points d'extension (priorité : demandé par la 002)
+
+- [X] T106 [osdd, enums-with-behavior] Enum `functional/booking/src/Enums/ReservationTransition.php` (`Departure`, `Return`, `Cancellation` pour les refus de transition) dans le contrat du point d'extension : `ReservationDetail` remplace `DEPARTURE_STEP` / `RETURN_STEP` par cet enum et l'événement `reservation-transition-readiness` porte sa valeur ; les layers supérieurs (inspection) s'y rattachent au lieu de recopier des chaînes ; research R12 mis à jour
+
+**Checkpoint**: `speckit-analyze` sans problème CRITIQUE, HAUT ou MOYEN ; Pint, PHPStan (cache vidé) et toute la suite verts ; CI de la PR #1 verte.
 ---
 
 ## Dependencies & Execution Order

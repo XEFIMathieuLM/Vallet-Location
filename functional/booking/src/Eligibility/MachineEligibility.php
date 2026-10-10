@@ -17,7 +17,7 @@ final class MachineEligibility
         }
 
         if ($this->isOverdue($machine)) {
-            throw MachineNotReservableException::becauseNotReturned();
+            throw MachineNotReservableException::becauseNotReturned($machine);
         }
 
         if (! $machine->isVgpCompliantUntil($endDate)) {

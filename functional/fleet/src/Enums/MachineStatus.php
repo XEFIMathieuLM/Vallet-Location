@@ -2,7 +2,9 @@
 
 namespace Functional\Fleet\Enums;
 
-enum MachineStatus: string
+use Functional\Fleet\Contracts\HasLabel;
+
+enum MachineStatus: string implements HasLabel
 {
     case Available = 'available';
     case RentedOut = 'rented_out';

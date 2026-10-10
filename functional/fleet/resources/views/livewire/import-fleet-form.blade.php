@@ -1,5 +1,5 @@
 <div class="flex max-w-3xl flex-col gap-6">
-    <flux:heading size="xl" level="1">{{ __('fleet::machines.import.title') }}</flux:heading>
+    <x-page-heading :title="__('fleet::machines.import.title')" />
     <flux:text>{{ __('fleet::machines.import.format_help') }}</flux:text>
 
     <form wire:submit="import" class="flex flex-col gap-4">
@@ -14,7 +14,7 @@
         <flux:callout variant="success" icon="check-circle" :heading="trans_choice('fleet::machines.import.created', $createdCount)" />
 
         @if ($rejections !== [])
-            <flux:heading size="lg">{{ __('fleet::machines.import.rejected_lines') }} ({{ count($rejections) }})</flux:heading>
+            <x-section-heading :title="__('fleet::machines.import.rejected_lines').' ('.count($rejections).')'" />
             <flux:table>
                 <flux:table.columns>
                     <flux:table.column>{{ __('fleet::machines.import.line') }}</flux:table.column>

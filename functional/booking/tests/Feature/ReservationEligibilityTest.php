@@ -13,13 +13,14 @@ use Functional\Booking\Models\Reservation;
 use Functional\Booking\Queries\AvailableMachinesQuery;
 use Functional\Fleet\Enums\MachineStatus;
 use Functional\Fleet\Models\Machine;
+use Functional\Fleet\Tests\Concerns\AssertsRefusals;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class ReservationEligibilityTest extends TestCase
 {
-    use RefreshDatabase;
+    use AssertsRefusals, RefreshDatabase;
 
     protected function setUp(): void
     {
@@ -46,10 +47,7 @@ class ReservationEligibilityTest extends TestCase
     {
         $machine = Machine::factory()->withStatus($status)->create();
 
-        $this->expectException(MachineNotReservableException::class);
-        $this->expectExceptionMessage("« {$statusLabel} »");
-
-        $this->reserve($machine, '2026-11-10', '2026-11-14');
+        $this->assertRefused(MachineNotReservableException::class, "« {$statusLabel} »", fn () => $this->reserve($machine, '2026-11-10', '2026-11-14'));
     }
 
     public function test_a_rented_out_machine_can_be_reserved_after_its_current_rental(): void
@@ -67,20 +65,14 @@ class ReservationEligibilityTest extends TestCase
         $machine = Machine::factory()->withStatus(MachineStatus::RentedOut)->create();
         $this->currentRental($machine, '2026-10-20', '2026-10-30');
 
-        $this->expectException(MachineNotReservableException::class);
-        $this->expectExceptionMessage(__('booking::reservations.refusals.machine_not_returned'));
-
-        $this->reserve($machine, '2026-12-10', '2026-12-14');
+        $this->assertRefused(MachineNotReservableException::class, __('booking::reservations.refusals.machine_not_returned'), fn () => $this->reserve($machine, '2026-12-10', '2026-12-14'));
     }
 
     public function test_a_machine_whose_vgp_expires_during_the_period_is_refused_with_the_due_date(): void
     {
         $machine = Machine::factory()->subjectToVgpUntil(CarbonImmutable::parse('2026-11-12'))->create();
 
-        $this->expectException(MachineNotReservableException::class);
-        $this->expectExceptionMessage('12/11/2026');
-
-        $this->reserve($machine, '2026-11-10', '2026-11-14');
+        $this->assertRefused(MachineNotReservableException::class, '12/11/2026', fn () => $this->reserve($machine, '2026-11-10', '2026-11-14'));
     }
 
     public function test_a_machine_whose_vgp_covers_the_period_is_accepted(): void
@@ -105,10 +97,7 @@ class ReservationEligibilityTest extends TestCase
     {
         $machine = Machine::factory()->subjectToVgpUntil(null)->create();
 
-        $this->expectException(MachineNotReservableException::class);
-        $this->expectExceptionMessage(__('booking::reservations.refusals.vgp_missing'));
-
-        $this->reserve($machine, '2026-11-10', '2026-11-14');
+        $this->assertRefused(MachineNotReservableException::class, __('booking::reservations.refusals.vgp_missing'), fn () => $this->reserve($machine, '2026-11-10', '2026-11-14'));
     }
 
     public function test_the_availability_search_hides_machines_that_cannot_be_reserved(): void

@@ -15,13 +15,14 @@ use Functional\Booking\Models\Reservation;
 use Functional\Booking\Queries\AvailableMachinesQuery;
 use Functional\Fleet\Models\Agency;
 use Functional\Fleet\Models\Machine;
+use Functional\Fleet\Tests\Concerns\AssertsRefusals;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 
 class CreateReservationTest extends TestCase
 {
-    use RefreshDatabase;
+    use AssertsRefusals, RefreshDatabase;
 
     private Machine $machine;
 
@@ -59,10 +60,7 @@ class CreateReservationTest extends TestCase
         $firstAgency = Agency::factory()->create(['name' => 'Annecy']);
         $this->reserve(User::factory()->employee()->for($firstAgency)->create(), '2026-11-10', '2026-11-14');
 
-        $this->expectException(ReservationOverlapException::class);
-        $this->expectExceptionMessage('du 10/11/2026 au 14/11/2026 par l\'agence Annecy');
-
-        $this->reserve(User::factory()->employee()->create(), '2026-11-13', '2026-11-16');
+        $this->assertRefused(ReservationOverlapException::class, 'du 10/11/2026 au 14/11/2026 par l\'agence Annecy', fn () => $this->reserve(User::factory()->employee()->create(), '2026-11-13', '2026-11-16'));
     }
 
     public function test_a_reservation_sharing_a_single_day_overlaps(): void
@@ -98,18 +96,12 @@ class CreateReservationTest extends TestCase
 
     public function test_a_reservation_ending_before_it_starts_is_refused(): void
     {
-        $this->expectException(InvalidReservationDatesException::class);
-        $this->expectExceptionMessage(__('booking::reservations.refusals.end_before_start'));
-
-        $this->reserve(User::factory()->employee()->create(), '2026-11-14', '2026-11-10');
+        $this->assertRefused(InvalidReservationDatesException::class, __('booking::reservations.refusals.end_before_start'), fn () => $this->reserve(User::factory()->employee()->create(), '2026-11-14', '2026-11-10'));
     }
 
     public function test_a_reservation_starting_in_the_past_is_refused(): void
     {
-        $this->expectException(InvalidReservationDatesException::class);
-        $this->expectExceptionMessage(__('booking::reservations.refusals.start_in_the_past'));
-
-        $this->reserve(User::factory()->employee()->create(), '2026-10-31', '2026-11-02');
+        $this->assertRefused(InvalidReservationDatesException::class, __('booking::reservations.refusals.start_in_the_past'), fn () => $this->reserve(User::factory()->employee()->create(), '2026-10-31', '2026-11-02'));
     }
 
     public function test_a_single_day_reservation_starting_today_is_accepted(): void

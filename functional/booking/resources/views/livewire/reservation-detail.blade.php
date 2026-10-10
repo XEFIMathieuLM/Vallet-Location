@@ -1,10 +1,9 @@
 <div class="flex max-w-4xl flex-col gap-6">
-    <div class="flex flex-wrap items-center justify-between gap-4">
-        <flux:heading size="xl" level="1">
-            {{ __('booking::reservations.detail.title', ['reference' => $reservation->machine->reference]) }}
-        </flux:heading>
-        @include('booking::partials.reservation-status', ['reservation' => $reservation])
-    </div>
+    <x-page-heading :title="__('booking::reservations.detail.title', ['reference' => $reservation->machine->reference])">
+        <x-slot:actions>
+            @include('booking::partials.reservation-status', ['reservation' => $reservation])
+        </x-slot:actions>
+    </x-page-heading>
 
     @if (session('reservation-created'))
         <flux:callout variant="success" icon="check-circle" :heading="session('reservation-created')" />
@@ -20,7 +19,7 @@
     @enderror
 
     <flux:card>
-        <dl class="grid gap-x-6 gap-y-3 sm:grid-cols-2">
+        <dl class="grid gap-x-6 gap-y-4 sm:grid-cols-2">
             @foreach ([
                 'machine' => "{$reservation->machine->reference} · {$reservation->machine->category->name}",
                 'home_agency' => $reservation->machine->agency->name,
@@ -41,18 +40,18 @@
 
     <div class="flex flex-wrap gap-2">
         @if ($isConfirmed)
-            <flux:button variant="primary" wire:click="depart" :disabled="! $this->isReadyFor(\Functional\Booking\Livewire\ReservationDetail::DEPARTURE_STEP)">
-                {{ __('booking::reservations.transitions.depart') }}
+            <flux:button variant="primary" wire:click="depart" :disabled="! $this->isReadyFor(\Functional\Booking\Enums\ReservationTransition::Departure)">
+                {{ __('booking::reservations.transitions.departure') }}
             </flux:button>
             <flux:button variant="danger" wire:click="cancel" wire:confirm="{{ __('booking::reservations.detail.cancel_confirmation') }}">
-                {{ __('booking::reservations.transitions.cancel') }}
+                {{ __('booking::reservations.transitions.cancellation') }}
             </flux:button>
         @endif
 
         @if ($isInProgress)
             @foreach ($returnConditions as $returnCondition)
                 <flux:button :variant="$loop->first ? 'primary' : 'filled'" wire:click="returnMachine('{{ $returnCondition->value }}')"
-                    :disabled="! $this->isReadyFor(\Functional\Booking\Livewire\ReservationDetail::RETURN_STEP)">
+                    :disabled="! $this->isReadyFor(\Functional\Booking\Enums\ReservationTransition::Return)">
                     {{ __('booking::reservations.detail.return_as', ['condition' => $returnCondition->label()]) }}
                 </flux:button>
             @endforeach

@@ -1,11 +1,11 @@
 <div class="flex max-w-2xl flex-col gap-6">
-    <flux:heading size="xl" level="1">{{ $title }}</flux:heading>
+    <x-page-heading :title="$title" />
 
     @error('refusal')
         <flux:callout variant="danger" icon="x-circle" :heading="$message" />
     @enderror
 
-    <form wire:submit="save" class="flex flex-col gap-6">
+    <form wire:submit="save" class="flex flex-col gap-4">
         <flux:input wire:model="reference" :label="__('fleet::machines.fields.reference')" />
 
         <div class="grid gap-4 md:grid-cols-2">

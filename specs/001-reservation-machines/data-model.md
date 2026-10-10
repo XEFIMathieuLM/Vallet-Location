@@ -107,11 +107,11 @@ Le motif est recalculé à chaque changement de machine (`MachineChanged`) et ch
 
 ### User (starter kit)
 
-Champs du starter kit + `agency_id` (référence → Agency, obligatoire) + `deactivated_at` (date-heure, nullable ; un compte désactivé est refusé à la connexion et déconnecté à sa requête suivante). Un compte créé reçoit un e-mail pour choisir son mot de passe. Rôle unique « salarié » portant toutes les permissions. Inscription publique désactivée.
+Champs du starter kit + `agency_id` (référence → Agency, obligatoire) + `deactivated_at` (date-heure, nullable ; un compte désactivé est refusé à la connexion et déconnecté à sa requête suivante). Un compte créé reçoit un e-mail pour choisir son mot de passe. Rôle unique « salarié » portant toutes les permissions (`machines.manage`, `fleet.view`, `reservations.manage`, `users.manage`). Les layers voient l'utilisateur via le contrat `AgencyMember` (agence de rattachement). Inscription publique désactivée.
 
 ## Historique
 
-`spatie/laravel-activitylog` sur Machine (statut, VGP, agence) et Reservation (statut, dates). Chaque entrée porte l'auteur et la date ; l'agence est celle de l'auteur.
+`spatie/laravel-activitylog` sur Machine (statut, VGP, agence) et Reservation (statut, dates). Chaque entrée porte l'auteur, la date et l'agence de l'auteur au moment de l'action (propriété enregistrée avec l'entrée).
 
 ## Relations
 

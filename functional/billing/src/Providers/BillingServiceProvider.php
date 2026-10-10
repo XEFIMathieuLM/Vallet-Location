@@ -13,9 +13,11 @@ use Functional\Billing\Exceptions\UnknownBillingGatewayException;
 use Functional\Billing\Gateways\FakeBillingGateway;
 use Functional\Billing\Listeners\RecordFinalPeriodOnReservationClosed;
 use Functional\Billing\Livewire\BillingAlert;
+use Functional\Billing\Livewire\DamageBillingActions;
 use Functional\Billing\Livewire\ReservationBillingSection;
 use Functional\Booking\Events\ReservationChanged;
 use Functional\Booking\Extensions\ReservationDetailSections;
+use Functional\Inspection\Support\DamageActions;
 use Illuminate\Support\Facades\Event;
 use Livewire\Livewire;
 use Lomkit\Access\Access;
@@ -45,6 +47,8 @@ class BillingServiceProvider extends LayerServiceProvider
 
         Livewire::component('billing.reservation-section', ReservationBillingSection::class);
         Livewire::component('billing.alert', BillingAlert::class);
+        Livewire::component('billing.damage-actions', DamageBillingActions::class);
+        $this->app->make(DamageActions::class)->register('billing.damage-actions', 10);
         $this->app->make(ReservationDetailSections::class)->register('billing.reservation-section', 20);
         Event::listen(ReservationChanged::class, RecordFinalPeriodOnReservationClosed::class);
 

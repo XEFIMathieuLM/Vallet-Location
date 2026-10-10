@@ -8,9 +8,12 @@ use Functional\Inspection\Enums\InspectionStep;
 use Functional\Inspection\Enums\RevocationReason;
 use Functional\Inspection\Events\PhotoSessionChanged;
 use Functional\Inspection\Models\PhotoSession;
+use Functional\Inspection\Support\InspectionHistory;
 
 class RevokePhotoSessions
 {
+    public function __construct(private readonly InspectionHistory $inspectionHistory) {}
+
     /**
      * @param  list<InspectionStep>  $steps
      */
@@ -28,6 +31,13 @@ class RevokePhotoSessions
         PhotoSession::query()
             ->whereKey($activeSessions->modelKeys())
             ->update(['revoked_at' => $now, 'revoked_reason' => $reason]);
+
+        $activeSessions->each(fn (PhotoSession $session) => $this->inspectionHistory->record(
+            $reservation,
+            'photo_session.revoked',
+            null,
+            ['step' => $session->step->value, 'reason' => $reason->value],
+        ));
 
         $activeSessions
             ->map(fn (PhotoSession $session): InspectionStep => $session->step)

@@ -2,14 +2,19 @@
 
 namespace Functional\Inspection\Actions;
 
+use App\Models\User;
 use Functional\Inspection\Events\PhotoChanged;
 use Functional\Inspection\Exceptions\StepAlreadyValidatedException;
 use Functional\Inspection\Models\Photo;
 use Functional\Inspection\Models\PhotoSession;
+use Functional\Inspection\Support\InspectionHistory;
 
 class DeletePhoto
 {
-    public function __construct(private readonly MissingViews $missingViews) {}
+    public function __construct(
+        private readonly MissingViews $missingViews,
+        private readonly InspectionHistory $inspectionHistory,
+    ) {}
 
     public function fromSession(PhotoSession $session, int $photoId): void
     {
@@ -18,10 +23,10 @@ class DeletePhoto
             ->where('step', $session->step)
             ->findOrFail($photoId);
 
-        $this->handle($photo);
+        $this->handle($photo, $session->author);
     }
 
-    public function handle(Photo $photo): void
+    public function handle(Photo $photo, ?User $author): void
     {
         $reservation = $photo->reservation;
 
@@ -30,6 +35,12 @@ class DeletePhoto
         }
 
         $photo->delete();
+
+        $this->inspectionHistory->record($reservation, 'photo.deleted', $author, [
+            'photo_id' => $photo->id,
+            'view' => $photo->view->label,
+            'step' => $photo->step->value,
+        ]);
 
         PhotoChanged::dispatch(
             $reservation->id,

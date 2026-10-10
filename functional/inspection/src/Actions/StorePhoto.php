@@ -5,6 +5,7 @@ namespace Functional\Inspection\Actions;
 use Functional\Inspection\Events\PhotoChanged;
 use Functional\Inspection\Models\Photo;
 use Functional\Inspection\Models\ReservationView;
+use Functional\Inspection\Support\InspectionHistory;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 
@@ -13,6 +14,7 @@ class StorePhoto
     public function __construct(
         private readonly FindActivePhotoSession $findActivePhotoSession,
         private readonly MissingViews $missingViews,
+        private readonly InspectionHistory $inspectionHistory,
     ) {}
 
     public function handle(string $token, int $reservationViewId, UploadedFile $file): Photo
@@ -32,6 +34,12 @@ class StorePhoto
             ]);
 
             $photo->addMedia($file)->toMediaCollection(Photo::COLLECTION);
+
+            $this->inspectionHistory->record($session->reservation, 'photo.received', $session->author, [
+                'photo_id' => $photo->id,
+                'view' => $view->label,
+                'step' => $session->step->value,
+            ]);
 
             return $photo;
         });

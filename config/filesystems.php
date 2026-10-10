@@ -62,7 +62,7 @@ return [
 
         'photos' => [
             'driver' => env('PHOTOS_DISK_DRIVER', 'local'),
-            'root' => storage_path('app/private/photos'),
+            'root' => env('PHOTOS_DISK_DRIVER', 'local') === 'local' ? storage_path('app/private/photos') : env('PHOTOS_S3_ROOT', ''),
             'url' => rtrim((string) env('APP_URL', 'http://localhost'), '/').'/photo-files',
             'serve' => true,
             'visibility' => 'private',

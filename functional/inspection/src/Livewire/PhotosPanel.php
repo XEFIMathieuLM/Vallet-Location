@@ -66,7 +66,7 @@ class PhotosPanel extends Component
 
         $photo = Photo::query()->where('reservation_id', $this->reservation->id)->findOrFail($photoId);
 
-        app(DeletePhoto::class)->handle($photo);
+        app(DeletePhoto::class)->handle($photo, Auth::user());
 
         $this->announceReadiness();
     }

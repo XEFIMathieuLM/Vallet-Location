@@ -38,6 +38,7 @@ class InspectionServiceProvider extends LayerServiceProvider
 
         $this->withRouting(
             web: __DIR__.'/../../routes/web.php',
+            commands: __DIR__.'/../../routes/console.php',
             channels: __DIR__.'/../../routes/channels.php',
         );
     }

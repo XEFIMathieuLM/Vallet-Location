@@ -2,13 +2,17 @@
 
 namespace Functional\Inspection\Models;
 
+use Carbon\CarbonImmutable;
+use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Models\Reservation;
 use Functional\Inspection\Database\Factories\PhotoFactory;
 use Functional\Inspection\Enums\InspectionStep;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Spatie\MediaLibrary\HasMedia;
@@ -31,7 +35,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 class Photo extends Model implements HasMedia
 {
     /** @use HasFactory<PhotoFactory> */
-    use HasFactory, InteractsWithMedia;
+    use HasFactory, InteractsWithMedia, Prunable;
 
     public const COLLECTION = 'photo';
 
@@ -68,6 +72,32 @@ class Photo extends Model implements HasMedia
     public function session(): BelongsTo
     {
         return $this->belongsTo(PhotoSession::class, 'photo_session_id');
+    }
+
+    /**
+     * @return Builder<self>
+     */
+    public function prunable(): Builder
+    {
+        $oneYearAgo = CarbonImmutable::now()->subYear();
+
+        $reservationsWithRecentDamages = Damage::query()
+            ->select('reservation_id')
+            ->where(fn (Builder $damages): Builder => $damages->whereNull('resolved_at')->orWhere('resolved_at', '>=', $oneYearAgo));
+
+        $reservationsClosedOverAYearAgo = Reservation::query()
+            ->select('id')
+            ->where('status', ReservationStatus::Closed)
+            ->where('returned_at', '<', $oneYearAgo)
+            ->whereNotIn('id', $reservationsWithRecentDamages);
+
+        $cancelledReservations = Reservation::query()->select('id')->where('status', ReservationStatus::Cancelled);
+
+        return self::query()
+            ->whereIn('reservation_id', $reservationsClosedOverAYearAgo)
+            ->orWhere(fn (Builder $photos): Builder => $photos
+                ->whereIn('reservation_id', $cancelledReservations)
+                ->where('created_at', '<', $oneYearAgo));
     }
 
     public function registerMediaCollections(): void

@@ -111,7 +111,7 @@ functional/
     └── tests/{Feature,Unit}/
 routes/channels.php                   # + canal privé reservation.{id}
 config/filesystems.php                # + disque photos
-compose.yaml                    # + MinIO (S3 local), facultatif
+compose.yaml                    # + S3 local (SeaweedFS, profil s3), facultatif
 ```
 
 **Structure Decision**: un layer `inspection` dans le même dépôt que la 001. `inspection` expose à son tour le registre `DamageActions` (P13), que la feature 003 remplira pour remplacer « Marquer traité ». Le layer `fleet` n'est pas modifié : l'écran des vues par catégorie appartient à `inspection` et a sa propre entrée de menu. `booking` gagne deux points d'extension génériques (guards de transition, sections du détail) qu'`inspection` remplit depuis son service provider. Ces points d'extension resserviront à la caution (guard de départ) sans nouvelle modification de `booking`.

@@ -110,7 +110,7 @@ class PhotosPanelTest extends TestCase
             ->call('deletePhoto', $remainingPhoto->id)
             ->assertHasErrors('refusal');
         $this->assertModelExists($remainingPhoto);
-        $this->assertThrows(fn () => app(DeletePhoto::class)->handle($remainingPhoto), StepAlreadyValidatedException::class);
+        $this->assertThrows(fn () => app(DeletePhoto::class)->handle($remainingPhoto, null), StepAlreadyValidatedException::class);
     }
 
     public function test_the_desk_cannot_delete_a_photo_of_another_reservation(): void

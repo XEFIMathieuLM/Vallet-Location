@@ -69,6 +69,13 @@
                         @endcan
                     </flux:sidebar.group>
                 @endcanany
+                @can(\Functional\Sales\Access\SalesPermission::Manage->value)
+                    <flux:sidebar.group :heading="__('sales::sales.navigation.heading')" class="grid">
+                        <flux:sidebar.item icon="banknotes" :href="route('sales.index')" :current="request()->routeIs('sales.*')" wire:navigate>
+                            {{ __('sales::sales.navigation.sales') }}
+                        </flux:sidebar.item>
+                    </flux:sidebar.group>
+                @endcan
 
                 @can(\Functional\Fleet\Access\FleetPermission::ManageMachines->value)
                     <flux:sidebar.group :heading="__('fleet::machines.navigation.fleet')" class="grid">

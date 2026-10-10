@@ -35,6 +35,9 @@ parameters:
         - functional/deposit/database/
         - functional/deposit/routes/
         - functional/deposit/config/
+        - functional/sales/src/
+        - functional/sales/database/
+        - functional/sales/routes/
 
     level: 7
 

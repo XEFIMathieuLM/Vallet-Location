@@ -42,9 +42,9 @@ description: "Task list for the full visual redesign (feature 010)"
 **Purpose** : police, fichiers de jetons, bouton Flux publié, outil de capture.
 
 - [X] T001 Copier la référence dans `specs/010-refonte-graphique/design-reference.md`, l'outil de capture dans `specs/010-refonte-graphique/outils/capture.mjs`, et produire les 38 captures avant dans `specs/010-refonte-graphique/captures/avant/` (fait pendant la spécification).
-- [ ] T002 Remplacer `bunny('Instrument Sans', { weights: [400, 500, 600] })` par `bunny('Inter Tight', { weights: [400, 600, 700, 800] })` dans `vite.config.js` (R1).
-- [ ] T003 Créer `resources/css/vallet/tokens.css`, `resources/css/vallet/components.css` et `resources/css/vallet/dark.css` (vides pour l'instant). Les importer depuis `resources/css/app.css` après `flux.css`. Retirer de `app.css` le bloc `@theme` des `zinc`, de l'accent et d'Instrument Sans, et le bloc `.dark` de l'accent, qui passent dans les nouveaux fichiers.
-- [ ] T004 Publier le bouton Flux : `docker compose exec -u sail laravel.test php artisan flux:publish button` → `resources/views/flux/button/index.blade.php` (copie conforme, aucune modification à cette étape).
+- [X] T002 Remplacer `bunny('Instrument Sans', { weights: [400, 500, 600] })` par `bunny('Inter Tight', { weights: [400, 600, 700, 800] })` dans `vite.config.js` (R1).
+- [X] T003 Créer `resources/css/vallet/tokens.css`, `resources/css/vallet/components.css` et `resources/css/vallet/dark.css` (vides pour l'instant). Les importer depuis `resources/css/app.css` après `flux.css`. Retirer de `app.css` le bloc `@theme` des `zinc`, de l'accent et d'Instrument Sans, et le bloc `.dark` de l'accent, qui passent dans les nouveaux fichiers.
+- [X] T004 Publier le bouton Flux : `docker compose exec -u sail laravel.test php artisan flux:publish button` → `resources/views/flux/button/index.blade.php` (copie conforme, aucune modification à cette étape).
 
 **Checkpoint** : `npm run build` passe, l'outil s'affiche comme avant (même rendu), `composer ci:check` vert.
 

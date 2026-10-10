@@ -5,6 +5,11 @@
     <flux:text size="sm">{{ __('billing::periods.section.exported_on', ['date' => $transmission->updated_at?->format('d/m/Y H:i')]) }}</flux:text>
 @elseif ($transmission->status === \Functional\Billing\Enums\TransmissionStatus::Failed)
     <flux:text size="sm">{{ __('billing::periods.section.failed_reason', ['reason' => $transmission->last_error]) }}</flux:text>
+    @if ($canRetry ?? false)
+        @can(\Functional\Billing\Enums\BillingPermission::Manage->value)
+            <flux:button size="xs" icon="arrow-path" wire:click="retry({{ $transmission->id }})">{{ __('billing::transmissions.screen.retry') }}</flux:button>
+        @endcan
+    @endif
 @else
     <flux:text size="sm">{{ __('billing::periods.section.pending_since', ['date' => $transmission->created_at->format('d/m/Y H:i')]) }}</flux:text>
 @endif

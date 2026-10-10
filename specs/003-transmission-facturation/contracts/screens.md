@@ -4,7 +4,7 @@ Tous les écrans exigent la permission `billing.manage`. Exception : les actions
 
 | Écran | Emplacement | Actions | Refus affichés | Exigences |
 |-------|-------------|---------|----------------|-----------|
-| Section « Facturation » du détail de réservation | section enregistrée dans le détail de `booking` | voir les périodes (dates, jours, type), les dégâts chiffrés ou non refacturés, l'état et la date de chaque transmission ; relancer une transmission en échec | — | FR-017, US1 |
+| Section « Facturation » du détail de réservation | section enregistrée dans le détail de `booking` | voir les périodes (dates, jours, type), les dégâts chiffrés ou non refacturés, l'état et la date de chaque transmission ; relancer une transmission en échec | relance d'une transmission qui n'est pas en échec | FR-010, FR-017, US1, US2 |
 | Actions d'un dégât | registre `DamageActions` d'`inspection`, rendu sur « Dégâts à traiter » et « Comparaison » (remplace « Marquer traité » sur les deux) | « Refacturer » : saisir montant HT et libellé, valider ; « Ne pas refacturer » : saisir un motif, valider | montant vide, nul ou négatif ; libellé vide ; motif vide ; dégât déjà réglé | US3, FR-012 à FR-016 |
 | Transmissions à traiter | `/facturation/transmissions` | lister les transmissions `failed` et les `pending` depuis plus de 24 h (réservation, client, type, date, motif) ; renseigner la référence client ; relancer ; ouvrir la réservation | relance d'une transmission déjà transmise ou exportée | US2, FR-009, FR-010 |
 | Exports de secours | `/facturation/exports` | produire un export de tout ce qui est en attente ou en échec ; télécharger un export passé (date, auteur, nombre de lignes) | aucun élément à exporter | US2, FR-022, FR-023 |

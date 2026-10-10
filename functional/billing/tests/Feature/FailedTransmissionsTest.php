@@ -4,7 +4,9 @@ namespace Functional\Billing\Tests\Feature;
 
 use App\Models\User;
 use Functional\Billing\Enums\TransmissionStatus;
+use Functional\Billing\Livewire\ReservationBillingSection;
 use Functional\Billing\Livewire\Transmissions;
+use Functional\Billing\Models\BillablePeriod;
 use Functional\Billing\Models\Transmission;
 use Functional\Billing\Tests\Concerns\BuildsBillingFixtures;
 use Functional\Billing\Tests\Concerns\RecordsReservationLifecycle;
@@ -66,5 +68,38 @@ class FailedTransmissionsTest extends TestCase
         $this->actingAs(User::factory()->create());
 
         $this->get(route('billing.transmissions'))->assertForbidden();
+    }
+
+    public function test_a_failed_transmission_can_be_retried_from_the_reservation_billing_section(): void
+    {
+        $this->actingAs($this->employee());
+        $reservation = $this->closedReservation('2026-11-10 08:00:00', '2026-11-14 17:00:00');
+        $period = BillablePeriod::factory()->create(['reservation_id' => $reservation->id]);
+        $transmission = Transmission::factory()->failed()->create(['billable_period_id' => $period->id, 'reservation_id' => $reservation->id]);
+
+        Livewire::test(ReservationBillingSection::class, ['reservation' => $reservation])
+            ->assertSee('Relancer')
+            ->call('retry', $transmission->id)
+            ->assertHasNoErrors()
+            ->assertDontSee('Relancer');
+
+        $this->assertSame(TransmissionStatus::Sent, $transmission->refresh()->status);
+    }
+
+    public function test_the_billing_section_retries_only_its_own_reservation_transmissions_and_requires_the_permission(): void
+    {
+        $this->actingAs($this->employee());
+        $reservation = $this->closedReservation('2026-11-10 08:00:00', '2026-11-14 17:00:00');
+        $otherTransmission = Transmission::factory()->failed()->create();
+
+        Livewire::test(ReservationBillingSection::class, ['reservation' => $reservation])
+            ->call('retry', $otherTransmission->id)
+            ->assertNotFound();
+
+        $this->actingAs(User::factory()->create());
+        Livewire::test(ReservationBillingSection::class, ['reservation' => $reservation])
+            ->call('retry', $otherTransmission->id)
+            ->assertForbidden();
+        $this->assertSame(TransmissionStatus::Failed, $otherTransmission->refresh()->status);
     }
 }

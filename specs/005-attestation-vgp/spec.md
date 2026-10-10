@@ -50,11 +50,11 @@ Après chaque vérification, un salarié dépose dans l'outil le rapport remis p
 
 **Why this priority**: Sans rapport déposé, il n'y a rien à envoyer. Le dépôt est la condition de l'envoi automatique.
 
-**Independent Test**: Déposer un rapport sur une nacelle qui n'en avait pas et qui a une réservation confirmée en attente de rapport : l'attestation part vers le client de cette réservation, et la fiche machine affiche le rapport en vigueur et ses dates.
+**Independent Test**: Déposer un rapport sur une nacelle qui n'en avait pas et qui a une réservation confirmée en attente de rapport : l'attestation part vers le client de cette réservation, et la page VGP de la machine affiche le rapport en vigueur et ses dates.
 
 **Acceptance Scenarios**:
 
-1. **Given** une machine soumise à VGP, **When** un salarié dépose un rapport avec une date de vérification au 2 octobre et une échéance au 1er avril, **Then** le rapport devient le rapport en vigueur de la machine, la date d'échéance VGP de la machine passe au 1er avril, et la fiche machine affiche le rapport et ses dates.
+1. **Given** une machine soumise à VGP, **When** un salarié dépose un rapport avec une date de vérification au 2 octobre et une échéance au 1er avril, **Then** le rapport devient le rapport en vigueur de la machine, la date d'échéance VGP de la machine passe au 1er avril, et la page VGP de la machine affiche le rapport et ses dates.
 2. **Given** une machine soumise à VGP sans rapport déposé et une réservation confirmée de cette machine, **When** la réservation est créée, **Then** la réservation est confirmée et affiche « Attestation VGP en attente : rapport de VGP non déposé pour la machine ».
 3. **Given** une réservation en attente de rapport, **When** un salarié dépose le rapport de la machine, **Then** l'attestation part automatiquement vers le client de la réservation.
 4. **Given** un fichier qui n'est pas un document accepté (format ou taille), **When** un salarié tente de le déposer, **Then** l'outil refuse et indique le motif.
@@ -144,7 +144,7 @@ Le client dit ne pas avoir reçu l'attestation, l'a perdue, ou donne une autre a
 - **FR-001**: Les salariés DOIVENT pouvoir déposer, pour une machine soumise à VGP, le rapport de VGP remis par l'organisme de contrôle, avec sa date de vérification et sa date d'échéance.
 - **FR-002**: Le dernier rapport déposé DOIT devenir le rapport en vigueur de la machine, et sa date d'échéance DOIT devenir la date d'échéance VGP de la machine ; les rapports précédents DOIVENT rester consultables.
 - **FR-003**: Le système DOIT refuser le dépôt d'un fichier dont le format ou la taille n'est pas accepté, et en indiquer le motif.
-- **FR-004**: La fiche machine DOIT afficher le rapport en vigueur, sa date de vérification et sa date d'échéance, ou l'absence de rapport.
+- **FR-004**: Le système DOIT présenter la liste des machines soumises à VGP avec, pour chacune, le rapport en vigueur, sa date de vérification et sa date d'échéance, ou l'absence de rapport ; et une page VGP par machine avec ses rapports successifs.
 
 **Envoi automatique**
 

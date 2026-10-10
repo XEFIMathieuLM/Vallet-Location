@@ -103,6 +103,24 @@
                     </flux:sidebar.group>
                 @endcanany
 
+                @canany([\Functional\Portal\Access\PortalPermission::HandleRequests->value, \Functional\Portal\Access\PortalPermission::ManagePrices->value])
+                    <flux:sidebar.group :heading="__('portal::navigation.staff.heading')" class="grid">
+                        @can(\Functional\Portal\Access\PortalPermission::HandleRequests->value)
+                            <flux:sidebar.item icon="inbox-arrow-down" :href="route('portal.staff.requests')" :current="request()->routeIs('portal.staff.requests')" wire:navigate>
+                                <div class="flex items-center justify-between gap-2">
+                                    {{ __('portal::navigation.staff.requests') }}
+                                    <livewire:portal.pending-requests-badge />
+                                </div>
+                            </flux:sidebar.item>
+                        @endcan
+                        @can(\Functional\Portal\Access\PortalPermission::ManagePrices->value)
+                            <flux:sidebar.item icon="currency-euro" :href="route('portal.staff.prices')" :current="request()->routeIs('portal.staff.prices')" wire:navigate>
+                                {{ __('portal::navigation.staff.prices') }}
+                            </flux:sidebar.item>
+                        @endcan
+                    </flux:sidebar.group>
+                @endcanany
+
                 @can(\Functional\Fleet\Access\FleetPermission::ManageMachines->value)
                     <flux:sidebar.group :heading="__('fleet::machines.navigation.fleet')" class="grid">
                         <flux:sidebar.item icon="truck" :href="route('machines.index')" :current="request()->routeIs('machines.*')" wire:navigate>

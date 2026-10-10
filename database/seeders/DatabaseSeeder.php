@@ -19,6 +19,7 @@ use Functional\Fleet\Database\Seeders\FleetSeeder;
 use Functional\Fleet\Models\Agency;
 use Functional\Inspection\Database\Seeders\InspectionPermissionSeeder;
 use Functional\Inspection\Database\Seeders\InspectionSeeder;
+use Functional\Portal\Database\Seeders\PortalPermissionSeeder;
 use Functional\Sales\Database\Seeders\SalesDemoSeeder;
 use Functional\Sales\Database\Seeders\SalesPermissionSeeder;
 use Illuminate\Database\Seeder;
@@ -27,7 +28,7 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        $this->call([FleetPermissionSeeder::class, BookingPermissionSeeder::class, InspectionPermissionSeeder::class, BillingPermissionSeeder::class, DepositPermissionSeeder::class, SalesPermissionSeeder::class, CertificationPermissionSeeder::class, AccountsPermissionSeeder::class, PermissionSeeder::class, FleetSeeder::class]);
+        $this->call([FleetPermissionSeeder::class, BookingPermissionSeeder::class, InspectionPermissionSeeder::class, BillingPermissionSeeder::class, DepositPermissionSeeder::class, SalesPermissionSeeder::class, CertificationPermissionSeeder::class, AccountsPermissionSeeder::class, PortalPermissionSeeder::class, PermissionSeeder::class, FleetSeeder::class]);
 
         $employees = Agency::query()->orderBy('name')->get()
             ->map(fn (Agency $agency): User => User::factory()->employee()->for($agency)->create());

@@ -46,6 +46,10 @@ parameters:
         - functional/accounts/database/
         - functional/accounts/routes/
         - functional/accounts/config/
+        - functional/portal/src/
+        - functional/portal/database/
+        - functional/portal/routes/
+        - functional/portal/config/
 
     level: 7
 

@@ -1,0 +1,35 @@
+<?php
+
+return [
+    'statuses' => [
+        'pending' => 'En attente',
+        'confirmed' => 'Confirmée',
+        'refused' => 'Refusée',
+        'cancelled' => 'Annulée',
+        'expired' => 'Expirée',
+    ],
+    'history' => [
+        'request_sent' => 'Demande envoyée en ligne',
+        'request_confirmed' => 'Demande confirmée : réservation n° :reservation_id',
+        'account_attached' => 'Compte client :account_email rattaché à la fiche',
+        'request_refused' => 'Demande refusée : :reason',
+        'request_cancelled' => 'Demande annulée par le client',
+        'request_expired' => 'Demande expirée sans décision de l\'agence',
+        'indicative_price_set' => 'Prix indicatif fixé à :new_price',
+        'indicative_price_removed' => 'Prix indicatif retiré',
+    ],
+    'new' => 'Nouvelle demande',
+    'empty' => 'Aucune demande pour le moment',
+    'empty_help' => 'Cherchez une machine disponible pour envoyer votre première demande.',
+    'period' => 'Du :start au :end · agence de :agency',
+    'sent_on' => 'Envoyée le :date',
+    'price_shown' => 'Prix indicatif au moment de la demande : à partir de :amount HT / jour',
+    'refusal_reason' => 'Motif du refus : :reason',
+    'reserved_machine' => 'Machine réservée : :reference.',
+    'see_reservations' => 'Voir mes réservations',
+    'cancel' => 'Annuler la demande',
+    'cancel_title' => 'Annuler cette demande ?',
+    'cancel_confirm' => 'L\'agence ne la traitera plus. Vous pourrez envoyer une nouvelle demande à tout moment.',
+    'keep' => 'Garder la demande',
+    'cancelled' => 'Votre demande est annulée.',
+];

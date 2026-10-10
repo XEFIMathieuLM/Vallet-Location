@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6e5d0a0d255c2141f2d2d8210bd45657",
+    "content-hash": "7f4898894063934bc53dab4e0f101b49",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -1261,6 +1261,39 @@
                     "Functional\\Inspection\\": "src/",
                     "Functional\\Inspection\\Database\\Seeders\\": "database/seeders/",
                     "Functional\\Inspection\\Database\\Factories\\": "database/factories/"
+                }
+            },
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "functional/portal",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "./functional/portal",
+                "reference": "0d173dda359a37481044755901b1b7b955ca01d3"
+            },
+            "require": {
+                "functional/booking": "*",
+                "functional/certification": "*",
+                "functional/fleet": "*",
+                "xefi/laravel-osdd": "*"
+            },
+            "type": "layer",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Functional\\Portal\\Providers\\PortalServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Functional\\Portal\\": "src/",
+                    "Functional\\Portal\\Database\\Seeders\\": "database/seeders/",
+                    "Functional\\Portal\\Database\\Factories\\": "database/factories/"
                 }
             },
             "transport-options": {

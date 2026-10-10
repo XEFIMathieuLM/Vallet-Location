@@ -1,0 +1,28 @@
+{
+    "name": "functional/portal",
+    "description": "",
+    "type": "layer",
+    "version": "1.0.0",
+    "require": {
+        "xefi/laravel-osdd": "*",
+        "functional/booking": "*",
+        "functional/certification": "*",
+        "functional/fleet": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Functional\\Portal\\": "src/",
+            "Functional\\Portal\\Database\\Seeders\\": "database/seeders/",
+            "Functional\\Portal\\Database\\Factories\\": "database/factories/"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Functional\\Portal\\Providers\\PortalServiceProvider"
+            ]
+        }
+    }
+}

@@ -16,21 +16,21 @@ Aucune inconnue technique bloquante : la stack, les packages et les mécanismes 
   sales y enregistre `ReservedSaleReservationGuard`.
 - **Rationale**: Principe I (point d'extension générique rempli depuis le provider du layer supérieur) et Principe II : le contrôle se fait dans la transaction de création, sous le même verrou `machines … FOR UPDATE` que l'acceptation d'une offre (R5), donc une location et une acceptation simultanées sont sérialisées.
 - **Alternatives considered**: Ajouter une méthode `beforeCreation` à `ReservationTransitionGuard` (rejeté : oblige les gardes existants de l'inspection à implémenter une méthode vide, et mélange création et transitions). Passer la machine en un statut fleet « vendue sous réserve » (rejeté : la machine reste louable avant la date de remise ; un statut global ne sait pas exprimer « louable jusqu'au 19 »).
-- **Modification d'un layer existant (booking)** : nouveau contrat, nouveau registre singleton, appel dans `CreateReservation` et `AvailableMachinesQuery`. Aucun changement de comportement sans garde enregistré. À arbitrer par la coordination : faite dans 007 ou confiée à 001.
+- **Modification d'un layer existant (booking)** : nouveau contrat, nouveau registre singleton, appel dans `CreateReservation` et `AvailableMachinesQuery`. Aucun changement de comportement sans garde enregistré. Arbitré : réalisé dans 007 (Phase 2).
 
 ## R3. Refus du retrait manuel d'une machine en vente (FR-016) : un registre de gardes de retrait dans fleet
 
 - **Decision**: fleet remplace le binding unique `MachineRetirementGuard` (aujourd'hui `bindIf` sur `UnrestrictedRetirement`, écrasé par booking) par un registre `MachineRetirementGuards` ; `RetireMachine` appelle tous les gardes enregistrés. booking enregistre `ActiveReservationsRetirementGuard` dans le registre au lieu de rebinder le contrat ; sales enregistre `OpenSaleRetirementGuard`. `UnrestrictedRetirement` disparaît (un registre vide = aucune restriction).
 - **Rationale**: avec un binding unique, le dernier provider qui bind gagne : sales écraserait le garde des réservations, ou devrait le décorer en connaissant sa classe. Le registre est le point d'extension générique attendu par le Principe I.
 - **Alternatives considered**: Décorateur dans sales qui enveloppe le garde de booking (rejeté : dépend de l'ordre de chargement des providers et masque le garde de booking). Garde composite dans sales (rejeté : même problème).
-- **Modification d'un layer existant (fleet + booking)** : `RetireMachine`, `FleetServiceProvider`, suppression de `UnrestrictedRetirement`, `BookingServiceProvider`. À arbitrer par la coordination.
+- **Modification d'un layer existant (fleet + booking)** : `RetireMachine`, `FleetServiceProvider`, suppression de `UnrestrictedRetirement`, `BookingServiceProvider`. Arbitré : réalisé dans 007 (Phase 2).
 
 ## R4. Mention « en vente » dans le parc et le planning (FR-005) : un registre de badges dans fleet
 
 - **Decision**: fleet expose `MachineBadges` (registre) et le contrat `MachineBadgeProvider::badgesFor(array $machineIds): array<int, list<MachineBadge>>` (lot de machines, une requête par fournisseur, pas de requête dans une boucle). `MachineIndex` (fleet) et `Planning` / `AvailabilitySearch` (booking) affichent les badges. sales enregistre `SaleMachineBadges` (« en vente », « vendue sous réserve au JJ/MM », avec lien vers la vente).
 - **Rationale**: Principe I : fleet ne peut pas lire les ventes. Le chargement par lot respecte le Principe II (agrégats en base, pas de requête dans une boucle).
 - **Alternatives considered**: Rien afficher dans le parc et le planning (rejeté : FR-005 ; c'est ce qui évite qu'une agence promette une machine déjà vendue). Une section ajoutée au détail de machine (rejeté : il n'existe pas d'écran de détail de machine, et le planning resterait muet).
-- **Modification d'un layer existant (fleet + booking)** : contrat, registre et objet-valeur dans fleet, affichage dans trois vues. À arbitrer par la coordination.
+- **Modification d'un layer existant (fleet + booking)** : contrat, registre et objet-valeur dans fleet, affichage dans trois vues. Arbitré : réalisé dans 007 (Phase 2).
 
 ## R5. Concurrence et garanties en base (FR-002, FR-011, FR-009, FR-010, FR-014)
 
@@ -60,7 +60,7 @@ Aucune inconnue technique bloquante : la stack, les packages et les mécanismes 
   Tout le reste de la feature 003 (relances, liste à traiter, alerte, export de secours, idempotence par UUID, rattrapage planifié `ReconcileCommand`) s'applique sans changement.
 - **Rationale**: FR-020 exige les mêmes garanties que 003 ; les réutiliser évite un second circuit. Le cas `UsedMachineSale` appartient au vocabulaire de billing (ce que le logiciel de facturation reçoit) ; billing n'importe aucune classe de sales.
 - **Alternatives considered**: Relation polymorphe Eloquent `morphTo` vers `Sale` (rejeté : billing déclarerait une relation vers un layer supérieur, interdit par le Principe I). Une table de transmission propre à sales avec son propre job (rejeté : duplique relances, export, alerte et liste ; une vente échouée n'apparaîtrait pas avec les autres). Transmettre via un événement écouté par billing (rejeté : billing devrait connaître l'événement de sales).
-- **Modification d'un layer existant (billing)** : migration additive sur `transmissions`, contrat, registre, action, enum, objet-valeur, délégation dans 4 classes et 1 vue. À arbitrer par la coordination.
+- **Modification d'un layer existant (billing)** : migration additive sur `transmissions`, contrat, registre, action, enum, objet-valeur, délégation dans 4 classes et 1 vue. Arbitré : réalisé dans 007 (Phase 2).
 
 ## R8. Acheteur
 

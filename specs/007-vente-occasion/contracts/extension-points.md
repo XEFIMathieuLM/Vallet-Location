@@ -2,7 +2,7 @@
 
 Trois layers existants reçoivent un point d'extension générique. Aucun ne mentionne la vente : ils exposent un contrat et un registre, que sales remplit depuis `SalesServiceProvider::boot()`. Sans enregistrement, leur comportement est strictement celui d'aujourd'hui.
 
-> **Modification d'un layer existant** : chaque section ci-dessous touche un layer d'une feature précédente. La coordination décide si elle est réalisée dans la branche 007 (phase 2 de `tasks.md`) ou confiée à la feature propriétaire du layer.
+> **Modification d'un layer existant** : chaque section ci-dessous touche un layer d'une feature précédente. Arbitrage de la coordination : toutes sont réalisées dans la branche 007 (Phase 2 de `tasks.md`), E1 et E2 après la remise à jour sur les corrections de 001 et 003.
 
 ## E1. booking : gardes de création de réservation
 
@@ -75,6 +75,13 @@ interface MachineBadgeProvider
      * @return array<int, list<MachineBadge>>  indexé par machine_id
      */
     public function badgesFor(array $machineIds): array;
+
+    /**
+     * Événements temps réel qui doivent rafraîchir les badges (noms d'écouteurs Livewire, ex. « echo-private:<canal>,.<événement> »).
+     *
+     * @return list<string>
+     */
+    public function refreshListeners(): array;
 }
 ```
 
@@ -97,12 +104,15 @@ final class MachineBadges   // singleton
 
     /** @param list<int> $machineIds @return array<int, list<MachineBadge>> */
     public function forMachines(array $machineIds): array;   // fusionne les fournisseurs, une requête par fournisseur
+
+    /** @return list<string> */
+    public function refreshListeners(): array;               // union des refreshListeners() des fournisseurs
 }
 ```
 
-Affichage : `fleet::livewire.machine-index`, `booking::livewire.planning`, `booking::livewire.availability-search` affichent les badges à côté de la référence (`flux:badge`, lien si `url`).
+Affichage : `fleet::livewire.machine-index`, `booking::livewire.planning`, `booking::livewire.availability-search` affichent les badges à côté de la référence (`flux:badge`, lien si `url`). Les trois composants ajoutent `MachineBadges::refreshListeners()` à leurs écouteurs via `getListeners()` (FR-025 : un badge change sans rechargement).
 
-Rempli par sales : `SaleMachineBadges` : « En vente » (bleu) pour `listed`, « Vendue sous réserve — remise le JJ/MM » (ambre) pour `reserved`, lien vers la vente.
+Rempli par sales : `SaleMachineBadges` : « En vente » (bleu) pour `listed`, « Vendue sous réserve — remise le JJ/MM » (ambre) pour `reserved`, lien vers la vente ; `refreshListeners()` = `['echo-private:sales,.sale.changed']`.
 
 ## E4. billing : sources de transmission
 

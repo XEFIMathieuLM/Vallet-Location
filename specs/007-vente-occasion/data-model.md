@@ -93,7 +93,7 @@ listed ──reserve(offre, date de remise)──▶ reserved ──sell──�
 
 Transitions interdites : toute transition depuis `sold` ou `cancelled`, `sell` depuis `listed`, `reserve` depuis `reserved`. → `IllegalSaleTransitionException`.
 
-Opérations sans changement d'état : modifier le prix demandé ou le descriptif (`listed` ou `reserved`), modifier la date de remise prévue (`reserved`), enregistrer une offre (`listed` uniquement).
+Opérations sans changement d'état : modifier le prix demandé (`listed` uniquement), modifier le descriptif (`listed` ou `reserved`), modifier la date de remise prévue (`reserved`), enregistrer une offre (`listed` uniquement).
 
 ### Offre (`OfferState`)
 

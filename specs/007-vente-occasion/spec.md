@@ -37,7 +37,7 @@ Un salarié met en vente une machine du parc en indiquant un prix demandé hors 
 1. **Given** une machine du parc sans vente ouverte, **When** un salarié la met en vente à 18 000 € HT avec un descriptif, **Then** la vente est ouverte « en vente » et la machine apparaît dans la liste des machines en vente pour toutes les agences, avec son prix, son agence de rattachement et son statut au parc.
 2. **Given** une machine déjà en vente, **When** un salarié d'une autre agence tente de la mettre en vente, **Then** l'outil refuse et indique la vente ouverte (prix, agence, date).
 3. **Given** deux salariés qui mettent en vente la même machine au même instant, **When** les deux demandes arrivent, **Then** une seule vente est ouverte et l'autre salarié reçoit un refus explicite.
-4. **Given** une machine en vente, **When** un salarié modifie le prix demandé, **Then** le nouveau prix est affiché partout et l'ancien prix reste dans l'historique de la vente.
+4. **Given** une machine en vente, **When** un salarié modifie le prix demandé, **Then** le nouveau prix est affiché partout et l'ancien prix reste dans l'historique de la vente ; une fois la vente réservée, le prix demandé n'est plus modifiable.
 5. **Given** une machine retirée du parc par une vente précédente conclue, **When** un salarié tente de la mettre en vente, **Then** l'outil refuse.
 6. **Given** une machine en vente, **When** elle est consultée dans le parc ou dans le planning, **Then** elle porte la mention « en vente » et reste réservable en location selon les règles habituelles de la feature 001.
 
@@ -143,7 +143,7 @@ Une vente peut être annulée tant qu'elle n'est pas conclue (acheteur qui se d�
 - **FR-001**: Les salariés DOIVENT pouvoir mettre en vente une machine du parc, quel que soit son statut au parc, avec un prix demandé hors taxes strictement positif et un descriptif (année de mise en service, heures d'utilisation, état général, commentaire libre).
 - **FR-002**: Une machine NE DOIT avoir qu'une seule vente ouverte (en vente ou réservée) à la fois, y compris en cas de demandes simultanées ; une machine dont une vente a été conclue NE DOIT plus pouvoir être mise en vente.
 - **FR-003**: Le système DOIT présenter à toutes les agences la liste des machines en vente, filtrable par catégorie, agence de rattachement et statut de vente, avec le prix demandé, l'agence de rattachement et le statut au parc.
-- **FR-004**: Les salariés DOIVENT pouvoir modifier le prix demandé et le descriptif d'une vente ouverte ; chaque changement de prix est conservé dans l'historique.
+- **FR-004**: Les salariés DOIVENT pouvoir modifier le prix demandé d'une vente « en vente », et le descriptif d'une vente « en vente » ou « réservée » ; chaque changement de prix est conservé dans l'historique. Le prix demandé n'est plus modifiable une fois la vente réservée (le prix final est celui de l'offre acceptée, FR-008a).
 - **FR-005**: Une machine ayant une vente ouverte DOIT porter la mention « en vente » ou « vendue sous réserve » dans le parc et le planning. Une machine « en vente » reste réservable en location selon les règles de la feature 001 ; seules les ventes réservées restreignent les locations (FR-010).
 
 **Offres et réservation de la vente**
@@ -151,7 +151,7 @@ Une vente peut être annulée tant qu'elle n'est pas conclue (acheteur qui se d�
 - **FR-006**: Les salariés DOIVENT pouvoir enregistrer sur une vente « en vente » une ou plusieurs offres : acheteur, montant hors taxes strictement positif, date de l'offre.
 - **FR-007**: L'acheteur DOIT être un client du fichier client de l'outil ; les salariés DOIVENT pouvoir le créer au moment de l'offre s'il n'existe pas.
 - **FR-008**: Les salariés DOIVENT pouvoir accepter une offre en indiquant une date de remise prévue (aujourd'hui ou plus tard) ; la vente passe « réservée » pour cet acheteur au montant de l'offre, et les autres offres en cours passent « refusées ».
-- **FR-009**: Le système DOIT refuser l'acceptation d'une offre, ou le report de la date de remise, si une location confirmée ou en cours de la machine se termine après la date de remise prévue, en indiquant la location en conflit.
+- **FR-009**: Le système DOIT refuser l'acceptation d'une offre, ou le report de la date de remise, si une location confirmée ou en cours de la machine se termine le jour de la remise prévue ou après, en indiquant la location en conflit ; une location qui se termine la veille est compatible.
 - **FR-010**: Tant qu'une vente est réservée, le système DOIT refuser toute réservation de location de la machine dont la date de fin est postérieure ou égale à la date de remise prévue, en indiquant la vente réservée et sa date de remise.
 - **FR-008a**: Les salariés DOIVENT pouvoir modifier la date de remise prévue d'une vente réservée (aujourd'hui ou plus tard), sous la condition de FR-009 ; le prix et l'acheteur d'une vente réservée ne sont pas modifiables : une renégociation passe par la levée de la réservation (FR-018a) et une nouvelle offre.
 - **FR-011**: Le système DOIT garantir qu'une seule offre peut être acceptée sur une vente, y compris en cas de validations simultanées.

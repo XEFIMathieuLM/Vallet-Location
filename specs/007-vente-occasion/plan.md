@@ -17,7 +17,7 @@ sales agit sur les layers existants uniquement par quatre points d'extension gé
 | E3 | fleet (+ booking pour l'affichage) | registre `MachineBadges` | mention « en vente » dans le parc et le planning (FR-005) |
 | E4 | billing | registre `BillableSources`, colonnes `source_type`/`source_id` sur `transmissions`, action `QueueSourceTransmission` | transmettre la vente avec toutes les garanties de 003 (FR-019 à FR-021) sans que billing connaisse sales |
 
-**Ces quatre modifications de layers existants sont à arbitrer par la session de coordination** : réalisées dans la branche 007 (phase 2 de `tasks.md`, isolée et commitée séparément) ou confiées aux features propriétaires (001 pour fleet/booking, 003 pour billing). Le reste du plan n'en dépend que par les contrats.
+**Arbitrage de la coordination (2026-10-10)** : les quatre modifications sont réalisées dans la branche 007 (Phase 2 de `tasks.md`, un commit par bloc), E1 et E2 uniquement après la remise à jour de la branche sur les corrections de 001 et 003. Elles restent génériques (aucune mention de la vente dans fleet, booking ou billing), la migration de billing est additive et réversible, et chaque bloc s'accompagne des tests de non-régression des features 001 et 003 concernées.
 
 ## Technical Context
 
@@ -45,7 +45,7 @@ sales agit sur les layers existants uniquement par quatre points d'extension gé
 
 | Principe | Application | Statut |
 |---|---|---|
-| I. Layers OSDD | Nouveau layer `functional/sales` généré par `osdd:*` ; sens `sales → billing → inspection → booking → fleet` ; aucune relation Eloquent ni import d'un layer inférieur vers sales (test `LayerBoundariesTest` dans sales) ; les layers inférieurs exposent des registres génériques (E1–E4) remplis depuis `SalesServiceProvider` ; sales ne modifie aucune table d'un autre layer (la migration de `transmissions` appartient à billing et fait partie de E4) | ✅ (E1–E4 signalés à la coordination) |
+| I. Layers OSDD | Nouveau layer `functional/sales` généré par `osdd:*` ; sens `sales → billing → inspection → booking → fleet` ; aucune relation Eloquent ni import d'un layer inférieur vers sales (test `LayerBoundariesTest` dans sales) ; les layers inférieurs exposent des registres génériques (E1–E4) remplis depuis `SalesServiceProvider` ; sales ne modifie ni le schéma ni les fichiers d'un autre layer (la migration de `transmissions` appartient à billing et fait partie de E4) ; écrire des lignes au travers du modèle public d'un layer inférieur reste permis dans le sens des dépendances (création d'un `Customer` de booking au moment d'une offre, exactement comme le formulaire de réservation de booking) | ✅ (E1–E4 signalés à la coordination) |
 | II. Garanties base et serveur | Index uniques partiels (une vente non annulée par machine, une offre acceptée par vente, une transmission par source) ; CHECK sur montants et champs liés à l'état ; verrou `machines … FOR UPDATE` partagé avec `CreateReservation` pour toute règle de conflit ; FK sans cascade ; total des ventes et ventes en retard calculés en base | ✅ |
 | III. Cycles de vie | `SaleStatus` et `OfferStatus` : colonnes texte + enums backed ; pattern State pour les deux (une classe par état, `IllegalSaleTransitionException`, `IllegalOfferTransitionException`) ; dates en `Europe/Paris` ; montants stockés en centimes et manipulés en `Functional\Billing\Money\Money` via `MoneyCast` (`bdef4c6`) | ✅ |
 | IV. Effets de bord explicites | Pas d'observer : la remise appelle explicitement `RetireMachine` et `QueueSourceTransmission` dans sa transaction ; `SaleChanged` dispatché après commit ; pas de `try/catch` (`rescue()` qui traduit `23505` et relance le reste) ; refus = classes `final` héritant de `RefusalException`, factories nommées, message technique anglais + clé `sales::refusals.*` (forme du socle, `e8cba36`) ; logiciel de facturation derrière `BillingGateway` (faux existant) ; transmission persistée en base et rattrapée par `billing:reconcile` | ✅ |
@@ -53,7 +53,7 @@ sales agit sur les layers existants uniquement par quatre points d'extension gé
 | VI. Tests par scénario | Un test Feature par scénario d'acceptation (US1 à US5), tests Unit des états et des règles de date ; tests écrits avant l'implémentation dans chaque phase ; faux logiciel et `travelTo()` | ✅ |
 | VII. Code simple | Code en anglais, textes dans `functional/sales/resources/lang/fr` ; une action par opération métier ; fichiers < 200 lignes ; aucun nouveau package | ✅ |
 
-Re-check après la phase 1 (design) : aucun écart. Les quatre modifications de layers existants sont conformes au Principe I (points d'extension génériques, aucun nom de sales dans les layers inférieurs) ; elles ne sont pas des violations mais exigent l'arbitrage de la coordination sur la branche qui les porte.
+Re-check après la phase 1 (design) : aucun écart. Les quatre modifications de layers existants sont conformes au Principe I (points d'extension génériques, aucun nom de sales dans les layers inférieurs) ; arbitrage de la coordination : elles sont réalisées dans la branche 007 (Phase 2).
 
 ## Project Structure
 
@@ -83,7 +83,7 @@ functional/sales/                                  # nouveau layer
 │   ├── migrations/2026_10_10_000070_create_sales_table.php
 │   │              2026_10_10_000071_create_sale_offers_table.php
 │   │              2026_10_10_000072_add_accepted_offer_foreign_key_to_sales_table.php
-│   └── seeders/SalesPermissionSeeder.php
+│   └── seeders/SalesPermissionSeeder.php, SalesDemoSeeder.php
 ├── resources/
 │   ├── lang/fr/sales.php, history.php, refusals.php
 │   └── views/livewire/sale-list, list-machine-form, sale-detail, sale-offers, machine-sale-history
@@ -93,7 +93,7 @@ functional/sales/                                  # nouveau layer
 │   ├── Actions/ListMachineForSale, UpdateSaleListing, RecordOffer, AcceptOffer, RejectOffer,
 │   │           WithdrawOffer, ChangePlannedHandoverDate, ReleaseSaleReservation, HandOverSale, CancelSale
 │   ├── Billing/SaleBillableSource.php              # E4
-│   ├── Enums/SaleStatus.php, OfferStatus.php, SaleTransition.php
+│   ├── Enums/SaleStatus.php, OfferStatus.php, SaleTransition.php, OfferTransition.php
 │   ├── Events/SaleChanged.php
 │   ├── Exceptions/…                               # héritent de Fleet\Exceptions\RefusalException
 │   ├── Guards/ReservedSaleReservationGuard.php    # E1
@@ -142,7 +142,7 @@ Un refus à n'importe quelle étape annule tout : ni vente conclue, ni retrait, 
 ## Prérequis et ordre
 
 - Base : `origin/003-transmission-facturation` (001 + 002 + 003). Les corrections de conformité en cours sur 001 à 003 doivent être fusionnées et la branche 007 remise à jour par-dessus avant `speckit-implement` ; le plan suppose déjà leurs formes : `RefusalException` à constructeur protégé + `HasLabel` + `AssertsRefusals` (`e8cba36`), `ReservationTransition` (`e8cba36`, non utilisé par sales), `Money` / `MoneyCast` / `Exports/ExportLineFormatter` (`bdef4c6`).
-- E1 à E4 : selon l'arbitrage de la coordination, phase 2 de 007 ou livrés par 001 et 003 ; dans le second cas, 007 déclare ces éléments comme prérequis et ne les réimplémente pas.
+- E1 à E4 : Phase 2 de 007 ; E1 et E2 après la remise à jour de la branche sur les corrections de 001 et 003.
 - Aucune dépendance vers les features 004 à 006.
 
 ## Complexity Tracking

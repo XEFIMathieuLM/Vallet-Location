@@ -40,7 +40,7 @@ Un test Feature par scénario d'acceptation ; tests Unit purs pour les classes d
 
 1. Créer une réservation pour un nouveau client « particulier » sur une nacelle.
 2. **Attendu** : la section « Caution » affiche « à encaisser » et le montant de la catégorie ; le bouton de sortie reste inactif.
-3. Prendre les photos de départ (002), tenter la sortie depuis un autre onglet ouvert avant : refus « caution non encaissée ».
+3. Prendre les photos de départ (002). **Attendu** : le bouton de sortie reste inactif tant que la section « Caution » n'est pas prête ; le refus serveur « caution non encaissée » est vérifié par les tests (T027).
 4. Encaisser (chèque, n° 1234567). **Attendu** : « encaissée », la sortie est acceptée.
 
 ### 2. Client existant sans type (US2)

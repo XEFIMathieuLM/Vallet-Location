@@ -52,17 +52,19 @@ Détail : [contracts/customer-contract.md](contracts/customer-contract.md).
 | payment_reference | string, nullable | CHECK : non nul sauf si `payment_method = 'cash'` |
 | status | string, indexé | `DepositStatus` (voir états) |
 | collected_by | FK `users` | |
+| collected_agency_id | FK `agencies` | agence de l'encaissement (FR-006) |
 | collected_at | timestamp | |
 | awaiting_since | timestamp, nullable | début de l'attente d'action (à restituer, à solder, bloquée) ; FR-019, FR-020 |
 | retained_cents | integer, nullable | renseigné à la fin |
 | refunded_cents | integer, nullable | renseigné à la fin |
 | is_no_damage_confirmed | boolean, default false | confirmation « aucun dégât constaté » (FR-012) |
 | closed_by | FK `users`, nullable | auteur de la restitution ou du solde |
+| closed_agency_id | FK `agencies`, nullable | agence de la restitution ou du solde |
 | closed_at | timestamp, nullable | |
 | timestamps | | |
 
 CHECK de cohérence :
-- `status IN ('refunded','settled')` ⇔ `closed_at`, `closed_by`, `retained_cents`, `refunded_cents` non nuls ;
+- `status IN ('refunded','settled')` ⇔ `closed_at`, `closed_by`, `closed_agency_id`, `retained_cents`, `refunded_cents` non nuls ;
 - `retained_cents + refunded_cents = amount_cents` quand ils sont renseignés ;
 - `status = 'refunded'` ⇒ `retained_cents = 0` ;
 - `retained_cents >= 0`, `refunded_cents >= 0`.

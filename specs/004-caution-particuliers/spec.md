@@ -169,7 +169,7 @@ Un salarié définit un montant de caution par défaut, et peut fixer pour chaqu
 - **FR-006**: Le système DOIT permettre d'enregistrer l'encaissement de la caution d'une réservation confirmée : montant, moyen (chèque, empreinte bancaire réalisée au terminal de paiement de l'agence, espèces), référence (numéro de chèque, numéro d'autorisation du terminal ; facultative pour les espèces), auteur, agence et date. L'outil enregistre un encaissement réalisé hors outil : il n'effectue ni paiement ni pré-autorisation bancaire.
 - **FR-007**: Le montant encaissé DOIT être égal au montant exigé pour la réservation au moment de l'encaissement ; le salarié ne peut pas encaisser un montant inférieur.
 - **FR-008**: Le système DOIT garantir qu'une réservation n'a jamais plus d'une caution encaissée, y compris en cas de validations simultanées.
-- **FR-009**: Le système DOIT afficher, dans le détail de chaque réservation, une section « Caution » indiquant l'état de la caution (non requise, type de client à renseigner, à encaisser, encaissée, à restituer, bloquée par un dégât, à solder, restituée, soldée) et signaler l'étape « départ » prête dès que la caution est encaissée ou non requise.
+- **FR-009**: Le système DOIT afficher, dans le détail de chaque réservation, une section « Caution » indiquant l'état de la caution (non requise, non suivie pour une réservation sortie avant la mise en service, type de client à renseigner, à encaisser, encaissée, à restituer, bloquée par un dégât, à solder, restituée, soldée) et signaler l'étape « départ » prête dès que la caution est encaissée ou non requise.
 - **FR-010**: Les salariés DOIVENT pouvoir corriger le moyen ou la référence d'un encaissement jusqu'à la restitution ou au solde de la caution, avec un motif obligatoire ; le système DOIT conserver dans l'historique l'ancienne et la nouvelle valeur. Le montant encaissé n'est pas corrigeable.
 
 **Restitution et retenue**
@@ -188,7 +188,7 @@ Un salarié définit un montant de caution par défaut, et peut fixer pour chaqu
 
 **Suivi et traçabilité**
 
-- **FR-019**: Le système DOIT présenter à toutes les agences la liste des cautions en attente d'action (à restituer, à solder, bloquées par un dégât), filtrable par agence, avec la réservation, le client, le montant, l'état et la date depuis laquelle la caution attend.
+- **FR-019**: Le système DOIT présenter à toutes les agences la liste des cautions en attente d'action (à restituer, à solder, bloquées par un dégât), filtrable par agence de rattachement de la machine, avec la réservation, le client, le montant, l'état et la date depuis laquelle la caution attend.
 - **FR-020**: Le système DOIT mettre en évidence les cautions à restituer ou à solder depuis plus de 7 jours.
 - **FR-021**: Le système DOIT enregistrer chaque qualification du type de client dans l'historique du client (ancien et nouveau type), et dans l'historique de la réservation chaque encaissement, correction (motif, ancienne et nouvelle valeur), restitution (avec la confirmation « aucun dégât constaté ») et solde de caution, avec l'auteur, l'agence et la date.
 - **FR-022**: Toutes ces actions sont ouvertes à tous les salariés dans cette version, chacune contrôlée par une autorisation dédiée.
@@ -232,5 +232,6 @@ Un salarié définit un montant de caution par défaut, et peut fixer pour chaqu
 - Une caution par réservation : un particulier qui loue deux machines en même temps verse deux cautions.
 - Les clients existants (feature 001) n'ont pas de type ; aucune reprise automatique n'est faite, chaque client est qualifié par un salarié au plus tard à la sortie de sa prochaine réservation.
 - Le seuil de 7 jours pour une caution en attente est une proposition à confirmer avec M. Vallet.
+- Le montant par défaut initial est de 1 500 € tant qu'aucun montant n'a été paramétré ; il est modifiable depuis l'écran des montants et reste à confirmer avec M. Vallet.
 - Le blocage de la sortie s'ajoute à ceux des features 001 (VGP, disponibilité) et 002 (photos de départ), sans les remplacer. La disponibilité du bouton de sortie se décide section par section : la section « Caution », comme celles des photos (002) et de l'attestation (005), indique si l'étape « départ » est prête de son point de vue, et le bouton ne s'active que si toutes le sont. Le refus serveur, avec son message, reste la seule garantie.
 - Cette fonctionnalité s'appuie sur la feature 001 (clients, réservations, sortie, retour, annulation, historique), la feature 002 (dégâts signalés au retour) et la feature 003 (règlement des dégâts : refacturé avec montant, ou non refacturé).

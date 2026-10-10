@@ -59,7 +59,7 @@ Portes tirées de la constitution v1.0.1 :
 | VI. Tests par scénario | un test Feature par scénario d'acceptation, écrit d'abord ; Unit purs pour les états et la retenue ; `travelTo()` pour l'ancienneté ; Larastan à zéro erreur | ✅ tasks.md |
 | VII. Code simple et lisible | aucun nouveau package ; code en anglais, textes traduits (`deposit::`, `booking::`) ; fichiers < 200 lignes, méthodes < 40 lignes, sans commentaire | à vérifier pendant l'implémentation |
 
-**Résultat** : aucune violation.
+**Résultat** : aucune violation. Un écart de transparence (modification de fichiers de `booking` par la feature) est justifié dans « Complexity Tracking ».
 
 **Re-check post-design** : le modèle de données et les contrats respectent toutes les portes. La seule écriture hors du layer `deposit` est l'enrichissement de `booking` par la feature, dans le layer propriétaire (D1).
 
@@ -122,7 +122,7 @@ functional/
     │   ├── Exceptions/            # DepositRefusedException, IllegalDepositTransitionException
     │   ├── Access/                # DepositPermission, Controls/DepositControl, Controls/DepositRateControl
     │   ├── Providers/             # DepositServiceProvider (garde, section, listeners, planification)
-    │   └── Livewire/              # ReservationDepositSection, PendingDepositsList, DepositRatesIndex, DepositRateForm
+    │   └── Livewire/              # ReservationDepositSection (affichage + disponibilité), Section/{CollectDepositForm, QualifyCustomerForm, CorrectPaymentForm, CloseDepositActions}, PendingDepositsList, DepositRatesIndex, DepositRateForm
     ├── database/{migrations,factories,seeders}/
     ├── resources/{views,lang/fr}/
     ├── routes/{web.php,console.php}   # /cautions, /cautions/montants ; deposit:reconcile toutes les 5 minutes
@@ -133,4 +133,6 @@ functional/
 
 ## Complexity Tracking
 
-Aucune violation à justifier.
+| Écart | Pourquoi | Alternative plus simple écartée |
+|-------|----------|--------------------------------|
+| La feature modifie des fichiers de `booking` livrés par la 001 (`Customer`, `NewCustomer`, `CreateReservation`, `CreateReservationForm`, `BookingServiceProvider`) | Le principe I interdit à un layer de modifier un autre layer : il est respecté, `deposit` n'écrit rien dans `booking`. Mais sa raison d'être dit qu'une feature s'ajoute sans toucher au code des précédentes. Le type de client appartient au client (`booking`), il est exigé à sa création et sert aussi aux 005 et 006 ; la 001 annonçait ce client « enrichi par les specs suivantes ». Arbitré par la coordination des features. | Type dans `deposit` (la 006 dépendrait de la caution, et la création du client ne pourrait pas l'exiger) ; layer `customer` dédié (un layer pour une colonne, mêmes modifications de `booking` pour l'exiger à la création). |

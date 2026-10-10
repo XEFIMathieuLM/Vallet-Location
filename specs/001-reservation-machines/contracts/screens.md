@@ -9,9 +9,10 @@ L'application n'expose pas d'API : son interface est un ensemble d'écrans Livew
 | Liste des réservations | `/reservations` | filtrer par statut, agence, période, « en conflit » ; ouvrir une réservation | — | US3, FR-019 |
 | Détail d'une réservation | `/reservations/{id}` | enregistrer la sortie, enregistrer le retour (en état / atelier), annuler | sortie avant la date de début, VGP non conforme, machine indisponible, annulation après sortie | US2, US3 |
 | Parc de machines | `/machines` | lister, filtrer, créer, modifier, changer le statut, retirer | référence en doublon, retrait avec réservations actives, transition de statut illégale | US4 |
+| Fiche machine | `/machines/nouvelle`, `/machines/{id}/modifier` | créer, modifier (référence, catégorie, agence, soumise à VGP, échéance VGP) | référence en doublon | US4 |
 | Import du parc | `/machines/import` | téléverser un fichier, voir le rapport | lignes rejetées avec motif (voir [import-format.md](import-format.md)) | US4, FR-005 |
 | Planning | `/planning` | vue calendrier par machine, filtres catégorie / agence / période | — | US5 |
-| Salariés | `/salaries` | créer, désactiver un compte, choisir son agence | e-mail en doublon | FR-021 |
+| Salariés | `/salaries` | créer un compte (e-mail pour choisir son mot de passe), changer son agence, désactiver / réactiver un compte | e-mail en doublon, désactivation de son propre compte | FR-021 |
 
 ## Mise à jour en temps réel
 

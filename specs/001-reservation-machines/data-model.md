@@ -97,15 +97,17 @@ confirmed ──(annulation)──► cancelled
 
 - **Sortie** : autorisée si `today >= start_date`, machine en `available`, et VGP conforme jusqu'à `end_date`. Passe la machine en `rented_out`.
 - **Retour** : précise « en état » ou « atelier » ; passe la machine en `available` ou `workshop`. Si retour avant `end_date`, `end_date` est ramenée à la date de retour. Si retour après `end_date` (retard), `end_date` n'est **jamais** repoussée : seul `returned_at` porte la date réelle.
-- **Annulation** : uniquement depuis `confirmed`.
+- **Annulation** : uniquement depuis `confirmed` ; efface `conflict_reason`.
 
-**`ConflictReason`** : `machine_unavailable` (atelier, panne), `vgp_expired` (VGP ne couvre plus la période), `machine_not_returned` (réservation précédente en retard).
+**`ConflictReason`** : `machine_unavailable` (atelier, panne), `vgp_expired` (VGP ne couvre plus la période), `machine_not_returned` (réservation précédente en retard ; seule la prochaine réservation `confirmed` de la machine est signalée).
+
+Le motif est recalculé à chaque changement de machine (`MachineChanged`) et chaque nuit par `booking:flag-late-returns`.
 
 ## Identité (`app/`)
 
 ### User (starter kit)
 
-Champs du starter kit + `agency_id` (référence → Agency, obligatoire) + `deactivated_at` (date-heure, nullable ; un compte désactivé ne peut plus se connecter). Rôle unique « salarié » portant toutes les permissions. Inscription publique désactivée.
+Champs du starter kit + `agency_id` (référence → Agency, obligatoire) + `deactivated_at` (date-heure, nullable ; un compte désactivé est refusé à la connexion et déconnecté à sa requête suivante). Un compte créé reçoit un e-mail pour choisir son mot de passe. Rôle unique « salarié » portant toutes les permissions. Inscription publique désactivée.
 
 ## Historique
 

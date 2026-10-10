@@ -18,12 +18,14 @@ Décisions techniques prises pour [plan.md](plan.md). Chaque entrée : décision
 
 - **Decision**: PostgreSQL. Le non-chevauchement est garanti par **une contrainte d'exclusion** (`EXCLUDE USING gist` sur `machine_id` + `daterange(start_date, end_date, '[]')`, hors réservations annulées), doublée d'un verrou `lockForUpdate()` sur la ligne machine pendant la création pour renvoyer un message de refus précis.
 - **Rationale**: FR-009 exige qu'une seule réservation passe en cas de validations simultanées. Une vérification applicative seule laisse une fenêtre de concurrence ; la contrainte d'exclusion rend la double réservation impossible au niveau de la base, quelle que soit la façon dont la ligne est écrite.
+- **Mise en œuvre**: une violation de la contrainte (SQLSTATE `23P01`) est traduite en refus de chevauchement dans `CreateReservation` via `rescue()`, et non dans `bootstrap/app.php` : Livewire intercepte les exceptions avant le gestionnaire HTTP. Les refus métier héritent de `RefusalException` et sont affichés par le trait Livewire `DisplaysRefusals`, sans `try/catch`.
 - **Alternatives considered**: MySQL + verrou applicatif seul (garantie non portée par la base) ; table de « jours réservés » avec index unique (machine, jour) — fonctionne en MySQL mais multiplie les lignes et complique les modifications de dates.
 
 ## R4 — Temps réel entre agences
 
 - **Decision**: broadcasting Laravel sur **Soketi** (protocole Pusher, driver `pusher`), Soketi en service Sail en local et en conteneur dédié en production. Les composants Livewire écoutent via Laravel Echo (`echo-private:fleet,...`) et se rafraîchissent.
 - **Rationale**: SC-006 (visible en moins de 5 s dans les autres agences, FR-018 sans rafraîchissement manuel). Soketi est la solution temps réel standard Xefi.
+- **Mise en œuvre**: les événements implémentent `ShouldBroadcast` et `ShouldDispatchAfterCommit` (rien n'est diffusé pour une modification annulée) ; un service `queue` de `compose.yaml` exécute les diffusions.
 - **Alternatives considered**: polling Livewire (`wire:poll`) — simple mais charge inutile et latence fixe ; Reverb — non standard Xefi.
 - **Action infra**: demander à l'infra un conteneur Soketi dédié avant la mise en production.
 
@@ -55,6 +57,7 @@ Décisions techniques prises pour [plan.md](plan.md). Chaque entrée : décision
 
 - **Decision**: une réservation porte un champ `conflict_reason` (null si aucun conflit). Il est recalculé par des listeners sur les événements « statut de machine changé » et « date VGP changée », et par une tâche planifiée quotidienne qui détecte les retours en retard.
 - **Rationale**: FR-019 et cas limites. Les conflits doivent être listés sans être recalculés à chaque affichage.
+- **Précision (clarification 2026-10-10)**: en cas de retard de retour, seule la prochaine réservation `confirmed` de la machine est signalée `machine_not_returned` ; une annulation efface le motif.
 - **Alternatives considered**: calcul à la volée à chaque affichage (coûteux sur le planning, et impossible de lister « toutes les réservations en conflit » efficacement) ; observers Eloquent (interdits par les règles Xefi).
 
 ## R10 — Environnement de développement
@@ -62,8 +65,16 @@ Décisions techniques prises pour [plan.md](plan.md). Chaque entrée : décision
 - **Decision**: Laravel Sail (Docker). Services : PostgreSQL, Soketi, Mailpit. Queue `database` avec un worker Sail pour le broadcasting.
 - **Rationale**: le poste de développement a Docker et WSL mais pas PHP ni Composer. Sail fournit tout.
 - **Alternatives considered**: installer PHP et Composer sous Windows (environnement différent de la production).
+- **Note**: sur un poste avec Herd (PHP 8.4), Composer et PHPStan peuvent tourner en local ; tests et artisan restent dans Sail (PHP 8.5, PostgreSQL).
 
 ## R11 — Qualité
 
 - **Decision**: PHPUnit (tests Feature pour chaque scénario d'acceptation, tests Unit pour les classes d'état), Larastan niveau 7 minimum avec `xefi/phpstan-xefi-rules`, `laravel/boost` pour l'outillage Claude, `xefi/faker-php-laravel` pour les factories.
 - **Rationale**: conventions Xefi obligatoires.
+
+## R12 — Points d'extension de `booking`
+
+- **Decision**: `booking` expose deux points d'extension, sans connaître les layers qui les utilisent. (1) L'interface `ReservationTransitionGuard` (`beforeDeparture`, `beforeReturn`) : les guards enregistrés dans le registre `ReservationTransitionGuards` sont appelés par `DepartReservation` et `ReturnReservation` dans leur transaction, avant tout changement ; un guard refuse en levant une sous-classe de `RefusalException`, affichée telle quelle. (2) Le registre `ReservationDetailSections` (composant Livewire + position) : l'écran de détail rend chaque section enregistrée et écoute l'événement Livewire `reservation-transition-readiness` `{ step, is_ready }` ; le bouton d'une étape s'active dès qu'une section a répondu `is_ready = true` pour cette étape, et reste actif sans section enregistrée. Les registres vivent dans `src/Extensions/`.
+- **Rationale**: la feature 002 (photos de départ et de retour) doit bloquer la sortie et le retour côté serveur et afficher son panneau dans le détail, tout en gardant le sens de dépendance `inspection → booking`. Le même mécanisme servira à la caution. Repris de la recherche P2 / P3 de la 002.
+- **Alternatives considered**: appeler la 002 depuis `booking` (dépendance inversée) ; un événement « avant sortie » (un listener ne peut pas annuler proprement la transition) ; un dossier `Support/` (fourre-tout, écarté au profit d'`Extensions/`). Les tests de `booking` lient des registres vides (`WithoutTransitionExtensions`) pour rester indépendants des layers qui s'y branchent.
+

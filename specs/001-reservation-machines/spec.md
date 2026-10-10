@@ -12,6 +12,14 @@
 
 M. Vallet dirige une PME de location de machines de travaux : 85 salariés, 7 agences, environ 400 machines. Les réservations sont aujourd'hui mal coordonnées entre agences, ce qui provoque des doubles réservations, des machines promises alors qu'elles sont à l'atelier, et une perte de 85 000 € l'an dernier en réparations non refacturées. Cette première fonctionnalité pose le socle : un parc unique, partagé, et des réservations que l'outil rend impossibles à mettre en conflit.
 
+## Clarifications
+
+### Session 2026-10-10
+
+- Q: Quand une machine louée n'est pas rentrée à sa date de fin, quelles réservations à venir sont signalées « en conflit » ? → A: Seulement la prochaine réservation confirmée de cette machine ; les suivantes ne sont pas signalées.
+- Q: Une réservation en conflit que l'on annule garde-t-elle son motif de conflit ? → A: Non, l'annulation efface le motif ; une réservation annulée n'est jamais « en conflit ».
+- Q: Quand le détail d'une réservation affiche des sections ajoutées par d'autres fonctionnalités (ex. photos), que faut-il pour activer « Enregistrer la sortie » ou « Enregistrer le retour » ? → A: Le bouton d'une étape s'active dès qu'une section a signalé que cette étape est prête ; sans section ajoutée, les boutons sont actifs. Le refus côté serveur reste la seule garantie.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Réserver une machine disponible sans risque de doublon (Priority: P1)
@@ -101,7 +109,8 @@ Depuis n'importe quelle agence, un salarié consulte le planning d'une machine o
 
 - **Machine passée à l'atelier ou en panne alors qu'elle a des réservations à venir** : les réservations ne sont pas supprimées, mais signalées « en conflit » et listées pour que l'agence concernée reloge le client.
 - **Date de VGP modifiée après une réservation** : si la nouvelle date ne couvre plus la période, la réservation est signalée en conflit, et la sortie est bloquée tant que la VGP n'est pas à jour.
-- **Retour en retard** : une machine toujours « sortie » après la date de fin prévue reste indisponible ; la réservation suivante sur cette machine est signalée en conflit.
+- **Retour en retard** : une machine toujours « sortie » après la date de fin prévue reste indisponible ; seule la prochaine réservation confirmée de cette machine est signalée en conflit, jusqu'au retour de la machine.
+- **Annulation d'une réservation en conflit** : l'annulation efface le motif de conflit ; la réservation sort de la liste « en conflit ».
 - **Retour anticipé** : la clôture avant la date de fin libère immédiatement les jours restants.
 - **Sortie anticipée ou tardive** : une sortie ne peut être enregistrée qu'à partir de la date de début de la réservation.
 - **Machine retirée du parc avec des réservations à venir** : le retrait est refusé tant que ces réservations ne sont pas annulées ou déplacées.
@@ -189,6 +198,7 @@ Ces éléments de la fiche font l'objet de specs séparées :
 - La règle VGP s'applique à toute machine marquée « soumise à VGP » ; les nacelles le sont toujours, les autres catégories selon le paramétrage.
 - Une réservation est retirée et rendue à l'agence de rattachement de la machine ; une réservation peut être créée depuis n'importe quelle agence.
 - « Promettre » une machine équivaut à la réserver : il n'existe pas de pré-réservation ou d'option distincte dans cette version.
+- Des fonctionnalités ultérieures peuvent ajouter des sections au détail d'une réservation et bloquer la sortie ou le retour ; le bouton d'une étape s'active dès qu'une section signale cette étape prête, et le blocage réel reste vérifié côté serveur.
 - Les 85 salariés ont les mêmes droits (choix du client pour cette version).
 - Le parc initial est fourni par le client sous forme de fichier tableur.
 - Les salariés disposent d'un poste connecté à internet dans chaque agence.

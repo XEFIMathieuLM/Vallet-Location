@@ -39,7 +39,7 @@ Textes en français dans `functional/portal/resources/lang/fr`. Composants Livew
 - Filtres :
   - `flux:select` des catégories ;
   - `flux:select` des 7 agences ;
-  - dates de début et de fin (`flux:date-picker`, mode plage) ;
+  - dates de début et de fin (`flux:input type="date"`, comme la recherche des salariés) ;
   - les trois sont obligatoires.
 - Résultats : `AvailableMachinesQuery` projetée en `PortalMachineOffer`. Chaque carte affiche :
   - la référence, la catégorie et l'agence ;
@@ -81,10 +81,11 @@ Textes en français dans `functional/portal/resources/lang/fr`. Composants Livew
 ### `OnlineRequests`
 
 - Filtre « Agence » (`flux:select`, toutes par défaut) sur l'agence de rattachement de la machine demandée. Tri par date de début croissante. Pagination par 20.
-- Une ligne par demande en attente :
-  - le client déclaré (nom, badge « Particulier » ou « Professionnel », e-mail, téléphone) ;
-  - le rattachement : nom de la fiche, ou badge « Compte non rattaché » ;
-  - la machine (référence, catégorie, agence), les dates, le commentaire, le prix indicatif affiché au client et la date d'envoi.
+- Une ligne par demande en attente, en quatre colonnes :
+  - les dates et la date d'envoi ;
+  - le client déclaré (nom, badge « Particulier » ou « Professionnel », e-mail, téléphone) et le rattachement : nom de la fiche, ou badge « Compte non rattaché » ;
+  - la machine (référence, catégorie, agence), avec en dessous le commentaire et le prix indicatif affiché au client ;
+  - les boutons Confirmer et Refuser.
 - Actions par ligne :
   - **Confirmer** : ouvre `ConfirmRequestModal`.
     - **Machine** : `flux:select` des machines de la même catégorie disponibles aux mêmes dates, toutes agences, la machine demandée en tête et présélectionnée si elle est disponible (FR-018).
@@ -99,7 +100,7 @@ Textes en français dans `functional/portal/resources/lang/fr`. Composants Livew
 
 ### `IndicativePrices`
 
-- Tableau des catégories : nom, prix actuel (« 95,00 € HT / jour » ou « — »), auteur et date de la dernière modification.
+- Tableau des catégories : nom, prix actuel (« 95,00 € HT / jour » ou « — ») avec en dessous l'auteur et la date de la dernière modification, champ du nouveau prix, bouton de retrait.
 - Actions :
   - « Modifier » : champ montant en euros, format `^\d+([.,]\d{1,2})?$`, strictement positif (FR-031) ;
   - « Retirer le prix ».

@@ -417,13 +417,13 @@ description: "Task list for the customer portal and online booking requests feat
 
 ## Phase 9: Polish & Cross-Cutting Concerns
 
-- [ ] T073 [P] `functional/portal/tests/Feature/PortalQueryCountTest.php` : nombre de requêtes identique avec 2 et 20 éléments pour `OnlineRequests`, `MyRequests`, `MyReservations` (documents compris) et `Search` (contrainte « aucune requête dans une boucle »).
-- [ ] T074 [P] Relecture des fichiers de `functional/portal` : moins de 200 lignes, aucun commentaire, aucun texte en dur hors des traductions, booléens préfixés, méthodes de moins de 40 lignes. Découper si nécessaire.
-- [ ] T075 Recette sur l'environnement du worktree (port 8099) :
+- [X] T073 [P] `functional/portal/tests/Feature/PortalQueryCountTest.php` : nombre de requêtes identique avec 2 et 20 éléments pour `OnlineRequests`, `MyRequests`, `MyReservations` (documents compris) et `Search` (contrainte « aucune requête dans une boucle »).
+- [X] T074 [P] Relecture des fichiers de `functional/portal` : moins de 200 lignes, aucun commentaire, aucun texte en dur hors des traductions, booléens préfixés, méthodes de moins de 40 lignes. Découper si nécessaire.
+- [X] T075 Recette sur l'environnement du worktree (port 8099) :
   - copier `storage/app/load-client-data/load.php` et `reprise-ech40.php` depuis le dossier principal et charger les données réelles ;
   - dérouler [quickstart.md](quickstart.md), parcours 1 à 8, dans le navigateur, avec Mailpit sur le port 8199 ;
   - noter tout écart dans la PR.
-- [ ] T076 `vendor/bin/phpstan clear-result-cache`, puis `composer ci:check` en code 0 sur la suite complète. Les tests des features 001 à 008 sont verts sans modification (FR-036, SC-005 de la 008).
+- [X] T076 `vendor/bin/phpstan clear-result-cache`, puis `composer ci:check` en code 0 sur la suite complète. Les tests des features 001 à 008 sont verts sans modification (FR-036, SC-005 de la 008).
 
 **Checkpoint**: commit « Espace client : finitions ». Pas de push : la coordinatrice pousse et ouvre la PR.
 

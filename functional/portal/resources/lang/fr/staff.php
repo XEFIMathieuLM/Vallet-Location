@@ -11,7 +11,6 @@ return [
         'dates' => 'Dates',
         'customer' => 'Client',
         'machine' => 'Machine',
-        'details' => 'Commentaire et prix',
         'sent_on' => 'envoyée le :date',
         'attached_to' => 'Fiche : :name',
         'unattached' => 'Compte non rattaché',

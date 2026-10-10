@@ -21,7 +21,6 @@
                 <flux:table.column>{{ __('portal::staff.requests.dates') }}</flux:table.column>
                 <flux:table.column>{{ __('portal::staff.requests.customer') }}</flux:table.column>
                 <flux:table.column>{{ __('portal::staff.requests.machine') }}</flux:table.column>
-                <flux:table.column>{{ __('portal::staff.requests.details') }}</flux:table.column>
                 <flux:table.column></flux:table.column>
             </flux:table.columns>
             <flux:table.rows>
@@ -43,11 +42,9 @@
                                 <flux:badge size="sm" color="amber">{{ __('portal::staff.requests.unattached') }}</flux:badge>
                             @endif
                         </flux:table.cell>
-                        <flux:table.cell>
+                        <flux:table.cell class="max-w-xs whitespace-normal">
                             <span class="font-medium">{{ $reservationRequest->machine->reference }}</span>
                             <flux:text size="sm">{{ $reservationRequest->machine->category->name }} · {{ $reservationRequest->machine->agency->name }}</flux:text>
-                        </flux:table.cell>
-                        <flux:table.cell class="max-w-xs">
                             @if ($reservationRequest->comment !== null)
                                 <flux:text size="sm" class="whitespace-normal">« {{ $reservationRequest->comment }} »</flux:text>
                             @endif
@@ -57,9 +54,11 @@
                                     : __('portal::staff.requests.no_price_shown') }}
                             </flux:text>
                         </flux:table.cell>
-                        <flux:table.cell align="end" class="whitespace-nowrap">
-                            <flux:button size="sm" variant="primary" icon="check" wire:click="startConfirming({{ $reservationRequest->id }})">{{ __('portal::staff.requests.confirm') }}</flux:button>
-                            <flux:button size="sm" variant="ghost" icon="x-mark" wire:click="startRefusing({{ $reservationRequest->id }})">{{ __('portal::staff.requests.refuse') }}</flux:button>
+                        <flux:table.cell align="end">
+                            <div class="flex flex-col items-end gap-2">
+                                <flux:button size="sm" variant="primary" icon="check" wire:click="startConfirming({{ $reservationRequest->id }})">{{ __('portal::staff.requests.confirm') }}</flux:button>
+                                <flux:button size="sm" variant="ghost" icon="x-mark" wire:click="startRefusing({{ $reservationRequest->id }})">{{ __('portal::staff.requests.refuse') }}</flux:button>
+                            </div>
                         </flux:table.cell>
                     </flux:table.row>
                 @endforeach

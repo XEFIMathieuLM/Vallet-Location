@@ -17,7 +17,7 @@ class CategoryViewFactory extends Factory
     {
         return [
             'machine_category_id' => MachineCategory::factory(),
-            'label' => ucfirst(faker()->words(1)).' '.faker()->unique()->number(1, 99999),
+            'label' => ucfirst(faker()->words(1)).' '.strtolower(substr(faker()->ulid(), -6)),
             'position' => faker()->number(1, 20),
         ];
     }

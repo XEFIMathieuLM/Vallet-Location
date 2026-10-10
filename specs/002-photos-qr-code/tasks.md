@@ -206,6 +206,14 @@ Les tâches T007 à T012 ne sont pas réalisées dans cette branche : génériqu
 - [X] T070 [P] Justifier dans `plan.md` (Technical Context) les dépendances ajoutées : `league/flysystem-aws-s3-v3` (disque S3 de production) et SeaweedFS (S3 local facultatif, MinIO n'étant plus publié) (D4)
 - [X] T071 [P] Aligner l'arborescence de `plan.md` sur le code (`Access/Controls/` sans `PhotoControl`, `Queries/`, `Http/Controllers/`, `Support/InspectionHistory`, `Support/QrCodeSvg`, `routes/channels.php` et `routes/console.php` du layer) et ajouter à T001 la note sur les limites d'envoi PHP déjà suffisantes (F3, F4, U1)
 
+## Phase 9: Conformité à la constitution v1.0.0
+
+**Purpose**: Constats K1, K2 et F6 du `/speckit-analyze` mené avec la constitution v1.0.0 (principe II).
+
+- [X] T072 [US1] Aucune requête dans une boucle et agrégats en base (K1) : tests d'abord dans `functional/inspection/tests/Feature/QueryCountTest.php` (nombre de requêtes indépendant du nombre de vues ou de sessions) ; puis `FreezeReservationViews` et `EditableCategoryViews` insèrent les vues en une requête, `RemoveCategoryView` renumérote en un seul `decrement`, `RevokePhotoSessions` écrit une seule entrée d'historique par révocation, et un objet `ViewCompleteness` calculé en une requête SQL (`count(*) filter`) remplace les comptages en PHP dans `PhotosPanel`, `StorePhoto` et `DeletePhoto`
+- [X] T073 [US3] Écritures liées dans une transaction (K2) : tests d'abord dans `functional/inspection/tests/Feature/HistoryAtomicityTest.php` (si l'historique échoue, ni le dégât ni la révocation ne sont enregistrés) ; puis `ReportDamage` et `RevokePhotoSessions` encadrés par `DB::transaction`
+- [X] T074 Corriger le Constitution Check de `plan.md` (principe II) une fois T072 et T073 faits (F6)
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies

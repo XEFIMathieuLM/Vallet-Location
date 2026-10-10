@@ -2,6 +2,7 @@
 
 namespace Functional\Inspection\Actions\CategoryViews;
 
+use Carbon\CarbonImmutable;
 use Functional\Fleet\Models\MachineCategory;
 use Functional\Inspection\Actions\ResolveRequiredViews;
 use Functional\Inspection\Exceptions\DuplicateCategoryViewLabelException;
@@ -20,13 +21,20 @@ class EditableCategoryViews
         MachineCategory::query()->whereKey($category->id)->lockForUpdate()->firstOrFail();
 
         if (! CategoryView::query()->where('machine_category_id', $category->id)->exists()) {
-            foreach ($this->resolveRequiredViews->defaultLabels() as $offset => $label) {
-                CategoryView::query()->create([
+            $now = CarbonImmutable::now();
+            $defaultLabels = $this->resolveRequiredViews->defaultLabels();
+
+            CategoryView::query()->insert(array_map(
+                fn (string $label, int $offset): array => [
                     'machine_category_id' => $category->id,
                     'label' => $label,
                     'position' => $offset + 1,
-                ]);
-            }
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ],
+                $defaultLabels,
+                array_keys($defaultLabels),
+            ));
         }
 
         return CategoryView::query()

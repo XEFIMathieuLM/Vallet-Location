@@ -15,7 +15,7 @@ class StorePhoto
 {
     public function __construct(
         private readonly FindActivePhotoSession $findActivePhotoSession,
-        private readonly MissingViews $missingViews,
+        private readonly ViewCompleteness $viewCompleteness,
         private readonly InspectionHistory $inspectionHistory,
     ) {}
 
@@ -56,7 +56,7 @@ class StorePhoto
             $session->reservation_id,
             $session->step,
             $view->id,
-            $this->missingViews->for($session->reservation, $session->step)->count(),
+            $this->viewCompleteness->for($session->reservation)->missingCount($session->step),
         );
 
         return $photo;

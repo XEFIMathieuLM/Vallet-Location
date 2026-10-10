@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 class DeletePhoto
 {
     public function __construct(
-        private readonly MissingViews $missingViews,
+        private readonly ViewCompleteness $viewCompleteness,
         private readonly InspectionHistory $inspectionHistory,
     ) {}
 
@@ -52,7 +52,7 @@ class DeletePhoto
             $reservation->id,
             $photo->step,
             $photo->reservation_view_id,
-            $this->missingViews->for($reservation, $photo->step)->count(),
+            $this->viewCompleteness->for($reservation)->missingCount($photo->step),
         );
     }
 }

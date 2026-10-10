@@ -21,6 +21,7 @@ use Spatie\Permission\Traits\HasRoles;
 /**
  * @property int $id
  * @property int $agency_id
+ * @property Carbon|null $deactivated_at
  * @property string $name
  * @property string $email
  * @property Carbon|null $email_verified_at
@@ -33,7 +34,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Carbon|null $updated_at
  * @property-read Agency $agency
  */
-#[Fillable(['name', 'email', 'password', 'agency_id'])]
+#[Fillable(['name', 'email', 'password', 'agency_id', 'deactivated_at'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
 {
@@ -50,6 +51,7 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'deactivated_at' => 'datetime',
         ];
     }
 
@@ -59,6 +61,11 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
     public function agency(): BelongsTo
     {
         return $this->belongsTo(Agency::class);
+    }
+
+    public function isDeactivated(): bool
+    {
+        return $this->deactivated_at !== null;
     }
 
     /**

@@ -63,7 +63,7 @@ description: "Task list for feature 001-reservation-machines"
 - [x] T017 [P] Créer les Controls `lomkit/laravel-access-control` `functional/fleet/src/Controls/MachineControl.php` (perimètre global si `machines.manage`) et brancher `HasControl` sur `Machine`
 - [x] T018 Créer `database/seeders/DatabaseSeeder.php` qui appelle : les 7 agences (`functional/fleet/database/seeders/AgencySeeder.php`), les catégories dont « Nacelle » avec `is_vgp_required = true` (`functional/fleet/database/seeders/MachineCategorySeeder.php`), 40 machines de démonstration, `PermissionSeeder`, un salarié par agence avec le rôle `salarie`
 - [x] T019 Créer le canal privé `fleet` dans `routes/channels.php`, autorisé pour tout utilisateur ayant la permission `reservations.manage`
-- [ ] T020 Ajouter dans le layout du starter kit (`resources/views/components/layouts/app/sidebar.blade.php`) les entrées de navigation des écrans de [contracts/screens.md](contracts/screens.md) : Disponibilités, Réservations, Parc, Planning, Salariés ; libellés traduits — **en cours** : Disponibilités, Réservations, Parc et Planning ajoutées (fichier réel `resources/views/layouts/app/sidebar.blade.php`) ; Salariés à ajouter avec T073
+- [X] T020 Ajouter dans le layout du starter kit (`resources/views/components/layouts/app/sidebar.blade.php`) les entrées de navigation des écrans de [contracts/screens.md](contracts/screens.md) : Disponibilités, Réservations, Parc, Planning, Salariés ; libellés traduits — fichier réel `resources/views/layouts/app/sidebar.blade.php` ; chaque groupe affiché selon sa permission
 
 **Checkpoint**: `sail artisan migrate:fresh --seed` passe ; un salarié se connecte et voit la navigation.
 
@@ -212,11 +212,11 @@ description: "Task list for feature 001-reservation-machines"
 
 ## Phase 8: Polish & Cross-Cutting Concerns
 
-- [ ] T073 Créer l'écran Livewire « Salariés » (`/salaries`) dans `app/Livewire/Users/UserIndex.php` et sa vue : créer un compte (nom, e-mail unique, agence, rôle `salarie`), désactiver un compte (migration `deactivated_at` nullable sur `users` ; connexion refusée pour un compte désactivé) ; permission `users.manage` ; test Feature dans `tests/Feature/ManageUsersTest.php`
-- [ ] T074 [P] Vérifier que chaque création, sortie, retour, annulation et changement de statut produit une entrée d'historique avec auteur et date (FR-022) : test Feature dans `functional/booking/tests/Feature/ActivityLogTest.php`
-- [ ] T075 [P] Lancer `./vendor/bin/sail php vendor/bin/phpstan analyse` et corriger toutes les erreurs dans `app/` et `functional/*/src/`
-- [ ] T076 [P] Vérifier qu'aucun fichier de code de `app/` et `functional/*/src/` ne dépasse 200 lignes ; découper sinon
-- [ ] T077 Lancer `./vendor/bin/sail artisan test` : toute la suite doit passer
+- [X] T073 Créer l'écran Livewire « Salariés » (`/salaries`) dans `app/Livewire/Users/UserIndex.php` et sa vue : créer un compte (nom, e-mail unique, agence, rôle `salarie`), désactiver un compte (migration `deactivated_at` nullable sur `users` ; connexion refusée pour un compte désactivé) ; permission `users.manage` ; test Feature dans `tests/Feature/ManageUsersTest.php`
+- [X] T074 [P] Vérifier que chaque création, sortie, retour, annulation et changement de statut produit une entrée d'historique avec auteur et date (FR-022) : test Feature dans `functional/booking/tests/Feature/ActivityLogTest.php`
+- [X] T075 [P] Lancer `./vendor/bin/sail php vendor/bin/phpstan analyse` et corriger toutes les erreurs dans `app/` et `functional/*/src/`
+- [X] T076 [P] Vérifier qu'aucun fichier de code de `app/` et `functional/*/src/` ne dépasse 200 lignes ; découper sinon
+- [X] T077 Lancer `./vendor/bin/sail artisan test` : toute la suite doit passer
 - [ ] T078 Dérouler les vérifications manuelles 1 à 8 de [quickstart.md](quickstart.md) et corriger les écarts
 
 ---

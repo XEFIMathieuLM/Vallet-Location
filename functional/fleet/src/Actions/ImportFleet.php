@@ -31,8 +31,9 @@ final class ImportFleet
             ->preserveEmptyRows()
             ->getRows();
 
+        /** @var array<string, mixed> $row */
         foreach ($rows as $rowIndex => $row) {
-            if (collect($row)->filter(fn (mixed $cellValue): bool => trim((string) $cellValue) !== '')->isEmpty()) {
+            if (array_filter($row, fn (mixed $cellValue): bool => trim((string) $cellValue) !== '') === []) {
                 continue;
             }
 

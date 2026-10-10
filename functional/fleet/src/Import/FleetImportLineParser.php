@@ -47,22 +47,22 @@ final class FleetImportLineParser
         $agency = $this->agenciesByName->get(self::nameKey($agencyName));
         $vgpDueDate = $this->parseDate($row['echeance_vgp'] ?? '');
 
-        $rejectionReason = match (true) {
-            $reference === '' => __('fleet::machines.import.rejections.missing_reference'),
-            isset($this->knownReferences[$reference]) => __('fleet::machines.import.rejections.duplicate_in_file'),
-            $isExistingReference => __('fleet::machines.import.rejections.existing_reference'),
-            $category === null => __('fleet::machines.import.rejections.unknown_category', ['category' => $categoryName]),
-            $agency === null => __('fleet::machines.import.rejections.unknown_agency', ['agency' => $agencyName]),
-            $vgpDueDate === false => __('fleet::machines.import.rejections.unreadable_date', ['date' => trim((string) $row['echeance_vgp'])]),
-            default => null,
-        };
+        $referenceRejection = $this->referenceRejection($reference, $isExistingReference);
 
-        if ($reference !== '') {
-            $this->knownReferences[$reference] = true;
+        if ($referenceRejection !== null) {
+            return $referenceRejection;
         }
 
-        if ($rejectionReason !== null || $category === null || $agency === null || $vgpDueDate === false) {
-            return (string) $rejectionReason;
+        if ($category === null) {
+            return $this->rejection('unknown_category', ['category' => $categoryName]);
+        }
+
+        if ($agency === null) {
+            return $this->rejection('unknown_agency', ['agency' => $agencyName]);
+        }
+
+        if ($vgpDueDate === false) {
+            return $this->rejection('unreadable_date', ['date' => trim((string) $row['echeance_vgp'])]);
         }
 
         return new MachineAttributes(
@@ -72,6 +72,32 @@ final class FleetImportLineParser
             isSubjectToVgp: $category->is_vgp_required || $this->isSubjectToVgp($row['soumise_vgp'] ?? ''),
             vgpDueDate: $vgpDueDate,
         );
+    }
+
+    private function referenceRejection(string $reference, bool $isExistingReference): ?string
+    {
+        if ($reference === '') {
+            return $this->rejection('missing_reference');
+        }
+
+        $isDuplicateInFile = isset($this->knownReferences[$reference]);
+        $this->knownReferences[$reference] = true;
+
+        return match (true) {
+            $isDuplicateInFile => $this->rejection('duplicate_in_file'),
+            $isExistingReference => $this->rejection('existing_reference'),
+            default => null,
+        };
+    }
+
+    /**
+     * @param  array<string, string>  $replacements
+     */
+    private function rejection(string $reason, array $replacements = []): string
+    {
+        $message = __("fleet::machines.import.rejections.{$reason}", $replacements);
+
+        return is_string($message) ? $message : $reason;
     }
 
     private function parseDate(mixed $cellValue): CarbonImmutable|false|null

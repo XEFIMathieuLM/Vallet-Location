@@ -56,7 +56,7 @@ final readonly class PlanningGrid
             self::cells($machine, $days, $reservationsByMachine->get($machine->id, collect())),
         ));
 
-        return new self($days, $rows->values()->all());
+        return new self($days, array_values($rows->all()));
     }
 
     /**

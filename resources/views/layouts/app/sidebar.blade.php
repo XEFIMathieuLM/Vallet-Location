@@ -38,6 +38,14 @@
                         </flux:sidebar.item>
                     </flux:sidebar.group>
                 @endcan
+
+                @can('users.manage')
+                    <flux:sidebar.group :heading="__('users.title')" class="grid">
+                        <flux:sidebar.item icon="users" :href="route('users.index')" :current="request()->routeIs('users.*')" wire:navigate>
+                            {{ __('users.title') }}
+                        </flux:sidebar.item>
+                    </flux:sidebar.group>
+                @endcan
             </flux:sidebar.nav>
 
             <flux:spacer />

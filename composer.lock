@@ -969,7 +969,7 @@
             "dist": {
                 "type": "path",
                 "url": "./functional/accounts",
-                "reference": "20034cd9acaffb48a89e6ff8bb395f462d492c74"
+                "reference": "ab8eed8915f2c57d879b3db851f19d05190c2973"
             },
             "require": {
                 "functional/billing": "*",
@@ -991,6 +991,11 @@
                 "laravel": {
                     "providers": [
                         "Functional\\Accounts\\Providers\\AccountsServiceProvider"
+                    ]
+                },
+                "faker": {
+                    "providers": [
+                        "Functional\\Accounts\\Faker\\AccountsFakerServiceProvider"
                     ]
                 }
             },

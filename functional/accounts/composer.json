@@ -32,6 +32,11 @@
             "providers": [
                 "Functional\\Accounts\\Providers\\AccountsServiceProvider"
             ]
+        },
+        "faker": {
+            "providers": [
+                "Functional\\Accounts\\Faker\\AccountsFakerServiceProvider"
+            ]
         }
     }
 }

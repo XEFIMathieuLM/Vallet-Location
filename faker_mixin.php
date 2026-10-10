@@ -3,6 +3,7 @@
 namespace Xefi\Faker\Container;
 
 /**
+ * @method string purchaseOrderNumber()
  * @method string billingCustomerRef()
  * @method string billingSoftwareRef()
  * @method string billingExportFileName()

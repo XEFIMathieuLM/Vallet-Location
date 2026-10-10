@@ -3,6 +3,9 @@
 namespace Xefi\Faker\Container;
 
 /**
+ * @method string billingCustomerRef()
+ * @method string billingSoftwareRef()
+ * @method string billingExportFileName()
  * @method array wordsAsArray(int $words = 3)
  * @method string words(int $words = 3)
  * @method array sentencesAsArray(int $sentences = 3)

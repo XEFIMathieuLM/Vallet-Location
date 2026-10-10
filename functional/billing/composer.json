@@ -23,6 +23,11 @@
             "providers": [
                 "Functional\\Billing\\Providers\\BillingServiceProvider"
             ]
+        },
+        "faker": {
+            "providers": [
+                "Functional\\Billing\\Faker\\BillingFakerServiceProvider"
+            ]
         }
     }
 }

@@ -18,7 +18,7 @@ class BillingExportFactory extends Factory
         return [
             'created_by' => User::factory(),
             'line_count' => faker()->number(1, 20),
-            'file_path' => 'export-facturation-'.faker()->number(10000000, 99999999).'.csv',
+            'file_path' => faker()->billingExportFileName(),
         ];
     }
 }

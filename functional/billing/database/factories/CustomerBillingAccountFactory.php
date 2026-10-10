@@ -17,7 +17,7 @@ class CustomerBillingAccountFactory extends Factory
     {
         return [
             'customer_id' => Customer::factory(),
-            'external_ref' => 'CLI-'.faker()->number(10000, 99999),
+            'external_ref' => faker()->billingCustomerRef(),
         ];
     }
 }

@@ -33,7 +33,7 @@ class TransmissionFactory extends Factory
             'attempts' => 1,
             'sent_at' => CarbonImmutable::now(),
             'last_attempt_at' => CarbonImmutable::now(),
-            'external_ref' => 'FAKE-'.faker()->number(1, 9999),
+            'external_ref' => faker()->billingSoftwareRef(),
         ]);
     }
 

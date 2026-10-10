@@ -20,4 +20,12 @@ class CustomerFactory extends Factory
             'email' => null,
         ];
     }
+
+    public function reachableByEmail(): static
+    {
+        return $this->state(fn (): array => [
+            'phone' => null,
+            'email' => faker()->email(),
+        ]);
+    }
 }

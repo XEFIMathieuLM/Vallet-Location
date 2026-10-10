@@ -231,7 +231,7 @@ description: "Task list for feature 001-reservation-machines"
 
 ### Données de démonstration (HAUTE)
 
-- [ ] T086 [seed-new-features, seeder-conventions] Réécrire `functional/fleet/database/seeders/FleetSeeder.php` avec les factories (états `MachineFactory` : `workshop`, `outOfOrder`, `rentedOut`, `retired`, VGP expirée / non renseignée) au lieu de `Model::create`, `sprintf` et listes en dur ; créer `functional/booking/database/seeders/CustomerSeeder.php` et `functional/booking/database/seeders/ReservationSeeder.php` (réservations `confirmed`, `in_progress`, `closed`, `cancelled` et les 3 `ConflictReason`) ; `database/seeders/DatabaseSeeder.php` sans nom ni e-mail en dur (salariés par factory, un par agence), qui affiche en fin de seed les comptes créés ; `quickstart.md` indique où trouver ces comptes
+- [X] T086 [seed-new-features, seeder-conventions] Réécrire `functional/fleet/database/seeders/FleetSeeder.php` avec les factories (états `MachineFactory` : `workshop`, `outOfOrder`, `rentedOut`, `retired`, VGP expirée / non renseignée) au lieu de `Model::create`, `sprintf` et listes en dur ; créer `functional/booking/database/seeders/CustomerSeeder.php` et `functional/booking/database/seeders/ReservationSeeder.php` (réservations `confirmed`, `in_progress`, `closed`, `cancelled` et les 3 `ConflictReason`) ; `database/seeders/DatabaseSeeder.php` sans nom ni e-mail en dur (salariés par factory, un par agence), qui affiche en fin de seed les comptes créés ; `quickstart.md` indique où trouver ces comptes
 
 ### Frontières des layers (MOYENNE)
 

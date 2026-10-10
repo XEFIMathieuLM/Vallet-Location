@@ -3,10 +3,11 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use Functional\Booking\Database\Seeders\CustomerSeeder;
+use Functional\Booking\Database\Seeders\ReservationSeeder;
 use Functional\Fleet\Database\Seeders\FleetSeeder;
 use Functional\Fleet\Models\Agency;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
@@ -14,14 +15,15 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([FleetSeeder::class, PermissionSeeder::class]);
 
-        Agency::query()->orderBy('name')->each(function (Agency $agency): void {
-            User::factory()
-                ->create([
-                    'name' => "Salarié {$agency->name}",
-                    'email' => Str::slug($agency->name).'@vallet-location.test',
-                    'agency_id' => $agency->id,
-                ])
-                ->assignRole(PermissionSeeder::EMPLOYEE_ROLE);
-        });
+        $employees = Agency::query()->orderBy('name')->get()
+            ->map(fn (Agency $agency): User => User::factory()->employee()->for($agency)->create());
+
+        $this->call([CustomerSeeder::class, ReservationSeeder::class]);
+
+        $this->command->table(
+            ['Agency', 'Employee e-mail'],
+            $employees->map(fn (User $employee): array => [$employee->agency->name, $employee->email])->all(),
+        );
+        $this->command->info('Password of every seeded employee: the UserFactory default.');
     }
 }

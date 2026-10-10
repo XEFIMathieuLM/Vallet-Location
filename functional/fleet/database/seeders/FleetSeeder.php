@@ -2,43 +2,64 @@
 
 namespace Functional\Fleet\Database\Seeders;
 
-use Carbon\CarbonImmutable;
+use Functional\Fleet\Database\Factories\MachineFactory;
+use Functional\Fleet\Enums\MachineStatus;
 use Functional\Fleet\Models\Agency;
 use Functional\Fleet\Models\Machine;
 use Functional\Fleet\Models\MachineCategory;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Database\Seeder;
 
 class FleetSeeder extends Seeder
 {
-    private const AGENCY_NAMES = ['Annecy', 'Chambéry', 'Grenoble', 'Lyon', 'Valence', 'Albertville', 'Thonon'];
+    private const AGENCY_COUNT = 7;
 
-    private const CATEGORIES = [
-        ['name' => 'Nacelle', 'is_vgp_required' => true, 'prefix' => 'NAC'],
-        ['name' => 'Chariot élévateur', 'is_vgp_required' => true, 'prefix' => 'CHA'],
-        ['name' => 'Mini-pelle', 'is_vgp_required' => false, 'prefix' => 'MPE'],
-        ['name' => 'Compacteur', 'is_vgp_required' => false, 'prefix' => 'CMP'],
-    ];
+    private const CATEGORY_COUNT_PER_VGP_RULE = 2;
 
     public function run(): void
     {
-        $agencies = collect(self::AGENCY_NAMES)
-            ->map(fn (string $agencyName): Agency => Agency::query()->create(['name' => $agencyName]));
+        $agencies = Agency::factory()->count(self::AGENCY_COUNT)->create();
 
-        foreach (self::CATEGORIES as $categoryDefinition) {
-            $category = MachineCategory::query()->create([
-                'name' => $categoryDefinition['name'],
-                'is_vgp_required' => $categoryDefinition['is_vgp_required'],
-            ]);
+        MachineCategory::factory()->requiringVgp()->count(self::CATEGORY_COUNT_PER_VGP_RULE)->create()
+            ->each(fn (MachineCategory $category) => $this->seedVgpMachines($category, $agencies));
 
-            foreach (range(1, 10) as $machineNumber) {
-                Machine::query()->create([
-                    'reference' => sprintf('%s-%04d', $categoryDefinition['prefix'], $machineNumber),
-                    'machine_category_id' => $category->id,
-                    'agency_id' => $agencies[$machineNumber % $agencies->count()]->id,
-                    'is_subject_to_vgp' => $categoryDefinition['is_vgp_required'],
-                    'vgp_due_date' => $categoryDefinition['is_vgp_required'] ? CarbonImmutable::today()->addMonths($machineNumber) : null,
-                ]);
-            }
-        }
+        MachineCategory::factory()->count(self::CATEGORY_COUNT_PER_VGP_RULE)->create()
+            ->each(fn (MachineCategory $category) => $this->seedMachines($category, $agencies));
+    }
+
+    /**
+     * @param  Collection<int, Agency>  $agencies
+     */
+    private function seedVgpMachines(MachineCategory $category, Collection $agencies): void
+    {
+        $this->machinesOf($category, $agencies)->vgpValid()->count(5)->create();
+        $this->machinesOf($category, $agencies)->vgpExpiringSoon()->create();
+        $this->machinesOf($category, $agencies)->vgpExpired()->create();
+        $this->machinesOf($category, $agencies)->vgpMissing()->create();
+        $this->machinesOf($category, $agencies)->vgpValid()->withStatus(MachineStatus::Workshop)->create();
+        $this->machinesOf($category, $agencies)->vgpValid()->withStatus(MachineStatus::RentedOut)->count(2)->create();
+    }
+
+    /**
+     * @param  Collection<int, Agency>  $agencies
+     */
+    private function seedMachines(MachineCategory $category, Collection $agencies): void
+    {
+        $this->machinesOf($category, $agencies)->count(6)->create();
+        $this->machinesOf($category, $agencies)->withStatus(MachineStatus::Workshop)->create();
+        $this->machinesOf($category, $agencies)->withStatus(MachineStatus::OutOfOrder)->create();
+        $this->machinesOf($category, $agencies)->withStatus(MachineStatus::RentedOut)->create();
+        $this->machinesOf($category, $agencies)->withStatus(MachineStatus::Retired)->create();
+    }
+
+    /**
+     * @param  Collection<int, Agency>  $agencies
+     */
+    private function machinesOf(MachineCategory $category, Collection $agencies): MachineFactory
+    {
+        return Machine::factory()
+            ->for($category, 'category')
+            ->state(new Sequence(...$agencies->map(fn (Agency $agency): array => ['agency_id' => $agency->id])->shuffle()->all()));
     }
 }

@@ -217,7 +217,7 @@ description: "Task list for feature 001-reservation-machines"
 - [X] T075 [P] Lancer `./vendor/bin/sail php vendor/bin/phpstan analyse` et corriger toutes les erreurs dans `app/` et `functional/*/src/`
 - [X] T076 [P] Vérifier qu'aucun fichier de code de `app/` et `functional/*/src/` ne dépasse 200 lignes ; découper sinon
 - [X] T077 Lancer `./vendor/bin/sail artisan test` : toute la suite doit passer
-- [ ] T078 Dérouler les vérifications manuelles 1 à 8 de [quickstart.md](quickstart.md) et corriger les écarts
+- [X] T078 Dérouler les vérifications manuelles 1 à 8 de [quickstart.md](quickstart.md) et corriger les écarts
 
 ---
 

@@ -91,6 +91,14 @@ class PlanningTest extends TestCase
         $this->actingAs($this->employee())->get(route('planning.index'))->assertOk();
     }
 
+    public function test_the_planning_opens_when_no_machine_matches_the_filters(): void
+    {
+        $this->seedPermissions();
+
+        $this->actingAs($this->employee())->get(route('planning.index'))->assertOk();
+        $this->assertSame([], $this->grid('2026-11-10', '2026-11-14')->rows);
+    }
+
     public function test_the_planning_shows_the_registered_machine_badges_and_listens_to_their_events(): void
     {
         $this->seedPermissions();

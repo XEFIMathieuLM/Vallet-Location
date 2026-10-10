@@ -48,6 +48,11 @@ final readonly class PlanningGrid
         /** @var EloquentCollection<int, Model> $relatedMachines */
         $relatedMachines = $machines;
         $days = array_values(iterator_to_array(CarbonPeriodImmutable::create($startDate->startOfDay(), $endDate->startOfDay())));
+
+        if ($machines->isEmpty()) {
+            return new self($days, []);
+        }
+
         $reservationsByMachine = Reservation::query()
             ->with('customer')
             ->whereBelongsTo($relatedMachines)

@@ -41,6 +41,17 @@
                     </flux:sidebar.group>
                 @endcan
 
+                @can('billing.manage')
+                    <flux:sidebar.group :heading="__('billing::navigation.heading')" class="grid">
+                        <flux:sidebar.item icon="paper-airplane" :href="route('billing.transmissions')" :current="request()->routeIs('billing.transmissions')" wire:navigate>
+                            {{ __('billing::navigation.transmissions') }}
+                        </flux:sidebar.item>
+                        <flux:sidebar.item icon="arrow-down-tray" :href="route('billing.exports')" :current="request()->routeIs('billing.exports*')" wire:navigate>
+                            {{ __('billing::navigation.exports') }}
+                        </flux:sidebar.item>
+                    </flux:sidebar.group>
+                @endcan
+
                 @can('machines.manage')
                     <flux:sidebar.group :heading="__('fleet::machines.navigation.fleet')" class="grid">
                         <flux:sidebar.item icon="truck" :href="route('machines.index')" :current="request()->routeIs('machines.*')" wire:navigate>

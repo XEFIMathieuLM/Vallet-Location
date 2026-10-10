@@ -12,6 +12,11 @@ final class BillingCalendar
         return $moment->setTimezone($this->timezone())->startOfDay();
     }
 
+    public function now(): CarbonImmutable
+    {
+        return CarbonImmutable::now()->setTimezone($this->timezone());
+    }
+
     public function today(): CarbonImmutable
     {
         return $this->dateOf(CarbonImmutable::now());

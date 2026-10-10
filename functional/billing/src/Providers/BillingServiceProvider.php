@@ -7,10 +7,12 @@ use Functional\Billing\Access\Controls\DamageSettlementControl;
 use Functional\Billing\Access\Controls\TransmissionControl;
 use Functional\Billing\Console\CloseMonthsCommand;
 use Functional\Billing\Console\FakeGatewayCommand;
+use Functional\Billing\Console\ReconcileCommand;
 use Functional\Billing\Contracts\BillingGateway;
 use Functional\Billing\Exceptions\UnknownBillingGatewayException;
 use Functional\Billing\Gateways\FakeBillingGateway;
 use Functional\Billing\Listeners\RecordFinalPeriodOnReservationClosed;
+use Functional\Billing\Livewire\BillingAlert;
 use Functional\Billing\Livewire\ReservationBillingSection;
 use Functional\Booking\Events\ReservationChanged;
 use Functional\Booking\Extensions\ReservationDetailSections;
@@ -42,11 +44,12 @@ class BillingServiceProvider extends LayerServiceProvider
         (new Access)->addControls([new TransmissionControl, new DamageSettlementControl, new BillingExportControl]);
 
         Livewire::component('billing.reservation-section', ReservationBillingSection::class);
+        Livewire::component('billing.alert', BillingAlert::class);
         $this->app->make(ReservationDetailSections::class)->register('billing.reservation-section', 20);
         Event::listen(ReservationChanged::class, RecordFinalPeriodOnReservationClosed::class);
 
         if ($this->app->runningInConsole()) {
-            $this->commands([CloseMonthsCommand::class, FakeGatewayCommand::class]);
+            $this->commands([CloseMonthsCommand::class, FakeGatewayCommand::class, ReconcileCommand::class]);
         }
 
         $this->withRouting(

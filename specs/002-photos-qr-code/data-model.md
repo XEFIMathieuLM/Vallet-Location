@@ -97,7 +97,7 @@ Fichier attaché par la médiathèque (collection `photo`, un seul fichier). Con
 
 ## Historique
 
-`spatie/laravel-activitylog` (déjà en place par la 001), journal `inspection`, écrit explicitement par les actions et rattaché à la réservation (`performedOn`) avec son auteur (`causedBy`) : génération de chaque QR code, chaque révocation (étapes concernées, nombre de sessions, raison), réception et suppression de chaque photo (vue, étape), signalement et traitement de chaque dégât (FR-024). Le jeton n'y figure jamais.
+`spatie/laravel-activitylog` (déjà en place par la 001), journal `inspection`, écrit explicitement par les actions (noms d'événements dans l'enum `InspectionHistoryEvent`) et rattaché à la réservation (`performedOn`) avec son auteur (`causedBy`) : génération de chaque QR code, chaque révocation (étapes concernées, nombre de sessions, raison), réception et suppression de chaque photo (vue, étape), signalement et traitement de chaque dégât (FR-024). Le jeton n'y figure jamais.
 
 ## Relations
 

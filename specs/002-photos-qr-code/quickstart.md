@@ -5,7 +5,7 @@ Guide de vérification de bout en bout. Les règles sont dans [spec.md](spec.md)
 ## Prérequis
 
 - La feature 001 implémentée et l'application lancée avec Sail (PostgreSQL, Soketi, worker de file d'attente).
-- Les migrations et seeders de la 001 et de la 002 passés : 7 agences, catégories dont « Nacelle », quelques machines, un salarié.
+- Les migrations et seeders de la 001 et de la 002 passés : 7 agences, catégories dont « Nacelle », des machines, un salarié par agence, et les données d'inspection de l'`InspectionSeeder` (une réservation par situation : départ en attente, location en cours, retours avec dégât traité ou non, réservation annulée).
 - Un smartphone sur le même réseau que le poste (l'adresse IP du poste suffit : le champ d'envoi avec appareil photo fonctionne en HTTP), ou un tunnel HTTPS vers l'application.
 - Un chronomètre pour mesurer SC-003 et SC-004.
 
@@ -43,7 +43,7 @@ Attendu : tous verts. Chaque scénario d'acceptation de la spec a son test Featu
 ## Rétention
 
 ```bash
-docker compose exec -u sail laravel.test php artisan model:prune --pretend
+docker compose exec -u sail laravel.test php artisan model:prune --pretend --model='Functional\Inspection\Models\Photo' --model='Functional\Inspection\Models\PhotoSession'
 ```
 
-Attendu : seules les photos de réservations clôturées depuis plus d'un an sans dégât en cours sont listées.
+Attendu : seules les photos de réservations clôturées depuis plus d'un an sans dégât en cours, et les sessions expirées ou révoquées depuis plus de 30 jours sans photo, sont listées. Sans `--model`, la commande ne voit que les modèles de `app/Models`.

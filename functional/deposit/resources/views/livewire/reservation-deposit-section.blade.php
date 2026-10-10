@@ -2,6 +2,7 @@
     use Functional\Booking\Enums\ReservationStatus;
     use Functional\Deposit\Access\DepositPermission;
     use Functional\Deposit\Enums\DepositSituationKind;
+    use Functional\Deposit\Enums\DepositStatus;
 @endphp
 
 <section class="space-y-4">
@@ -21,6 +22,9 @@
 
     @if ($situation->deposit)
         @include('deposit::partials.deposit-details', ['deposit' => $situation->deposit])
+        @if ($situation->deposit->status === DepositStatus::BlockedByDamage)
+            @include('deposit::partials.damages-to-settle', ['damages' => $damagesToSettle])
+        @endif
     @endif
 
     @can(DepositPermission::ManageDeposits->value)
@@ -29,6 +33,10 @@
         @endif
         @if ($situation->kind === DepositSituationKind::ToCollect)
             <livewire:deposit.collect-deposit-form :reservation="$reservation" :key="'collect-deposit-'.$reservation->id" />
+        @endif
+        @if ($situation->deposit && ! $situation->deposit->status->isFinal())
+            <livewire:deposit.correct-payment-form :reservation="$reservation" :key="'correct-payment-'.$reservation->id" />
+            <livewire:deposit.close-deposit-actions :reservation="$reservation" :key="'close-deposit-'.$reservation->id.'-'.$situation->deposit->status->value" />
         @endif
     @endcan
 </section>

@@ -291,7 +291,7 @@ Chaque phase se termine par `composer ci:check` en code 0 (après `vendor/bin/ph
 
 ### Tests (écrits d'abord, en échec)
 
-- [ ] T032 [US5] `tests/Feature/Dashboard/AgencySelectionTest.php` : un test par scénario de la US5.
+- [X] T032 [US5] `tests/Feature/Dashboard/AgencySelectionTest.php` : un test par scénario de la US5.
   1. Agence par défaut : celle du salarié.
   2. `set('agency', $evreux->id)` : les départs d'Évreux sont affichés, ceux de Rouen absents ; les compteurs sont inchangés.
   3. `set('agency', 'toutes')` : les départs des deux agences sont affichés, avec le nom de l'agence sur chaque ligne.
@@ -303,11 +303,11 @@ Chaque phase se termine par `composer ci:check` en code 0 (après `vendor/bin/ph
 
 ### Implémentation
 
-- [ ] T033 [US5] Dans `app/Livewire/Dashboard/Dashboard.php` :
+- [X] T033 [US5] Dans `app/Livewire/Dashboard/Dashboard.php` :
   - ajouter `#[Url(as: 'agence')] public string $agency = ''` ;
   - la propriété calculée `agencyId` (`?int`) applique la table « Agence sélectionnée » de [data-model.md](data-model.md) ;
   - passer `agencies` (par nom) à la vue.
-- [ ] T034 [US5] Dans `resources/views/livewire/dashboard/dashboard.blade.php` :
+- [X] T034 [US5] Dans `resources/views/livewire/dashboard/dashboard.blade.php` :
   - `flux:select wire:model.live="agency"` dans les actions de `x-page-heading`, avec les agences et `toutes`, rendu sous `@canany` des trois permissions des sections filtrées par agence ;
   - `wire:key` des enfants dépendant de l'agence.
 

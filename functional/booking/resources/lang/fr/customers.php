@@ -8,5 +8,10 @@ return [
     'type_missing' => 'À renseigner',
     'fields' => [
         'type' => 'type de client',
+        'email' => 'adresse e-mail',
+    ],
+    'refusals' => [
+        'email_empty' => 'L\'adresse e-mail du client est obligatoire.',
+        'email_invalid' => 'L\'adresse e-mail « :email » n\'est pas valide.',
     ],
 ];

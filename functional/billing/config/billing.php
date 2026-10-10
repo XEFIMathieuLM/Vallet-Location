@@ -1,10 +1,12 @@
 <?php
 
+use Functional\Billing\Gateways\FakeBillingGateway;
+
 return [
     'go_live_date' => env('BILLING_GO_LIVE_DATE'),
     'gateway' => env('BILLING_GATEWAY', 'fake'),
     'gateways' => [
-        'fake' => Functional\Billing\Gateways\FakeBillingGateway::class,
+        'fake' => FakeBillingGateway::class,
     ],
     'timezone' => 'Europe/Paris',
     'http_timeout_seconds' => 10,

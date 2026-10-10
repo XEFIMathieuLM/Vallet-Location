@@ -203,9 +203,9 @@ Lire `design-patterns:state` avant T016.
 
 ## Phase 7: Polish & Cross-Cutting Concerns
 
-- [ ] T059 [P] Écrire `functional/billing/tests/Feature/BillingHistoryTest.php` : FR-020, l'historique de la réservation contient chaque tentative, échec, relance manuelle, chiffrage, classement « non refacturé » et export, avec auteur et date
-- [ ] T060 [P] Écrire `functional/billing/tests/Feature/LayerBoundariesTest.php` : aucun fichier sous `functional/inspection`, `functional/booking`, `functional/fleet` ne référence le namespace de `billing`
-- [ ] T061 Lancer `docker compose exec -u sail laravel.test vendor/bin/phpstan analyse` et corriger jusqu'à zéro erreur ; vérifier qu'aucun fichier de code de `functional/billing/src/` ne dépasse 200 lignes
+- [X] T059 [P] Écrire `functional/billing/tests/Feature/BillingHistoryTest.php` : FR-020, l'historique de la réservation contient chaque tentative, échec, relance manuelle, chiffrage, classement « non refacturé » et export, avec auteur et date
+- [X] T060 [P] Écrire `functional/billing/tests/Feature/LayerBoundariesTest.php` : aucun fichier sous `functional/inspection`, `functional/booking`, `functional/fleet` ne référence le namespace de `billing`
+- [X] T061 Lancer `docker compose exec -u sail laravel.test vendor/bin/phpstan analyse` et corriger jusqu'à zéro erreur ; vérifier qu'aucun fichier de code de `functional/billing/src/` ne dépasse 200 lignes
 - [ ] T062 Dérouler les scénarios de [quickstart.md](quickstart.md) avec `BILLING_GATEWAY=fake`, worker et planificateur actifs
 - [ ] T063 **Bloquée par le client** : écrire l'adaptateur du logiciel de facturation réel dans `functional/billing/src/Gateways/` selon [contracts/billing-gateway.md](contracts/billing-gateway.md#obligations-de-toute-implémentation) (idempotence, délai borné, motifs sans secret), avec un test Feature utilisant `Http::fake()` ; aligner la mise en forme de l'export sur le format d'import réel ([contracts/export-format.md](contracts/export-format.md)). Ne démarre qu'avec le nom du logiciel, son moyen d'envoi, son authentification et son format d'import. **Critère d'arrêt** : si le logiciel ne sait ni ignorer une clé déjà reçue ni retrouver une ligne par sa clé, ne pas écrire l'adaptateur et revenir à `/speckit-plan` ([billing-gateway.md](contracts/billing-gateway.md#critère-darrêt-pour-ladaptateur-réel)).
 

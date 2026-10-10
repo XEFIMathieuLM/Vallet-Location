@@ -8,6 +8,7 @@ use Functional\Billing\Database\Seeders\BillingSeeder;
 use Functional\Booking\Database\Seeders\BookingPermissionSeeder;
 use Functional\Booking\Database\Seeders\CustomerSeeder;
 use Functional\Booking\Database\Seeders\ReservationSeeder;
+use Functional\Certification\Database\Seeders\CertificationDemoSeeder;
 use Functional\Certification\Database\Seeders\CertificationPermissionSeeder;
 use Functional\Fleet\Database\Seeders\FleetPermissionSeeder;
 use Functional\Fleet\Database\Seeders\FleetSeeder;
@@ -25,7 +26,7 @@ class DatabaseSeeder extends Seeder
         $employees = Agency::query()->orderBy('name')->get()
             ->map(fn (Agency $agency): User => User::factory()->employee()->for($agency)->create());
 
-        $this->call([CustomerSeeder::class, ReservationSeeder::class, InspectionSeeder::class, BillingSeeder::class]);
+        $this->call([CustomerSeeder::class, ReservationSeeder::class, InspectionSeeder::class, BillingSeeder::class, CertificationDemoSeeder::class]);
 
         $this->command->table(
             ['Agency', 'Employee e-mail'],

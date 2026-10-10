@@ -224,11 +224,11 @@ Celles de la 001 s'appliquent ([tasks.md de la 001](../001-reservation-machines/
 
 ## Phase 8: Polish & Cross-Cutting Concerns
 
-- [ ] T058 [P] Écrire `functional/certification/tests/Feature/LayerBoundaryTest.php` : aucun fichier de `functional/{fleet,booking,inspection,billing}` ne référence `Functional\Certification` ; `certification` n'écrit pas dans `machines` ni `customers` (recherche d'`update(`/`save(` sur ces modèles dans `functional/certification/src`)
-- [ ] T059 [P] Ajouter des données de démonstration : rapports déposés pour une partie des nacelles du seeder de `fleet` et attestations dans chaque état dans `functional/certification/database/seeders/CertificationDemoSeeder.php`, appelé depuis `database/seeders/DatabaseSeeder.php` en local
-- [ ] T060 Vérifier que chaque fichier de `functional/certification/src` fait moins de 200 lignes, sans commentaire, sans nom générique ; découper sinon
-- [ ] T061 Lancer `docker compose exec -u sail laravel.test vendor/bin/pint --dirty --format agent`, `vendor/bin/phpstan analyse` (zéro erreur) et `php artisan test` (vert) sur `functional/certification` puis toute la suite
-- [ ] T062 Dérouler la recette manuelle de [quickstart.md](quickstart.md#recette-manuelle-worker-et-planificateur-lancés) (tests 1 à 10) sur l'environnement isolé et noter le résultat dans le message de commit de phase
+- [X] T058 [P] Écrire `functional/certification/tests/Feature/LayerBoundaryTest.php` : aucun fichier de `functional/{fleet,booking,inspection,billing}` ne référence `Functional\Certification` ; `certification` n'écrit pas dans `machines` ni `customers` (recherche d'`update(`/`save(` sur ces modèles dans `functional/certification/src`)
+- [X] T059 [P] Ajouter des données de démonstration : rapports déposés pour une partie des nacelles du seeder de `fleet` et attestations dans chaque état dans `functional/certification/database/seeders/CertificationDemoSeeder.php`, appelé depuis `database/seeders/DatabaseSeeder.php` en local
+- [X] T060 Vérifier que chaque fichier de `functional/certification/src` fait moins de 200 lignes, sans commentaire, sans nom générique ; découper sinon
+- [X] T061 Lancer `docker compose exec -u sail laravel.test vendor/bin/pint --dirty --format agent`, `vendor/bin/phpstan analyse` (zéro erreur) et `php artisan test` (vert) sur `functional/certification` puis toute la suite
+- [X] T062 Dérouler la recette manuelle de [quickstart.md](quickstart.md#recette-manuelle-worker-et-planificateur-lancés) (tests 1 à 10) sur l'environnement isolé et noter le résultat dans le message de commit de phase
 
 ---
 

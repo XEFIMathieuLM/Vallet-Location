@@ -3,6 +3,7 @@
 namespace Functional\Billing\Access\Controls;
 
 use App\Models\User;
+use Functional\Billing\Enums\BillingPermission;
 use Functional\Billing\Models\BillingExport;
 use Functional\Fleet\Access\Perimeters\GlobalPerimeter;
 use Illuminate\Database\Eloquent\Builder;
@@ -20,7 +21,7 @@ class BillingExportControl extends Control
     {
         return [
             GlobalPerimeter::new()
-                ->allowed(fn (Model $user, string $method): bool => $user instanceof User && $user->can('billing.manage'))
+                ->allowed(fn (Model $user, string $method): bool => $user instanceof User && $user->can(BillingPermission::Manage->value))
                 ->should(fn (Model $user, Model $billingExport): bool => true)
                 ->query(fn (Builder $query, Model $user): Builder => $query),
         ];

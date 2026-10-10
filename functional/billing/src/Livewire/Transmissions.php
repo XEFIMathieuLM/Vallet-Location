@@ -4,6 +4,7 @@ namespace Functional\Billing\Livewire;
 
 use Functional\Billing\Actions\RetryTransmission;
 use Functional\Billing\Actions\SetCustomerBillingRef;
+use Functional\Billing\Enums\BillingPermission;
 use Functional\Billing\Livewire\Concerns\DisplaysBillingRefusals;
 use Functional\Billing\Models\Transmission;
 use Functional\Billing\Queries\TransmissionsToHandle;
@@ -23,7 +24,7 @@ class Transmissions extends Component
 
     public function saveCustomerRef(int $customerId, SetCustomerBillingRef $setCustomerBillingRef): void
     {
-        Gate::authorize('billing.manage');
+        Gate::authorize(BillingPermission::Manage->value);
 
         $this->validate(["customerRefs.{$customerId}" => ['required', 'string', 'max:100']], attributes: ["customerRefs.{$customerId}" => __('billing::transmissions.screen.customer_ref')]);
 
@@ -32,7 +33,7 @@ class Transmissions extends Component
 
     public function retry(int $transmissionId, RetryTransmission $retryTransmission): void
     {
-        Gate::authorize('billing.manage');
+        Gate::authorize(BillingPermission::Manage->value);
 
         $retryTransmission->handle(Transmission::query()->findOrFail($transmissionId));
     }

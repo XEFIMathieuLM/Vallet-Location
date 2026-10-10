@@ -46,7 +46,7 @@ final class RecordFinalPeriod
     private function hasFinalPeriod(Reservation $reservation): bool
     {
         return BillablePeriod::query()
-            ->where('reservation_id', $reservation->id)
+            ->whereBelongsTo($reservation)
             ->where('kind', BillablePeriodKind::Final)
             ->exists();
     }

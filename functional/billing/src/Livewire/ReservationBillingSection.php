@@ -19,13 +19,13 @@ class ReservationBillingSection extends Component
     {
         return view('billing::livewire.reservation-billing-section', [
             'periodTransmissions' => Transmission::query()
-                ->where('reservation_id', $this->reservation->id)
+                ->whereBelongsTo($this->reservation)
                 ->whereNotNull('billable_period_id')
                 ->with('billablePeriod')
                 ->get()
                 ->sortBy(fn (Transmission $transmission): string => $transmission->billablePeriod?->start_date->toDateString() ?? ''),
             'damageSettlements' => DamageSettlement::query()
-                ->whereIn('damage_id', Damage::query()->select('id')->where('reservation_id', $this->reservation->id))
+                ->whereIn('damage_id', Damage::query()->select('id')->whereBelongsTo($this->reservation))
                 ->with(['damage.view', 'settler', 'transmission'])
                 ->orderBy('settled_at')
                 ->get(),

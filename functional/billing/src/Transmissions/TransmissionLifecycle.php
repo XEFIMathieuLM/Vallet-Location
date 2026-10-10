@@ -3,6 +3,7 @@
 namespace Functional\Billing\Transmissions;
 
 use Carbon\CarbonImmutable;
+use Functional\Billing\Enums\BillingHistoryEvent;
 use Functional\Billing\Enums\TransmissionFailureReason;
 use Functional\Billing\History\BillingHistory;
 use Functional\Billing\Models\BillingExport;
@@ -22,7 +23,7 @@ final class TransmissionLifecycle
             'last_error' => null,
             'reserved_until' => null,
         ]);
-        $this->billingHistory->record($transmission->reservation, 'sent', ['uuid' => $transmission->uuid, 'external_ref' => $externalRef]);
+        $this->billingHistory->record($transmission->reservation, BillingHistoryEvent::Sent, ['uuid' => $transmission->uuid, 'external_ref' => $externalRef]);
     }
 
     public function markFailed(Transmission $transmission, TransmissionFailureReason $failureReason, string $message): void
@@ -33,7 +34,7 @@ final class TransmissionLifecycle
             'last_error' => $message,
             'reserved_until' => null,
         ]);
-        $this->billingHistory->record($transmission->reservation, 'failed', ['uuid' => $transmission->uuid, 'reason' => $message]);
+        $this->billingHistory->record($transmission->reservation, BillingHistoryEvent::Failed, ['uuid' => $transmission->uuid, 'reason' => $message]);
     }
 
     public function scheduleRetry(Transmission $transmission, string $message): void
@@ -42,7 +43,7 @@ final class TransmissionLifecycle
         $delayMinutes = $retryDelays[min($transmission->attempts, count($retryDelays)) - 1];
 
         $transmission->update(['next_attempt_at' => CarbonImmutable::now()->addMinutes($delayMinutes), 'last_error' => $message, 'reserved_until' => null]);
-        $this->billingHistory->record($transmission->reservation, 'unreachable', ['uuid' => $transmission->uuid, 'delay' => $delayMinutes]);
+        $this->billingHistory->record($transmission->reservation, BillingHistoryEvent::Unreachable, ['uuid' => $transmission->uuid, 'delay' => $delayMinutes]);
     }
 
     public function requeue(Transmission $transmission): void
@@ -52,7 +53,7 @@ final class TransmissionLifecycle
             'next_attempt_at' => CarbonImmutable::now(),
             'failure_reason' => null,
         ]);
-        $this->billingHistory->record($transmission->reservation, 'retried', ['uuid' => $transmission->uuid]);
+        $this->billingHistory->record($transmission->reservation, BillingHistoryEvent::Retried, ['uuid' => $transmission->uuid]);
     }
 
     public function markExported(Transmission $transmission, BillingExport $billingExport): void
@@ -61,6 +62,6 @@ final class TransmissionLifecycle
             'status' => $transmission->state()->export()->status(),
             'billing_export_id' => $billingExport->id,
         ]);
-        $this->billingHistory->record($transmission->reservation, 'exported', ['uuid' => $transmission->uuid, 'export' => $billingExport->id]);
+        $this->billingHistory->record($transmission->reservation, BillingHistoryEvent::Exported, ['uuid' => $transmission->uuid, 'export' => $billingExport->id]);
     }
 }

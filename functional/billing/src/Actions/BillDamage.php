@@ -3,6 +3,7 @@
 namespace Functional\Billing\Actions;
 
 use App\Models\User;
+use Functional\Billing\Enums\BillingHistoryEvent;
 use Functional\Billing\Enums\DamageOutcome;
 use Functional\Billing\Exceptions\InvalidDamageSettlementException;
 use Functional\Billing\History\BillingHistory;
@@ -34,7 +35,7 @@ final class BillDamage
             $damageSettlement = $this->settleDamage->handle($damage, DamageOutcome::Billed, ['amount' => $amount, 'label' => trim($label)], $settler);
             $transmission = Transmission::query()->create(['damage_settlement_id' => $damageSettlement->id, 'reservation_id' => $damage->reservation_id]);
 
-            $this->billingHistory->record($damage->reservation, 'damage_billed', [
+            $this->billingHistory->record($damage->reservation, BillingHistoryEvent::DamageBilled, [
                 'damage' => $damage->id,
                 'label' => $damageSettlement->label,
                 'amount' => $amount->format(),

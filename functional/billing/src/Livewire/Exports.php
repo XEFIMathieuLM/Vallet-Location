@@ -3,6 +3,7 @@
 namespace Functional\Billing\Livewire;
 
 use Functional\Billing\Actions\CreateBillingExport;
+use Functional\Billing\Enums\BillingPermission;
 use Functional\Billing\Livewire\Concerns\DisplaysBillingRefusals;
 use Functional\Billing\Models\BillingExport;
 use Illuminate\Contracts\View\View;
@@ -16,7 +17,7 @@ class Exports extends Component
 
     public function export(CreateBillingExport $createBillingExport): void
     {
-        Gate::authorize('billing.manage');
+        Gate::authorize(BillingPermission::Manage->value);
 
         $createBillingExport->handle(Auth::user() ?? abort(401));
     }

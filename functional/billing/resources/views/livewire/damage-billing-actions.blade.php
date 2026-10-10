@@ -1,5 +1,5 @@
 <div x-data="{ mode: null }" class="space-y-2">
-    @can('billing.manage')
+    @can(\Functional\Billing\Enums\BillingPermission::Manage->value)
         <div class="flex flex-wrap gap-2" x-show="mode === null">
             <flux:button size="sm" icon="currency-euro" x-on:click="mode = 'bill'">{{ __('billing::damages.bill') }}</flux:button>
             <flux:button size="sm" variant="ghost" x-on:click="mode = 'waive'">{{ __('billing::damages.waive') }}</flux:button>

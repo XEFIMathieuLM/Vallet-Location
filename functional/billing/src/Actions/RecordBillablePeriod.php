@@ -5,6 +5,7 @@ namespace Functional\Billing\Actions;
 use Carbon\CarbonImmutable;
 use Functional\Billing\Calendar\BillingCalendar;
 use Functional\Billing\Enums\BillablePeriodKind;
+use Functional\Billing\Enums\BillingHistoryEvent;
 use Functional\Billing\History\BillingHistory;
 use Functional\Billing\Models\BillablePeriod;
 use Functional\Billing\Models\Transmission;
@@ -20,7 +21,7 @@ final class RecordBillablePeriod
 
     public function firstUncoveredDate(Reservation $reservation): CarbonImmutable
     {
-        $lastCoveredDate = BillablePeriod::query()->where('reservation_id', $reservation->id)->max('end_date');
+        $lastCoveredDate = BillablePeriod::query()->whereBelongsTo($reservation)->max('end_date');
 
         return is_string($lastCoveredDate)
             ? CarbonImmutable::parse($lastCoveredDate, $this->billingCalendar->today()->timezone)->addDay()
@@ -37,7 +38,7 @@ final class RecordBillablePeriod
             'days' => $dateRange->days(),
         ]);
 
-        $this->billingHistory->record($reservation, 'period_created', [
+        $this->billingHistory->record($reservation, BillingHistoryEvent::PeriodCreated, [
             'kind' => $kind->label(),
             'start' => $dateRange->start->format('d/m/Y'),
             'end' => $dateRange->end->format('d/m/Y'),

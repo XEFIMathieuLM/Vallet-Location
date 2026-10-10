@@ -22,7 +22,7 @@ final class SettleDamage
     {
         $lockedDamage = Damage::query()->lockForUpdate()->findOrFail($damage->id);
 
-        if ($lockedDamage->isResolved() || DamageSettlement::query()->where('damage_id', $lockedDamage->id)->exists()) {
+        if ($lockedDamage->isResolved() || DamageSettlement::query()->whereBelongsTo($lockedDamage)->exists()) {
             throw DamageAlreadySettledException::for($lockedDamage->id);
         }
 

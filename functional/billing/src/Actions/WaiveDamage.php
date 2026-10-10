@@ -3,6 +3,7 @@
 namespace Functional\Billing\Actions;
 
 use App\Models\User;
+use Functional\Billing\Enums\BillingHistoryEvent;
 use Functional\Billing\Enums\DamageOutcome;
 use Functional\Billing\Exceptions\InvalidDamageSettlementException;
 use Functional\Billing\History\BillingHistory;
@@ -26,7 +27,7 @@ final class WaiveDamage
         return DB::transaction(function () use ($damage, $waiverReason, $settler): DamageSettlement {
             $damageSettlement = $this->settleDamage->handle($damage, DamageOutcome::Waived, ['waiver_reason' => trim($waiverReason)], $settler);
 
-            $this->billingHistory->record($damage->reservation, 'damage_waived', ['damage' => $damage->id, 'reason' => $damageSettlement->waiver_reason]);
+            $this->billingHistory->record($damage->reservation, BillingHistoryEvent::DamageWaived, ['damage' => $damage->id, 'reason' => $damageSettlement->waiver_reason]);
 
             return $damageSettlement;
         });

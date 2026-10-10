@@ -4,6 +4,7 @@ namespace Functional\Billing\Livewire;
 
 use Functional\Billing\Actions\BillDamage;
 use Functional\Billing\Actions\WaiveDamage;
+use Functional\Billing\Enums\BillingPermission;
 use Functional\Billing\Livewire\Concerns\DisplaysBillingRefusals;
 use Functional\Billing\Money\Money;
 use Functional\Inspection\Models\Damage;
@@ -28,7 +29,7 @@ class DamageBillingActions extends Component
 
     public function bill(BillDamage $billDamage): void
     {
-        Gate::authorize('billing.manage');
+        Gate::authorize(BillingPermission::Manage->value);
 
         $this->validate([
             'amount' => ['required', 'regex:'.Money::INPUT_PATTERN, 'not_regex:/^0+([.,]0+)?$/'],
@@ -44,7 +45,7 @@ class DamageBillingActions extends Component
 
     public function waive(WaiveDamage $waiveDamage): void
     {
-        Gate::authorize('billing.manage');
+        Gate::authorize(BillingPermission::Manage->value);
 
         $this->validate(['waiverReason' => ['required', 'string', 'max:2000']], attributes: ['waiverReason' => __('billing::damages.waiver_reason')]);
 

@@ -222,6 +222,39 @@ Les tâches T007 à T012 ne sont pas réalisées dans cette branche : génériqu
 - [X] T076 Tests Unit des calculs (K4, principe VI) : `functional/inspection/tests/Unit/StepCompletenessTest.php` (règles de complétude), `functional/inspection/tests/Unit/ViewCompletenessTest.php` (comptage SQL par étape) et `functional/inspection/tests/Unit/PhotoRetentionRuleTest.php` (photos retenues par `Photo::prunable()`)
 - [X] T077 [US3] Dans `PhotosPanel`, afficher « Comparer les photos » d'après `ViewCompleteness` (`hasPhotosFor(InspectionStep::Return)`) au lieu d'un parcours des photos en PHP (L1)
 
+## Phase 11: Conformité aux skills Xefi
+
+**Purpose**: Audit de conformité aux skills Xefi (plugins `laravel`, `global`, `design-patterns`, `design`), validé par l'utilisateur : points HAUTE, MOYENNE et UI à corriger avant la fusion des PR. Périmètre : `functional/inspection` et les fichiers de configuration introduits par la 002. Lire le `SKILL.md` concerné avant chaque tâche.
+
+**Dépendances 001** : T080 attend la séparation message utilisateur / message technique dans `RefusalException` et `DisplaysRefusals` (layer `fleet`) ; T085 attend le mécanisme `extra.faker` ; les tâches d'interface reprennent la convention commune d'échelle des titres et de modale de confirmation dès que la 001 l'a livrée et fusionnée dans cette branche.
+
+### Haute
+
+- [ ] T078 [seed-new-features, seeder-conventions] Créer `functional/inspection/database/seeders/InspectionSeeder.php`, enregistré dans `DatabaseSeeder` : vues personnalisées pour une catégorie, vues figées, photos de départ et de retour avec fichier, dégâts traités et non traités, sessions actives, expirées et révoquées (chaque `RevocationReason`) ; uniquement via les factories (états nommés), sans orphelin ; vérifier `migrate:fresh --seed`
+
+### Moyenne
+
+- [ ] T079 [no-god-classes] Supprimer le dossier fourre-tout `functional/inspection/src/Support/` : ranger `DamageActions`, `InspectionHistory`, `QrCodeSvg`, `StepCompleteness` et `ViewCompleteness` dans des dossiers nommés d'après leur concept
+- [ ] T080 [no-generic-exceptions, code-in-english] Messages techniques des exceptions d'`inspection` en anglais ; le texte affiché à l'utilisateur passe par les traductions selon la forme retenue par la 001 pour `RefusalException` / `DisplaysRefusals` (dépendance 001)
+- [ ] T081 [automated-tests] Déplacer en Feature les tests « Unit » qui utilisent la base (`FreezeReservationViewsTest`, `MissingViewsTest`, `ViewCompletenessTest`, `PhotoRetentionRuleTest`) ; rendre `InspectionStepTest` purement Unit (`PHPUnit\Framework\TestCase`, sans framework), en extrayant au besoin la règle d'ouverture et de validation sur le statut et les dates
+- [ ] T082 [no-magic-strings] Requêtes par relation (`whereBelongsTo`) au lieu de `where('*_id', …)` dans le layer ; enum `InspectionHistoryEvent` pour les événements d'historique, qui sert aussi de clé de traduction ; signaler à la 001 la recopie des valeurs d'étape dans `ReservationDetail`
+- [ ] T083 [no-fat-models] Sortir `Photo::temporaryUrl()` du modèle (classe dédiée aux URL des fichiers de photo) ; examiner `PhotoSession::isActive()` (accesseur trivial sur ses propres attributs ou règle à extraire)
+- [ ] T084 [retention-via-prunable] Durée de rétention des photos en configuration (`inspection.photo_retention_days` ou équivalent) au lieu de `subYear()` en dur ; rendre `PhotoSession` `Prunable` (sessions expirées ou révoquées depuis plus de N jours **sans photo**, à cause de la clé étrangère) ; s'aligner sur une entrée `model:prune` unique pour l'application si la 001 en planifie une
+- [ ] T085 [custom-faker-extensions, faker-extensions] Remplacer la logique des factories (`CategoryViewFactory`, `ReservationViewFactory`, `PhotoSessionFactory` avec `Str::random`) par des extensions faker du projet, déclarées via le mécanisme `extra.faker` de la 001 (dépendance 001)
+- [ ] T086 [extend-dont-override] Supprimer les copies intégrales de `config/livewire.php` et `config/media-library.php` ; ne garder que les clés surchargées
+- [ ] T087 Relier les limites de taille : une seule valeur (`inspection.max_photo_kilobytes`) pour la validation Livewire, l'envoi temporaire et `media-library.max_file_size` ; test d'une photo entre 10 et 15 Mo acceptée
+- [ ] T088 [layer-owned-config] Déplacer le disque `photos` dans la configuration du layer (surcharge `filesystems` par `overrideConfigFrom`, l'API de `xefi/laravel-osdd` v2.0.1, qui n'a pas de chargement automatique du dossier `config/` d'un layer) ; vérifier l'URL de service du disque (`/photo-files`) par rapport à la route `photo-fichiers`
+- [ ] T089 [osdd, osdd-scaffolding] Compléter `functional/inspection/composer.json` avec toutes les dépendances réellement utilisées (booking, fleet, medialibrary, livewire, flux, activitylog, permission, access-control, Flysystem S3, QR code…)
+
+### Interface (skills design)
+
+- [ ] T090 [accessibility] Page téléphone : vrai bouton d'envoi avec focus visible (au lieu du label sur un champ masqué) ; alternative textuelle au QR code SVG du panneau ; niveaux de titres explicites sur les écrans d'inspection
+- [ ] T091 [buttons] Un seul bouton primaire par écran : « Lancer le QR code » secondaire (« Enregistrer la sortie » de la 001 reste le primaire) ; écran des vues et comparaison sans double primaire ; action principale du téléphone en taille L (48 px)
+- [ ] T092 [screen-states] Messages de succès (signalement de dégât, modification des vues) et état d'erreur de chargement sur les écrans d'inspection
+- [ ] T093 [spacing, foundations] Supprimer les espacements de 12 px, `top-0.5` / `right-0.5`, et l'écart de 4 px entre titre et sous-titre (8 px) ; appliquer l'échelle des titres commune de la 001 dès qu'elle est fusionnée
+- [ ] T094 [ux-writing] Un seul verbe par action (« Supprimer » une photo, « Retirer » une vue : harmoniser) ; messages de refus qui disent quoi faire (`damages.php`, `photos.php`) ; taille explicite du badge d'étape sur le téléphone
+- [ ] T095 [Couverture FR-012] Test vérifiant que le panneau se met à jour à la réception d'une photo (`PhotosPanel::getListeners` et rafraîchissement sur `photo.changed`)
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies

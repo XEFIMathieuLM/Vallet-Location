@@ -3,7 +3,9 @@
 namespace Functional\Billing\Actions;
 
 use Functional\Billing\Contracts\PurchaseOrderNumbers;
+use Functional\Billing\Enums\BillableLineType;
 use Functional\Billing\Exceptions\TransmissionWithoutSourceException;
+use Functional\Billing\Extensions\BillableSources;
 use Functional\Billing\Lines\BillableLine;
 use Functional\Billing\Lines\DamageLine;
 use Functional\Billing\Lines\RentalContext;
@@ -23,11 +25,18 @@ final class MakeBillableLine
         'customerBillingAccount',
     ];
 
-    public function __construct(private readonly PurchaseOrderNumbers $purchaseOrderNumbers) {}
+    public function __construct(
+        private readonly BillableSources $billableSources,
+        private readonly PurchaseOrderNumbers $purchaseOrderNumbers,
+    ) {}
 
     public function handle(Transmission $transmission): BillableLine
     {
-        return $this->lineFor($transmission, $this->purchaseOrderNumbers->forReservation($transmission->reservation_id));
+        if ($transmission->source_type instanceof BillableLineType) {
+            return $this->billableSources->for($transmission->source_type)->line($transmission);
+        }
+
+        return $this->rentalLine($transmission, $this->purchaseOrderNumbers->forReservation((int) $transmission->reservation_id));
     }
 
     /**
@@ -36,14 +45,15 @@ final class MakeBillableLine
      */
     public function handleAll(Collection $transmissions): array
     {
-        $numbersByReservation = $this->purchaseOrderNumbers->forReservations(array_values(array_unique($transmissions->pluck('reservation_id')->all())));
+        $reservationIds = array_values(array_unique(array_filter($transmissions->pluck('reservation_id')->all(), fn (?int $reservationId): bool => $reservationId !== null)));
+        $numbersByReservation = $this->purchaseOrderNumbers->forReservations($reservationIds);
 
-        return array_values($transmissions->map(
-            fn (Transmission $transmission): BillableLine => $this->lineFor($transmission, $numbersByReservation[$transmission->reservation_id] ?? null),
-        )->all());
+        return array_values($transmissions->map(fn (Transmission $transmission): BillableLine => $transmission->source_type instanceof BillableLineType
+            ? $this->billableSources->for($transmission->source_type)->line($transmission)
+            : $this->rentalLine($transmission, $numbersByReservation[(int) $transmission->reservation_id] ?? null))->all());
     }
 
-    private function lineFor(Transmission $transmission, ?string $purchaseOrderNumber): BillableLine
+    private function rentalLine(Transmission $transmission, ?string $purchaseOrderNumber): BillableLine
     {
         $transmission->loadMissing(self::RELATIONS);
         $rentalContext = RentalContext::fromTransmission($transmission, $transmission->customerBillingAccount?->external_ref, $purchaseOrderNumber);

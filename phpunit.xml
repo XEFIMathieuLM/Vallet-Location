@@ -21,6 +21,8 @@
             <directory>functional/booking/src</directory>
             <directory>functional/inspection/src</directory>
             <directory>functional/billing/src</directory>
+            <directory>functional/deposit/src</directory>
+            <directory>functional/sales/src</directory>
             <directory>functional/accounts/src</directory>
         </include>
     </source>

@@ -35,8 +35,8 @@ class KeyAccountBadgeTest extends TestCase
         $this->actingAs($this->employee());
         Livewire::test(CreateReservationForm::class, ['machineId' => Machine::factory()->create()->id])
             ->set('customerSearch', 'Bâti')
-            ->assertSee('Bâti-Ouest — Grand compte')
-            ->assertDontSee('Bâti-Est — Grand compte')
+            ->assertSee('Bâti-Ouest · Professionnel — Grand compte')
+            ->assertDontSee('Bâti-Est · Professionnel — Grand compte')
             ->set('customerId', $keyAccount->customer_id)
             ->assertSee('Tarif négocié appliqué par la facturation')
             ->assertSee('bon de commande exigé avant la sortie');

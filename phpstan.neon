@@ -31,6 +31,13 @@ parameters:
         - functional/billing/database/
         - functional/billing/routes/
         - functional/billing/config/
+        - functional/deposit/src/
+        - functional/deposit/database/
+        - functional/deposit/routes/
+        - functional/deposit/config/
+        - functional/sales/src/
+        - functional/sales/database/
+        - functional/sales/routes/
         - functional/accounts/src/
         - functional/accounts/database/
         - functional/accounts/routes/

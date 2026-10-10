@@ -53,6 +53,16 @@ class UpdateCustomerQualifyTest extends TestCase
         $this->assertSame($this->author->agencyId(), $activity->properties->get('author_agency_id'));
     }
 
+    public function test_the_given_author_is_recorded_even_when_another_employee_is_logged_in(): void
+    {
+        $customer = Customer::factory()->untyped()->create();
+        $otherAuthor = $this->employee();
+
+        app(UpdateCustomer::class)->qualify($customer, CustomerType::Professional, $otherAuthor);
+
+        $this->assertTrue($this->lastActivityOf($customer)->causer?->is($otherAuthor));
+    }
+
     public function test_qualifying_with_the_same_type_changes_nothing(): void
     {
         Event::fake([CustomerChanged::class]);

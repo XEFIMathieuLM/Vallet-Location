@@ -27,8 +27,8 @@ Aucun PHP local : tout passe par Docker (`compose.yaml` : `laravel.test`, `queue
 ## Architecture
 
 - Layers OSDD (`xefi/laravel-osdd`) dans `functional/`, générés avec les commandes `osdd:*` (`--layer=functional/<layer>`). Un nouveau domaine métier est un nouveau layer.
-- Sens des dépendances : `billing → inspection → booking → fleet`. Un layer n'importe jamais une classe d'un layer qui dépend de lui.
-- Quand un layer inférieur doit laisser un layer supérieur agir, il expose un point d'extension : contrat (`fleet` : `MachineRetirementGuard`), registres de `booking` (`Extensions/ReservationTransitionGuards`, `Extensions/ReservationDetailSections`). Le layer supérieur les remplit depuis son service provider.
+- Sens des dépendances : `deposit → billing → inspection → booking → fleet`. Un layer n'importe jamais une classe d'un layer qui dépend de lui.
+- Quand un layer inférieur doit laisser un layer supérieur agir, il expose un point d'extension : contrat (`fleet` : `MachineRetirementGuard`), registres de `booking` (`Extensions/ReservationTransitionGuards`, `Extensions/ReservationDetailSections`, `Extensions/CustomerChangeGuards`). Toute écriture d'un client existant passe par `Functional\Booking\Actions\UpdateCustomer` (une méthode par changement), qui émet `CustomerChanged`. Le layer supérieur les remplit depuis son service provider.
 - `app/` ne contient que la colle : utilisateurs, authentification (Fortify), layout, navigation, écran Salariés.
 - Chaque layer déclare ses permissions (enum `<Layer>Permission`) et les crée dans son seeder (`<Layer>PermissionSeeder`), sans jamais toucher au rôle ; `database/seeders/DatabaseSeeder` appelle ces seeders avant `PermissionSeeder`, qui donne toutes les permissions existantes au rôle `salarie`. Les tests utilisent `Tests\TestCase::seedPermissions()` (à compléter avec le seeder de permissions de chaque nouveau layer).
 

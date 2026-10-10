@@ -33,7 +33,7 @@ class CustomerBadgesTest extends TestCase
 
         Livewire::test(CreateReservationForm::class, ['machineId' => Machine::factory()->create()->id])
             ->assertSee('Bâti-Ouest')
-            ->assertDontSee('Bâti-Ouest — ')
+            ->assertDontSee('Bâti-Ouest · Professionnel — ')
             ->set('customerId', $customer->id)
             ->assertDontSee('Précision du badge');
     }
@@ -44,7 +44,7 @@ class CustomerBadgesTest extends TestCase
         app(CustomerBadges::class)->register(TestCustomerBadgeProvider::class);
 
         Livewire::test(CreateReservationForm::class, ['machineId' => Machine::factory()->create()->id])
-            ->assertSee('Bâti-Ouest — Badge de test')
+            ->assertSee('Bâti-Ouest · Professionnel — Badge de test')
             ->set('customerId', $customer->id)
             ->assertSee('Précision du badge');
     }

@@ -5,6 +5,7 @@ namespace Functional\Billing\Lines;
 use Functional\Billing\Enums\BillableLineType;
 use Functional\Billing\Enums\BillablePeriodKind;
 use Functional\Billing\Models\BillablePeriod;
+use Functional\Billing\Money\Money;
 use Functional\Billing\Periods\DateRange;
 
 final readonly class RentalPeriodLine implements BillableLine
@@ -28,6 +29,11 @@ final readonly class RentalPeriodLine implements BillableLine
     public function customerRef(): ?string
     {
         return $this->rentalContext->customerRef;
+    }
+
+    public function amountExclTax(): ?Money
+    {
+        return null;
     }
 
     public function toArray(): array

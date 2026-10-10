@@ -1,0 +1,37 @@
+{
+    "name": "functional/sales",
+    "description": "",
+    "type": "layer",
+    "version": "1.0.0",
+    "require": {
+        "xefi/laravel-osdd": "*",
+        "functional/billing": "*",
+        "functional/inspection": "*",
+        "functional/booking": "*",
+        "functional/fleet": "*",
+        "livewire/livewire": "^4.1",
+        "livewire/flux": "^2.13.1",
+        "lomkit/laravel-access-control": "^0.6.0",
+        "spatie/laravel-activitylog": "^5.1",
+        "spatie/laravel-permission": "^8.3"
+    },
+    "require-dev": {
+        "xefi/faker-php-laravel": "^1.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Functional\\Sales\\": "src/",
+            "Functional\\Sales\\Database\\Seeders\\": "database/seeders/",
+            "Functional\\Sales\\Database\\Factories\\": "database/factories/"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Functional\\Sales\\Providers\\SalesServiceProvider"
+            ]
+        }
+    }
+}

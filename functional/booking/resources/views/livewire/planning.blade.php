@@ -52,7 +52,10 @@
                     @foreach ($grid->rows as $row)
                         <tr wire:key="planning-{{ $row->machine->id }}" class="border-t border-zinc-200 dark:border-zinc-700">
                             <th class="sticky left-0 bg-white px-4 py-2 text-left font-medium whitespace-nowrap dark:bg-zinc-800">
-                                {{ $row->machine->reference }}
+                                <span class="flex flex-wrap items-center gap-2">
+                                    {{ $row->machine->reference }}
+                                    @include('fleet::partials.machine-badges', ['badges' => $machineBadges[$row->machine->id] ?? []])
+                                </span>
                                 <span class="block text-xs font-normal text-zinc-600 dark:text-zinc-300">{{ $row->machine->category->name }} · {{ $row->machine->agency->name }}</span>
                             </th>
                             @foreach ($row->cells as $date => $cell)

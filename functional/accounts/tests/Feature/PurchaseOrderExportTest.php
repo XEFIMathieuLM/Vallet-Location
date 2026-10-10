@@ -35,7 +35,7 @@ class PurchaseOrderExportTest extends TestCase
         $billingExport = app(CreateBillingExport::class)->handle($this->employee());
 
         $lines = explode("\n", trim(Storage::disk('billing-exports')->get($billingExport->file_path) ?? ''));
-        $this->assertStringEndsWith(';amount_excl_tax;purchase_order_number', $lines[0]);
+        $this->assertStringEndsWith(';amount_excl_tax;source_ref;sale_date;purchase_order_number', $lines[0]);
         $this->assertStringStartsWith($withNumber->uuid, $lines[1]);
         $this->assertStringEndsWith(';BC-2026-0412', $lines[1]);
         $this->assertStringStartsWith($withoutNumber->uuid, $lines[2]);

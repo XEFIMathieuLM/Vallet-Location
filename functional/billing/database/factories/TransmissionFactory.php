@@ -3,6 +3,7 @@
 namespace Functional\Billing\Database\Factories;
 
 use Carbon\CarbonImmutable;
+use Functional\Billing\Enums\BillableLineType;
 use Functional\Billing\Enums\TransmissionFailureReason;
 use Functional\Billing\Enums\TransmissionStatus;
 use Functional\Billing\Models\BillablePeriod;
@@ -24,6 +25,16 @@ class TransmissionFactory extends Factory
             'reservation_id' => fn (array $attributes): mixed => BillablePeriod::query()->whereKey($attributes['billable_period_id'])->value('reservation_id'),
             'status' => TransmissionStatus::Pending,
         ];
+    }
+
+    public function forSource(BillableLineType $type, int $sourceId): static
+    {
+        return $this->state(fn (): array => [
+            'billable_period_id' => null,
+            'reservation_id' => null,
+            'source_type' => $type,
+            'source_id' => $sourceId,
+        ]);
     }
 
     public function sent(): static

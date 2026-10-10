@@ -1,6 +1,11 @@
 <?php
 
 return [
+    'line_types' => [
+        'rental_period' => 'Période de location',
+        'damage' => 'Dégât',
+        'used_machine_sale' => 'Vente d\'occasion',
+    ],
     'transitions' => [
         'send' => 'transmettre',
         'fail' => 'marquer en échec',

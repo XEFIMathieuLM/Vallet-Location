@@ -44,7 +44,7 @@ final class CreateBillingExport
                 throw NothingToExportException::make();
             }
 
-            $fileName = 'export-facturation-'.$this->billingCalendar->now()->format('Ymd-His').'.csv';
+            $fileName = __('billing::exports.file_name', ['timestamp' => $this->billingCalendar->now()->format('Ymd-His')]);
             $this->writeFile($fileName, $exportableTransmissions);
 
             $billingExport = BillingExport::query()->create([

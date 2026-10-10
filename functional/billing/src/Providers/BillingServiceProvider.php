@@ -29,6 +29,7 @@ class BillingServiceProvider extends LayerServiceProvider
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../../config/billing.php', 'billing');
+        $this->overrideConfigFrom(__DIR__.'/../../config/filesystems.php', 'filesystems');
         $this->app->singleton(FakeBillingGateway::class);
         $this->app->bind(BillingGateway::class, function (): BillingGateway {
             $gatewayName = config('billing.gateway');

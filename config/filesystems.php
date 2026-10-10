@@ -60,13 +60,6 @@ return [
             'report' => false,
         ],
 
-        'billing-exports' => [
-            'driver' => 'local',
-            'root' => storage_path('app/private/billing-exports'),
-            'throw' => true,
-            'report' => false,
-        ],
-
         'photos' => [
             'driver' => env('PHOTOS_DISK_DRIVER', 'local'),
             'root' => env('PHOTOS_DISK_DRIVER', 'local') === 'local' ? storage_path('app/private/photos') : env('PHOTOS_S3_ROOT', ''),

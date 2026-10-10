@@ -11,6 +11,7 @@ use Functional\Billing\Models\BillingExport;
 use Functional\Billing\Models\CustomerBillingAccount;
 use Functional\Billing\Models\DamageSettlement;
 use Functional\Billing\Models\Transmission;
+use Functional\Billing\Money\Money;
 use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Models\Customer;
 use Functional\Booking\Models\Reservation;
@@ -75,7 +76,7 @@ class BillingSeeder extends Seeder
     private function damages(Collection $rentals, User $employee): void
     {
         $billedDamage = $this->damage($rentals[0], resolvedBy: $employee);
-        $billedSettlement = DamageSettlement::factory()->billed(faker()->number(5000, 120000), faker()->sentences(1))->for($billedDamage)->for($employee, 'settler')->create();
+        $billedSettlement = DamageSettlement::factory()->billed(Money::fromStored(faker()->number(5000, 120000)), faker()->sentences(1))->for($billedDamage)->for($employee, 'settler')->create();
         Transmission::factory()->sent()->create(['billable_period_id' => null, 'damage_settlement_id' => $billedSettlement->id, 'reservation_id' => $rentals[0]->id]);
 
         $waivedDamage = $this->damage($rentals[1], resolvedBy: $employee);

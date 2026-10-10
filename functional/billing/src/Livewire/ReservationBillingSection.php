@@ -4,7 +4,6 @@ namespace Functional\Billing\Livewire;
 
 use Functional\Billing\Models\DamageSettlement;
 use Functional\Billing\Models\Transmission;
-use Functional\Billing\Money\EuroAmount;
 use Functional\Booking\Models\Reservation;
 use Functional\Inspection\Models\Damage;
 use Illuminate\Contracts\View\View;
@@ -16,7 +15,7 @@ class ReservationBillingSection extends Component
     #[Locked]
     public Reservation $reservation;
 
-    public function render(EuroAmount $euroAmount): View
+    public function render(): View
     {
         return view('billing::livewire.reservation-billing-section', [
             'periodTransmissions' => Transmission::query()
@@ -30,7 +29,6 @@ class ReservationBillingSection extends Component
                 ->with(['damage.view', 'settler', 'transmission'])
                 ->orderBy('settled_at')
                 ->get(),
-            'euroAmount' => $euroAmount,
         ]);
     }
 }

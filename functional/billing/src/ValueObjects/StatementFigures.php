@@ -3,6 +3,7 @@
 namespace Functional\Billing\ValueObjects;
 
 use Functional\Billing\Models\DamageSettlement;
+use Functional\Billing\Money\Money;
 use Functional\Inspection\Models\Damage;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -14,7 +15,7 @@ final readonly class StatementFigures
      */
     public function __construct(
         public int $transmittedRentalsCount,
-        public int $billedDamagesTotalCents,
+        public Money $billedDamagesTotal,
         public Collection $waivedDamages,
         public Collection $unresolvedDamages,
     ) {}

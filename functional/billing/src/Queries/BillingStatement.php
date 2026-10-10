@@ -7,6 +7,7 @@ use Functional\Billing\Enums\DamageOutcome;
 use Functional\Billing\Enums\TransmissionStatus;
 use Functional\Billing\Models\BillablePeriod;
 use Functional\Billing\Models\DamageSettlement;
+use Functional\Billing\Money\Money;
 use Functional\Billing\ValueObjects\StatementFigures;
 use Functional\Booking\Models\Reservation;
 use Functional\Inspection\Models\Damage;
@@ -30,7 +31,7 @@ final class BillingStatement
                 ->when($agencyId !== null, fn (Builder $periods) => $periods->whereIn('reservation_id', $this->agencyReservationIds((int) $agencyId)))
                 ->distinct()
                 ->count('reservation_id'),
-            billedDamagesTotalCents: (int) $this->settlements(DamageOutcome::Billed, $agencyId, $periodBounds)->sum('amount_cents'),
+            billedDamagesTotal: Money::fromStored((int) $this->settlements(DamageOutcome::Billed, $agencyId, $periodBounds)->sum('amount_cents')),
             waivedDamages: $this->settlements(DamageOutcome::Waived, $agencyId, $periodBounds)
                 ->with(['damage.view', 'damage.reservation.machine', 'settler'])
                 ->orderBy('settled_at')

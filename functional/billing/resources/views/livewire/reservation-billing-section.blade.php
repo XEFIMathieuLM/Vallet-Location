@@ -27,7 +27,7 @@
                     <span>{{ __('billing::damages.section.damage', ['view' => $damageSettlement->damage->view->label, 'comment' => $damageSettlement->damage->comment]) }}</span>
                     <flux:badge size="sm">{{ $damageSettlement->outcome->label() }}</flux:badge>
                     @if ($damageSettlement->transmission)
-                        <span>{{ __('billing::damages.section.billed', ['label' => $damageSettlement->label, 'amount' => $euroAmount->format((int) $damageSettlement->amount_cents)]) }}</span>
+                        <span>{{ __('billing::damages.section.billed', ['label' => $damageSettlement->label, 'amount' => $damageSettlement->amount?->format()]) }}</span>
                         @include('billing::partials.transmission-status', ['transmission' => $damageSettlement->transmission])
                     @else
                         <span>{{ __('billing::damages.section.waived', ['reason' => $damageSettlement->waiver_reason, 'author' => $damageSettlement->settler->name, 'date' => $damageSettlement->settled_at->format('d/m/Y')]) }}</span>

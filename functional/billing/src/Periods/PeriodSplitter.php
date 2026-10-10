@@ -7,7 +7,7 @@ use Carbon\CarbonImmutable;
 final class PeriodSplitter
 {
     /**
-     * @return list<array{CarbonImmutable, CarbonImmutable}>
+     * @return list<DateRange>
      */
     public function intermediatePeriods(CarbonImmutable $firstUncoveredDate, CarbonImmutable $today): array
     {
@@ -15,9 +15,8 @@ final class PeriodSplitter
         $periodStart = $firstUncoveredDate;
 
         while ($periodStart->endOfMonth()->startOfDay()->lt($today)) {
-            $periodEnd = $periodStart->endOfMonth()->startOfDay();
-            $periods[] = [$periodStart, $periodEnd];
-            $periodStart = $periodEnd->addDay();
+            $periods[] = new DateRange($periodStart, $periodStart->endOfMonth()->startOfDay());
+            $periodStart = $periodStart->endOfMonth()->startOfDay()->addDay();
         }
 
         return $periods;

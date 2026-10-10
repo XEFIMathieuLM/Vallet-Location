@@ -6,6 +6,7 @@ use App\Models\User;
 use Carbon\CarbonImmutable;
 use Functional\Billing\Enums\DamageOutcome;
 use Functional\Billing\Models\DamageSettlement;
+use Functional\Billing\Money\Money;
 use Functional\Inspection\Models\Damage;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -21,7 +22,7 @@ class DamageSettlementFactory extends Factory
         return [
             'damage_id' => Damage::factory()->resolved(),
             'outcome' => DamageOutcome::Billed,
-            'amount_cents' => faker()->number(1000, 200000),
+            'amount' => Money::fromStored(faker()->number(1000, 200000)),
             'label' => faker()->sentences(1),
             'waiver_reason' => null,
             'settled_by' => User::factory(),
@@ -29,11 +30,11 @@ class DamageSettlementFactory extends Factory
         ];
     }
 
-    public function billed(int $amountCents, string $label): static
+    public function billed(Money $amount, string $label): static
     {
         return $this->state(fn (): array => [
             'outcome' => DamageOutcome::Billed,
-            'amount_cents' => $amountCents,
+            'amount' => $amount,
             'label' => $label,
             'waiver_reason' => null,
         ]);
@@ -43,7 +44,7 @@ class DamageSettlementFactory extends Factory
     {
         return $this->state(fn (): array => [
             'outcome' => DamageOutcome::Waived,
-            'amount_cents' => null,
+            'amount' => null,
             'label' => null,
             'waiver_reason' => $waiverReason,
         ]);

@@ -6,6 +6,8 @@ use App\Models\User;
 use Carbon\CarbonImmutable;
 use Functional\Billing\Database\Factories\DamageSettlementFactory;
 use Functional\Billing\Enums\DamageOutcome;
+use Functional\Billing\Money\Money;
+use Functional\Billing\Money\MoneyCast;
 use Functional\Inspection\Models\Damage;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
@@ -19,7 +21,7 @@ use Lomkit\Access\Controls\HasControl;
  * @property int $id
  * @property int $damage_id
  * @property DamageOutcome $outcome
- * @property int|null $amount_cents
+ * @property Money|null $amount
  * @property string|null $label
  * @property string|null $waiver_reason
  * @property int $settled_by
@@ -28,7 +30,7 @@ use Lomkit\Access\Controls\HasControl;
  * @property-read User $settler
  * @property-read Transmission|null $transmission
  */
-#[Fillable(['damage_id', 'outcome', 'amount_cents', 'label', 'waiver_reason', 'settled_by', 'settled_at'])]
+#[Fillable(['damage_id', 'outcome', 'amount', 'label', 'waiver_reason', 'settled_by', 'settled_at'])]
 #[UseFactory(DamageSettlementFactory::class)]
 class DamageSettlement extends Model
 {
@@ -39,6 +41,7 @@ class DamageSettlement extends Model
     {
         return [
             'outcome' => DamageOutcome::class,
+            'amount' => MoneyCast::class.':amount_cents',
             'settled_at' => 'immutable_datetime',
         ];
     }

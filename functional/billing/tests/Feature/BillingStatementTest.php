@@ -9,6 +9,7 @@ use Functional\Billing\Livewire\Statement;
 use Functional\Billing\Models\BillablePeriod;
 use Functional\Billing\Models\DamageSettlement;
 use Functional\Billing\Models\Transmission;
+use Functional\Billing\Money\Money;
 use Functional\Billing\Queries\BillingStatement;
 use Functional\Billing\Tests\Concerns\BuildsBillingFixtures;
 use Functional\Booking\Enums\ReservationStatus;
@@ -39,7 +40,7 @@ class BillingStatementTest extends TestCase
         $this->rouen = Agency::factory()->create(['name' => 'Rouen']);
 
         $reservations = collect(range(1, 10))->map(fn (int $day): Reservation => $this->transmittedRental($this->rouen, sprintf('2026-11-%02d', $day + 5)));
-        DamageSettlement::factory()->billed(45000, 'Remplacement capot')->create(['damage_id' => $this->damageOf($reservations[0])->id, 'settled_at' => '2026-11-20 10:00:00']);
+        DamageSettlement::factory()->billed(Money::fromStored(45000), 'Remplacement capot')->create(['damage_id' => $this->damageOf($reservations[0])->id, 'settled_at' => '2026-11-20 10:00:00']);
         DamageSettlement::factory()->waived('usure normale')->create(['damage_id' => $this->damageOf($reservations[1])->id, 'settled_at' => '2026-11-21 10:00:00', 'settled_by' => $this->employee->id]);
         $this->unresolvedDamage($reservations[2], 'Gauche', 'Bras rayé')->update(['reported_at' => '2026-11-22 10:00:00']);
         $this->transmittedRental(Agency::factory()->create(['name' => 'Caen']), '2026-11-10');
@@ -50,7 +51,7 @@ class BillingStatementTest extends TestCase
         $billingStatement = app(BillingStatement::class)->for($this->rouen->id, CarbonImmutable::parse('2026-11-01'), CarbonImmutable::parse('2026-11-30'));
 
         $this->assertSame(10, $billingStatement->transmittedRentalsCount);
-        $this->assertSame(45000, $billingStatement->billedDamagesTotalCents);
+        $this->assertSame(45000, $billingStatement->billedDamagesTotal->minorUnits);
         $this->assertSame(['usure normale'], $billingStatement->waivedDamages->pluck('waiver_reason')->all());
         $this->assertSame(['Bras rayé'], $billingStatement->unresolvedDamages->pluck('comment')->all());
     }

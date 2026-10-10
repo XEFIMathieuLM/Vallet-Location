@@ -16,6 +16,7 @@ use Functional\Billing\Models\BillablePeriod;
 use Functional\Billing\Models\CustomerBillingAccount;
 use Functional\Billing\Models\DamageSettlement;
 use Functional\Billing\Models\Transmission;
+use Functional\Billing\Money\Money;
 use Functional\Billing\Tests\Concerns\BuildsBillingFixtures;
 use Functional\Billing\Tests\Doubles\ObservingBillingGateway;
 use Functional\Billing\ValueObjects\BillableLine;
@@ -67,7 +68,7 @@ class SendTransmissionTest extends TestCase
     {
         $reservation = $this->closedReservation('2026-11-10 08:00:00', '2026-11-14 17:00:00');
         $damage = $this->unresolvedDamage($reservation, 'Gauche', 'Capot enfoncé');
-        $settlement = DamageSettlement::factory()->billed(45000, 'Remplacement capot')->create(['damage_id' => $damage->id]);
+        $settlement = DamageSettlement::factory()->billed(Money::fromStored(45000), 'Remplacement capot')->create(['damage_id' => $damage->id]);
         $transmission = Transmission::factory()->create(['billable_period_id' => null, 'damage_settlement_id' => $settlement->id, 'reservation_id' => $reservation->id]);
 
         app(SendTransmission::class)->handle($transmission);

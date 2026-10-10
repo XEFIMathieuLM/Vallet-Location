@@ -3,6 +3,7 @@
 namespace Functional\Billing\Tests\Unit;
 
 use Carbon\CarbonImmutable;
+use Functional\Billing\Periods\DateRange;
 use Functional\Billing\Periods\PeriodSplitter;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -31,13 +32,12 @@ class PeriodSplitTest extends TestCase
         $splitter = new PeriodSplitter;
 
         $periods = $splitter->intermediatePeriods($departure, $return);
-        $finalStart = $periods === [] ? $departure : end($periods)[1]->addDay();
-        $periods[] = [$finalStart, $return];
+        $finalStart = $periods === [] ? $departure : end($periods)->end->addDay();
+        $periods[] = new DateRange($finalStart, $return);
 
         $coveredDays = [];
-        foreach ($periods as [$periodStart, $periodEnd]) {
-            $this->assertTrue($periodEnd->gte($periodStart));
-            for ($day = $periodStart; $day->lte($periodEnd); $day = $day->addDay()) {
+        foreach ($periods as $period) {
+            for ($day = $period->start; $day->lte($period->end); $day = $day->addDay()) {
                 $coveredDays[] = $day->toDateString();
             }
         }

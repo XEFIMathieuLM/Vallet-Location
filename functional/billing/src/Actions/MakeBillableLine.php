@@ -42,7 +42,7 @@ final class MakeBillableLine
             damageView: $damageSettlement->damage->view->label,
             damageComment: $damageSettlement->damage->comment,
             label: $damageSettlement->label,
-            amountExclTaxCents: $damageSettlement->amount_cents,
+            amountExclTax: $damageSettlement->amount,
         );
     }
 

@@ -3,6 +3,7 @@
 namespace Functional\Billing\ValueObjects;
 
 use Functional\Billing\Enums\BillableLineType;
+use Functional\Billing\Money\Money;
 
 final readonly class BillableLine
 {
@@ -22,7 +23,7 @@ final readonly class BillableLine
         public ?string $damageView = null,
         public ?string $damageComment = null,
         public ?string $label = null,
-        public ?int $amountExclTaxCents = null,
+        public ?Money $amountExclTax = null,
     ) {}
 
     /**
@@ -46,7 +47,7 @@ final readonly class BillableLine
             'damage_view' => $this->damageView,
             'damage_comment' => $this->damageComment,
             'label' => $this->label,
-            'amount_excl_tax_cents' => $this->amountExclTaxCents,
+            'amount_excl_tax_cents' => $this->amountExclTax?->minorUnits,
         ];
     }
 }

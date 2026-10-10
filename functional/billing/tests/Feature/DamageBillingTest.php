@@ -12,6 +12,7 @@ use Functional\Billing\Exceptions\InvalidDamageSettlementException;
 use Functional\Billing\Livewire\ReservationBillingSection;
 use Functional\Billing\Models\DamageSettlement;
 use Functional\Billing\Models\Transmission;
+use Functional\Billing\Money\Money;
 use Functional\Billing\Tests\Concerns\BuildsBillingFixtures;
 use Functional\Billing\Tests\Concerns\RecordsReservationLifecycle;
 use Functional\Inspection\Models\Damage;
@@ -39,7 +40,7 @@ class DamageBillingTest extends TestCase
         $reservation = $this->closedReservation('2026-11-10 08:00:00', '2026-11-14 17:00:00');
         $damage = $this->unresolvedDamage($reservation, 'Gauche', 'Capot enfoncé');
 
-        app(BillDamage::class)->handle($damage, 45000, 'remplacement capot', $this->employee);
+        app(BillDamage::class)->handle($damage, Money::fromStored(45000), 'remplacement capot', $this->employee);
 
         $settlement = DamageSettlement::query()->where('damage_id', $damage->id)->sole();
         $this->assertSame(DamageOutcome::Billed, $settlement->outcome);
@@ -59,7 +60,7 @@ class DamageBillingTest extends TestCase
         $this->recordReturn($reservation, '2026-11-14 17:00:00');
         $damage = $this->unresolvedDamage($reservation);
 
-        app(BillDamage::class)->handle($damage, 45000, 'remplacement capot', $this->employee);
+        app(BillDamage::class)->handle($damage, Money::fromStored(45000), 'remplacement capot', $this->employee);
 
         $receivedTypes = array_column($this->fakeGateway()->received(), 'type');
         $this->assertSame(['rental_period', 'damage'], $receivedTypes);
@@ -93,23 +94,23 @@ class DamageBillingTest extends TestCase
     public function test_a_settled_damage_cannot_be_changed_in_the_tool(): void
     {
         $damage = $this->unresolvedDamage($this->closedReservation('2026-11-10 08:00:00', '2026-11-14 17:00:00'));
-        app(BillDamage::class)->handle($damage, 45000, 'remplacement capot', $this->employee);
+        app(BillDamage::class)->handle($damage, Money::fromStored(45000), 'remplacement capot', $this->employee);
 
         $this->assertThrows(
-            fn () => app(BillDamage::class)->handle($damage, 30000, 'remplacement capot', $this->employee),
+            fn () => app(BillDamage::class)->handle($damage, Money::fromStored(30000), 'remplacement capot', $this->employee),
             DamageAlreadySettledException::class,
             'avoir',
         );
-        $this->assertSame(45000, DamageSettlement::query()->sole()->amount_cents);
+        $this->assertSame(45000, DamageSettlement::query()->sole()->amount?->minorUnits);
     }
 
     public function test_a_zero_or_negative_amount_or_an_empty_label_is_refused(): void
     {
         $damage = $this->unresolvedDamage($this->closedReservation('2026-11-10 08:00:00', '2026-11-14 17:00:00'));
 
-        $this->assertThrows(fn () => app(BillDamage::class)->handle($damage, 0, 'remplacement capot', $this->employee), InvalidDamageSettlementException::class);
-        $this->assertThrows(fn () => app(BillDamage::class)->handle($damage, -100, 'remplacement capot', $this->employee), InvalidDamageSettlementException::class);
-        $this->assertThrows(fn () => app(BillDamage::class)->handle($damage, 45000, ' ', $this->employee), InvalidDamageSettlementException::class);
+        $this->assertThrows(fn () => app(BillDamage::class)->handle($damage, Money::fromStored(0), 'remplacement capot', $this->employee), InvalidDamageSettlementException::class);
+        $this->assertThrows(fn () => app(BillDamage::class)->handle($damage, Money::fromStored(-100), 'remplacement capot', $this->employee), InvalidDamageSettlementException::class);
+        $this->assertThrows(fn () => app(BillDamage::class)->handle($damage, Money::fromStored(45000), ' ', $this->employee), InvalidDamageSettlementException::class);
         $this->assertSame(0, DamageSettlement::query()->count());
     }
 
@@ -126,7 +127,7 @@ class DamageBillingTest extends TestCase
         config(['billing.go_live_date' => '2026-12-01']);
         $reservation = $this->closedReservation('2026-11-10 08:00:00', '2026-11-14 17:00:00');
 
-        app(BillDamage::class)->handle($this->unresolvedDamage($reservation), 45000, 'remplacement capot', $this->employee);
+        app(BillDamage::class)->handle($this->unresolvedDamage($reservation), Money::fromStored(45000), 'remplacement capot', $this->employee);
 
         $this->assertSame(['damage'], array_column($this->fakeGateway()->received(), 'type'));
     }
@@ -134,7 +135,7 @@ class DamageBillingTest extends TestCase
     public function test_the_reservation_section_shows_billed_and_waived_damages(): void
     {
         $reservation = $this->closedReservation('2026-11-10 08:00:00', '2026-11-14 17:00:00');
-        app(BillDamage::class)->handle($this->unresolvedDamage($reservation, 'Gauche'), 45050, 'remplacement capot', $this->employee);
+        app(BillDamage::class)->handle($this->unresolvedDamage($reservation, 'Gauche'), Money::fromStored(45050), 'remplacement capot', $this->employee);
         app(WaiveDamage::class)->handle($this->unresolvedDamage($reservation, 'Droite'), 'usure normale', $this->employee);
 
         Livewire::test(ReservationBillingSection::class, ['reservation' => $reservation])

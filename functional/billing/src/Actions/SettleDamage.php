@@ -7,6 +7,7 @@ use Carbon\CarbonImmutable;
 use Functional\Billing\Enums\DamageOutcome;
 use Functional\Billing\Exceptions\DamageAlreadySettledException;
 use Functional\Billing\Models\DamageSettlement;
+use Functional\Billing\Money\Money;
 use Functional\Inspection\Actions\ResolveDamage;
 use Functional\Inspection\Models\Damage;
 
@@ -15,7 +16,7 @@ final class SettleDamage
     public function __construct(private readonly ResolveDamage $resolveDamage) {}
 
     /**
-     * @param  array{amount_cents?: int, label?: string, waiver_reason?: string}  $outcomeDetails
+     * @param  array{amount?: Money, label?: string, waiver_reason?: string}  $outcomeDetails
      */
     public function handle(Damage $damage, DamageOutcome $outcome, array $outcomeDetails, User $settler): DamageSettlement
     {

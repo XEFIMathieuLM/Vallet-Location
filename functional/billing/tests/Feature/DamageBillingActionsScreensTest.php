@@ -59,7 +59,7 @@ class DamageBillingActionsScreensTest extends TestCase
             ->assertHasNoErrors();
 
         $settlement = DamageSettlement::query()->where('damage_id', $this->damage->id)->sole();
-        $this->assertSame(45000, $settlement->amount_cents);
+        $this->assertSame(45000, $settlement->amount?->minorUnits);
         $this->assertSame(1, Transmission::query()->where('damage_settlement_id', $settlement->id)->count());
         Livewire::test(Comparison::class, ['reservation' => $this->reservation])->assertDontSeeLivewire(DamageBillingActions::class);
     }

@@ -10,6 +10,7 @@ use Functional\Billing\Actions\SetCustomerBillingRef;
 use Functional\Billing\Actions\WaiveDamage;
 use Functional\Billing\Enums\FakeGatewayMode;
 use Functional\Billing\Models\Transmission;
+use Functional\Billing\Money\Money;
 use Functional\Billing\Tests\Concerns\BuildsBillingFixtures;
 use Functional\Billing\Tests\Concerns\RecordsReservationLifecycle;
 use Functional\Booking\Models\Reservation;
@@ -33,10 +34,10 @@ class BillingHistoryTest extends TestCase
         $transmission = Transmission::query()->where('reservation_id', $reservation->id)->sole();
         app(SetCustomerBillingRef::class)->handle($reservation->customer, 'CLI-1');
         app(RetryTransmission::class)->handle($transmission);
-        app(BillDamage::class)->handle($this->unresolvedDamage($reservation, 'Gauche'), 45000, 'remplacement capot', $employee);
+        app(BillDamage::class)->handle($this->unresolvedDamage($reservation, 'Gauche'), Money::fromStored(45000), 'remplacement capot', $employee);
         app(WaiveDamage::class)->handle($this->unresolvedDamage($reservation, 'Droite'), 'usure normale', $employee);
         $this->fakeGateway()->switchTo(FakeGatewayMode::Unreachable);
-        app(BillDamage::class)->handle($this->unresolvedDamage($reservation, 'Avant'), 12000, 'rétroviseur', $employee);
+        app(BillDamage::class)->handle($this->unresolvedDamage($reservation, 'Avant'), Money::fromStored(12000), 'rétroviseur', $employee);
         app(CreateBillingExport::class)->handle($employee);
 
         $this->assertSame(

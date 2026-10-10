@@ -36,8 +36,8 @@ final class RecordMonthEndPeriods
                 $this->billingCalendar->today(),
             );
 
-            foreach ($elapsedPeriods as [$startDate, $endDate]) {
-                $transmission = $this->recordBillablePeriod->handle($lockedReservation, BillablePeriodKind::Intermediate, $startDate, $endDate);
+            foreach ($elapsedPeriods as $elapsedPeriod) {
+                $transmission = $this->recordBillablePeriod->handle($lockedReservation, BillablePeriodKind::Intermediate, $elapsedPeriod);
                 SendTransmissionJob::dispatch($transmission->id);
             }
         });

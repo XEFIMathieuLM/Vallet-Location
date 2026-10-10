@@ -4,7 +4,6 @@ namespace Functional\Billing\Livewire;
 
 use Carbon\CarbonImmutable;
 use Functional\Billing\Calendar\BillingCalendar;
-use Functional\Billing\Money\EuroAmount;
 use Functional\Billing\Queries\BillingStatement;
 use Functional\Fleet\Models\Agency;
 use Functional\Inspection\Models\Damage;
@@ -25,7 +24,7 @@ class Statement extends Component
         $this->month = $this->month !== '' ? $this->month : $billingCalendar->today()->format('Y-m');
     }
 
-    public function render(BillingStatement $billingStatement, BillingCalendar $billingCalendar, EuroAmount $euroAmount): View
+    public function render(BillingStatement $billingStatement, BillingCalendar $billingCalendar): View
     {
         $firstDay = $this->firstDayOfMonth($billingCalendar);
         $today = $billingCalendar->today();
@@ -33,7 +32,6 @@ class Statement extends Component
         return view('billing::livewire.statement', [
             'agencies' => Agency::query()->orderBy('name')->get(),
             'statementFigures' => $billingStatement->for($this->agencyId, $firstDay, $firstDay->endOfMonth()->startOfDay()),
-            'euroAmount' => $euroAmount,
             'ageInDays' => fn (Damage $damage): int => (int) $billingCalendar->dateOf($damage->reported_at)->diffInDays($today),
             'overdueDays' => config()->integer('billing.damage_overdue_days'),
         ])->title(__('billing::statement.title'));

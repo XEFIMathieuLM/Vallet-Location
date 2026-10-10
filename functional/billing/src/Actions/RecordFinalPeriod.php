@@ -6,6 +6,7 @@ use Functional\Billing\Calendar\BillingCalendar;
 use Functional\Billing\Enums\BillablePeriodKind;
 use Functional\Billing\Jobs\SendTransmissionJob;
 use Functional\Billing\Models\BillablePeriod;
+use Functional\Billing\Periods\DateRange;
 use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Models\Reservation;
 use Illuminate\Support\Facades\DB;
@@ -35,8 +36,7 @@ final class RecordFinalPeriod
             $transmission = $this->recordBillablePeriod->handle(
                 $lockedReservation,
                 BillablePeriodKind::Final,
-                $this->recordBillablePeriod->firstUncoveredDate($lockedReservation),
-                $returnDate,
+                new DateRange($this->recordBillablePeriod->firstUncoveredDate($lockedReservation), $returnDate),
             );
 
             SendTransmissionJob::dispatch($transmission->id);

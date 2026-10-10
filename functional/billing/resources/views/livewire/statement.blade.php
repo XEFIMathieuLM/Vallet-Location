@@ -18,7 +18,7 @@
         </flux:card>
         <flux:card>
             <flux:text>{{ __('billing::statement.billed_damages') }}</flux:text>
-            <flux:heading size="xl">{{ __('billing::statement.amount', ['amount' => $euroAmount->format($statementFigures->billedDamagesTotalCents)]) }}</flux:heading>
+            <flux:heading size="xl">{{ __('billing::statement.amount', ['amount' => $statementFigures->billedDamagesTotal->format()]) }}</flux:heading>
         </flux:card>
     </div>
 

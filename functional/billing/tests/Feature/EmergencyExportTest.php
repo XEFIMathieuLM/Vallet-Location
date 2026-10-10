@@ -10,6 +10,7 @@ use Functional\Billing\Livewire\Exports;
 use Functional\Billing\Models\BillingExport;
 use Functional\Billing\Models\DamageSettlement;
 use Functional\Billing\Models\Transmission;
+use Functional\Billing\Money\Money;
 use Functional\Billing\Tests\Concerns\BuildsBillingFixtures;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
@@ -64,7 +65,7 @@ class EmergencyExportTest extends TestCase
     {
         $employee = $this->employee();
         $reservation = $this->closedReservation('2026-11-10 08:00:00', '2026-11-14 17:00:00');
-        $settlement = DamageSettlement::factory()->billed(45000, 'Remplacement capot')->create(['damage_id' => $this->unresolvedDamage($reservation)->id]);
+        $settlement = DamageSettlement::factory()->billed(Money::fromStored(45000), 'Remplacement capot')->create(['damage_id' => $this->unresolvedDamage($reservation)->id]);
         $transmission = Transmission::factory()->create(['billable_period_id' => null, 'damage_settlement_id' => $settlement->id, 'reservation_id' => $reservation->id]);
 
         $billingExport = app(CreateBillingExport::class)->handle($employee);

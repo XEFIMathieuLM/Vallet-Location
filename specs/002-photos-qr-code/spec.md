@@ -104,6 +104,7 @@ Un salarié définit, pour chaque catégorie de machine, la liste des vues à ph
 ### Session 2026-10-10
 
 - Q: À quel moment la liste des vues d'une réservation est-elle figée, si la sortie est tentée sans QR code ou si la réservation est sortie avant la mise en service ? → A: Au premier de ces moments : lancement d'une prise de photos, ou sortie ou retour acceptés. Une sortie ou un retour refusés ne figent rien, le contrôle se faisant dans la transaction annulée par le refus (FR-003, révisé après branchement sur la 001).
+- Q: Combien de temps garder les QR codes (sessions de prise de photos) expirés ou révoqués ? → A: 30 jours, puis suppression automatique s'ils n'ont aucune photo ; ceux qui portent des photos suivent la durée de vie de ces photos (FR-023, audit de conformité Xefi).
 - Q: Deux vues d'une même catégorie dont les noms ne diffèrent que par la casse sont-elles un doublon ? → A: Oui, la comparaison ignore les majuscules et les espaces en début et fin (FR-001).
 
 ## Requirements *(mandatory)*
@@ -149,7 +150,7 @@ Un salarié définit, pour chaque catégorie de machine, la liste des vues à ph
 
 **Rétention et traçabilité**
 
-- **FR-023**: Le système DOIT supprimer automatiquement les photos d'une réservation 1 an après sa clôture, sauf si elle porte un dégât non traité ; dans ce cas, la suppression intervient 1 an après le traitement du dernier dégât. Les photos d'une réservation annulée sont supprimées 1 an après leur réception.
+- **FR-023**: Le système DOIT supprimer automatiquement les photos d'une réservation 1 an après sa clôture, sauf si elle porte un dégât non traité ; dans ce cas, la suppression intervient 1 an après le traitement du dernier dégât. Les photos d'une réservation annulée sont supprimées 1 an après leur réception. Les autorisations de prise de photos (QR codes) expirées ou révoquées depuis plus de 30 jours et auxquelles aucune photo n'est rattachée sont supprimées automatiquement ; l'historique de la réservation (FR-024) en garde la trace.
 - **FR-024**: Le système DOIT conserver dans l'historique de la réservation la génération de chaque QR code, la réception et la suppression de chaque photo, le signalement et le traitement de chaque dégât (auteur, date).
 
 ### Key Entities

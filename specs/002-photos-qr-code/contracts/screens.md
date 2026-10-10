@@ -22,4 +22,6 @@ Sur la comparaison comme sur la liste, les actions d'un dégât suivent la même
 
 ## Messages
 
+Les refus disent toujours quoi faire. Le texte « Photos manquantes : {vues} » et le message du lien expiré ci-dessus sont fixés par ce contrat ; les autres refus (étape déjà validée, dégât déjà traité, photos de retour incomplètes) indiquent l'action possible.
+
 Tous les libellés passent par les fichiers de traduction `fr` du layer `inspection`. La page téléphone ne révèle jamais pourquoi un jeton inconnu est refusé (même message qu'un jeton expiré).

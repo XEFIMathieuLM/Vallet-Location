@@ -27,7 +27,7 @@ sales agit sur les layers existants uniquement par quatre points d'extension gé
 
 **Storage**: PostgreSQL (index uniques partiels, CHECK, `num_nonnulls`)
 
-**Testing**: PHPUnit 12 (Feature + Unit), factories avec `faker()`, `travelTo()`, `FakeBillingGateway` ; Larastan + `xefi/phpstan-xefi-rules` ; Pint
+**Testing**: PHPUnit 12 : Unit purs pour les calculs et transitions en mémoire, Feature pour tout ce qui passe par la base (constitution 1.0.1 annoncée) ; factories avec `faker()`, `travelTo()`, `FakeBillingGateway`, `AssertsRefusals::assertRefused` ; Larastan + `xefi/phpstan-xefi-rules` ; Pint
 
 **Target Platform**: application web Laravel servie par Sail (Docker) ; worker de file et planificateur actifs en production
 
@@ -47,8 +47,8 @@ sales agit sur les layers existants uniquement par quatre points d'extension gé
 |---|---|---|
 | I. Layers OSDD | Nouveau layer `functional/sales` généré par `osdd:*` ; sens `sales → billing → inspection → booking → fleet` ; aucune relation Eloquent ni import d'un layer inférieur vers sales (test `LayerBoundariesTest` dans sales) ; les layers inférieurs exposent des registres génériques (E1–E4) remplis depuis `SalesServiceProvider` ; sales ne modifie aucune table d'un autre layer (la migration de `transmissions` appartient à billing et fait partie de E4) | ✅ (E1–E4 signalés à la coordination) |
 | II. Garanties base et serveur | Index uniques partiels (une vente non annulée par machine, une offre acceptée par vente, une transmission par source) ; CHECK sur montants et champs liés à l'état ; verrou `machines … FOR UPDATE` partagé avec `CreateReservation` pour toute règle de conflit ; FK sans cascade ; total des ventes et ventes en retard calculés en base | ✅ |
-| III. Cycles de vie | `SaleStatus` et `OfferStatus` : colonnes texte + enums backed ; pattern State pour les deux (une classe par état, `IllegalSaleTransitionException`, `IllegalOfferTransitionException`) ; dates en `Europe/Paris` ; montants en centimes | ✅ |
-| IV. Effets de bord explicites | Pas d'observer : la remise appelle explicitement `RetireMachine` et `QueueSourceTransmission` dans sa transaction ; `SaleChanged` dispatché après commit ; pas de `try/catch` (`rescue()` qui traduit `23505` et relance le reste) ; refus = exceptions typées héritant de `RefusalException` ; logiciel de facturation derrière `BillingGateway` (faux existant) ; transmission persistée en base et rattrapée par `billing:reconcile` | ✅ |
+| III. Cycles de vie | `SaleStatus` et `OfferStatus` : colonnes texte + enums backed ; pattern State pour les deux (une classe par état, `IllegalSaleTransitionException`, `IllegalOfferTransitionException`) ; dates en `Europe/Paris` ; montants stockés en centimes et manipulés en `Functional\Billing\Money\Money` via `MoneyCast` (`bdef4c6`) | ✅ |
+| IV. Effets de bord explicites | Pas d'observer : la remise appelle explicitement `RetireMachine` et `QueueSourceTransmission` dans sa transaction ; `SaleChanged` dispatché après commit ; pas de `try/catch` (`rescue()` qui traduit `23505` et relance le reste) ; refus = classes `final` héritant de `RefusalException`, factories nommées, message technique anglais + clé `sales::refusals.*` (forme du socle, `e8cba36`) ; logiciel de facturation derrière `BillingGateway` (faux existant) ; transmission persistée en base et rattrapée par `billing:reconcile` | ✅ |
 | V. Accès par permission | Permission `sales.manage` (routes, canal `sales`, `SaleControl`), seeder `SalesPermissionSeeder`, attribuée au rôle salarié (FR-012a) | ✅ |
 | VI. Tests par scénario | Un test Feature par scénario d'acceptation (US1 à US5), tests Unit des états et des règles de date ; tests écrits avant l'implémentation dans chaque phase ; faux logiciel et `travelTo()` | ✅ |
 | VII. Code simple | Code en anglais, textes dans `functional/sales/resources/lang/fr` ; une action par opération métier ; fichiers < 200 lignes ; aucun nouveau package | ✅ |
@@ -141,7 +141,7 @@ Un refus à n'importe quelle étape annule tout : ni vente conclue, ni retrait, 
 
 ## Prérequis et ordre
 
-- Base : `origin/003-transmission-facturation` (001 + 002 + 003). Les corrections de conformité en cours sur 001 à 003 doivent être fusionnées et la branche 007 remise à jour par-dessus avant `speckit-implement`.
+- Base : `origin/003-transmission-facturation` (001 + 002 + 003). Les corrections de conformité en cours sur 001 à 003 doivent être fusionnées et la branche 007 remise à jour par-dessus avant `speckit-implement` ; le plan suppose déjà leurs formes : `RefusalException` à constructeur protégé + `HasLabel` + `AssertsRefusals` (`e8cba36`), `ReservationTransition` (`e8cba36`, non utilisé par sales), `Money` / `MoneyCast` / `Exports/ExportLineFormatter` (`bdef4c6`).
 - E1 à E4 : selon l'arbitrage de la coordination, phase 2 de 007 ou livrés par 001 et 003 ; dans le second cas, 007 déclare ces éléments comme prérequis et ne les réimplémente pas.
 - Aucune dépendance vers les features 004 à 006.
 

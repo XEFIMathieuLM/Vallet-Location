@@ -1,6 +1,6 @@
 # Data Model: Vente de machines d'occasion
 
-Montants en centimes (entiers), dates métier en heure de Paris. Statuts en colonnes texte castées en enums PHP. Aucune clé étrangère en cascade.
+Montants stockés en centimes (entiers) et exposés en `Functional\Billing\Money\Money` par `MoneyCast` (attributs `asking_price`, `final_price`, `amount`), dates métier en heure de Paris. Statuts en colonnes texte castées en enums PHP. Aucune clé étrangère en cascade.
 
 ## Layer `sales` (nouvelles tables)
 
@@ -11,7 +11,7 @@ Montants en centimes (entiers), dates métier en heure de Paris. Statuts en colo
 | id | bigint PK | |
 | machine_id | FK `machines` | obligatoire |
 | status | string | `SaleStatus` : `listed`, `reserved`, `sold`, `cancelled` ; défaut `listed` |
-| asking_price_cents | integer | CHECK `> 0` |
+| asking_price_cents | integer | CHECK `> 0` ; attribut `asking_price` (`Money`, `MoneyCast`) |
 | year_of_manufacture | smallint nullable | CHECK `>= 1950` ; pas dans le futur (contrôle serveur) |
 | operating_hours | integer nullable | CHECK `>= 0` |
 | condition | string | descriptif de l'état général |
@@ -20,7 +20,7 @@ Montants en centimes (entiers), dates métier en heure de Paris. Statuts en colo
 | listed_by | FK `users` | |
 | buyer_id | FK `customers` nullable | renseigné ssi `reserved` ou `sold` |
 | accepted_offer_id | FK `sale_offers` nullable | renseigné ssi `reserved` ou `sold` |
-| final_price_cents | integer nullable | renseigné ssi `reserved` ou `sold` ; CHECK `> 0` |
+| final_price_cents | integer nullable | renseigné ssi `reserved` ou `sold` ; CHECK `> 0` ; attribut `final_price` (`Money`) |
 | planned_handover_date | date nullable | renseigné ssi `reserved` ou `sold` |
 | handed_over_on | date nullable | renseigné ssi `sold` |
 | handed_over_by | FK `users` nullable | renseigné ssi `sold` |
@@ -44,7 +44,7 @@ La FK `accepted_offer_id` → `sale_offers` est ajoutée après la création de 
 | id | bigint PK | |
 | sale_id | FK `sales` | |
 | customer_id | FK `customers` | l'acheteur |
-| amount_cents | integer | CHECK `> 0` |
+| amount_cents | integer | CHECK `> 0` ; attribut `amount` (`Money`) |
 | offered_on | date | défaut aujourd'hui, pas dans le futur (contrôle serveur) |
 | status | string | `OfferStatus` : `pending`, `accepted`, `rejected`, `withdrawn` ; défaut `pending` |
 | recorded_by | FK `users` | |
@@ -120,5 +120,5 @@ Toute autre transition → `IllegalOfferTransitionException`.
 ## Valeurs dérivées
 
 - **Vente en retard** (FR-023) : `status = reserved AND planned_handover_date < aujourd'hui (Paris)`. Calculée en requête, pas stockée.
-- **Total des ventes conclues** (FR-022) : `SUM(final_price_cents)` en base sur le filtre.
+- **Total des ventes conclues** (FR-022) : `SUM(final_price_cents)` en base sur le filtre, restitué en `Money::fromStored()`.
 - **Jour de remise compatible** : une location dont `end_date < planned_handover_date` est compatible.

@@ -15,9 +15,9 @@ Envoyée par le `BillingGateway` existant (003), une seule fois par vente, clé 
 | booking_agency | agence du salarié qui a mis en vente |
 | sale_date | date de remise (`YYYY-MM-DD`) |
 | label | « Vente machine d'occasion {référence} » |
-| amount_excl_tax_cents | prix final hors taxes en centimes |
+| amount_excl_tax (`amountExclTax: Money`) | prix final hors taxes (`Sale::final_price`) |
 | period_* / days / damage_* | `null` |
 
-Export de secours : même ligne, montant formaté en euros par `ExportLineFormatter` (colonne `amount_excl_tax`), colonnes `source_ref` et `sale_date` ajoutées à l'en-tête.
+Export de secours : même ligne, montant formaté par `Money::format()` via `Exports/ExportLineFormatter` (colonne `amount_excl_tax`), colonnes `source_ref` et `sale_date` ajoutées à l'en-tête.
 
 Faux logiciel (`FakeBillingGateway`) : accepte ou refuse selon le mode existant ; refuse avec « client inconnu » quand `customer_ref` est `null`, comme pour une location.

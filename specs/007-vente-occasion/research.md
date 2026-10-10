@@ -76,6 +76,20 @@ Aucune inconnue technique bloquante : la stack, les packages et les mécanismes 
   - Traductions dans `functional/sales/resources/lang/fr`.
 - **Rationale**: Principes IV, V, VII ; mêmes mécanismes que les features 001 à 003.
 
+## R11. Refus : la forme du socle 001 (commit `e8cba36`)
+
+- **Decision**: chaque refus de sales est une classe `final` qui étend `abstract Functional\Fleet\Exceptions\RefusalException`, construite uniquement par des factories nommées (`MachineAlreadyForSaleException::withOpenSale(Sale $openSale)`, `HandoverConflictsWithReservationException::with(Reservation $reservation)`…), qui passent au constructeur protégé un message technique en anglais, une clé `sales::refusals.*` et ses remplacements (les enums passent par `HasLabel`). `DisplaysRefusals` affiche `userMessage()`. Les tests utilisent `AssertsRefusals::assertRefused` (classe, texte français, message technique anglais). Les exceptions de transition illégale (`IllegalSaleTransitionException`, `IllegalOfferTransitionException`) suivent le même modèle que `IllegalMachineTransitionException` ; `SaleTransition` et `OfferTransition` sont des enums `HasLabel`, comme `MachineTransition` et `ReservationTransition`.
+- **Rationale**: une seule forme de refus dans toute l'application, messages traduits à l'affichage, journaux en anglais.
+
+## R12. Montants : value object `Money` de billing (commit `bdef4c6`)
+
+- **Decision**: les prix et montants de sales sont des `Functional\Billing\Money\Money` (sales dépend de billing, sens autorisé). Colonnes en centimes inchangées (`asking_price_cents`, `final_price_cents`, `amount_cents`), exposées par `MoneyCast` (`asking_price`, `final_price`, `amount`). Saisie : `Money::fromInput()` (refuse un montant mal formé avec `InvalidMoneyException`) ; positivité : `isPositive()` côté serveur + CHECK `> 0` en base ; affichage : `format()` ; total des ventes conclues : `SUM` en base puis `Money::fromStored()`. La ligne transmise porte `amountExclTax: Money`, comme un dégât.
+- **Rationale**: Principe III (montants en entiers) avec un type qui empêche de mélanger centimes et euros ; même type que billing.
+
+## R13. Niveau des tests (constitution 1.0.1 annoncée)
+
+- **Decision**: calculs et transitions en mémoire (états vente et offre, règle « location compatible avec la date de remise » sur des dates, construction de la ligne transmise à partir d'objets non persistés) → tests Unit purs, sans base ni application ; tout ce qui passe par la base (contraintes, verrous, requêtes, total, retards, actions) → tests Feature.
+
 ## R10. Aucun nouveau package
 
 Tout est couvert par les dépendances actuelles (Livewire, Flux, activitylog, permission, access-control, faker).

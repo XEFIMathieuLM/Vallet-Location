@@ -36,7 +36,7 @@ Points d'appel (booking) :
 - `CreateReservation::reserve()` : après `MachineEligibility::ensureReservableUntil()`, sous le verrou `machines`, avant la recherche de chevauchement : `foreach ($guards->all() as $guard) $guard->ensureCanReserve($lockedMachine, $startDate, $endDate);`
 - `AvailableMachinesQuery` : chaque garde reçoit le builder des machines pour la période recherchée.
 
-Rempli par sales : `ReservedSaleReservationGuard` refuse si une vente `reserved` de la machine a `planned_handover_date <= $endDate` (exception `MachineReservedForSaleException`, message : « Machine vendue sous réserve, remise prévue le JJ/MM/AAAA ») ; dans `excludeUnavailable`, il ajoute `whereNotExists` sur ces ventes.
+Rempli par sales : `ReservedSaleReservationGuard` refuse si une vente `reserved` de la machine a `planned_handover_date <= $endDate` (`MachineReservedForSaleException::until(Sale $sale)`, clé `sales::refusals.machine_reserved_for_sale`, texte : « Machine vendue sous réserve, remise prévue le JJ/MM/AAAA ») ; dans `excludeUnavailable`, il ajoute `whereNotExists` sur ces ventes.
 
 ## E2. fleet : gardes de retrait
 
@@ -59,7 +59,7 @@ Changements :
 - `BookingServiceProvider` : `$this->app->make(MachineRetirementGuards::class)->register(ActiveReservationsRetirementGuard::class)` dans `boot()`, à la place du `bind()` dans `register()`.
 - Les tests de retrait existants (001) restent verts sans modification de comportement.
 
-Rempli par sales : `OpenSaleRetirementGuard` refuse si la machine a une vente `listed` ou `reserved` (`MachineRetirementRefusedException::becauseOfOpenSale()` côté sales : nouvelle exception `MachineHasOpenSaleException` qui étend `RefusalException`).
+Rempli par sales : `OpenSaleRetirementGuard` refuse si la machine a une vente `listed` ou `reserved` (`MachineHasOpenSaleException::for(Sale $sale)`, classe `final` de sales qui étend `RefusalException`, clé `sales::refusals.machine_has_open_sale`).
 
 La remise d'une vente (`HandOverSale`) passe la vente à `sold` **avant** d'appeler `RetireMachine` dans la même transaction : le garde de sales ne voit plus de vente ouverte, le garde de booking contrôle toujours les réservations, et un refus annule toute la transaction.
 
@@ -142,7 +142,7 @@ final class BillableSources   // singleton
     /** @param class-string<BillableSource> $sourceClass */
     public function register(string $sourceClass): void;
 
-    /** @throws UnknownBillableSourceException */
+    /** @throws UnknownBillableSourceException  final, étend RefusalException, factory forType() */
     public function for(BillableLineType $type): BillableSource;
 }
 ```
@@ -160,7 +160,7 @@ final class QueueSourceTransmission
 Changements dans billing :
 - migration additive sur `transmissions` (voir data-model) ;
 - `BillableLineType::UsedMachineSale = 'used_machine_sale'` ;
-- `BillableLine` : `reservationRef` et `bookingAgency` nullables ; nouveaux champs `sourceRef` et `saleDate` (nullables), présents dans `toArray()` et donc dans l'export ;
+- `BillableLine` : `reservationRef` et `bookingAgency` nullables ; nouveaux champs `sourceRef` et `saleDate` (nullables), présents dans `toArray()` et donc dans l'export (`Exports/ExportLineFormatter`) ; le montant reste `amountExclTax: ?Money` (forme de `bdef4c6`) ;
 - `MakeBillableLine` : si `source_type` est renseigné, délègue à `BillableSources::for($type)->line()` ;
 - `BillingHistory::record()` accepte un `Model` ; `TransmissionLifecycle` rattache l'activité à la réservation, ou au `historySubject` de la source ;
 - écran `Transmissions` : pour une transmission de source, affiche `subject()` (libellé, lien, client, saisie de l'identifiant client) au lieu de la réservation ; chargement par lot (pas de requête dans une boucle) ;

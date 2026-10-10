@@ -44,15 +44,15 @@ Toute autre exception est un bug : elle remonte et la transmission reste `pendin
 Pour le développement et les tests. Modes : accepter tout, refuser une clé donnée avec un motif, simuler l'indisponibilité. Le mode et les lignes reçues sont gardés dans le cache de l'application, pour être partagés entre le worker de file et la console :
 
 ```bash
-./vendor/bin/sail artisan billing:fake-gateway unreachable
+docker compose exec -u sail laravel.test php artisan billing:fake-gateway unreachable
 ```
 
 ```bash
-./vendor/bin/sail artisan billing:fake-gateway accept
+docker compose exec -u sail laravel.test php artisan billing:fake-gateway accept
 ```
 
 ```bash
-./vendor/bin/sail artisan billing:fake-gateway --received
+docker compose exec -u sail laravel.test php artisan billing:fake-gateway --received
 ```
 
 La commande refuse de s'exécuter hors des environnements `local` et `testing`. Pour une clé déjà reçue, le faux logiciel renvoie le même identifiant sans ajouter de ligne.

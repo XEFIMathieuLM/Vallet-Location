@@ -32,5 +32,5 @@
 ## Notes
 
 - 3 clarifications résolues le 2026-10-09 (section Clarifications de la spec) : envoi automatique avec export de secours, aucun montant de location transmis, périodes de fin de mois pour les locations en cours.
-- À obtenir du client avant `/speckit-plan` : le nom du logiciel de facturation, ses moyens d'échange automatique et son format d'import (voir Assumptions).
+- À obtenir du client avant l'adaptateur réel (T063) et la mise en production : le nom du logiciel de facturation, ses moyens d'échange automatique et son format d'import (voir Assumptions).
 - Items marked incomplete require spec updates before `/speckit-clarify` or `/speckit-plan`

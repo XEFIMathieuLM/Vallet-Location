@@ -112,7 +112,7 @@ Un responsable consulte un relevé : locations transmises sur une période, dég
 - **Réservation clôturée avant la mise en service mais portant un dégât à traiter** : le dégât peut être chiffré et transmis comme facturation complémentaire.
 - **Plusieurs dégâts sur une même location** : chacun est chiffré et transmis séparément ; l'ordre d'arrivée dans le logiciel de facturation n'est pas garanti.
 - **Montant de dégât nul ou négatif** : refusé ; un dégât sans refacturation passe par « non refacturé » avec motif.
-- **Le logiciel de facturation accepte la transmission mais la réponse se perd** : la relance ne crée pas de doublon (US1, scénario 5).
+- **Le logiciel de facturation accepte la transmission mais la réponse se perd** : la relance ne crée pas de doublon (US1, scénario 8).
 - **Indisponibilité prolongée du logiciel de facturation** (plusieurs jours) : les transmissions s'accumulent en attente et partent toutes dès le retour du logiciel, sans ordre garanti.
 
 ## Requirements *(mandatory)*
@@ -164,9 +164,9 @@ Un responsable consulte un relevé : locations transmises sur une période, dég
 - **Période facturable** : une tranche d'une location à transmettre ; réservation, date de début, date de fin, nombre de jours, intermédiaire (fin de mois) ou finale (retour).
 - **Transmission** : l'envoi d'un élément facturable (période de location ou dégât) au logiciel de facturation ; type, élément concerné, état (en attente, transmis, transmis par export, en échec), date de chaque tentative, motif du dernier échec, identifiant reçu du logiciel de facturation une fois transmis, export de secours d'origine le cas échéant.
 - **Export de secours** : un fichier produit par un salarié ; date, auteur, éléments inclus.
-- **Réservation** (feature 001) : enrichie de ses périodes facturables et de leur état de transmission.
-- **Dégât** (feature 002) : enrichi d'un montant, d'un libellé de réparation, et d'un état final « refacturé » ou « non refacturé » avec motif, auteur et date, en remplacement du simple « traité ».
-- **Client** (feature 001) : enrichi de son identifiant dans le logiciel de facturation, nécessaire pour que la transmission aboutisse.
+- **Réservation** (feature 001) : associée à ses périodes facturables et à leur état de transmission.
+- **Dégât** (feature 002) : associé à un règlement : soit « refacturé » (montant, libellé de réparation), soit « non refacturé » (motif) ; avec auteur et date, en remplacement du simple « traité ».
+- **Client** (feature 001) : associé à son identifiant dans le logiciel de facturation, nécessaire pour que la transmission aboutisse.
 
 ## Success Criteria *(mandatory)*
 
@@ -194,7 +194,7 @@ Un responsable consulte un relevé : locations transmises sur une période, dég
 ## Assumptions
 
 - Le logiciel de facturation reste la référence pour la facture : tarifs de location, numérotation, TVA, mentions légales, avoirs. L'outil transmet des quantités (jours) pour les locations et des montants hors taxes pour les dégâts.
-- Le logiciel de facturation actuel accepte une transmission automatique et l'import d'un fichier. Son nom, ses moyens d'échange et le format d'import restent à identifier avec le client avant le plan.
+- Le logiciel de facturation actuel accepte une transmission automatique et l'import d'un fichier. Son nom, ses moyens d'échange et le format d'import restent à identifier avec le client avant l'écriture de l'adaptateur réel et la mise en production ; le reste de la feature se construit avec un faux logiciel.
 - Le logiciel de facturation sait rattacher une période ou un dégât à un client et à une référence de location transmise par l'outil.
 - La fin de mois s'entend au dernier jour calendaire, à l'heure de Paris ; la transmission de fin de mois part après la fin de ce jour.
 - À la mise en service, l'ancien circuit de facturation ne facture plus les locations encore en cours : elles sont transmises en entier par l'outil. À confirmer avec la comptabilité de M. Vallet pour éviter une double facturation au basculement.

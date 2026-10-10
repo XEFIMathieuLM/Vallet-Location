@@ -1,6 +1,6 @@
 # Research: Transmission des locations et des réparations au logiciel de facturation
 
-Les décisions de la 001 (R1–R11) et de la 002 (P1–P12) restent valables : Laravel + Livewire, OSDD, PostgreSQL, Sail, `spatie/laravel-activitylog`, `spatie/simple-excel`, contrôles par permission. Ce document ne traite que ce que la 003 ajoute.
+Les décisions de la 001 (R1–R11) et de la 002 (P1–P13) restent valables : Laravel + Livewire, OSDD, PostgreSQL, Sail, `spatie/laravel-activitylog`, `spatie/simple-excel`, contrôles par permission. Ce document ne traite que ce que la 003 ajoute.
 
 ## B1 — Un nouveau layer `billing`
 
@@ -57,7 +57,7 @@ Les décisions de la 001 (R1–R11) et de la 002 (P1–P12) restent valables : L
   - Chaque création est idempotente : elle repart de la dernière période existante, et la contrainte d'exclusion de B4 refuse tout chevauchement.
 - **Rationale**: le listener donne l'immédiateté (SC-002 : moins de 5 minutes). Le rattrapage garantit qu'un événement perdu ne fait pas disparaître une location (SC-001). Une exécution quotidienne de la clôture mensuelle, plutôt que le 1er du mois seulement, se rattrape seule après une panne (SC-001a : sous 24 h).
 - **Dates** : la date de sortie est la date (heure de Paris) de `departed_at`, la date de retour celle de `returned_at`, jamais `end_date` (qui ne reflète pas un retard, voir data-model de la 001). Jours facturables = jours calendaires, bornes incluses.
-- **Mise en service** : `billing.go_live_date` (config). Une réservation dont `returned_at` est antérieure à cette date ne produit aucune période. Toute autre réservation (encore en cours, ou rendue après) est transmise **en entier depuis sa date de sortie**, même si elle est sortie avant (clarification du 2026-10-09, option A). La première exécution de `billing:close-months` après la mise en service crée donc d'un coup les périodes de tous les mois déjà écoulés des locations en cours.
+- **Mise en service** : `billing.go_live_date` (config, obligatoire, sans valeur par défaut). Une réservation dont la date de retour (heure de Paris) est antérieure à cette date ne produit aucune période ; rendue le jour même, elle est transmise. Tant que la date du jour est antérieure à `go_live_date`, la clôture mensuelle ne crée rien : l'ancien circuit facture encore, et un déploiement anticipé ne doit pas provoquer de double facturation (SC-003). Sans date configurée, rien n'est transmis. Toute autre réservation (encore en cours, ou rendue après) est transmise **en entier depuis sa date de sortie**, même si elle est sortie avant (clarification du 2026-10-09, option A). La première exécution de `billing:close-months` après la mise en service crée donc d'un coup les périodes de tous les mois déjà écoulés des locations en cours.
 - **Alternatives considered**: modifier `ReturnReservation` (001) pour créer la période dans sa transaction (couplage `booking → billing` interdit) ; ajouter un point d'extension « après retour » dans `booking` (possible, mais le rattrapage est de toute façon nécessaire et suffit à garantir l'absence de perte).
 
 ## B7 — Chiffrage des dégâts sans modifier le modèle d'`inspection`
@@ -86,7 +86,7 @@ Les décisions de la 001 (R1–R11) et de la 002 (P1–P12) restent valables : L
 - **Decision**:
   - **Alerte** (FR-011) : un composant Livewire `billing` inclus dans le layout de `app/`. Il compte les transmissions `failed` et les `pending` créées il y a plus de 24 h (seuil configurable) et se rafraîchit toutes les 60 s.
   - **Relevé** (FR-018, FR-019) : un écran filtré par agence et par période, calculé par agrégats SQL (compter, sommer en base, pas en PHP). Les dégâts à traiter depuis plus de 7 jours (configurable) sont mis en évidence.
-  - **Détail de réservation** (FR-017) : `billing` enregistre une section « Facturation » dans le registre des sections de `booking` (P3 de la 002). Elle liste les périodes, les dégâts chiffrés et l'état de chaque transmission.
+  - **Détail de réservation** (FR-017) : `billing` enregistre une section « Facturation » dans le registre `ReservationDetailSections` de `booking` (point d'extension conçu par la 002, P3, et livré par la 001). Elle liste les périodes, les dégâts chiffrés et l'état de chaque transmission.
 - **Rationale**: réutilise les points d'extension existants ; aucune diffusion temps réel n'est exigée par la spec pour la facturation.
 
 ## B11 — Droits et traçabilité

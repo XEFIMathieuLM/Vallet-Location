@@ -1,6 +1,6 @@
 # Contrat : écrans
 
-Tous les écrans exigent la permission `billing.manage`. Textes en français par fichiers de traduction.
+Tous les écrans exigent la permission `billing.manage`. Exception : les actions d'un dégât s'affichent dans les écrans de la 002, dont l'accès reste régi par `damages.manage` ; les actions elles-mêmes (« Refacturer », « Ne pas refacturer ») exigent en plus `billing.manage`, sinon elles ne sont ni affichées ni acceptées par le serveur. Textes en français par fichiers de traduction.
 
 | Écran | Emplacement | Actions | Refus affichés | Exigences |
 |-------|-------------|---------|----------------|-----------|

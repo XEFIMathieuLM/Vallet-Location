@@ -5,26 +5,26 @@ Guide de vérification de bout en bout. Le détail des entités est dans [data-m
 ## Prérequis
 
 - Les features 001 et 002 sont implémentées et commitées, et cette branche est à jour par-dessus.
-- Sail démarré, base migrée et peuplée (agences, catégories, machines, un salarié).
+- Conteneurs démarrés (`docker compose up -d`), base migrée et peuplée (agences, catégories, machines, un salarié).
 - `.env` : `BILLING_GATEWAY=fake`, `BILLING_GO_LIVE_DATE` antérieure aux réservations de test.
 - Un worker de file et le planificateur tournent :
 
 ```bash
-./vendor/bin/sail artisan queue:work
+docker compose exec -u sail laravel.test php artisan queue:work
 ```
 
 ```bash
-./vendor/bin/sail artisan schedule:work
+docker compose exec -u sail laravel.test php artisan schedule:work
 ```
 
 ## Tests automatisés
 
 ```bash
-./vendor/bin/sail artisan test layers/billing/tests
+docker compose exec -u sail laravel.test php artisan test functional/billing/tests
 ```
 
 ```bash
-./vendor/bin/sail php vendor/bin/phpstan analyse
+docker compose exec -u sail laravel.test vendor/bin/phpstan analyse
 ```
 
 Un test Feature par scénario d'acceptation de la spec ; tests Unit pour les classes d'état de `Transmission` et le découpage en périodes.
@@ -37,7 +37,7 @@ Un test Feature par scénario d'acceptation de la spec ; tests Unit pour les cla
 2. **Attendu** : la section « Facturation » du détail montre une période `finale` de 5 jours, transmise. Le faux logiciel a reçu une ligne `rental_period` :
 
 ```bash
-./vendor/bin/sail artisan billing:fake-gateway --received
+docker compose exec -u sail laravel.test php artisan billing:fake-gateway --received
 ```
 
 ### 2. Location à cheval sur deux mois (US1, scénarios 5 à 7)
@@ -46,7 +46,7 @@ Un test Feature par scénario d'acceptation de la spec ; tests Unit pour les cla
 2. Avancer l'horloge au 1er du mois suivant, puis lancer la clôture mensuelle :
 
 ```bash
-./vendor/bin/sail artisan billing:close-months
+docker compose exec -u sail laravel.test php artisan billing:close-months
 ```
 
 3. **Attendu** : une période `intermédiaire` du 20 à la fin du mois, transmise ; la réservation reste en cours.
@@ -58,14 +58,14 @@ Un test Feature par scénario d'acceptation de la spec ; tests Unit pour les cla
 1. Rendre le faux logiciel injoignable, puis clôturer une réservation :
 
 ```bash
-./vendor/bin/sail artisan billing:fake-gateway unreachable
+docker compose exec -u sail laravel.test php artisan billing:fake-gateway unreachable
 ```
 
 2. **Attendu** : le retour s'enregistre immédiatement ; la transmission reste `en attente` avec une échéance de relance.
 3. Rétablir le faux logiciel et attendre au plus une minute (passage de `billing:reconcile`). **Attendu** : transmise, sans action.
 
 ```bash
-./vendor/bin/sail artisan billing:fake-gateway accept
+docker compose exec -u sail laravel.test php artisan billing:fake-gateway accept
 ```
 4. Laisser une transmission en attente plus de 24 h (horloge avancée). **Attendu** : le bandeau d'alerte apparaît.
 

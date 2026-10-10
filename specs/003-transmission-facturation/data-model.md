@@ -28,7 +28,9 @@ Une tranche d'une location à transmettre (FR-001 à FR-003b).
 - Début = lendemain de la `end_date` de la dernière période de la réservation, ou date de sortie (heure de Paris) s'il n'y en a pas.
 - `intermediate` : fin = dernier jour du mois, seulement si ce jour est passé et que la réservation est encore `in_progress`.
 - `final` : fin = date de retour (heure de Paris). Si le retour tombe le dernier jour du mois, aucune période `intermediate` n'est créée pour ce mois : la réservation est déjà `closed` quand la clôture mensuelle passe.
-- Aucune période pour une réservation dont `returned_at` est antérieure à `billing.go_live_date`. Une réservation sortie avant cette date mais encore en cours, ou rendue après, est découpée en entier depuis sa date de sortie.
+- Aucune période pour une réservation dont la date de retour (date de `returned_at`, heure de Paris) est antérieure à `billing.go_live_date` ; une réservation rendue le jour même est transmise. Une réservation sortie avant cette date mais encore en cours, ou rendue ce jour-là ou après, est découpée en entier depuis sa date de sortie.
+- Aucune période `intermediate` n'est créée tant que la date du jour (heure de Paris) est antérieure à `billing.go_live_date` : avant la mise en service, l'ancien circuit facture encore.
+- Sans `billing.go_live_date` (vide ou invalide), aucune période n'est créée : `MissingGoLiveDateException`.
 - Chaque période crée sa `Transmission` dans la même transaction.
 
 **Invariant vérifié en test** : pour une réservation `closed`, la somme des `days` est égale au nombre de jours entre la date de sortie et la date de retour, bornes incluses.
@@ -134,11 +136,11 @@ User 1──* DamageSettlement (settled_by)
 User 1──* BillingExport (created_by)
 ```
 
-## Configuration (`layers/billing/config/billing.php`)
+## Configuration (`functional/billing/config/billing.php`)
 
 | Clé | Défaut | Rôle |
 |-----|--------|------|
-| `go_live_date` | à fixer au déploiement | réservations rendues avant : non transmises |
+| `go_live_date` | aucun, obligatoire (AAAA-MM-JJ) | réservations rendues avant cette date : non transmises ; aucune clôture mensuelle avant cette date ; vide → rien n'est transmis |
 | `gateway` | `fake` | implémentation de `BillingGateway` |
 | `http_timeout_seconds` | 10 | borne l'attente du logiciel sous verrou (B4) |
 | `retry_delays_minutes` | `[1, 5, 15, 60]` | puis 60 min à chaque tentative |

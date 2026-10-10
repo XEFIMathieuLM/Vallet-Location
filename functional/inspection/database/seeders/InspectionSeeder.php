@@ -2,13 +2,8 @@
 
 namespace Functional\Inspection\Database\Seeders;
 
-use App\Models\User;
-use Carbon\CarbonImmutable;
 use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Models\Reservation;
-use Functional\Fleet\Enums\MachineStatus;
-use Functional\Fleet\Models\Agency;
-use Functional\Fleet\Models\Machine;
 use Functional\Fleet\Models\MachineCategory;
 use Functional\Inspection\Actions\ResolveRequiredViews;
 use Functional\Inspection\Database\Factories\PhotoSessionFactory;
@@ -21,12 +16,13 @@ use Functional\Inspection\Models\PhotoSession;
 use Functional\Inspection\Models\ReservationView;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\Sequence;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
 
 class InspectionSeeder extends Seeder
 {
     /**
-     * @var Collection<int, User>
+     * @var Collection<int, Model>
      */
     private Collection $employees;
 
@@ -34,54 +30,59 @@ class InspectionSeeder extends Seeder
 
     public function run(): void
     {
-        $this->employees = User::query()->get();
+        /** @var class-string<Model> $userModel */
+        $userModel = config('auth.providers.users.model');
+        $this->employees = $userModel::query()->get();
 
         $this->customizeOneCategory();
-        $this->awaitingDeparture();
-        $this->onRent();
-        $this->returned(isDamageResolved: false);
-        $this->returned(isDamageResolved: true);
-        $this->cancelledDuringPhotos();
+
+        $this->reservationsIn(ReservationStatus::InProgress, 2)->each(
+            fn (Reservation $reservation, int $offset) => $offset === 0 ? $this->onRentWithReturnUnderway($reservation) : $this->onRent($reservation),
+        );
+        $this->reservationsIn(ReservationStatus::Closed, 3)->each(
+            fn (Reservation $reservation, int $offset) => $this->returned($reservation, damageCount: $offset < 2 ? 1 : 0, isDamageResolved: $offset === 1),
+        );
+        $this->reservationsIn(ReservationStatus::Cancelled, 1)->each(fn (Reservation $reservation) => $this->cancelledDuringPhotos($reservation));
     }
 
     private function customizeOneCategory(): void
     {
-        $category = MachineCategory::query()->inRandomOrder()->firstOrFail();
-
         CategoryView::factory()
             ->count(faker()->number(4, 7))
-            ->for($category, 'category')
+            ->for(MachineCategory::query()->inRandomOrder()->firstOrFail(), 'category')
             ->sequence(fn (Sequence $sequence): array => ['position' => $sequence->index + 1])
             ->create();
     }
 
-    private function awaitingDeparture(): void
+    /**
+     * @return Collection<int, Reservation>
+     */
+    private function reservationsIn(ReservationStatus $status, int $count): Collection
     {
-        $reservation = $this->reservation(ReservationStatus::Confirmed, MachineStatus::Available, CarbonImmutable::today());
+        return Reservation::query()->where('status', $status)->orderBy('id')->take($count)->get();
+    }
+
+    private function onRentWithReturnUnderway(Reservation $reservation): void
+    {
         $views = $this->frozenViews($reservation);
 
         $this->session($reservation, InspectionStep::Departure)->expired()->createOne();
         $this->session($reservation, InspectionStep::Departure)->revoked(RevocationReason::Replaced)->createOne();
-        $activeSession = $this->session($reservation, InspectionStep::Departure)->createOne();
-
-        $this->photograph($views->take(faker()->number(1, $views->count() - 1)), InspectionStep::Departure, $activeSession);
-    }
-
-    private function onRent(): void
-    {
-        $reservation = $this->reservation(ReservationStatus::InProgress, MachineStatus::RentedOut, CarbonImmutable::today()->subDays(faker()->number(1, 5)));
-        $views = $this->frozenViews($reservation);
-
-        $departureSession = $this->session($reservation, InspectionStep::Departure)->revoked(RevocationReason::StepValidated)->createOne();
-        $this->photograph($views, InspectionStep::Departure, $departureSession);
+        $this->photograph($views, InspectionStep::Departure, $this->session($reservation, InspectionStep::Departure)->revoked(RevocationReason::StepValidated)->createOne());
 
         $returnSession = $this->session($reservation, InspectionStep::Return)->createOne();
         $this->photograph($views->take(faker()->number(1, $views->count() - 1)), InspectionStep::Return, $returnSession);
     }
 
-    private function returned(bool $isDamageResolved): void
+    private function onRent(Reservation $reservation): void
     {
-        $reservation = $this->reservation(ReservationStatus::Closed, MachineStatus::Available, CarbonImmutable::today()->subDays(faker()->number(10, 60)));
+        $views = $this->frozenViews($reservation);
+
+        $this->photograph($views, InspectionStep::Departure, $this->session($reservation, InspectionStep::Departure)->revoked(RevocationReason::StepValidated)->createOne());
+    }
+
+    private function returned(Reservation $reservation, int $damageCount, bool $isDamageResolved): void
+    {
         $views = $this->frozenViews($reservation);
 
         foreach (InspectionStep::cases() as $step) {
@@ -89,37 +90,20 @@ class InspectionSeeder extends Seeder
         }
 
         $damage = Damage::factory()
+            ->count($damageCount)
             ->for($reservation)
             ->for($views->random(), 'view')
             ->for($this->employees->random(), 'reporter');
 
-        ($isDamageResolved ? $damage->resolved()->for($this->employees->random(), 'resolver') : $damage)->create();
+        ($isDamageResolved ? $damage->resolvedBy($this->employees->random()) : $damage)->create();
     }
 
-    private function cancelledDuringPhotos(): void
+    private function cancelledDuringPhotos(Reservation $reservation): void
     {
-        $reservation = $this->reservation(ReservationStatus::Cancelled, MachineStatus::Available, CarbonImmutable::today()->addDays(faker()->number(1, 10)));
         $views = $this->frozenViews($reservation);
 
         $session = $this->session($reservation, InspectionStep::Departure)->revoked(RevocationReason::ReservationCancelled)->createOne();
         $this->photograph($views->take(1), InspectionStep::Departure, $session);
-    }
-
-    private function reservation(ReservationStatus $status, MachineStatus $machineStatus, CarbonImmutable $startDate): Reservation
-    {
-        $machine = Machine::factory()
-            ->recycle(MachineCategory::query()->get())
-            ->recycle(Agency::query()->get())
-            ->withStatus($machineStatus)
-            ->create();
-
-        return Reservation::factory()
-            ->for($machine)
-            ->recycle(Agency::query()->get())
-            ->for($this->employees->random(), 'author')
-            ->between($startDate, $startDate->addDays(faker()->number(2, 6)))
-            ->withStatus($status)
-            ->create();
     }
 
     /**

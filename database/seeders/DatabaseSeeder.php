@@ -9,6 +9,7 @@ use Functional\Booking\Database\Seeders\ReservationSeeder;
 use Functional\Fleet\Database\Seeders\FleetPermissionSeeder;
 use Functional\Fleet\Database\Seeders\FleetSeeder;
 use Functional\Fleet\Models\Agency;
+use Functional\Inspection\Database\Seeders\InspectionPermissionSeeder;
 use Functional\Inspection\Database\Seeders\InspectionSeeder;
 use Illuminate\Database\Seeder;
 
@@ -16,7 +17,7 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        $this->call([FleetPermissionSeeder::class, BookingPermissionSeeder::class, PermissionSeeder::class, FleetSeeder::class]);
+        $this->call([FleetPermissionSeeder::class, BookingPermissionSeeder::class, InspectionPermissionSeeder::class, PermissionSeeder::class, FleetSeeder::class]);
 
         $employees = Agency::query()->orderBy('name')->get()
             ->map(fn (Agency $agency): User => User::factory()->employee()->for($agency)->create());

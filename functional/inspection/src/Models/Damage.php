@@ -2,9 +2,9 @@
 
 namespace Functional\Inspection\Models;
 
-use App\Models\User;
 use Carbon\CarbonImmutable;
 use Functional\Booking\Models\Reservation;
+use Functional\Fleet\Contracts\AgencyMember;
 use Functional\Inspection\Database\Factories\DamageFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
@@ -24,8 +24,8 @@ use Lomkit\Access\Controls\HasControl;
  * @property CarbonImmutable|null $resolved_at
  * @property-read Reservation $reservation
  * @property-read ReservationView $view
- * @property-read User $reporter
- * @property-read User|null $resolver
+ * @property-read Model&AgencyMember $reporter
+ * @property-read (Model&AgencyMember)|null $resolver
  */
 #[Fillable(['reservation_id', 'reservation_view_id', 'comment', 'reported_by', 'reported_at', 'resolved_by', 'resolved_at'])]
 #[UseFactory(DamageFactory::class)]
@@ -59,23 +59,31 @@ class Damage extends Model
     }
 
     /**
-     * @return BelongsTo<User, $this>
+     * @return BelongsTo<Model, $this>
      */
     public function reporter(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'reported_by');
+        return $this->belongsTo($this->userModel(), 'reported_by');
     }
 
     /**
-     * @return BelongsTo<User, $this>
+     * @return BelongsTo<Model, $this>
      */
     public function resolver(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'resolved_by');
+        return $this->belongsTo($this->userModel(), 'resolved_by');
     }
 
     public function isResolved(): bool
     {
         return $this->resolved_at !== null;
+    }
+
+    /**
+     * @return class-string<Model>
+     */
+    private function userModel(): string
+    {
+        return config('auth.providers.users.model');
     }
 }

@@ -2,8 +2,8 @@
 
 namespace Functional\Inspection\Actions;
 
-use App\Models\User;
 use Functional\Booking\Models\Reservation;
+use Functional\Fleet\Contracts\AgencyMember;
 use Functional\Inspection\Completeness\ViewCompleteness;
 use Functional\Inspection\Events\PhotoChanged;
 use Functional\Inspection\Exceptions\StepAlreadyValidatedException;
@@ -11,6 +11,7 @@ use Functional\Inspection\History\InspectionHistory;
 use Functional\Inspection\History\InspectionHistoryEvent;
 use Functional\Inspection\Models\Photo;
 use Functional\Inspection\Models\PhotoSession;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 class DeletePhoto
@@ -30,7 +31,7 @@ class DeletePhoto
         $this->handle($photo, $session->author);
     }
 
-    public function handle(Photo $photo, ?User $author): void
+    public function handle(Photo $photo, (Model&AgencyMember)|null $author): void
     {
         $reservation = DB::transaction(function () use ($photo, $author): Reservation {
             $lockedReservation = Reservation::query()->lockForUpdate()->findOrFail($photo->reservation_id);

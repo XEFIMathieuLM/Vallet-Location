@@ -30,7 +30,7 @@ class ReturnPhotosTest extends TestCase
         parent::setUp();
 
         $this->setUpPhotoStorage();
-        $this->actingAs($this->employee());
+        $this->actingAs($this->seededEmployee());
     }
 
     public function test_the_return_qr_code_requires_the_same_views_as_the_departure(): void

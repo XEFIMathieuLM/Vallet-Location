@@ -21,7 +21,7 @@ class DamageBroadcastTest extends TestCase
     public function test_reporting_and_resolving_broadcast_only_the_reservation_and_its_unresolved_count(): void
     {
         Event::fake([DamageChanged::class]);
-        $employee = $this->employee();
+        $employee = $this->seededEmployee();
         $reservation = $this->reservationStartingToday(ReservationStatus::InProgress);
         $this->photographEveryView($reservation, InspectionStep::Return);
         $view = ReservationView::query()->where('reservation_id', $reservation->id)->firstOrFail();

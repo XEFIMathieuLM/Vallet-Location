@@ -2,9 +2,9 @@
 
 namespace Functional\Inspection\Actions;
 
-use App\Models\User;
 use Carbon\CarbonImmutable;
 use Functional\Booking\Models\Reservation;
+use Functional\Fleet\Contracts\AgencyMember;
 use Functional\Inspection\Enums\InspectionStep;
 use Functional\Inspection\Enums\RevocationReason;
 use Functional\Inspection\Events\PhotoSessionChanged;
@@ -12,6 +12,7 @@ use Functional\Inspection\Exceptions\StepNotOpenException;
 use Functional\Inspection\History\InspectionHistory;
 use Functional\Inspection\History\InspectionHistoryEvent;
 use Functional\Inspection\Models\PhotoSession;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -23,7 +24,7 @@ class OpenPhotoSession
         private readonly InspectionHistory $inspectionHistory,
     ) {}
 
-    public function handle(Reservation $reservation, InspectionStep $step, User $author): string
+    public function handle(Reservation $reservation, InspectionStep $step, Model&AgencyMember $author): string
     {
         if (! $step->isOpenFor($reservation)) {
             throw StepNotOpenException::for($reservation, $step);
@@ -42,7 +43,7 @@ class OpenPhotoSession
                 'reservation_id' => $reservation->id,
                 'step' => $step,
                 'token_hash' => PhotoSession::hashToken($token),
-                'created_by' => $author->id,
+                'created_by' => $author->getKey(),
                 'expires_at' => CarbonImmutable::now()->addMinutes(config()->integer('inspection.session_lifetime_minutes')),
             ]);
 

@@ -15,12 +15,12 @@
                     <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
                         {{ __('Dashboard') }}
                     </flux:sidebar.item>
-                    @can('damages.manage')
+                    @can(\Functional\Inspection\Access\InspectionPermission::ManageDamages->value)
                         <flux:sidebar.item icon="exclamation-triangle" :href="route('inspection.damages')" :current="request()->routeIs('inspection.damages')" wire:navigate>
                             {{ __('inspection::damages.navigation') }}
                         </flux:sidebar.item>
                     @endcan
-                    @can('inspection_views.manage')
+                    @can(\Functional\Inspection\Access\InspectionPermission::ManageInspectionViews->value)
                         <flux:sidebar.item icon="camera" :href="route('inspection.category-views.index')" :current="request()->routeIs('inspection.category-views.*')" wire:navigate>
                             {{ __('inspection::views.navigation') }}
                         </flux:sidebar.item>

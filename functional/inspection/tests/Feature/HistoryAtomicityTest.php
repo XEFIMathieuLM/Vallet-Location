@@ -2,7 +2,6 @@
 
 namespace Functional\Inspection\Tests\Feature;
 
-use App\Models\User;
 use Functional\Booking\Models\Reservation;
 use Functional\Inspection\Actions\ReportDamage;
 use Functional\Inspection\Actions\RevokePhotoSessions;
@@ -28,7 +27,7 @@ class HistoryAtomicityTest extends TestCase
         $this->historyFails();
 
         $this->assertThrows(
-            fn () => app(ReportDamage::class)->handle($reservation, $this->firstView($reservation)->id, 'Choc', User::factory()->create()),
+            fn () => app(ReportDamage::class)->handle($reservation, $this->firstView($reservation)->id, 'Choc', $this->userWithoutPermission()),
             RuntimeException::class,
         );
 

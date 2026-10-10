@@ -2,9 +2,9 @@
 
 namespace Functional\Inspection\Actions;
 
-use App\Models\User;
 use Carbon\CarbonImmutable;
 use Functional\Booking\Models\Reservation;
+use Functional\Fleet\Contracts\AgencyMember;
 use Functional\Inspection\Completeness\ViewCompleteness;
 use Functional\Inspection\Enums\InspectionStep;
 use Functional\Inspection\Events\DamageChanged;
@@ -13,6 +13,7 @@ use Functional\Inspection\History\InspectionHistory;
 use Functional\Inspection\History\InspectionHistoryEvent;
 use Functional\Inspection\Models\Damage;
 use Functional\Inspection\Models\ReservationView;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 class ReportDamage
@@ -23,7 +24,7 @@ class ReportDamage
         private readonly InspectionHistory $inspectionHistory,
     ) {}
 
-    public function handle(Reservation $reservation, int $reservationViewId, string $comment, User $reporter): Damage
+    public function handle(Reservation $reservation, int $reservationViewId, string $comment, Model&AgencyMember $reporter): Damage
     {
         $comment = trim($comment);
 
@@ -42,7 +43,7 @@ class ReportDamage
                 'reservation_id' => $reservation->id,
                 'reservation_view_id' => $view->id,
                 'comment' => $comment,
-                'reported_by' => $reporter->id,
+                'reported_by' => $reporter->getKey(),
                 'reported_at' => CarbonImmutable::now(),
             ]);
 

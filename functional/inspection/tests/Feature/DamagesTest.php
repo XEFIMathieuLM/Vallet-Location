@@ -2,10 +2,11 @@
 
 namespace Functional\Inspection\Tests\Feature;
 
-use App\Models\User;
 use Carbon\CarbonImmutable;
+use Functional\Booking\Access\BookingPermission;
 use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Models\Reservation;
+use Functional\Fleet\Contracts\AgencyMember;
 use Functional\Fleet\Tests\Concerns\AssertsRefusals;
 use Functional\Inspection\Actions\ReportDamage;
 use Functional\Inspection\Actions\ResolveDamage;
@@ -21,6 +22,8 @@ use Functional\Inspection\Models\ReservationView;
 use Functional\Inspection\Tests\Concerns\BuildsPhotoSessions;
 use Functional\Inspection\Tests\Concerns\WithoutDamageActions;
 use Functional\Inspection\Tests\Fixtures\FakeDamageAction;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -29,14 +32,14 @@ class DamagesTest extends TestCase
 {
     use AssertsRefusals, BuildsPhotoSessions, RefreshDatabase, WithoutDamageActions;
 
-    private User $employee;
+    private Model&Authenticatable&AgencyMember $employee;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->setUpPhotoStorage();
-        $this->employee = $this->employee();
+        $this->employee = $this->seededEmployee();
         $this->actingAs($this->employee);
     }
 
@@ -65,7 +68,7 @@ class DamagesTest extends TestCase
 
         $this->assertDatabaseHas('damages', ['reservation_id' => $reservation->id, 'reservation_view_id' => $left->id, 'reported_by' => $this->employee->id, 'resolved_at' => null]);
 
-        $this->actingAs($this->employee());
+        $this->actingAs($this->seededEmployee());
         $this->get(route('inspection.damages'))
             ->assertOk()
             ->assertSee($reservation->machine->reference)
@@ -84,7 +87,7 @@ class DamagesTest extends TestCase
             ->assertSee('Marquer traité')
             ->call('resolveDamage', $damage->id)
             ->assertHasNoErrors()
-            ->assertSee('Aucun dégât à traiter.');
+            ->assertSee('Aucun dégât à traiter');
 
         $damage->refresh();
         $this->assertSame($this->employee->id, $damage->resolved_by);
@@ -140,7 +143,7 @@ class DamagesTest extends TestCase
     public function test_damages_require_the_damages_permission(): void
     {
         $reservation = $this->returnedReservation();
-        $this->actingAs(User::factory()->create()->givePermissionTo('reservations.manage'));
+        $this->actingAs($this->userWithPermissions(BookingPermission::ManageReservations));
 
         $this->get(route('inspection.damages'))->assertForbidden();
         Livewire::test(Comparison::class, ['reservation' => $reservation])

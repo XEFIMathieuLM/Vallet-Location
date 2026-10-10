@@ -5,20 +5,21 @@ namespace Functional\Inspection\Livewire;
 use Flux\Flux;
 use Functional\Booking\Models\Reservation;
 use Functional\Fleet\Livewire\Concerns\DisplaysRefusals;
+use Functional\Inspection\Access\InspectionPermission;
 use Functional\Inspection\Actions\ReportDamage;
+use Functional\Inspection\Livewire\Concerns\ActsAsAgencyMember;
 use Functional\Inspection\Livewire\Concerns\ResolvesDamages;
 use Functional\Inspection\Models\Damage;
 use Functional\Inspection\Models\ReservationView;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class Comparison extends Component
 {
-    use DisplaysRefusals, ResolvesDamages;
+    use ActsAsAgencyMember, DisplaysRefusals, ResolvesDamages;
 
     #[Locked]
     public Reservation $reservation;
@@ -34,14 +35,14 @@ class Comparison extends Component
 
     public function report(): void
     {
-        Gate::authorize('damages.manage');
+        Gate::authorize(InspectionPermission::ManageDamages->value);
 
         $this->validate([
             'reservationViewId' => ['required', 'integer'],
             'comment' => ['required', 'string', 'max:2000'],
         ]);
 
-        app(ReportDamage::class)->handle($this->reservation, (int) $this->reservationViewId, $this->comment, Auth::user() ?? abort(401));
+        app(ReportDamage::class)->handle($this->reservation, (int) $this->reservationViewId, $this->comment, $this->agencyMember());
 
         $this->reset('reservationViewId', 'comment');
 

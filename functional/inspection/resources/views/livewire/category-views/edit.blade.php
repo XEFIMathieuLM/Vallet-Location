@@ -9,6 +9,8 @@
         @endif
     </div>
 
+    <x-loading-hint />
+
     @error('refusal')
         <flux:callout variant="danger" icon="x-circle" :heading="$message" />
     @enderror
@@ -20,15 +22,15 @@
                 @if ($editedPosition === $position)
                     <form wire:submit="rename" class="flex flex-1 items-center gap-2">
                         <flux:input wire:model="editedLabel" class="flex-1" :aria-label="__('inspection::views.edit.label')" />
-                        <flux:button type="submit" size="sm">{{ __('inspection::views.edit.save') }}</flux:button>
-                        <flux:button size="sm" wire:click="$set('editedPosition', null)">{{ __('inspection::views.edit.cancel') }}</flux:button>
+                        <flux:button type="submit" size="xs">{{ __('inspection::views.edit.save') }}</flux:button>
+                        <flux:button size="xs" wire:click="$set('editedPosition', null)">{{ __('inspection::views.edit.cancel') }}</flux:button>
                     </form>
                 @else
                     <flux:text class="flex-1">{{ $position }}. {{ $label }}</flux:text>
-                    <flux:button size="sm" variant="ghost" icon="arrow-up" wire:click="move({{ $position }}, -1)" :disabled="$loop->first" :aria-label="__('inspection::views.edit.move_up')" />
-                    <flux:button size="sm" variant="ghost" icon="arrow-down" wire:click="move({{ $position }}, 1)" :disabled="$loop->last" :aria-label="__('inspection::views.edit.move_down')" />
-                    <flux:button size="sm" variant="ghost" icon="pencil" wire:click="edit({{ $position }}, @js($label))" :aria-label="__('inspection::views.edit.rename')" />
-                    <flux:button size="sm" variant="ghost" icon="trash" wire:click="remove({{ $position }})" :aria-label="__('inspection::views.edit.remove')" />
+                    <flux:button size="xs" variant="ghost" icon="arrow-up" wire:click="move({{ $position }}, -1)" :disabled="$loop->first" :aria-label="__('inspection::views.edit.move_up')" />
+                    <flux:button size="xs" variant="ghost" icon="arrow-down" wire:click="move({{ $position }}, 1)" :disabled="$loop->last" :aria-label="__('inspection::views.edit.move_down')" />
+                    <flux:button size="xs" variant="ghost" icon="pencil" wire:click="edit({{ $position }}, @js($label))" :aria-label="__('inspection::views.edit.rename')" />
+                    <flux:button size="xs" variant="ghost" icon="trash" wire:click="remove({{ $position }})" :aria-label="__('inspection::views.edit.remove')" />
                 @endif
             </li>
         @endforeach
@@ -44,9 +46,24 @@
 
     @if ($isCustomized)
         <div>
-            <flux:button variant="subtle" wire:click="resetToDefault" wire:confirm="{{ __('inspection::views.edit.reset_confirm') }}">
-                {{ __('inspection::views.edit.reset') }}
-            </flux:button>
+            <flux:modal.trigger name="reset-views">
+                <flux:button variant="subtle">{{ __('inspection::views.edit.reset') }}</flux:button>
+            </flux:modal.trigger>
+
+            <flux:modal name="reset-views" class="max-w-md">
+                <div class="flex flex-col gap-6">
+                    <div class="flex flex-col gap-2">
+                        <x-section-heading :title="__('inspection::views.edit.reset')" />
+                        <flux:text>{{ __('inspection::views.edit.reset_confirm') }}</flux:text>
+                    </div>
+                    <div class="flex justify-end gap-2">
+                        <flux:modal.close>
+                            <flux:button variant="ghost">{{ __('screens.cancel') }}</flux:button>
+                        </flux:modal.close>
+                        <flux:button variant="danger" wire:click="resetToDefault">{{ __('inspection::views.edit.reset') }}</flux:button>
+                    </div>
+                </div>
+            </flux:modal>
         </div>
     @endif
 </section>

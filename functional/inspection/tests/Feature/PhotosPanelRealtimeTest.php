@@ -16,7 +16,7 @@ class PhotosPanelRealtimeTest extends TestCase
 
     public function test_the_panel_listens_to_the_photos_and_sessions_of_its_reservation(): void
     {
-        $this->actingAs($this->employee());
+        $this->actingAs($this->seededEmployee());
         $reservation = $this->reservationStartingToday();
 
         $listeners = Livewire::test(PhotosPanel::class, ['reservation' => $reservation])->instance()->getListeners();
@@ -28,7 +28,7 @@ class PhotosPanelRealtimeTest extends TestCase
     public function test_a_received_photo_shows_on_the_panel_and_unlocks_the_departure(): void
     {
         $this->setUpPhotoStorage();
-        $this->actingAs($this->employee());
+        $this->actingAs($this->seededEmployee());
         $reservation = $this->reservationStartingToday();
         $this->openSession($reservation);
         $panel = Livewire::test(PhotosPanel::class, ['reservation' => $reservation])
@@ -37,6 +37,6 @@ class PhotosPanelRealtimeTest extends TestCase
         $this->photographEveryView($reservation, InspectionStep::Departure);
         $panel->dispatch("echo-private:reservation.{$reservation->id},.photo.changed")
             ->assertSee(route('inspection.photo-file', [Photo::query()->firstOrFail(), 'thumb']), false)
-            ->assertDispatched(PhotosPanel::READINESS_EVENT, step: 'departure', is_ready: true);
+            ->assertDispatched(PhotosPanel::READINESS_EVENT, step: 'departure', section: PhotosPanel::SECTION, is_ready: true);
     }
 }

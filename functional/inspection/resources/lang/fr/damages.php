@@ -25,8 +25,8 @@ return [
     'list' => [
         'title' => 'Dégâts à traiter',
         'agency' => 'Agence :agency',
-        'empty' => 'Aucun dégât à traiter. Les dégâts signalés depuis la comparaison des photos de départ et de retour apparaîtront ici.',
-        'offline' => 'Connexion perdue : la liste ne se met plus à jour. Vérifiez votre connexion puis rechargez la page.',
+        'empty_heading' => 'Aucun dégât à traiter',
+        'empty' => 'Les dégâts signalés depuis la comparaison des photos de départ et de retour apparaîtront ici.',
     ],
 
     'refusals' => [

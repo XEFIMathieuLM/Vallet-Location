@@ -2,9 +2,10 @@
 
 namespace Functional\Inspection\Access\Controls;
 
-use App\Models\User;
 use Functional\Fleet\Access\Perimeters\GlobalPerimeter;
+use Functional\Inspection\Access\InspectionPermission;
 use Functional\Inspection\Models\CategoryView;
+use Illuminate\Contracts\Auth\Access\Authorizable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Lomkit\Access\Controls\Control;
@@ -20,7 +21,7 @@ class CategoryViewControl extends Control
     {
         return [
             GlobalPerimeter::new()
-                ->allowed(fn (Model $user, string $method): bool => $user instanceof User && $user->can('inspection_views.manage'))
+                ->allowed(fn (Model $user, string $method): bool => $user instanceof Authorizable && $user->can(InspectionPermission::ManageInspectionViews->value))
                 ->should(fn (Model $user, Model $categoryView): bool => true)
                 ->query(fn (Builder $query, Model $user): Builder => $query),
         ];

@@ -10,5 +10,4 @@ return [
     'view' => 'Vue',
     'compare' => 'Comparer les photos',
     'qr_label' => 'QR code de prise de photos de :step, à scanner avec votre téléphone',
-    'offline' => 'Connexion perdue : les photos reçues ne s\'affichent plus. Vérifiez votre connexion puis rechargez la page.',
 ];

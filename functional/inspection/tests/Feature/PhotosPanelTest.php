@@ -2,9 +2,9 @@
 
 namespace Functional\Inspection\Tests\Feature;
 
-use App\Models\User;
 use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Models\Reservation;
+use Functional\Fleet\Contracts\AgencyMember;
 use Functional\Fleet\Tests\Concerns\AssertsRefusals;
 use Functional\Inspection\Actions\DeletePhoto;
 use Functional\Inspection\Enums\InspectionStep;
@@ -13,6 +13,8 @@ use Functional\Inspection\Livewire\PhotosPanel;
 use Functional\Inspection\Models\Photo;
 use Functional\Inspection\Models\PhotoSession;
 use Functional\Inspection\Tests\Concerns\BuildsPhotoSessions;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -21,14 +23,14 @@ class PhotosPanelTest extends TestCase
 {
     use AssertsRefusals, BuildsPhotoSessions, RefreshDatabase;
 
-    private User $employee;
+    private Model&Authenticatable&AgencyMember $employee;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->setUpPhotoStorage();
-        $this->employee = $this->employee();
+        $this->employee = $this->seededEmployee();
         $this->actingAs($this->employee);
     }
 
@@ -54,8 +56,8 @@ class PhotosPanelTest extends TestCase
         $reservation = $this->reservationStartingToday();
 
         Livewire::test(PhotosPanel::class, ['reservation' => $reservation])
-            ->assertDispatched(PhotosPanel::READINESS_EVENT, step: 'departure', is_ready: false)
-            ->assertDispatched(PhotosPanel::READINESS_EVENT, step: 'return', is_ready: false);
+            ->assertDispatched(PhotosPanel::READINESS_EVENT, step: 'departure', section: PhotosPanel::SECTION, is_ready: false)
+            ->assertDispatched(PhotosPanel::READINESS_EVENT, step: 'return', section: PhotosPanel::SECTION, is_ready: false);
     }
 
     public function test_the_departure_is_announced_as_ready_once_every_view_has_a_photo(): void
@@ -64,9 +66,9 @@ class PhotosPanelTest extends TestCase
         $this->photographEveryView($reservation, InspectionStep::Departure);
 
         Livewire::test(PhotosPanel::class, ['reservation' => $reservation])
-            ->assertDispatched(PhotosPanel::READINESS_EVENT, step: 'departure', is_ready: true)
+            ->assertDispatched(PhotosPanel::READINESS_EVENT, step: 'departure', section: PhotosPanel::SECTION, is_ready: true)
             ->call('refreshPhotos')
-            ->assertDispatched(PhotosPanel::READINESS_EVENT, step: 'departure', is_ready: true);
+            ->assertDispatched(PhotosPanel::READINESS_EVENT, step: 'departure', section: PhotosPanel::SECTION, is_ready: true);
     }
 
     public function test_the_qr_code_cannot_be_launched_before_the_start_date(): void
@@ -134,7 +136,7 @@ class PhotosPanelTest extends TestCase
         $this->get(route('inspection.photo-file', [$photo, 'display']))->assertOk();
         $this->get(route('inspection.photo-file', [$photo, 'original']))->assertNotFound();
 
-        $this->actingAs(User::factory()->create());
+        $this->actingAs($this->userWithoutPermission());
         $this->get(route('inspection.photo-file', [$photo, 'thumb']))->assertForbidden();
     }
 }

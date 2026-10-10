@@ -10,7 +10,8 @@ return [
     'photo_of' => 'Photo de la vue :view',
     'retry' => 'Réessayer',
     'delete' => 'Supprimer la photo',
-    'delete_confirm' => 'Supprimer cette photo ?',
+    'delete_heading' => 'Supprimer la photo',
+    'delete_confirm' => 'La photo sera supprimée définitivement. Vous pourrez en prendre une autre tant que l\'étape n\'est pas validée.',
     'view' => [
         'missing' => 'Manquante',
         'received' => 'Reçue',

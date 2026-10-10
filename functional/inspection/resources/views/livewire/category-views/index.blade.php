@@ -24,7 +24,7 @@
                         @endif
                     </flux:table.cell>
                     <flux:table.cell align="end">
-                        <flux:button size="sm" :href="route('inspection.category-views.edit', $category)" wire:navigate>
+                        <flux:button size="xs" :href="route('inspection.category-views.edit', $category)" wire:navigate>
                             {{ __('inspection::views.index.edit') }}
                         </flux:button>
                     </flux:table.cell>

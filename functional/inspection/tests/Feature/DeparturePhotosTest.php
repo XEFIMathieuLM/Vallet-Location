@@ -2,12 +2,12 @@
 
 namespace Functional\Inspection\Tests\Feature;
 
-use App\Models\User;
 use Functional\Booking\Actions\CancelReservation;
 use Functional\Booking\Actions\DepartReservation;
 use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Events\ReservationChanged;
 use Functional\Booking\Livewire\ReservationDetail;
+use Functional\Fleet\Contracts\AgencyMember;
 use Functional\Fleet\Enums\MachineStatus;
 use Functional\Fleet\Tests\Concerns\AssertsRefusals;
 use Functional\Inspection\Actions\StorePhoto;
@@ -20,6 +20,8 @@ use Functional\Inspection\Models\Photo;
 use Functional\Inspection\Models\PhotoSession;
 use Functional\Inspection\Models\ReservationView;
 use Functional\Inspection\Tests\Concerns\BuildsPhotoSessions;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -28,14 +30,14 @@ class DeparturePhotosTest extends TestCase
 {
     use AssertsRefusals, BuildsPhotoSessions, RefreshDatabase;
 
-    private User $employee;
+    private Model&Authenticatable&AgencyMember $employee;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->setUpPhotoStorage();
-        $this->employee = $this->employee();
+        $this->employee = $this->seededEmployee();
         $this->actingAs($this->employee);
     }
 

@@ -2,24 +2,19 @@
 
 namespace Functional\Inspection\Database\Seeders;
 
-use Database\Seeders\PermissionSeeder;
+use Functional\Inspection\Access\InspectionPermission;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
 
 class InspectionPermissionSeeder extends Seeder
 {
-    public const PERMISSIONS = ['damages.manage', 'inspection_views.manage'];
-
     public function run(): void
     {
         app(PermissionRegistrar::class)->forgetCachedPermissions();
 
-        foreach (self::PERMISSIONS as $permissionName) {
-            Permission::findOrCreate($permissionName);
+        foreach (InspectionPermission::cases() as $permission) {
+            Permission::findOrCreate($permission->value);
         }
-
-        Role::findOrCreate(PermissionSeeder::EMPLOYEE_ROLE)->givePermissionTo(self::PERMISSIONS);
     }
 }

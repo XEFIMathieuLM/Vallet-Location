@@ -1,8 +1,10 @@
 <section class="flex flex-col gap-6">
     <x-page-heading :title="__('inspection::damages.list.title')" />
 
+    <x-loading-hint />
+
     <div wire:offline>
-        <flux:callout variant="warning" icon="signal-slash" :heading="__('inspection::damages.list.offline')" />
+        <flux:callout variant="warning" icon="signal-slash" :heading="__('screens.connection_lost')" />
     </div>
 
     @error('refusal')
@@ -17,7 +19,7 @@
                     <x-section-heading :title="$reservation->machine->reference.' – '.$reservation->customer->name" />
                     <flux:text size="sm">{{ __('inspection::damages.list.agency', ['agency' => $reservation->agency->name]) }}</flux:text>
                 </div>
-                <flux:button size="sm" icon="arrows-right-left" :href="route('inspection.comparison', $reservation)" wire:navigate>
+                <flux:button size="xs" icon="arrows-right-left" :href="route('inspection.comparison', $reservation)" wire:navigate>
                     {{ __('inspection::panel.compare') }}
                 </flux:button>
             </div>
@@ -32,6 +34,6 @@
             @endforeach
         </div>
     @empty
-        <flux:text>{{ __('inspection::damages.list.empty') }}</flux:text>
+        <x-empty-state :heading="__('inspection::damages.list.empty_heading')" :description="__('inspection::damages.list.empty')" />
     @endforelse
 </section>

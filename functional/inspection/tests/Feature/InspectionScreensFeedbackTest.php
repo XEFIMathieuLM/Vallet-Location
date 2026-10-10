@@ -23,7 +23,7 @@ class InspectionScreensFeedbackTest extends TestCase
         parent::setUp();
 
         $this->setUpPhotoStorage();
-        $this->actingAs($this->employee());
+        $this->actingAs($this->seededEmployee());
     }
 
     public function test_a_reported_damage_is_confirmed(): void

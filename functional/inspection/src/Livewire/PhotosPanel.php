@@ -2,6 +2,8 @@
 
 namespace Functional\Inspection\Livewire;
 
+use Flux\Flux;
+use Functional\Booking\Access\BookingPermission;
 use Functional\Booking\Models\Reservation;
 use Functional\Fleet\Livewire\Concerns\DisplaysRefusals;
 use Functional\Inspection\Actions\DeletePhoto;
@@ -9,6 +11,7 @@ use Functional\Inspection\Actions\OpenPhotoSession;
 use Functional\Inspection\Completeness\ViewCompleteness;
 use Functional\Inspection\Enums\InspectionStep;
 use Functional\Inspection\Exceptions\StepNotOpenException;
+use Functional\Inspection\Livewire\Concerns\ActsAsAgencyMember;
 use Functional\Inspection\Models\Photo;
 use Functional\Inspection\Models\PhotoSession;
 use Functional\Inspection\Models\ReservationView;
@@ -16,22 +19,27 @@ use Functional\Inspection\QrCodes\QrCodeSvg;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class PhotosPanel extends Component
 {
-    use DisplaysRefusals;
+    use ActsAsAgencyMember, DisplaysRefusals;
 
     public const READINESS_EVENT = 'reservation-transition-readiness';
+
+    public const SECTION = 'inspection.photos-panel';
+
+    private const DELETE_PHOTO_MODAL = 'delete-photo';
 
     #[Locked]
     public Reservation $reservation;
 
     #[Locked]
     public ?string $token = null;
+
+    public ?int $photoIdToDelete = null;
 
     public function mount(Reservation $reservation): void
     {
@@ -54,21 +62,29 @@ class PhotosPanel extends Component
 
     public function generate(): void
     {
-        Gate::authorize('reservations.manage');
+        Gate::authorize(BookingPermission::ManageReservations->value);
 
         $step = $this->openStep() ?? throw StepNotOpenException::forAnyStep($this->reservation);
 
-        $this->token = app(OpenPhotoSession::class)->handle($this->reservation, $step, Auth::user() ?? abort(401));
+        $this->token = app(OpenPhotoSession::class)->handle($this->reservation, $step, $this->agencyMember());
+    }
+
+    public function confirmPhotoDeletion(int $photoId): void
+    {
+        $this->photoIdToDelete = $photoId;
+
+        Flux::modal(self::DELETE_PHOTO_MODAL)->show();
     }
 
     public function deletePhoto(int $photoId): void
     {
-        Gate::authorize('reservations.manage');
+        Gate::authorize(BookingPermission::ManageReservations->value);
 
         $photo = Photo::query()->whereBelongsTo($this->reservation)->findOrFail($photoId);
 
-        app(DeletePhoto::class)->handle($photo, Auth::user());
+        app(DeletePhoto::class)->handle($photo, $this->agencyMember());
 
+        Flux::modal(self::DELETE_PHOTO_MODAL)->close();
         $this->announceReadiness();
     }
 
@@ -143,7 +159,7 @@ class PhotosPanel extends Component
         foreach (InspectionStep::cases() as $step) {
             $isReady = $completeness->isCompleteFor($step);
 
-            $this->dispatch(self::READINESS_EVENT, step: $step->transition()->value, is_ready: $isReady);
+            $this->dispatch(self::READINESS_EVENT, step: $step->transition()->value, section: self::SECTION, is_ready: $isReady);
         }
     }
 }

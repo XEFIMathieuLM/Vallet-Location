@@ -4,6 +4,8 @@
         <flux:text>{{ $reservation->customer->name }}</flux:text>
     </div>
 
+    <x-loading-hint />
+
     @error('refusal')
         <flux:callout variant="danger" icon="x-circle" :heading="$message" />
     @enderror
@@ -37,7 +39,7 @@
         @endforeach
     </div>
 
-    @can('damages.manage')
+    @can(\Functional\Inspection\Access\InspectionPermission::ManageDamages->value)
         <form wire:submit="report" class="flex flex-col gap-4 rounded-xl border border-zinc-200 p-4 dark:border-zinc-700">
             <x-section-heading :title="__('inspection::damages.report.title')" />
             <flux:select wire:model="reservationViewId" :label="__('inspection::damages.report.view')" :placeholder="__('inspection::damages.report.choose_view')">

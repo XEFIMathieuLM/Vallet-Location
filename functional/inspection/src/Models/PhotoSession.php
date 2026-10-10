@@ -2,9 +2,9 @@
 
 namespace Functional\Inspection\Models;
 
-use App\Models\User;
 use Carbon\CarbonImmutable;
 use Functional\Booking\Models\Reservation;
+use Functional\Fleet\Contracts\AgencyMember;
 use Functional\Inspection\Database\Factories\PhotoSessionFactory;
 use Functional\Inspection\Enums\InspectionStep;
 use Functional\Inspection\Enums\RevocationReason;
@@ -27,7 +27,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property CarbonImmutable|null $revoked_at
  * @property RevocationReason|null $revoked_reason
  * @property-read Reservation $reservation
- * @property-read User $author
+ * @property-read Model&AgencyMember $author
  */
 #[Fillable(['reservation_id', 'step', 'token_hash', 'created_by', 'expires_at', 'revoked_at', 'revoked_reason'])]
 #[UseFactory(PhotoSessionFactory::class)]
@@ -55,11 +55,11 @@ class PhotoSession extends Model
     }
 
     /**
-     * @return BelongsTo<User, $this>
+     * @return BelongsTo<Model, $this>
      */
     public function author(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo($this->userModel(), 'created_by');
     }
 
     /**
@@ -92,5 +92,13 @@ class PhotoSession extends Model
     public static function hashToken(string $token): string
     {
         return hash('sha256', $token);
+    }
+
+    /**
+     * @return class-string<Model>
+     */
+    private function userModel(): string
+    {
+        return config('auth.providers.users.model');
     }
 }

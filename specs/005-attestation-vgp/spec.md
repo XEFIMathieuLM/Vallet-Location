@@ -131,6 +131,7 @@ Le client dit ne pas avoir reçu l'attestation, l'a perdue, ou donne une autre a
 - **Cumul avec les autres conditions de sortie** : l'attestation est une condition de sortie parmi d'autres (VGP et disponibilité de la feature 001, photos de départ de la feature 002, et celles ajoutées par d'autres fonctionnalités, comme la caution) ; chacune est vérifiée indépendamment, et le refus indique au moins un motif bloquant. Le bouton de sortie suit la règle de la feature 001 : il s'active quand chaque section concernée signale l'étape prête.
 - **Réservations confirmées avant la mise en service** : leur attestation est envoyée automatiquement à la mise en service, comme si elles venaient d'être créées (mêmes états, même liste à traiter, même garantie d'envoi unique) ; les réservations déjà en cours ou clôturées ne sont pas concernées.
 - **Machine soumise à VGP uniquement par sa catégorie** : traitée comme toute machine soumise à VGP (règle de la feature 001).
+- **Réservation déjà en cours à la mise en service** : aucune attestation n'est ouverte pour elle (elle est déjà sortie) ; la section attestation et le renvoi ne s'affichent pas.
 - **Retour d'une réservation en cours** : l'attestation n'a aucun effet sur l'enregistrement du retour.
 - **Remise en main propre puis e-mail renseigné** : aucune attestation automatique n'est envoyée en plus ; le renvoi manuel reste possible (US5).
 - **Remise en main propre puis nouveau rapport déposé** : la remise reste valable (même règle que pour un envoi).

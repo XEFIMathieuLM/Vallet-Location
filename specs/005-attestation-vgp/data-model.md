@@ -36,10 +36,11 @@ L'obligation d'envoyer le rapport au client d'une réservation confirmée d'une 
 | `attempts` | integer | nombre de tentatives automatiques, ≥ 0 |
 | `next_attempt_at` | timestamp nullable | prochaine relance automatique (état `pending`) |
 | `last_failure_reason` | string nullable | `DispatchFailureReason` du dernier échec |
+| `status_changed_at` | timestamp | date d'entrée dans l'état courant, mise à jour à chaque transition |
 | `delivered_at` | timestamp nullable | date de l'envoi réussi ou de la remise ; CHECK non nul si et seulement si `status` ∈ (`sent`, `hand_delivered`) |
 | `created_at`, `updated_at` | timestamps | `created_at` = ouverture de l'attestation |
 
-- Index `(status, next_attempt_at)` pour le rattrapage et la liste à traiter.
+- Index `(status, next_attempt_at)` pour le rattrapage et `(status, status_changed_at)` pour la liste à traiter.
 - Relations : `reservation()` (BelongsTo `Functional\Booking\Models\Reservation`), `dispatches()` (HasMany `CertificateDispatch`), `lastDispatch()` (HasOne latestOfMany). `booking` ne déclare aucune relation vers cette table.
 
 ### `CertificateStatus` et états (pattern State, [research.md](research.md) C4)
@@ -48,7 +49,7 @@ L'obligation d'envoyer le rapport au client d'une réservation confirmée d'une 
 |---|---|---|---|
 | `awaiting_report` | En attente : rapport de VGP non déposé | non | oui |
 | `awaiting_email` | Non envoyée : e-mail du client manquant | non | oui |
-| `pending` | En attente d'envoi | non | si ouverte depuis plus de `alert_after_minutes` |
+| `pending` | En attente d'envoi | non | si `status_changed_at` est plus ancien que `alert_after_minutes` |
 | `failed` | Échec de l'envoi : motif | non | oui |
 | `sent` | Envoyée le … à … | oui | non |
 | `hand_delivered` | Remise en main propre le … par … | oui | non |

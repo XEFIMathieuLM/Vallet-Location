@@ -60,7 +60,7 @@ Portes tirées de la constitution v1.0.0 (et des précisions 1.0.1 annoncées : 
 | I. Layers OSDD | nouveau domaine = nouveau layer `functional/certification` ; dépendances `certification → booking → fleet` ; extension par `ReservationTransitionGuards`, `ReservationDetailSections` et les événements `ReservationChanged` / `CustomerChanged` ; appels aux actions publiques des layers inférieurs (`UpdateMachineVgp`, `UpdateCustomer::changeEmail()`) ; aucun fichier ni table d'un autre layer modifié par `certification` | ✅ C1, C9, C10 (les deux points d'extension sont livrés dans `booking` lui-même) |
 | II. Garanties en base et serveur | une attestation par réservation (index unique) ; un seul envoi automatique réussi (état sous `lockForUpdate()`, index unique partiel sur l'envoi automatique réussi) ; garde de sortie dans la transaction verrouillée de `DepartReservation` ; CHECK sur les états et les canaux ; pas de cascade ; compteurs et liste en SQL | ✅ C4, C5, C6, data-model |
 | III. Cycles de vie explicites | attestation en pattern State (6 états, transitions interdites, `IllegalCertificateTransitionException`) ; statuts texte + enums ; dates en heure de Paris | ✅ C4, data-model |
-| IV. Effets de bord et erreurs typées | listeners sur événements typés, job, commande planifiée ; pas d'observer ; `rescue()` et exceptions typées (`RefusalException` pour les refus) ; service d'envoi isolé derrière le mailer de Laravel, avec transport factice pour les tests et Mailpit en local ; état persisté + rattrapage chaque minute | ✅ C3, C5, C7 |
+| IV. Effets de bord et erreurs typées | listeners sur événements typés, job, commande planifiée ; pas d'observer ; `rescue()` et exceptions typées (`RefusalException` pour les refus) ; service d'envoi isolé derrière le mailer de Laravel, qui est déjà l'interface (transports factices, `Mail::fake()`, Mailpit en local) — pas de port maison autour, voir C7 ; état persisté + rattrapage chaque minute | ✅ C3, C5, C7 |
 | V. Accès par permission | `certification.manage` déclarée dans le seeder du layer et attribuée au rôle salarié | ✅ C11 |
 | VI. Tests par scénario | un test Feature par scénario d'acceptation, écrit d'abord ; Unit pour les états et la classification des échecs ; horloge contrôlée, faux transport, `Storage::fake` | ✅ tasks.md |
 | VII. Code simple et lisible | aucun nouveau package ; code en anglais, textes en français dans `functional/certification/resources/lang/fr` ; fichiers < 200 lignes, sans commentaire | à vérifier pendant l'implémentation |
@@ -121,7 +121,7 @@ functional/
     │   ├── Http/Controllers/      # VgpReportFileController (téléchargement sous permission)
     │   ├── Access/Controls/       # VgpReportControl, ReservationCertificateControl
     │   ├── Providers/             # CertificationServiceProvider
-    │   └── Livewire/              # VgpMachines, MachineVgpReports, CertificatesToHandle, ReservationCertificateSection, CertificationAlert
+    │   └── Livewire/              # VgpMachines, MachineVgpReports, CertificatesToHandle, ReservationCertificateSection (+ CustomerEmailForm, HandDeliveryButton, ResendCertificateButton), CertificationAlert
     ├── database/{migrations,factories,seeders}/
     ├── resources/{views (dont mail/), lang/fr}/
     ├── routes/{web.php,console.php}   # /vgp/*, planification

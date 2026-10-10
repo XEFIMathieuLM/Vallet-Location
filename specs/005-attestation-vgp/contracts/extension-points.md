@@ -22,7 +22,7 @@ Functional\Booking\Actions\UpdateCustomer::changeEmail(User $author, Customer $c
 Functional\Booking\Events\CustomerChanged(public readonly Customer $customer)  // ShouldDispatchAfterCommit
 ```
 
-`certification` écoute `CustomerChanged` (`ResolveCertificatesOnCustomerChanged`) et résout les attestations `awaiting_email` ou `failed` des réservations confirmées du client.
+`certification` écoute `CustomerChanged` (`ResolveCertificatesOnCustomerChanged`) et résout les attestations `awaiting_email` des réservations confirmées du client, et les `failed` seulement si l'e-mail actuel diffère de l'adresse du dernier envoi raté.
 
 ### 2. Disponibilité d'une étape par section (booking) — livrée par la 001 — [research.md](../research.md) C10
 

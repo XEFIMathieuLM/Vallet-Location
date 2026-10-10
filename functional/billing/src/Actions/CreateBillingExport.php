@@ -34,6 +34,7 @@ final class CreateBillingExport
                 ->where(fn (Builder $unreservedTransmissions): Builder => $unreservedTransmissions
                     ->whereNull('reserved_until')
                     ->orWhere('reserved_until', '<=', CarbonImmutable::now()))
+                ->with(MakeBillableLine::RELATIONS)
                 ->orderBy('created_at')
                 ->orderBy('id')
                 ->lockForUpdate()

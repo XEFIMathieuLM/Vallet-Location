@@ -2,32 +2,34 @@
 
 namespace Functional\Billing\Actions;
 
+use Functional\Billing\Exceptions\TransmissionWithoutSourceException;
 use Functional\Billing\Lines\BillableLine;
 use Functional\Billing\Lines\DamageLine;
 use Functional\Billing\Lines\RentalContext;
 use Functional\Billing\Lines\RentalPeriodLine;
 use Functional\Billing\Models\BillablePeriod;
-use Functional\Billing\Models\CustomerBillingAccount;
 use Functional\Billing\Models\Transmission;
-use Functional\Booking\Models\Reservation;
 
 final class MakeBillableLine
 {
+    public const RELATIONS = [
+        'reservation.machine.category',
+        'reservation.machine.agency',
+        'reservation.agency',
+        'billablePeriod',
+        'damageSettlement.damage.view',
+        'customerBillingAccount',
+    ];
+
     public function handle(Transmission $transmission): BillableLine
     {
-        $transmission->loadMissing([
-            'reservation.machine.category', 'reservation.machine.agency', 'reservation.agency',
-            'billablePeriod',
-        ]);
-        $rentalContext = RentalContext::fromTransmission($transmission, $this->customerRef($transmission->reservation));
+        $transmission->loadMissing(self::RELATIONS);
+        $rentalContext = RentalContext::fromTransmission($transmission, $transmission->customerBillingAccount?->external_ref);
 
-        return $transmission->billablePeriod instanceof BillablePeriod
-            ? RentalPeriodLine::fromPeriod($rentalContext, $transmission->billablePeriod)
-            : DamageLine::fromSettlement($rentalContext, $transmission->damageSettlement()->with('damage.view')->firstOrFail());
-    }
+        if ($transmission->billablePeriod instanceof BillablePeriod) {
+            return RentalPeriodLine::fromPeriod($rentalContext, $transmission->billablePeriod);
+        }
 
-    private function customerRef(Reservation $reservation): ?string
-    {
-        return CustomerBillingAccount::query()->where('customer_id', $reservation->customer_id)->value('external_ref');
+        return DamageLine::fromSettlement($rentalContext, $transmission->damageSettlement ?? throw TransmissionWithoutSourceException::for($transmission->id));
     }
 }

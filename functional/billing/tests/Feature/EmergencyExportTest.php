@@ -2,17 +2,20 @@
 
 namespace Functional\Billing\Tests\Feature;
 
+use App\Models\User;
 use Carbon\CarbonImmutable;
 use Functional\Billing\Actions\CreateBillingExport;
 use Functional\Billing\Enums\TransmissionStatus;
 use Functional\Billing\Exceptions\NothingToExportException;
 use Functional\Billing\Livewire\Exports;
+use Functional\Billing\Models\BillablePeriod;
 use Functional\Billing\Models\BillingExport;
 use Functional\Billing\Models\DamageSettlement;
 use Functional\Billing\Models\Transmission;
 use Functional\Billing\Money\Money;
 use Functional\Billing\Tests\Concerns\BuildsBillingFixtures;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -105,5 +108,38 @@ class EmergencyExportTest extends TestCase
             ->assertHasErrors('refusal');
 
         $this->assertSame(0, BillingExport::query()->count());
+    }
+
+    public function test_the_number_of_queries_of_an_export_does_not_grow_with_its_lines(): void
+    {
+        $employee = $this->employee();
+        $this->exportableRentalsWithDamage(2);
+        $queriesForTwoRentals = $this->countExportQueries($employee);
+        $this->exportableRentalsWithDamage(6);
+
+        $this->assertSame($queriesForTwoRentals, $this->countExportQueries($employee));
+    }
+
+    private function exportableRentalsWithDamage(int $count): void
+    {
+        foreach (range(1, $count) as $position) {
+            $reservation = $this->closedReservation('2026-11-10 08:00:00', '2026-11-14 17:00:00');
+            Transmission::factory()->create(['billable_period_id' => BillablePeriod::factory()->create(['reservation_id' => $reservation->id])->id, 'reservation_id' => $reservation->id]);
+            $settlement = DamageSettlement::factory()->billed(Money::fromStored(1000 * $position), 'Réparation')->create(['damage_id' => $this->unresolvedDamage($reservation)->id]);
+            Transmission::factory()->create(['billable_period_id' => null, 'damage_settlement_id' => $settlement->id, 'reservation_id' => $reservation->id]);
+        }
+    }
+
+    private function countExportQueries(User $employee): int
+    {
+        DB::flushQueryLog();
+        DB::enableQueryLog();
+        app(CreateBillingExport::class)->handle($employee);
+        DB::disableQueryLog();
+
+        return count(array_filter(
+            array_column(DB::getQueryLog(), 'query'),
+            fn (string $query): bool => str_starts_with(strtolower(ltrim($query)), 'select'),
+        ));
     }
 }

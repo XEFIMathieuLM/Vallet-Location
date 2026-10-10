@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Lomkit\Access\Controls\HasControl;
 
 /**
@@ -38,6 +39,7 @@ use Lomkit\Access\Controls\HasControl;
  * @property-read DamageSettlement|null $damageSettlement
  * @property-read Reservation $reservation
  * @property-read BillingExport|null $export
+ * @property-read CustomerBillingAccount|null $customerBillingAccount
  */
 #[Fillable([
     'billable_period_id', 'damage_settlement_id', 'reservation_id', 'status', 'attempts', 'next_attempt_at',
@@ -100,6 +102,14 @@ class Transmission extends Model
     public function reservation(): BelongsTo
     {
         return $this->belongsTo(Reservation::class);
+    }
+
+    /**
+     * @return HasOneThrough<CustomerBillingAccount, Reservation, $this>
+     */
+    public function customerBillingAccount(): HasOneThrough
+    {
+        return $this->hasOneThrough(CustomerBillingAccount::class, Reservation::class, 'id', 'customer_id', 'reservation_id', 'customer_id');
     }
 
     /**

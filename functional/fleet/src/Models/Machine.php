@@ -3,7 +3,6 @@
 namespace Functional\Fleet\Models;
 
 use Carbon\CarbonImmutable;
-use Functional\Fleet\Access\Controls\MachineControl;
 use Functional\Fleet\Database\Factories\MachineFactory;
 use Functional\Fleet\Enums\MachineStatus;
 use Functional\Fleet\States\MachineState;

@@ -319,12 +319,12 @@ Chaque phase se termine par `composer ci:check` en code 0 (après `vendor/bin/ph
 
 ## Phase 8: Polish & Cross-Cutting Concerns
 
-- [ ] T035 `tests/Feature/Dashboard/DashboardQueryCountTest.php` (FR-020, SC-003) :
+- [X] T035 `tests/Feature/Dashboard/DashboardQueryCountTest.php` (FR-020, SC-003) :
   - le nombre de requêtes du rendu complet de la page est identique avec 2 puis 30 réservations et machines par section (`DB::enableQueryLog()`), en vue agence comme en vue « Toutes les agences » ;
   - avec le volume de SC-003 (400 machines dans 7 agences, 3 000 réservations sur un an, par factories), le rendu complet en vue « Toutes les agences » prend moins de 2 secondes.
-- [ ] T036 [P] Vérifier qu'aucun fichier existant de `functional/*` n'est modifié par la branche (`git diff --stat origin/main -- functional` ne liste que les dix fichiers ajoutés), et que les bandeaux `billing.alert` et `certification.alert` sont toujours rendus sur `/dashboard` (FR-003, à ajouter à `tests/Feature/DashboardTest.php`).
-- [ ] T037 Recette manuelle de [quickstart.md](quickstart.md) avec les données du client chargées dans `vallet-008` (scripts copiés depuis le dossier principal, sans toucher l'environnement 8080) ; contrôle visuel en clair et en sombre, et à largeur de téléphone.
-- [ ] T038 `vendor/bin/pint --dirty`, `vendor/bin/phpstan clear-result-cache`, puis `composer ci:check` en code 0 ; commit « Tableau de bord : finitions ».
+- [X] T036 [P] Vérifier qu'aucun fichier existant de `functional/*` n'est modifié par la branche (`git diff --stat origin/main -- functional` ne liste que les dix fichiers ajoutés), et que les bandeaux `billing.alert` et `certification.alert` sont toujours rendus sur `/dashboard` (FR-003, à ajouter à `tests/Feature/DashboardTest.php`).
+- [X] T037 Recette manuelle de [quickstart.md](quickstart.md) avec les données du client chargées dans `vallet-008` (scripts copiés depuis le dossier principal, sans toucher l'environnement 8080) ; contrôle visuel en clair et en sombre, et à largeur de téléphone.
+- [X] T038 `vendor/bin/pint --dirty`, `vendor/bin/phpstan clear-result-cache`, puis `composer ci:check` en code 0 ; commit « Tableau de bord : finitions ».
 
 ---
 

@@ -250,7 +250,7 @@ Chaque phase se termine par `composer ci:check` en code 0 (après `vendor/bin/ph
 
 ### Tests (écrits d'abord, en échec)
 
-- [ ] T028 [US4] `tests/Feature/Dashboard/FleetOverviewTest.php` : un test par scénario de la US4.
+- [X] T028 [US4] `tests/Feature/Dashboard/FleetOverviewTest.php` : un test par scénario de la US4.
   1. Chiffres par statut, retirées non comptées.
   2. « VGP à surveiller » liste, dans cet ordre, la non renseignée, l'expirée (« Expirée le … ») et l'échéance à 5 jours (« dans 5 jours »).
   3. Le lien « Atelier » pointe vers `route('machines.index', ['agence' => $agency->id, 'statut' => 'workshop'])`.
@@ -264,20 +264,20 @@ Chaque phase se termine par `composer ci:check` en code 0 (après `vendor/bin/ph
 
 ### Implémentation
 
-- [ ] T029 [P] [US4] Créer `app/Livewire/Dashboard/FleetStatus.php` et `resources/views/livewire/dashboard/fleet-status.blade.php` :
+- [X] T029 [P] [US4] Créer `app/Livewire/Dashboard/FleetStatus.php` et `resources/views/livewire/dashboard/fleet-status.blade.php` :
   - `#[Reactive] ?int $agencyId` ;
   - `Gate::authorize(FleetPermission::ManageMachines->value)` ;
   - écouteurs `.machine.changed`, `.reservation.changed` et `.fleet.imported` ; `wire:poll.60s` ;
   - quatre chiffres via `FleetStatusCounts::count()`, libellés par `MachineStatus::label()` et couleurs par `MachineStatus::color()` ;
   - liens `machines.index` avec `statut`, et `agence` si une agence est choisie.
-- [ ] T030 [P] [US4] Créer `app/Livewire/Dashboard/VgpWatch.php` et `resources/views/livewire/dashboard/vgp-watch.blade.php` :
+- [X] T030 [P] [US4] Créer `app/Livewire/Dashboard/VgpWatch.php` et `resources/views/livewire/dashboard/vgp-watch.blade.php` :
   - `#[Reactive] ?int $agencyId` ;
   - `Gate::authorize(CertificationPermission::Manage->value)` ;
   - écouteur `.machine.changed` ; `wire:poll.60s` ;
   - `DashboardSection::fromQuery(VgpWatchList::query($agencyId, today()->addDays(config('dashboard.vgp_watch_days'))), config('dashboard.section_limit'))` ;
   - libellés d'échéance de [contracts/screens.md](contracts/screens.md) ;
   - lien « voir tout » vers `certification.machines` avec `agence`.
-- [ ] T031 [US4] Insérer les deux composants dans `dashboard.blade.php`, chacun sous son `@can`, et compléter `lang/fr/dashboard.php` (`fleet.*`, `vgp.*`).
+- [X] T031 [US4] Insérer les deux composants dans `dashboard.blade.php`, chacun sous son `@can`, et compléter `lang/fr/dashboard.php` (`fleet.*`, `vgp.*`).
 
 **Checkpoint**: `FleetOverviewTest` vert ; `composer ci:check` vert ; commit « Tableau de bord : état du parc et VGP à surveiller ».
 

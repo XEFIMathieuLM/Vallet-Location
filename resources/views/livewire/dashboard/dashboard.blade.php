@@ -16,6 +16,15 @@
         <livewire:dashboard.pending-work />
     @endcanany
 
+    <div class="grid gap-8 lg:grid-cols-2">
+        @can(\Functional\Fleet\Access\FleetPermission::ManageMachines->value)
+            <livewire:dashboard.fleet-status :agency-id="$this->agencyId" />
+        @endcan
+        @can(\Functional\Certification\Enums\CertificationPermission::Manage->value)
+            <livewire:dashboard.vgp-watch :agency-id="$this->agencyId" />
+        @endcan
+    </div>
+
     @unless ($this->hasAnySection)
         <x-empty-state :heading="__('dashboard.empty.heading')" :description="__('dashboard.empty.description')" />
     @endunless

@@ -2,6 +2,7 @@
 
 namespace Functional\Booking\Tests\Concerns;
 
+use Functional\Booking\Extensions\CustomerChangeGuards;
 use Functional\Booking\Extensions\ReservationDetailSections;
 use Functional\Booking\Extensions\ReservationTransitionGuards;
 
@@ -11,5 +12,6 @@ trait WithoutTransitionExtensions
     {
         $this->app->instance(ReservationTransitionGuards::class, new ReservationTransitionGuards);
         $this->app->instance(ReservationDetailSections::class, new ReservationDetailSections);
+        $this->app->instance(CustomerChangeGuards::class, new CustomerChangeGuards);
     }
 }

@@ -259,8 +259,8 @@ description: "Task list for feature 001-reservation-machines"
 
 - [ ] T097 [transaction-boundaries] Retirer la transaction du composant `functional/booking/src/Livewire/CreateReservationForm.php` (création du client inline portée par l'action) et celle, inutile, de `functional/fleet/src/Actions/ImportFleet.php`
 - [ ] T098 [FR-022] Tracer l'agence de l'auteur dans l'historique des changements de machine et de réservation (`Machine` et `Reservation`, `tapActivity`) ; `functional/booking/tests/Feature/ActivityLogTest.php` l'affirme
-- [ ] T099 [retention-via-prunable, layer-owned-config, latest-stable-versions, boost] Point d'enregistrement commun des modèles prunables des layers pour `model:prune` (config fusionnée par les layers, planification dans `routes/console.php`) ; `composer.json` `"php": "^8.5"` ; installer les skills Boost de `xefi/laravel-osdd` et `lomkit/laravel-access-control` (`boost.json`, `.claude/skills/`)
-- [ ] T100 [no-project-docs] Déplacer `spec.md.txt` dans `specs/brief-client.md`
+- [X] T099 [retention-via-prunable, layer-owned-config, latest-stable-versions, boost] Point d'enregistrement commun des modèles prunables des layers pour `model:prune` : clé `prunable.models` de `config/prunable.php`, remplie par chaque layer depuis son service provider (`config()->push('prunable.models', Model::class)`), lue par l'unique `Schedule::command('model:prune', ['--model' => …])->daily()` de `routes/console.php` ; `composer.json` `"php": "^8.5"` ; installer les skills Boost de `xefi/laravel-osdd` et `lomkit/laravel-access-control` (`boost.json`, `.claude/skills/`)
+- [X] T100 [no-project-docs] Déplacer `spec.md.txt` dans `specs/brief-client.md`
 
 ### Interface (skills design)
 

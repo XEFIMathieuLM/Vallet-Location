@@ -2,7 +2,9 @@
 
 namespace Functional\Inspection\Actions;
 
+use Functional\Booking\Models\Reservation;
 use Functional\Inspection\Events\PhotoChanged;
+use Functional\Inspection\Exceptions\PhotoSessionUnavailableException;
 use Functional\Inspection\Models\Photo;
 use Functional\Inspection\Models\ReservationView;
 use Functional\Inspection\Support\InspectionHistory;
@@ -26,6 +28,12 @@ class StorePhoto
             ->findOrFail($reservationViewId);
 
         $photo = DB::transaction(function () use ($session, $view, $file): Photo {
+            $session->setRelation('reservation', Reservation::query()->lockForUpdate()->findOrFail($session->reservation_id));
+
+            if (! $session->isActive()) {
+                throw PhotoSessionUnavailableException::make();
+            }
+
             $photo = Photo::query()->create([
                 'reservation_id' => $session->reservation_id,
                 'reservation_view_id' => $view->id,

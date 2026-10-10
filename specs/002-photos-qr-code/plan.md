@@ -14,7 +14,7 @@ Approche : un nouveau layer OSDD **`inspection`** au-dessus de `booking` et `fle
 
 **Language/Version**: PHP 8.4, Laravel 13, Livewire 4 + Flux (identique à la 001)
 
-**Primary Dependencies**: existantes (001) + `spatie/laravel-medialibrary` (nouveau), `bacon/bacon-qr-code` (déjà installé par Fortify), Alpine (fourni par Livewire) pour la réduction des photos côté téléphone
+**Primary Dependencies**: existantes (001) + `spatie/laravel-medialibrary` (nouveau : fichiers, conversions et suppression des fichiers avec le modèle, plutôt que du code maison), `bacon/bacon-qr-code` (déjà installé par Fortify, déclaré explicitement par le layer), `league/flysystem-aws-s3-v3` (nouveau : adaptateur officiel Laravel pour le disque `photos` en S3 en production), Alpine (fourni par Livewire) pour la réduction des photos côté téléphone. En local, un service S3 facultatif SeaweedFS (profil `s3` de `compose.yaml`) permet de tester le stockage S3 ; il remplace MinIO, dont les images ne sont plus publiées sur Docker Hub ni sur quay.io.
 
 **Storage**: PostgreSQL (6 nouvelles tables : 5 pour `inspection`, plus `media` de la médiathèque) ; fichiers sur un disque privé `photos` (local en dev, S3-compatible en production)
 
@@ -96,20 +96,23 @@ functional/
     ├── src/
     │   ├── Models/                   # CategoryView, ReservationView, PhotoSession, Photo, Damage
     │   ├── Enums/                    # InspectionStep, RevocationReason
-    │   ├── Actions/                  # OpenPhotoSession, StorePhoto, DeletePhoto, ReportDamage, ResolveDamage, FreezeReservationViews
+    │   ├── Actions/                  # OpenPhotoSession, FindActivePhotoSession, RevokePhotoSessions, StorePhoto, DeletePhoto, FreezeReservationViews, ResolveRequiredViews, MissingViews, ReportDamage, ResolveDamage, CountUnresolvedDamages, CategoryViews/*
     │   ├── Guards/                   # PhotosCompleteGuard
-    │   ├── Support/                  # registre DamageActions (point d'extension pour la 003)
-    │   ├── Exceptions/               # MissingPhotosException, PhotoSessionUnavailableException, StepAlreadyValidatedException
+    │   ├── Queries/                  # ReservationsToReinvoice
+    │   ├── Support/                  # DamageActions (point d'extension pour la 003), InspectionHistory (journal), QrCodeSvg
+    │   ├── Exceptions/               # refus typés (sous-classes de RefusalException)
     │   ├── Events/                   # PhotoChanged, PhotoSessionChanged, DamageChanged
     │   ├── Listeners/                # révocation des sessions sur ReservationChanged
-    │   ├── Controls/                 # PhotoControl, DamageControl, CategoryViewControl
+    │   ├── Access/Controls/          # DamageControl, CategoryViewControl (les photos sont protégées par la permission des routes)
+    │   ├── Http/Controllers/         # PhotoFileController : photos servies aux salariés connectés
     │   ├── Http/Middleware/          # en-têtes noindex / no-referrer sur /photos/*
-    │   └── Livewire/                 # PhotosPanel, PhoneCapture, Comparison, DamagesList, CategoryViews
+    │   └── Livewire/                 # PhotosPanel, PhoneCapture, Comparison, DamagesList, CategoryViewsIndex, CategoryViews
     ├── database/{migrations,factories,seeders}/
     ├── resources/{views,js,lang/fr}/ # js : réduction des photos (Alpine)
     ├── routes/web.php                # /photos/{token} (public), écrans poste
-    └── tests/{Feature,Unit}/
-routes/channels.php                   # + canal privé reservation.{id}
+    ├── routes/channels.php           # canal privé reservation.{id}
+    ├── routes/console.php            # purge nocturne des photos (model:prune)
+    └── tests/{Feature,Unit,Concerns,Fixtures}/
 config/filesystems.php                # + disque photos
 compose.yaml                    # + S3 local (SeaweedFS, profil s3), facultatif
 ```

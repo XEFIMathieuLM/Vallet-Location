@@ -40,7 +40,7 @@ Celles de la 001 s'appliquent sans changement ([tasks.md de la 001](../001-reser
 
 **Purpose**: Layer `inspection`, médiathèque, disque de stockage, permissions.
 
-- [X] T001 Installer `spatie/laravel-medialibrary` (`docker compose exec -u sail laravel.test composer require spatie/laravel-medialibrary`), publier et migrer sa migration `media` dans `database/migrations/`, publier `config/media-library.php` avec `queue_conversions_by_default = true` ; publier `config/livewire.php` et fixer `temporary_file_upload.rules` à `['required', 'file', 'max:15360']` ; relever `upload_max_filesize` et `post_max_size` à 16M dans la configuration PHP de Sail (`compose.yaml` / `php.ini` du conteneur)
+- [X] T001 Installer `spatie/laravel-medialibrary` (`docker compose exec -u sail laravel.test composer require spatie/laravel-medialibrary`), publier et migrer sa migration `media` dans `database/migrations/`, publier `config/media-library.php` avec `queue_conversions_by_default = true` ; publier `config/livewire.php` et fixer `temporary_file_upload.rules` à `['required', 'file', 'max:15360']` ; relever `upload_max_filesize` et `post_max_size` à 16M dans la configuration PHP de Sail (`compose.yaml` / `php.ini` du conteneur) — **non nécessaire** : le `php.ini` du conteneur Sail fixe déjà ces deux limites à 100M
 - [X] T002 Ajouter le disque privé `photos` dans `config/filesystems.php` (driver lu depuis `PHOTOS_DISK_DRIVER`, `local` par défaut sur `storage/app/private/photos`, `s3` en production avec `PHOTOS_S3_*`) et les variables dans `.env.example`
 - [X] T003 Créer le layer OSDD `functional/inspection/` (`composer.json` LayerManifest déclarant la dépendance à `booking` et `fleet`, namespace PSR-4, service provider, dossiers `src/`, `config/`, `database/migrations/`, `database/factories/`, `database/seeders/`, `resources/views/`, `resources/js/`, `resources/lang/fr/`, `routes/`, `tests/Feature/`, `tests/Unit/`) ; enregistrer sa suite de tests dans `phpunit.xml`
 - [X] T004 [P] Créer `functional/inspection/config/inspection.php` : `default_views` = `['Avant', 'Arrière', 'Gauche', 'Droite', 'Compteur d\'heures']` (clés de traduction), `session_lifetime_minutes` = 30, `max_photo_kilobytes` = 15360, `allowed_mimes` = `jpeg, png, webp` ; le charger depuis le service provider du layer
@@ -196,6 +196,15 @@ Les tâches T007 à T012 ne sont pas réalisées dans cette branche : génériqu
 - [ ] T067 Dérouler le parcours manuel de [quickstart.md](quickstart.md) avec un vrai smartphone iOS et un Android, **chronométrer SC-003 (moins de 3 min pour 5 vues) et SC-004 (moins de 5 s par photo)** et noter les mesures et les écarts dans `specs/002-photos-qr-code/checklists/requirements.md`
 
 ---
+
+## Phase 8: Corrections de l'analyse finale
+
+**Purpose**: Constats D1, D2, D4, F3, F4 et U1 du `/speckit-analyze` final.
+
+- [X] T068 [US1] Tests Feature dans `functional/inspection/tests/Feature/PhotoStepLockTest.php` : une suppression ou un ajout de photo dont la réservation a été validée entre le chargement et l'écriture est refusé (la vérification relit la réservation sous verrou) ; puis, dans `DeletePhoto` et `StorePhoto`, verrouiller la réservation (`lockForUpdate()`) dans la transaction et revérifier l'étape avant d'écrire, pour se sérialiser avec `DepartReservation` / `ReturnReservation` (D1, FR-014, FR-016, SC-001)
+- [X] T069 [US1] Dans `functional/inspection/src/Livewire/PhotosPanel.php`, calculer `is_ready` avec `MissingViews` (requête en base, sans figer les vues) au lieu d'un parcours en PHP ; les tests de `PhotosPanelTest` restent verts (D2)
+- [X] T070 [P] Justifier dans `plan.md` (Technical Context) les dépendances ajoutées : `league/flysystem-aws-s3-v3` (disque S3 de production) et SeaweedFS (S3 local facultatif, MinIO n'étant plus publié) (D4)
+- [X] T071 [P] Aligner l'arborescence de `plan.md` sur le code (`Access/Controls/` sans `PhotoControl`, `Queries/`, `Http/Controllers/`, `Support/InspectionHistory`, `Support/QrCodeSvg`, `routes/channels.php` et `routes/console.php` du layer) et ajouter à T001 la note sur les limites d'envoi PHP déjà suffisantes (F3, F4, U1)
 
 ## Dependencies & Execution Order
 

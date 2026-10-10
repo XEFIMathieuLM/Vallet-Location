@@ -3,11 +3,13 @@
 namespace Functional\Inspection\Actions;
 
 use App\Models\User;
+use Functional\Booking\Models\Reservation;
 use Functional\Inspection\Events\PhotoChanged;
 use Functional\Inspection\Exceptions\StepAlreadyValidatedException;
 use Functional\Inspection\Models\Photo;
 use Functional\Inspection\Models\PhotoSession;
 use Functional\Inspection\Support\InspectionHistory;
+use Illuminate\Support\Facades\DB;
 
 class DeletePhoto
 {
@@ -28,19 +30,23 @@ class DeletePhoto
 
     public function handle(Photo $photo, ?User $author): void
     {
-        $reservation = $photo->reservation;
+        $reservation = DB::transaction(function () use ($photo, $author): Reservation {
+            $lockedReservation = Reservation::query()->lockForUpdate()->findOrFail($photo->reservation_id);
 
-        if ($photo->step->isValidatedFor($reservation)) {
-            throw StepAlreadyValidatedException::for($photo->step);
-        }
+            if ($photo->step->isValidatedFor($lockedReservation)) {
+                throw StepAlreadyValidatedException::for($photo->step);
+            }
 
-        $photo->delete();
+            $photo->delete();
 
-        $this->inspectionHistory->record($reservation, 'photo.deleted', $author, [
-            'photo_id' => $photo->id,
-            'view' => $photo->view->label,
-            'step' => $photo->step->value,
-        ]);
+            $this->inspectionHistory->record($lockedReservation, 'photo.deleted', $author, [
+                'photo_id' => $photo->id,
+                'view' => $photo->view->label,
+                'step' => $photo->step->value,
+            ]);
+
+            return $lockedReservation;
+        });
 
         PhotoChanged::dispatch(
             $reservation->id,

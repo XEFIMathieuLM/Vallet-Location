@@ -22,6 +22,7 @@ Le logiciel de facturation reste la référence pour les tarifs, y compris les t
 - Q: À quel moment le bon de commande devient-il obligatoire ? → A: Avant la sortie. Une réservation peut être créée sans bon de commande ; la sortie est refusée tant qu'il manque (FR-007).
 - Q: Que saisit-on pour le bon de commande ? → A: Le numéro seul, sans document joint (FR-005).
 - Q: Comment un bon de commande se rattache-t-il aux réservations ? → A: Chaque réservation porte son numéro ; un même numéro peut servir à plusieurs réservations du même client (bon cadre, chantier). Aucun plafond ni aucune date de validité ne sont suivis dans l'outil (FR-006).
+- Q: Le numéro se saisit-il dans le formulaire de création de la réservation ? → A: Non : le détail de la réservation s'ouvre juste après la création, et le numéro se saisit dans sa section « Bon de commande » (US2, scénario 5).
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -58,7 +59,7 @@ Le client grand compte réserve souvent par téléphone et envoie son bon de com
 2. **Given** une réservation confirmée d'un grand compte sans numéro de bon de commande, **When** le salarié tente d'enregistrer la sortie, **Then** l'outil refuse en indiquant que le numéro de bon de commande doit être saisi.
 3. **Given** la même réservation, **When** le salarié saisit le numéro « BC-2026-0412 », **Then** la section affiche le numéro avec l'auteur, l'agence et la date de saisie, et l'étape « départ » est signalée prête du point de vue du bon de commande.
 4. **Given** une réservation d'un grand compte dont le numéro est saisi, **When** le salarié enregistre la sortie, **Then** la sortie est acceptée si les autres règles (VGP, disponibilité, photos de départ) sont respectées.
-5. **Given** le formulaire de création de réservation pour un grand compte, **When** le salarié connaît déjà le numéro et le saisit, **Then** la réservation est créée avec son numéro de bon de commande.
+5. **Given** une réservation que le salarié vient de créer pour un grand compte et dont il connaît déjà le numéro, **When** le détail de la réservation s'ouvre après la création, **Then** la section « Bon de commande » est à l'état « à saisir » et le salarié y saisit le numéro sans changer d'écran.
 6. **Given** un numéro saisi sur une réservation confirmée, **When** un salarié le corrige avant la sortie, **Then** le nouveau numéro remplace l'ancien et l'historique conserve les deux, avec l'auteur et la date.
 7. **Given** une réservation en cours ou clôturée, **When** un salarié tente de modifier son numéro de bon de commande, **Then** l'outil refuse : le numéro est figé à la sortie.
 8. **Given** le numéro « BC-CHANTIER-ROUEN » déjà saisi sur une réservation d'un grand compte, **When** un salarié saisit le même numéro sur une autre réservation de ce client, **Then** la saisie est acceptée.
@@ -131,7 +132,7 @@ Un salarié consulte la liste des réservations confirmées de grands comptes qu
 
 **Bon de commande**
 
-- **FR-005**: Les salariés DOIVENT pouvoir saisir un numéro de bon de commande sur une réservation confirmée d'un client professionnel, à sa création ou ensuite : texte de 1 à 50 caractères, espaces superflus retirés. Aucun document n'est joint.
+- **FR-005**: Les salariés DOIVENT pouvoir saisir un numéro de bon de commande sur une réservation confirmée d'un client professionnel, depuis le détail de la réservation (ouvert juste après sa création) ou depuis la liste des bons manquants : texte de 1 à 50 caractères, espaces superflus retirés. Aucun document n'est joint.
 - **FR-006**: Un même numéro de bon de commande DOIT pouvoir être saisi sur plusieurs réservations ; le système ne suit ni plafond ni date de validité du bon de commande.
 - **FR-007**: Le système DOIT refuser l'enregistrement de la sortie d'une réservation dont le client est grand compte au moment de la sortie et qui n'a pas de numéro de bon de commande, en indiquant la raison. Ce refus DOIT être garanti côté serveur, au moment même de la sortie, même si l'interface a laissé le bouton actif.
 - **FR-008**: Le système DOIT afficher, dans le détail de chaque réservation d'un client professionnel, une section « Bon de commande » indiquant l'état (exigé et à saisir, saisi, facultatif) et, si le numéro est saisi, l'auteur, l'agence et la date ; la section DOIT signaler l'étape « départ » prête dès que le numéro est saisi ou qu'il n'est pas exigé.
@@ -146,7 +147,7 @@ Un salarié consulte la liste des réservations confirmées de grands comptes qu
 
 **Suivi et traçabilité**
 
-- **FR-014**: Le système DOIT présenter à toutes les agences la liste des réservations confirmées de grands comptes sans numéro de bon de commande, triées par date de départ, filtrable par agence de rattachement de la machine, avec la réservation, le client, la machine et la date de départ.
+- **FR-014**: Le système DOIT présenter à toutes les agences la liste des réservations confirmées de grands comptes sans numéro de bon de commande, triées par date de départ (date de début prévue de la réservation), filtrable par agence de rattachement de la machine, avec la réservation, le client, la machine et la date de départ.
 - **FR-015**: Le système DOIT mettre en évidence dans cette liste les réservations dont le départ a lieu dans 3 jours ou moins.
 - **FR-016**: Le système DOIT enregistrer dans l'historique chaque désignation et chaque retrait de grand compte, et chaque saisie ou correction de numéro de bon de commande (ancien et nouveau numéro), avec l'auteur, l'agence et la date.
 - **FR-017**: Ces actions sont ouvertes à tous les salariés dans cette version, chacune contrôlée par une autorisation dédiée (désigner un grand compte, saisir un bon de commande).

@@ -5,11 +5,14 @@ namespace Functional\Billing\Tests\Unit;
 use Functional\Billing\Enums\TransmissionStatus;
 use Functional\Billing\Exceptions\IllegalTransmissionTransitionException;
 use Functional\Billing\States\TransmissionStateFactory;
+use Functional\Fleet\Tests\Concerns\AssertsRefusals;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class TransmissionStateTest extends TestCase
 {
+    use AssertsRefusals;
+
     private const TRANSITIONS = ['send', 'fail', 'requeue', 'export'];
 
     private const LEGAL_TRANSITIONS = [
@@ -38,7 +41,9 @@ class TransmissionStateTest extends TestCase
         $expectedStatus = self::LEGAL_TRANSITIONS[$status][$transition] ?? null;
 
         if ($expectedStatus === null) {
-            $this->expectException(IllegalTransmissionTransitionException::class);
+            $this->assertRefused(IllegalTransmissionTransitionException::class, 'Impossible de', fn () => $state->{$transition}());
+
+            return;
         }
 
         $this->assertSame($expectedStatus, $state->{$transition}()->status()->value);

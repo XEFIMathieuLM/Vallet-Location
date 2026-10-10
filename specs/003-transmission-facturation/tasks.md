@@ -252,6 +252,21 @@ Lire `design-patterns:state` avant T016.
 
 ---
 
+## Phase 9: Alignement sur le socle 001
+
+**Purpose**: reprendre les conventions livrées par la 001 (39d253a) et la 002 (ffc711b), fusionnées dans cette branche par la coordination (3ed749a), à la place des équivalents propres à `billing` écrits en phase 8.
+
+- [X] T086 [Socle] Refus : les refus de `billing` (`IllegalTransmissionTransitionException`, `NothingToExportException`, `DamageAlreadySettledException`, `InvalidDamageSettlementException`) étendent `Functional\Fleet\Exceptions\RefusalException` (message technique anglais, clé de traduction, `userMessage()`), affichés par `DisplaysRefusals` ; supprimer `BillingRefusalException` et `DisplaysBillingRefusals` ; les tests de refus passent par `AssertsRefusals::assertRefused()` ; les exceptions qui ne sont pas des refus affichés restent typées avec un message anglais
+- [ ] T087 [Socle] Faker : renommer `BillingExtension` en `BillingFakerExtension` (convention de la 001 et de la 002) et régénérer `faker_mixin.php`
+- [ ] T088 [Socle] Titres (suite de T084) : `<x-page-heading>` pour les écrans Transmissions, Exports de secours et Relevé ; `<x-section-heading>` pour les sections du relevé et la section « Facturation » du détail de réservation (niveau 3 pour ses sous-parties)
+- [ ] T089 [Socle] Navigation : `@can` du layout et de la barre latérale lisent `BillingPermission::Manage` au lieu de la chaîne `'billing.manage'`
+
+`model:prune` : aucun modèle de `billing` n'est purgeable, rien à enregistrer.
+
+**Checkpoint** : suite complète, PHPStan (cache vidé) et Pint passent.
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies

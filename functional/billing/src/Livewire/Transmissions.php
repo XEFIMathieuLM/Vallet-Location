@@ -6,17 +6,17 @@ use Flux\Flux;
 use Functional\Billing\Actions\RetryTransmission;
 use Functional\Billing\Actions\SetCustomerBillingRef;
 use Functional\Billing\Enums\BillingPermission;
-use Functional\Billing\Livewire\Concerns\DisplaysBillingRefusals;
 use Functional\Billing\Models\Transmission;
 use Functional\Billing\Queries\TransmissionsToHandle;
 use Functional\Booking\Models\Customer;
+use Functional\Fleet\Livewire\Concerns\DisplaysRefusals;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Component;
 
 class Transmissions extends Component
 {
-    use DisplaysBillingRefusals;
+    use DisplaysRefusals;
 
     /**
      * @var array<int|string, string>

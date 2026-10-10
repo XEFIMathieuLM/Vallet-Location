@@ -5,11 +5,11 @@ namespace Functional\Billing\Livewire;
 use Flux\Flux;
 use Functional\Billing\Actions\RetryTransmission;
 use Functional\Billing\Enums\BillingPermission;
-use Functional\Billing\Livewire\Concerns\DisplaysBillingRefusals;
 use Functional\Billing\Models\BillablePeriod;
 use Functional\Billing\Models\DamageSettlement;
 use Functional\Billing\Models\Transmission;
 use Functional\Booking\Models\Reservation;
+use Functional\Fleet\Livewire\Concerns\DisplaysRefusals;
 use Functional\Inspection\Models\Damage;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Gate;
@@ -18,7 +18,7 @@ use Livewire\Component;
 
 class ReservationBillingSection extends Component
 {
-    use DisplaysBillingRefusals;
+    use DisplaysRefusals;
 
     #[Locked]
     public Reservation $reservation;

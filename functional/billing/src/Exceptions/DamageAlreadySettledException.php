@@ -2,7 +2,9 @@
 
 namespace Functional\Billing\Exceptions;
 
-final class DamageAlreadySettledException extends BillingRefusalException
+use Functional\Fleet\Exceptions\RefusalException;
+
+final class DamageAlreadySettledException extends RefusalException
 {
     public static function for(int $damageId): self
     {

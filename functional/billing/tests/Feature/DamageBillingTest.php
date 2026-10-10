@@ -15,6 +15,7 @@ use Functional\Billing\Models\Transmission;
 use Functional\Billing\Money\Money;
 use Functional\Billing\Tests\Concerns\BuildsBillingFixtures;
 use Functional\Billing\Tests\Concerns\RecordsReservationLifecycle;
+use Functional\Fleet\Tests\Concerns\AssertsRefusals;
 use Functional\Inspection\Actions\ResolveDamage;
 use Functional\Inspection\Models\Damage;
 use Functional\Inspection\Queries\ReservationsToReinvoice;
@@ -26,7 +27,7 @@ use Tests\TestCase;
 
 class DamageBillingTest extends TestCase
 {
-    use BuildsBillingFixtures, RecordsReservationLifecycle, RefreshDatabase;
+    use AssertsRefusals, BuildsBillingFixtures, RecordsReservationLifecycle, RefreshDatabase;
 
     private User $employee;
 
@@ -89,7 +90,7 @@ class DamageBillingTest extends TestCase
     {
         $damage = $this->unresolvedDamage($this->closedReservation('2026-11-10 08:00:00', '2026-11-14 17:00:00'));
 
-        $this->assertThrows(fn () => app(WaiveDamage::class)->handle($damage, '   ', $this->employee), InvalidDamageSettlementException::class);
+        $this->assertRefused(InvalidDamageSettlementException::class, 'Le motif est obligatoire', fn () => app(WaiveDamage::class)->handle($damage, '   ', $this->employee));
         $this->assertSame(0, DamageSettlement::query()->count());
         $this->assertFalse($damage->refresh()->isResolved());
     }
@@ -99,9 +100,10 @@ class DamageBillingTest extends TestCase
         $damage = $this->unresolvedDamage($this->closedReservation('2026-11-10 08:00:00', '2026-11-14 17:00:00'));
         app(BillDamage::class)->handle($damage, Money::fromStored(45000), 'remplacement capot', $this->employee);
 
-        $this->assertThrows(
+        $this->assertRefused(
+            DamageAlreadySettledException::class,
+            'toute correction se fait par un avoir',
             fn () => app(BillDamage::class)->handle($damage, Money::fromStored(30000), 'remplacement capot', $this->employee),
-            fn (DamageAlreadySettledException $exception): bool => str_contains($exception->userMessage(), 'avoir') && $exception->getMessage() === "Damage #{$damage->id} is already settled.",
         );
         $this->assertSame(45000, DamageSettlement::query()->sole()->amount?->minorUnits);
     }
@@ -110,9 +112,9 @@ class DamageBillingTest extends TestCase
     {
         $damage = $this->unresolvedDamage($this->closedReservation('2026-11-10 08:00:00', '2026-11-14 17:00:00'));
 
-        $this->assertThrows(fn () => app(BillDamage::class)->handle($damage, Money::fromStored(0), 'remplacement capot', $this->employee), InvalidDamageSettlementException::class);
-        $this->assertThrows(fn () => app(BillDamage::class)->handle($damage, Money::fromStored(-100), 'remplacement capot', $this->employee), InvalidDamageSettlementException::class);
-        $this->assertThrows(fn () => app(BillDamage::class)->handle($damage, Money::fromStored(45000), ' ', $this->employee), InvalidDamageSettlementException::class);
+        $this->assertRefused(InvalidDamageSettlementException::class, 'strictement positif', fn () => app(BillDamage::class)->handle($damage, Money::fromStored(0), 'remplacement capot', $this->employee));
+        $this->assertRefused(InvalidDamageSettlementException::class, 'strictement positif', fn () => app(BillDamage::class)->handle($damage, Money::fromStored(-100), 'remplacement capot', $this->employee));
+        $this->assertRefused(InvalidDamageSettlementException::class, 'libellé de la réparation est obligatoire', fn () => app(BillDamage::class)->handle($damage, Money::fromStored(45000), ' ', $this->employee));
         $this->assertSame(0, DamageSettlement::query()->count());
     }
 
@@ -121,7 +123,7 @@ class DamageBillingTest extends TestCase
         $reservation = $this->closedReservation('2026-11-10 08:00:00', '2026-11-14 17:00:00');
         $damage = Damage::factory()->resolved()->create(['reservation_id' => $reservation->id, 'reservation_view_id' => $this->unresolvedDamage($reservation)->reservation_view_id]);
 
-        $this->assertThrows(fn () => app(WaiveDamage::class)->handle($damage, 'usure normale', $this->employee), DamageAlreadySettledException::class);
+        $this->assertRefused(DamageAlreadySettledException::class, 'déjà réglé', fn () => app(WaiveDamage::class)->handle($damage, 'usure normale', $this->employee));
     }
 
     public function test_a_damage_of_a_rental_returned_before_go_live_can_be_billed(): void

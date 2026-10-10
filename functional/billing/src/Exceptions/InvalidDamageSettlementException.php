@@ -2,7 +2,9 @@
 
 namespace Functional\Billing\Exceptions;
 
-final class InvalidDamageSettlementException extends BillingRefusalException
+use Functional\Fleet\Exceptions\RefusalException;
+
+final class InvalidDamageSettlementException extends RefusalException
 {
     public static function amountNotPositive(): self
     {

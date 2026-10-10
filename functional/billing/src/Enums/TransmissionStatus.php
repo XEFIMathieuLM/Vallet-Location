@@ -2,7 +2,9 @@
 
 namespace Functional\Billing\Enums;
 
-enum TransmissionStatus: string
+use Functional\Fleet\Contracts\HasLabel;
+
+enum TransmissionStatus: string implements HasLabel
 {
     case Pending = 'pending';
     case Sent = 'sent';

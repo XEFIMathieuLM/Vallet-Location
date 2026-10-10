@@ -2,7 +2,9 @@
 
 namespace Functional\Billing\Exceptions;
 
-final class NothingToExportException extends BillingRefusalException
+use Functional\Fleet\Exceptions\RefusalException;
+
+final class NothingToExportException extends RefusalException
 {
     public static function make(): self
     {

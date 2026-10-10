@@ -21,6 +21,7 @@ use Functional\Billing\Money\Money;
 use Functional\Billing\Tests\Concerns\BuildsBillingFixtures;
 use Functional\Billing\Tests\Doubles\ObservingBillingGateway;
 use Functional\Booking\Models\Reservation;
+use Functional\Fleet\Tests\Concerns\AssertsRefusals;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -29,7 +30,7 @@ use Tests\TestCase;
 
 class SendTransmissionTest extends TestCase
 {
-    use BuildsBillingFixtures, RefreshDatabase;
+    use AssertsRefusals, BuildsBillingFixtures, RefreshDatabase;
 
     public function test_an_accepted_transmission_is_sent_with_every_field_of_the_rental_period(): void
     {
@@ -165,7 +166,7 @@ class SendTransmissionTest extends TestCase
         $observedTransactionLevel = null;
         $this->app->instance(BillingGateway::class, new ObservingBillingGateway(function (BillableLine $line) use (&$observedTransactionLevel, $employee): string {
             $observedTransactionLevel = DB::transactionLevel();
-            $this->assertThrows(fn () => app(CreateBillingExport::class)->handle($employee), NothingToExportException::class);
+            $this->assertRefused(NothingToExportException::class, 'rien à exporter', fn () => app(CreateBillingExport::class)->handle($employee));
 
             return 'EXT-1';
         }));

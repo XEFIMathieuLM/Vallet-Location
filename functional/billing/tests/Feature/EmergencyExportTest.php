@@ -14,6 +14,7 @@ use Functional\Billing\Models\DamageSettlement;
 use Functional\Billing\Models\Transmission;
 use Functional\Billing\Money\Money;
 use Functional\Billing\Tests\Concerns\BuildsBillingFixtures;
+use Functional\Fleet\Tests\Concerns\AssertsRefusals;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -22,7 +23,7 @@ use Tests\TestCase;
 
 class EmergencyExportTest extends TestCase
 {
-    use BuildsBillingFixtures, RefreshDatabase;
+    use AssertsRefusals, BuildsBillingFixtures, RefreshDatabase;
 
     protected function setUp(): void
     {
@@ -61,7 +62,7 @@ class EmergencyExportTest extends TestCase
         $this->artisan('billing:reconcile')->assertSuccessful();
 
         $this->assertSame([], $this->fakeGateway()->received());
-        $this->assertThrows(fn () => app(CreateBillingExport::class)->handle($employee), NothingToExportException::class);
+        $this->assertRefused(NothingToExportException::class, 'il n\'y a rien à exporter', fn () => app(CreateBillingExport::class)->handle($employee));
     }
 
     public function test_the_file_follows_the_export_format(): void

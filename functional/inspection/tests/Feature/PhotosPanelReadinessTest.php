@@ -25,6 +25,9 @@ class PhotosPanelReadinessTest extends TestCase
     public function test_the_departure_button_is_disabled_on_first_display_until_the_panel_reports_ready(): void
     {
         $reservation = $this->reservationStartingToday();
+        $photosOnlySections = new ReservationDetailSections;
+        $photosOnlySections->register(PhotosPanel::SECTION, 10, ReservationTransition::Departure, ReservationTransition::Return);
+        $this->app->instance(ReservationDetailSections::class, $photosOnlySections);
 
         $detail = Livewire::test(ReservationDetail::class, ['reservation' => $reservation]);
 

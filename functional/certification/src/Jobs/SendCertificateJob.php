@@ -2,6 +2,7 @@
 
 namespace Functional\Certification\Jobs;
 
+use Functional\Certification\Actions\SendCertificate;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -20,5 +21,8 @@ final class SendCertificateJob implements ShouldBeUnique, ShouldQueue
         return (string) $this->certificateId;
     }
 
-    public function handle(): void {}
+    public function handle(SendCertificate $sendCertificate): void
+    {
+        $sendCertificate->handle($this->certificateId);
+    }
 }

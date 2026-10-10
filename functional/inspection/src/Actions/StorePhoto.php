@@ -1,0 +1,66 @@
+<?php
+
+namespace Functional\Inspection\Actions;
+
+use Functional\Booking\Models\Reservation;
+use Functional\Inspection\Completeness\ViewCompleteness;
+use Functional\Inspection\Events\PhotoChanged;
+use Functional\Inspection\Exceptions\PhotoSessionUnavailableException;
+use Functional\Inspection\History\InspectionHistory;
+use Functional\Inspection\History\InspectionHistoryEvent;
+use Functional\Inspection\Models\Photo;
+use Functional\Inspection\Models\ReservationView;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
+
+class StorePhoto
+{
+    public function __construct(
+        private readonly FindActivePhotoSession $findActivePhotoSession,
+        private readonly ViewCompleteness $viewCompleteness,
+        private readonly InspectionHistory $inspectionHistory,
+    ) {}
+
+    public function handle(string $token, int $reservationViewId, UploadedFile $file): Photo
+    {
+        $session = $this->findActivePhotoSession->handle($token);
+
+        $view = ReservationView::query()
+            ->whereBelongsTo($session->reservation)
+            ->findOrFail($reservationViewId);
+
+        $photo = DB::transaction(function () use ($session, $view, $file): Photo {
+            $session->setRelation('reservation', Reservation::query()->lockForUpdate()->findOrFail($session->reservation_id));
+
+            if (! $this->findActivePhotoSession->isActive($session)) {
+                throw PhotoSessionUnavailableException::make();
+            }
+
+            $photo = Photo::query()->create([
+                'reservation_id' => $session->reservation_id,
+                'reservation_view_id' => $view->id,
+                'step' => $session->step,
+                'photo_session_id' => $session->id,
+            ]);
+
+            $photo->addMedia($file)->toMediaCollection(Photo::COLLECTION);
+
+            $this->inspectionHistory->record($session->reservation, InspectionHistoryEvent::PhotoReceived, $session->author, [
+                'photo_id' => $photo->id,
+                'view' => $view->label,
+                'step' => $session->step->value,
+            ]);
+
+            return $photo;
+        });
+
+        PhotoChanged::dispatch(
+            $session->reservation_id,
+            $session->step,
+            $view->id,
+            $this->viewCompleteness->for($session->reservation)->missingCount($session->step),
+        );
+
+        return $photo;
+    }
+}

@@ -85,9 +85,22 @@ services:
             - '${FORWARD_MAILPIT_DASHBOARD_PORT:-8025}:8025'
         networks:
             - sail
+    s3:
+        image: 'chrislusf/seaweedfs:latest'
+        profiles:
+            - s3
+        ports:
+            - '${FORWARD_S3_PORT:-8333}:8333'
+        command: 'server -s3 -dir=/data'
+        volumes:
+            - 'sail-s3:/data'
+        networks:
+            - sail
 networks:
     sail:
         driver: bridge
 volumes:
     sail-pgsql:
+        driver: local
+    sail-s3:
         driver: local

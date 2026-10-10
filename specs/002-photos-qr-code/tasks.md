@@ -248,12 +248,12 @@ Les tâches T007 à T012 ne sont pas réalisées dans cette branche : génériqu
 
 ### Interface (skills design)
 
-- [ ] T090 [accessibility] Page téléphone : vrai bouton d'envoi avec focus visible (au lieu du label sur un champ masqué) ; alternative textuelle au QR code SVG du panneau ; niveaux de titres explicites sur les écrans d'inspection
-- [ ] T091 [buttons] Un seul bouton primaire par écran : « Lancer le QR code » secondaire (« Enregistrer la sortie » de la 001 reste le primaire) ; écran des vues et comparaison sans double primaire ; action principale du téléphone en taille L (48 px)
-- [ ] T092 [screen-states] Messages de succès (signalement de dégât, modification des vues) et état d'erreur de chargement sur les écrans d'inspection : message de succès après un signalement de dégât et après chaque modification des vues d'une catégorie ; message d'erreur sur le panneau photos et la comparaison si leur rechargement échoue
-- [ ] T093 [spacing, foundations] Supprimer les espacements de 12 px, `top-0.5` / `right-0.5`, et l'écart de 4 px entre titre et sous-titre (8 px) ; appliquer l'échelle des titres commune de la 001 dès qu'elle est fusionnée
-- [ ] T094 [ux-writing] Un seul verbe par action (« Supprimer » une photo, « Retirer » une vue : harmoniser) ; messages de refus qui disent quoi faire (`damages.php`, `photos.php`) ; taille explicite du badge d'étape sur le téléphone ; ne réécrire que les refus qui ne disent pas quoi faire (`step_validated`, `already_resolved`, `return_photos_incomplete`) ; les textes fixés par `contracts/screens.md` restent
-- [ ] T095 [Couverture FR-012] Test vérifiant que le panneau se met à jour à la réception d'une photo (`PhotosPanel::getListeners` et rafraîchissement sur `photo.changed`)
+- [X] T090 [accessibility] Page téléphone : vrai bouton d'envoi avec focus visible (au lieu du label sur un champ masqué) ; alternative textuelle au QR code SVG du panneau ; niveaux de titres explicites sur les écrans d'inspection
+- [X] T091 [buttons] Un seul bouton primaire par écran : « Lancer le QR code » secondaire (« Enregistrer la sortie » de la 001 reste le primaire) ; écran des vues et comparaison sans double primaire ; action principale du téléphone en taille L (48 px)
+- [X] T092 [screen-states] Messages de succès (signalement de dégât, modification des vues) et état d'erreur de chargement sur les écrans d'inspection : message de succès après un signalement de dégât et après chaque modification des vues d'une catégorie ; message d'erreur sur le panneau photos et la comparaison si leur rechargement échoue
+- [ ] T093 [spacing, foundations] Supprimer les espacements de 12 px, `top-0.5` / `right-0.5`, et l'écart de 4 px entre titre et sous-titre (8 px) ; appliquer l'échelle des titres commune de la 001 dès qu'elle est fusionnée — **État** : espacements corrigés (12 px, `top-0.5`, titre/sous-titre à 8 px) ; reste l'échelle des titres commune de la 001
+- [X] T094 [ux-writing] Un seul verbe par action (« Supprimer » une photo, « Retirer » une vue : harmoniser) ; messages de refus qui disent quoi faire (`damages.php`, `photos.php`) ; taille explicite du badge d'étape sur le téléphone ; ne réécrire que les refus qui ne disent pas quoi faire (`step_validated`, `already_resolved`, `return_photos_incomplete`) ; les textes fixés par `contracts/screens.md` restent
+- [X] T095 [Couverture FR-012] Test vérifiant que le panneau se met à jour à la réception d'une photo (`PhotosPanel::getListeners` et rafraîchissement sur `photo.changed`)
 - [ ] T096 Mettre à jour `plan.md` (arborescence, configuration du layer, Complexity Tracking), `data-model.md` et `quickstart.md` pour refléter la phase 11 (X6)
 
 ## Dependencies & Execution Order

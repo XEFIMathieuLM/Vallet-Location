@@ -9,7 +9,7 @@ return [
     'refusals' => [
         'missing_photos' => 'Photos manquantes : :views',
         'link_unavailable' => 'Ce lien n\'est plus valable, générez un nouveau QR code depuis le poste.',
-        'step_validated' => 'Les photos de :step sont validées et ne peuvent plus être modifiées.',
+        'step_validated' => 'Les photos de :step sont déjà validées et ne peuvent plus être modifiées. Rechargez la page pour voir leur état à jour.',
         'step_not_open' => 'La prise de photos de :step n\'est pas ouverte pour cette réservation.',
         'no_open_step' => 'Aucune prise de photos n\'est ouverte : la réservation doit être confirmée avec sa date de début atteinte, ou être en cours.',
     ],

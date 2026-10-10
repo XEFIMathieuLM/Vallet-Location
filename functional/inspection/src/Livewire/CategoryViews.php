@@ -2,6 +2,7 @@
 
 namespace Functional\Inspection\Livewire;
 
+use Flux\Flux;
 use Functional\Fleet\Livewire\Concerns\DisplaysRefusals;
 use Functional\Fleet\Models\MachineCategory;
 use Functional\Inspection\Actions\CategoryViews\AddCategoryView;
@@ -38,6 +39,7 @@ class CategoryViews extends Component
         $this->validate(['newLabel' => ['required', 'string', 'max:100']]);
 
         app(AddCategoryView::class)->handle($this->category, $this->newLabel);
+        $this->confirmSaved();
 
         $this->reset('newLabel');
     }
@@ -53,6 +55,7 @@ class CategoryViews extends Component
         $this->validate(['editedLabel' => ['required', 'string', 'max:100'], 'editedPosition' => ['required', 'integer']]);
 
         app(RenameCategoryView::class)->handle($this->category, (int) $this->editedPosition, $this->editedLabel);
+        $this->confirmSaved();
 
         $this->reset('editedPosition', 'editedLabel');
     }
@@ -60,16 +63,24 @@ class CategoryViews extends Component
     public function move(int $position, int $offset): void
     {
         app(MoveCategoryView::class)->handle($this->category, $position, $offset);
+        $this->confirmSaved();
     }
 
     public function remove(int $position): void
     {
         app(RemoveCategoryView::class)->handle($this->category, $position);
+        $this->confirmSaved();
     }
 
     public function resetToDefault(): void
     {
         app(ResetCategoryViews::class)->handle($this->category);
+        $this->confirmSaved();
+    }
+
+    private function confirmSaved(): void
+    {
+        Flux::toast(text: __('inspection::views.edit.saved'), variant: 'success');
     }
 
     public function render(): View

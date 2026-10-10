@@ -1,12 +1,16 @@
 <section class="flex flex-col gap-4 rounded-xl border border-zinc-200 p-4 dark:border-zinc-700">
     <div class="flex flex-wrap items-center justify-between gap-2">
-        <flux:heading size="lg">{{ __('inspection::panel.title') }}</flux:heading>
+        <flux:heading level="2" size="lg">{{ __('inspection::panel.title') }}</flux:heading>
 
         @if ($openStep !== null)
-            <flux:button size="sm" variant="primary" icon="qr-code" wire:click="generate">
+            <flux:button size="sm" icon="qr-code" wire:click="generate">
                 {{ $activeSession === null ? __('inspection::panel.generate', ['step' => $openStep->label()]) : __('inspection::panel.regenerate') }}
             </flux:button>
         @endif
+    </div>
+
+    <div wire:offline>
+        <flux:callout variant="warning" icon="signal-slash" :heading="__('inspection::panel.offline')" />
     </div>
 
     @error('refusal')
@@ -18,10 +22,10 @@
     @elseif ($activeSession !== null)
         <div class="flex flex-wrap items-center gap-4">
             @if ($qrCode !== null)
-                <div class="rounded-lg bg-white p-2">{!! $qrCode !!}</div>
+                <div class="rounded-lg bg-white p-2" role="img" aria-label="{{ __('inspection::panel.qr_label', ['step' => $openStep->label()]) }}">{!! $qrCode !!}</div>
             @endif
             <div
-                class="flex flex-col gap-1"
+                class="flex flex-col gap-2"
                 x-data="{ remaining: Math.max(0, {{ $activeSession->expires_at->getTimestamp() }} - Math.floor(Date.now() / 1000)) }"
                 x-init="setInterval(() => remaining = Math.max(0, remaining - 1), 1000)"
             >
@@ -60,7 +64,7 @@
                                             <div wire:key="panel-photo-{{ $photo->id }}" class="relative">
                                                 <img src="{{ route('inspection.photo-file', [$photo, 'thumb']) }}" alt="{{ $view->label }}" class="size-16 rounded object-cover" />
                                                 @if (! $step->isValidatedFor($reservation))
-                                                    <div class="absolute top-0.5 right-0.5">
+                                                    <div class="absolute top-1 right-1">
                                                         <flux:button
                                                             size="xs"
                                                             variant="danger"

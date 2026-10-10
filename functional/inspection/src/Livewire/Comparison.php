@@ -2,6 +2,7 @@
 
 namespace Functional\Inspection\Livewire;
 
+use Flux\Flux;
 use Functional\Booking\Models\Reservation;
 use Functional\Fleet\Livewire\Concerns\DisplaysRefusals;
 use Functional\Inspection\Actions\ReportDamage;
@@ -43,6 +44,8 @@ class Comparison extends Component
         app(ReportDamage::class)->handle($this->reservation, (int) $this->reservationViewId, $this->comment, Auth::user() ?? abort(401));
 
         $this->reset('reservationViewId', 'comment');
+
+        Flux::toast(text: __('inspection::damages.report.done'), variant: 'success');
     }
 
     public function render(): View

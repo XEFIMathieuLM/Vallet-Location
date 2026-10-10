@@ -1,7 +1,7 @@
 <section class="flex max-w-2xl flex-col gap-6">
-    <div class="flex flex-col gap-1">
+    <div class="flex flex-col gap-2">
         <flux:link :href="route('inspection.category-views.index')" wire:navigate>{{ __('inspection::views.edit.back') }}</flux:link>
-        <flux:heading size="xl">{{ __('inspection::views.edit.title', ['category' => $category->name]) }}</flux:heading>
+        <flux:heading level="1" size="xl">{{ __('inspection::views.edit.title', ['category' => $category->name]) }}</flux:heading>
         @if ($isCustomized)
             <flux:badge color="blue" size="sm" class="self-start">{{ __('inspection::views.index.custom') }}</flux:badge>
         @else
@@ -16,11 +16,11 @@
     <ol class="flex flex-col divide-y divide-zinc-200 rounded-lg border border-zinc-200 dark:divide-zinc-700 dark:border-zinc-700">
         @foreach ($labels as $offset => $label)
             @php($position = $offset + 1)
-            <li wire:key="view-{{ $position }}-{{ $label }}" class="flex items-center gap-2 p-3">
+            <li wire:key="view-{{ $position }}-{{ $label }}" class="flex items-center gap-2 p-4">
                 @if ($editedPosition === $position)
                     <form wire:submit="rename" class="flex flex-1 items-center gap-2">
                         <flux:input wire:model="editedLabel" class="flex-1" :aria-label="__('inspection::views.edit.label')" />
-                        <flux:button type="submit" size="sm" variant="primary">{{ __('inspection::views.edit.save') }}</flux:button>
+                        <flux:button type="submit" size="sm">{{ __('inspection::views.edit.save') }}</flux:button>
                         <flux:button size="sm" wire:click="$set('editedPosition', null)">{{ __('inspection::views.edit.cancel') }}</flux:button>
                     </form>
                 @else

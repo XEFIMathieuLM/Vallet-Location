@@ -133,32 +133,32 @@ description: "Task list for the full visual redesign (feature 010)"
 
 ### Tests for User Story 2
 
-- [ ] T020 [P] [US2] Écrire `tests/Feature/Design/StaffNavigationTest.php` :
+- [X] T020 [P] [US2] Écrire `tests/Feature/Design/StaffNavigationTest.php` :
   - (1) salarié avec toutes les permissions : `get(route('dashboard'))` contient les 20 liens de la colonne (routes de `layouts/app/sidebar.blade.php`), dans l'ordre des groupes ;
   - (2) sur `route('reservations.index')`, l'élément `[data-flux-sidebar-item][data-current]` pointe vers `reservations.index` ;
   - (3) un salarié sans `BillingPermission::Manage` ne voit ni `billing.transmissions`, ni `billing.exports`, ni `billing.statement` ;
   - (4) le composant `portal.pending-requests-badge` est rendu pour `PortalPermission::HandleRequests` ;
   - (5) la page contient le logotype (`aria-label` « Vallet Location ») et `data-test="sidebar-menu-button"`.
-- [ ] T021 [P] [US2] Écrire `tests/Feature/Design/TopBarTest.php` : la barre de 60 px affiche le titre de la page (`#[Title]` du composant) et la date du jour en heure de Paris (`travelTo('2026-10-10 08:00')` → « samedi 10 octobre 2026 »), et contient la zone `id="top-bar-actions"`.
+- [X] T021 [P] [US2] Écrire `tests/Feature/Design/TopBarTest.php` : la barre de 60 px affiche le titre de la page (`#[Title]` du composant) et la date du jour en heure de Paris (`travelTo('2026-10-10 08:00')` → « samedi 10 octobre 2026 »), et contient la zone `id="top-bar-actions"`.
 
 ### Implementation for User Story 2
 
-- [ ] T022 [P] [US2] Refaire `resources/views/components/app-logo.blade.php` : logotype « VALLET » + pavé « LOCATION », prop `inverse`, mode `sidebar` conservé (`flux:sidebar.brand` / `flux:brand` avec le logotype en slot `logo`, sans nom dupliqué), `aria-label` = `config('app.name')`. Refaire `resources/views/components/app-logo-icon.blade.php` en monogramme carré « V » (SVG, `currentColor`).
-- [ ] T023 [P] [US2] Remplacer `public/favicon.svg` par le monogramme (carré noir, « V » blanc). Régénérer `public/favicon.ico` (32 px) et `public/apple-touch-icon.png` (180 px) depuis ce SVG, avec la capture Chrome de l'outil, sans nouvelle dépendance.
-- [ ] T024 [P] [US2] Créer `resources/views/components/top-bar.blade.php` (`x-top-bar`, prop `title`, slot `start`) :
+- [X] T022 [P] [US2] Refaire `resources/views/components/app-logo.blade.php` : logotype « VALLET » + pavé « LOCATION », prop `inverse`, mode `sidebar` conservé (`flux:sidebar.brand` / `flux:brand` avec le logotype en slot `logo`, sans nom dupliqué), `aria-label` = `config('app.name')`. Refaire `resources/views/components/app-logo-icon.blade.php` en monogramme carré « V » (SVG, `currentColor`).
+- [X] T023 [P] [US2] Remplacer `public/favicon.svg` par le monogramme (carré noir, « V » blanc). Régénérer `public/favicon.ico` (32 px) et `public/apple-touch-icon.png` (180 px) depuis ce SVG, avec la capture Chrome de l'outil, sans nouvelle dépendance.
+- [X] T024 [P] [US2] Créer `resources/views/components/top-bar.blade.php` (`x-top-bar`, prop `title`, slot `start`) :
   - 60 px, `border-b border-zinc-100` ;
   - titre en 600, date `now('Europe/Paris')->locale('fr')->isoFormat('dddd D MMMM YYYY')` en `zinc-500` ;
   - slot `start` pour le bouton du menu mobile ;
   - à droite, une zone vide `<div id="top-bar-actions" class="ms-auto flex items-center gap-3"></div>`, destinée aux `@teleport`.
-- [ ] T025 [US2] Réécrire `resources/views/layouts/app/sidebar.blade.php` (R4) :
+- [X] T025 [US2] Réécrire `resources/views/layouts/app/sidebar.blade.php` (R4) :
   - `flux:sidebar` en `class="dark bg-black border-e border-white/16"`, logotype inversé ;
   - groupes et entrées inchangés (mêmes `@can`, routes, `:current`, badge des demandes) ;
   - titres de groupe en surtitre ;
   - menu personnel en bas (`x-desktop-user-menu` inchangé) ;
   - zone de contenu avec `x-top-bar :title="$title ?? null"` ;
   - sur mobile, la barre porte `flux:sidebar.toggle`, le logotype et le profil (dropdown existant), avec des cibles de 44 px.
-- [ ] T026 [US2] Ajuster `resources/views/components/desktop-user-menu.blade.php` pour la colonne noire (lisible en `dark`), `data-test` conservé, et `resources/views/flux/navlist/group.blade.php` pour le surtitre (11 px, 700, capitales, blanc à 55 % dans la colonne).
-- [ ] T027 [US2] Captures du tableau de bord et des réservations en 1440 et 375 px, menu ouvert sur téléphone. `composer ci:check` code 0, puis commit « Refonte graphique : navigation et logotype ».
+- [X] T026 [US2] Ajuster `resources/views/components/desktop-user-menu.blade.php` pour la colonne noire (lisible en `dark`), `data-test` conservé, et le surtitre des groupes (11 px, 700, capitales, blanc à 55 % dans la colonne), posé par `components.css` sur `[data-flux-sidebar-group]` car la colonne utilise `flux:sidebar.group` et non `navlist/group`. Menu personnel mobile extrait dans `resources/views/components/mobile-user-menu.blade.php` (layout sous 200 lignes).
+- [X] T027 [US2] Captures du tableau de bord et des réservations en 1440 et 375 px, menu ouvert sur téléphone. `composer ci:check` code 0, puis commit « Refonte graphique : navigation et logotype ».
 
 **Checkpoint** : US1 + US2 : tout l'espace salariés a sa nouvelle structure.
 

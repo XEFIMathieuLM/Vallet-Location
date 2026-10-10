@@ -1,17 +1,14 @@
 @props([
     'sidebar' => false,
+    'inverse' => false,
 ])
 
-@if($sidebar)
-    <flux:sidebar.brand :name="config('app.name', 'Laravel')" {{ $attributes }}>
-        <x-slot name="logo" class="flex aspect-square size-8 items-center justify-center rounded-md bg-accent-content text-accent-foreground">
-            <x-app-logo-icon class="size-5 fill-current text-white dark:text-black" />
-        </x-slot>
-    </flux:sidebar.brand>
-@else
-    <flux:brand :name="config('app.name', 'Laravel')" {{ $attributes }}>
-        <x-slot name="logo" class="flex aspect-square size-8 items-center justify-center rounded-md bg-accent-content text-accent-foreground">
-            <x-app-logo-icon class="size-5 fill-current text-white dark:text-black" />
-        </x-slot>
-    </flux:brand>
-@endif
+@php
+    $wordmarkClasses = $inverse ? 'text-white' : 'text-zinc-950 dark:text-white';
+    $blockClasses = $inverse ? 'bg-white text-black' : 'bg-zinc-950 text-white dark:bg-white dark:text-black';
+@endphp
+
+<a {{ $attributes->class('group/logo inline-flex h-10 shrink-0 items-center gap-1.5') }} aria-label="{{ config('app.name') }}" data-app-logo>
+    <span aria-hidden="true" class="text-[1.375rem] leading-none font-extrabold tracking-tight {{ $wordmarkClasses }}">VALLET</span>
+    <span aria-hidden="true" class="px-1.5 py-1 text-[0.5625rem] leading-none font-bold tracking-[0.2em] {{ $blockClasses }}">LOCATION</span>
+</a>

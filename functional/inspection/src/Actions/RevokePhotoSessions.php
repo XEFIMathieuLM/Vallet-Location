@@ -7,8 +7,10 @@ use Functional\Booking\Models\Reservation;
 use Functional\Inspection\Enums\InspectionStep;
 use Functional\Inspection\Enums\RevocationReason;
 use Functional\Inspection\Events\PhotoSessionChanged;
+use Functional\Inspection\History\InspectionHistory;
+use Functional\Inspection\History\InspectionHistoryEvent;
 use Functional\Inspection\Models\PhotoSession;
-use Functional\Inspection\Support\InspectionHistory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -24,26 +26,23 @@ class RevokePhotoSessions
         $now = CarbonImmutable::now();
 
         $revokedSteps = DB::transaction(function () use ($reservation, $steps, $reason, $now): Collection {
-            $activeSessions = PhotoSession::query()
-                ->where('reservation_id', $reservation->id)
+            $activeSessions = fn (): Builder => PhotoSession::query()
+                ->whereBelongsTo($reservation)
                 ->whereIn('step', $steps)
                 ->whereNull('revoked_at')
-                ->where('expires_at', '>', $now)
-                ->get(['id', 'step']);
+                ->where('expires_at', '>', $now);
 
-            if ($activeSessions->isEmpty()) {
+            $sessionSteps = $activeSessions()->distinct()->orderBy('step')->pluck('step');
+
+            if ($sessionSteps->isEmpty()) {
                 return collect();
             }
 
-            PhotoSession::query()
-                ->whereKey($activeSessions->modelKeys())
-                ->update(['revoked_at' => $now, 'revoked_reason' => $reason]);
+            $revokedSessionsCount = $activeSessions()->update(['revoked_at' => $now, 'revoked_reason' => $reason]);
 
-            $sessionSteps = $activeSessions->map(fn (PhotoSession $session): InspectionStep => $session->step)->unique()->values();
-
-            $this->inspectionHistory->record($reservation, 'photo_session.revoked', null, [
+            $this->inspectionHistory->record($reservation, InspectionHistoryEvent::PhotoSessionRevoked, null, [
                 'steps' => $sessionSteps->map(fn (InspectionStep $step): string => $step->value)->implode(','),
-                'sessions_count' => $activeSessions->count(),
+                'sessions_count' => $revokedSessionsCount,
                 'reason' => $reason->value,
             ]);
 

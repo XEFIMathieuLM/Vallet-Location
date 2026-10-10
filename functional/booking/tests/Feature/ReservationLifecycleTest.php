@@ -19,12 +19,13 @@ use Functional\Booking\Models\Reservation;
 use Functional\Booking\Tests\Concerns\WithoutTransitionExtensions;
 use Functional\Fleet\Enums\MachineStatus;
 use Functional\Fleet\Models\Machine;
+use Functional\Fleet\Tests\Concerns\AssertsRefusals;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class ReservationLifecycleTest extends TestCase
 {
-    use RefreshDatabase, WithoutTransitionExtensions;
+    use AssertsRefusals, RefreshDatabase, WithoutTransitionExtensions;
 
     private Machine $machine;
 
@@ -52,10 +53,7 @@ class ReservationLifecycleTest extends TestCase
     {
         $reservation = $this->reservation('2026-11-11', '2026-11-14');
 
-        $this->expectException(DepartureRefusedException::class);
-        $this->expectExceptionMessage('11/11/2026');
-
-        app(DepartReservation::class)->handle($reservation);
+        $this->assertRefused(DepartureRefusedException::class, '11/11/2026', fn () => app(DepartReservation::class)->handle($reservation));
     }
 
     public function test_departure_is_refused_when_the_vgp_no_longer_covers_the_end_date(): void
@@ -64,10 +62,7 @@ class ReservationLifecycleTest extends TestCase
         $reservation = $this->reservation('2026-11-10', '2026-11-14');
         $this->machine->update(['vgp_due_date' => '2026-11-12']);
 
-        $this->expectException(DepartureRefusedException::class);
-        $this->expectExceptionMessage('12/11/2026');
-
-        app(DepartReservation::class)->handle($reservation);
+        $this->assertRefused(DepartureRefusedException::class, '12/11/2026', fn () => app(DepartReservation::class)->handle($reservation));
     }
 
     public function test_departure_is_refused_when_the_machine_is_not_available(): void
@@ -75,10 +70,7 @@ class ReservationLifecycleTest extends TestCase
         $reservation = $this->reservation('2026-11-10', '2026-11-14');
         $this->machine->update(['status' => MachineStatus::Workshop]);
 
-        $this->expectException(DepartureRefusedException::class);
-        $this->expectExceptionMessage('« Atelier »');
-
-        app(DepartReservation::class)->handle($reservation);
+        $this->assertRefused(DepartureRefusedException::class, '« Atelier »', fn () => app(DepartReservation::class)->handle($reservation));
     }
 
     public function test_a_return_in_good_state_closes_the_reservation_and_frees_the_machine(): void

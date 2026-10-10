@@ -10,6 +10,7 @@ use Functional\Booking\Models\Reservation;
 use Functional\Fleet\Enums\MachineStatus;
 use Functional\Fleet\Models\Machine;
 use Functional\Fleet\Models\MachineCategory;
+use Functional\Fleet\Tests\Concerns\AssertsRefusals;
 use Functional\Inspection\Actions\MissingViews;
 use Functional\Inspection\Enums\InspectionStep;
 use Functional\Inspection\Exceptions\MissingPhotosException;
@@ -21,7 +22,7 @@ use Tests\TestCase;
 
 class LegacyReservationReturnTest extends TestCase
 {
-    use BuildsPhotoSessions, RefreshDatabase;
+    use AssertsRefusals, BuildsPhotoSessions, RefreshDatabase;
 
     private MachineCategory $category;
 
@@ -59,10 +60,10 @@ class LegacyReservationReturnTest extends TestCase
     {
         $reservation = $this->reservationLeftBeforeGoLive();
 
-        $this->assertThrows(
-            fn () => app(ReturnReservation::class)->handle($reservation, ReturnCondition::GoodState),
+        $this->assertRefused(
             MissingPhotosException::class,
             'Photos manquantes : Godet, Bras',
+            fn () => app(ReturnReservation::class)->handle($reservation, ReturnCondition::GoodState),
         );
 
         $this->assertSame(ReservationStatus::InProgress, $reservation->fresh()?->status);

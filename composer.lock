@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "247b1446872a44bfa74d1d406c9c0adf",
+    "content-hash": "5111572edffe7b63ab9712eb369cbf93",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -1016,7 +1016,7 @@
             "dist": {
                 "type": "path",
                 "url": "./functional/booking",
-                "reference": "6676a40d8a041eb7667032c808ae1342852b983e"
+                "reference": "bd6e88b6b403f765ee04a88397648ac26ee9ceeb"
             },
             "require": {
                 "xefi/laravel-osdd": "*"
@@ -1026,6 +1026,11 @@
                 "laravel": {
                     "providers": [
                         "Functional\\Booking\\Providers\\BookingServiceProvider"
+                    ]
+                },
+                "faker": {
+                    "providers": [
+                        "Functional\\Booking\\Faker\\BookingFakerServiceProvider"
                     ]
                 }
             },
@@ -1046,7 +1051,7 @@
             "dist": {
                 "type": "path",
                 "url": "./functional/fleet",
-                "reference": "e06501706ea8ec55071007667c89ac0608f98b59"
+                "reference": "328982b02edf61733fa0e9c99064b003541e2556"
             },
             "require": {
                 "xefi/laravel-osdd": "*"
@@ -1056,6 +1061,11 @@
                 "laravel": {
                     "providers": [
                         "Functional\\Fleet\\Providers\\FleetServiceProvider"
+                    ]
+                },
+                "faker": {
+                    "providers": [
+                        "Functional\\Fleet\\Faker\\FleetFakerServiceProvider"
                     ]
                 }
             },
@@ -1076,21 +1086,33 @@
             "dist": {
                 "type": "path",
                 "url": "./functional/inspection",
-                "reference": "9093f1812bf7bd4aee7397f7fae76f3bdc4dd1d6"
+                "reference": "b9e071f48ac2380a15fb95921d4df454fb12ee31"
             },
             "require": {
                 "bacon/bacon-qr-code": "^3.0",
                 "functional/booking": "*",
                 "functional/fleet": "*",
+                "laravel/framework": "^13.17",
                 "league/flysystem-aws-s3-v3": "^3.0",
+                "livewire/flux": "^2.13.1",
+                "livewire/livewire": "^4.1",
+                "lomkit/laravel-access-control": "^0.6.0",
+                "php": "^8.3",
+                "spatie/laravel-activitylog": "^5.1",
                 "spatie/laravel-medialibrary": "^11.23",
-                "xefi/laravel-osdd": "*"
+                "spatie/laravel-permission": "^8.3",
+                "xefi/laravel-osdd": "^2.0"
             },
             "type": "layer",
             "extra": {
                 "laravel": {
                     "providers": [
                         "Functional\\Inspection\\Providers\\InspectionServiceProvider"
+                    ]
+                },
+                "faker": {
+                    "providers": [
+                        "Functional\\Inspection\\Faker\\InspectionFakerServiceProvider"
                     ]
                 }
             },
@@ -8867,12 +8889,12 @@
             "version": "v5.7.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/vlucas/phpdotenv.git",
+                "url": "https://github.com/phpdotenv/phpdotenv.git",
                 "reference": "301c07936b16d88628b126b01d082ba153cf4c40"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vlucas/phpdotenv/zipball/301c07936b16d88628b126b01d082ba153cf4c40",
+                "url": "https://api.github.com/repos/phpdotenv/phpdotenv/zipball/301c07936b16d88628b126b01d082ba153cf4c40",
                 "reference": "301c07936b16d88628b126b01d082ba153cf4c40",
                 "shasum": ""
             },
@@ -12776,6 +12798,65 @@
             "time": "2026-05-20T14:38:16+00:00"
         },
         {
+            "name": "xefi/faker-php-locales-fr-fr",
+            "version": "v1.1.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/xefi/faker-php-locales-fr-fr.git",
+                "reference": "97200b4372441f0c662af4ef4ba88b34ef91bd5c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/xefi/faker-php-locales-fr-fr/zipball/97200b4372441f0c662af4ef4ba88b34ef91bd5c",
+                "reference": "97200b4372441f0c662af4ef4ba88b34ef91bd5c",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.3",
+                "psr/container": "^2.0",
+                "xefi/faker-php": "^1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^11"
+            },
+            "type": "library",
+            "extra": {
+                "faker": {
+                    "providers": [
+                        "Xefi\\Faker\\FrFr\\FakerFrFrServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Xefi\\Faker\\FrFr\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Gautier Deleglise"
+                },
+                {
+                    "name": "Martin Soenen"
+                }
+            ],
+            "description": "Faker extension to include fr_FR locale",
+            "keywords": [
+                "data",
+                "faker",
+                "fr"
+            ],
+            "support": {
+                "issues": "https://github.com/xefi/faker-php-locales-fr-fr/issues",
+                "source": "https://github.com/xefi/faker-php-locales-fr-fr/tree/v1.1.4"
+            },
+            "time": "2025-12-30T14:45:38+00:00"
+        },
+        {
             "name": "xefi/phpstan-xefi-rules",
             "version": "v1.1",
             "source": {
@@ -12830,7 +12911,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.3"
+        "php": "^8.5"
     },
     "platform-dev": {},
     "plugin-api-version": "2.9.0"

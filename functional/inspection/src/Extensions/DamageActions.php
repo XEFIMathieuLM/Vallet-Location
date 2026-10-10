@@ -1,6 +1,6 @@
 <?php
 
-namespace Functional\Inspection\Support;
+namespace Functional\Inspection\Extensions;
 
 class DamageActions
 {

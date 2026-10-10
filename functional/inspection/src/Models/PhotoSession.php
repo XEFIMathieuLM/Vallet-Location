@@ -10,9 +10,12 @@ use Functional\Inspection\Enums\InspectionStep;
 use Functional\Inspection\Enums\RevocationReason;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int $id
@@ -31,7 +34,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class PhotoSession extends Model
 {
     /** @use HasFactory<PhotoSessionFactory> */
-    use HasFactory;
+    use HasFactory, Prunable;
 
     protected function casts(): array
     {
@@ -59,11 +62,31 @@ class PhotoSession extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function isActive(): bool
+    /**
+     * @return HasMany<Photo, $this>
+     */
+    public function photos(): HasMany
     {
-        return $this->revoked_at === null
-            && $this->expires_at->isFuture()
-            && $this->step->isOpenFor($this->reservation);
+        return $this->hasMany(Photo::class);
+    }
+
+    /**
+     * @return Builder<self>
+     */
+    public function prunable(): Builder
+    {
+        $retentionStart = CarbonImmutable::now()->subDays(config()->integer('inspection.photo_session_retention_days'));
+
+        return self::query()
+            ->whereDoesntHave('photos')
+            ->where(fn (Builder $sessions): Builder => $sessions
+                ->where('expires_at', '<', $retentionStart)
+                ->orWhere('revoked_at', '<', $retentionStart));
+    }
+
+    public function isRevokedOrExpired(): bool
+    {
+        return $this->revoked_at !== null || ! $this->expires_at->isFuture();
     }
 
     public static function hashToken(string $token): string

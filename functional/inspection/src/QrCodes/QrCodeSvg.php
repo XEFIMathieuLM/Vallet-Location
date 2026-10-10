@@ -1,6 +1,6 @@
 <?php
 
-namespace Functional\Inspection\Support;
+namespace Functional\Inspection\QrCodes;
 
 use BaconQrCode\Renderer\Image\SvgImageBackEnd;
 use BaconQrCode\Renderer\ImageRenderer;

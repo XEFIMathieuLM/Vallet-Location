@@ -20,7 +20,7 @@ class EditableCategoryViews
     {
         MachineCategory::query()->whereKey($category->id)->lockForUpdate()->firstOrFail();
 
-        if (! CategoryView::query()->where('machine_category_id', $category->id)->exists()) {
+        if (! CategoryView::query()->whereBelongsTo($category, 'category')->exists()) {
             $now = CarbonImmutable::now();
             $defaultLabels = $this->resolveRequiredViews->defaultLabels();
 
@@ -38,7 +38,7 @@ class EditableCategoryViews
         }
 
         return CategoryView::query()
-            ->where('machine_category_id', $category->id)
+            ->whereBelongsTo($category, 'category')
             ->orderBy('position')
             ->get();
     }
@@ -46,14 +46,14 @@ class EditableCategoryViews
     /**
      * @param  Collection<int, CategoryView>  $views
      */
-    public function ensureLabelIsFree(Collection $views, string $label, ?int $ignoredViewId = null): void
+    public function ensureLabelIsFree(MachineCategory $category, Collection $views, string $label, ?int $ignoredViewId = null): void
     {
         $isTaken = $views->contains(
             fn (CategoryView $view): bool => $view->id !== $ignoredViewId && mb_strtolower($view->label) === mb_strtolower($label),
         );
 
         if ($isTaken) {
-            throw DuplicateCategoryViewLabelException::for($label);
+            throw DuplicateCategoryViewLabelException::for($category, $label);
         }
     }
 }

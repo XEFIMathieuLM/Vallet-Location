@@ -18,7 +18,7 @@ use Functional\Billing\Livewire\DamageBillingActions;
 use Functional\Billing\Livewire\ReservationBillingSection;
 use Functional\Booking\Events\ReservationChanged;
 use Functional\Booking\Extensions\ReservationDetailSections;
-use Functional\Inspection\Support\DamageActions;
+use Functional\Inspection\Extensions\DamageActions;
 use Illuminate\Support\Facades\Event;
 use Livewire\Livewire;
 use Lomkit\Access\Access;

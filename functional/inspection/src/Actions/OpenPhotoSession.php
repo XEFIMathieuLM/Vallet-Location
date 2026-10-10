@@ -9,8 +9,9 @@ use Functional\Inspection\Enums\InspectionStep;
 use Functional\Inspection\Enums\RevocationReason;
 use Functional\Inspection\Events\PhotoSessionChanged;
 use Functional\Inspection\Exceptions\StepNotOpenException;
+use Functional\Inspection\History\InspectionHistory;
+use Functional\Inspection\History\InspectionHistoryEvent;
 use Functional\Inspection\Models\PhotoSession;
-use Functional\Inspection\Support\InspectionHistory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -25,7 +26,7 @@ class OpenPhotoSession
     public function handle(Reservation $reservation, InspectionStep $step, User $author): string
     {
         if (! $step->isOpenFor($reservation)) {
-            throw StepNotOpenException::for($step);
+            throw StepNotOpenException::for($reservation, $step);
         }
 
         $this->freezeReservationViews->handle($reservation);
@@ -45,7 +46,7 @@ class OpenPhotoSession
                 'expires_at' => CarbonImmutable::now()->addMinutes(config()->integer('inspection.session_lifetime_minutes')),
             ]);
 
-            $this->inspectionHistory->record($reservation, 'photo_session.opened', $author, ['step' => $step->value]);
+            $this->inspectionHistory->record($reservation, InspectionHistoryEvent::PhotoSessionOpened, $author, ['step' => $step->value]);
         });
 
         PhotoSessionChanged::dispatch($reservation->id, $step, true);

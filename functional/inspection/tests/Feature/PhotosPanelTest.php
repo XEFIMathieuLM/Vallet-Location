@@ -5,6 +5,7 @@ namespace Functional\Inspection\Tests\Feature;
 use App\Models\User;
 use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Models\Reservation;
+use Functional\Fleet\Tests\Concerns\AssertsRefusals;
 use Functional\Inspection\Actions\DeletePhoto;
 use Functional\Inspection\Enums\InspectionStep;
 use Functional\Inspection\Exceptions\StepAlreadyValidatedException;
@@ -18,7 +19,7 @@ use Tests\TestCase;
 
 class PhotosPanelTest extends TestCase
 {
-    use BuildsPhotoSessions, RefreshDatabase;
+    use AssertsRefusals, BuildsPhotoSessions, RefreshDatabase;
 
     private User $employee;
 
@@ -110,7 +111,7 @@ class PhotosPanelTest extends TestCase
             ->call('deletePhoto', $remainingPhoto->id)
             ->assertHasErrors('refusal');
         $this->assertModelExists($remainingPhoto);
-        $this->assertThrows(fn () => app(DeletePhoto::class)->handle($remainingPhoto, null), StepAlreadyValidatedException::class);
+        $this->assertRefused(StepAlreadyValidatedException::class, 'Les photos de départ sont déjà validées', fn () => app(DeletePhoto::class)->handle($remainingPhoto, null));
     }
 
     public function test_the_desk_cannot_delete_a_photo_of_another_reservation(): void

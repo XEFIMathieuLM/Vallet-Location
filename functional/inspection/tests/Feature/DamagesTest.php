@@ -6,17 +6,18 @@ use App\Models\User;
 use Carbon\CarbonImmutable;
 use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Models\Reservation;
+use Functional\Fleet\Tests\Concerns\AssertsRefusals;
 use Functional\Inspection\Actions\ReportDamage;
 use Functional\Inspection\Actions\ResolveDamage;
 use Functional\Inspection\Enums\InspectionStep;
 use Functional\Inspection\Exceptions\DamageAlreadyResolvedException;
 use Functional\Inspection\Exceptions\DamageNotReportableException;
+use Functional\Inspection\Extensions\DamageActions;
 use Functional\Inspection\Livewire\Comparison;
 use Functional\Inspection\Livewire\DamagesList;
 use Functional\Inspection\Models\Damage;
 use Functional\Inspection\Models\Photo;
 use Functional\Inspection\Models\ReservationView;
-use Functional\Inspection\Support\DamageActions;
 use Functional\Inspection\Tests\Concerns\BuildsPhotoSessions;
 use Functional\Inspection\Tests\Concerns\WithoutDamageActions;
 use Functional\Inspection\Tests\Fixtures\FakeDamageAction;
@@ -26,7 +27,7 @@ use Tests\TestCase;
 
 class DamagesTest extends TestCase
 {
-    use BuildsPhotoSessions, RefreshDatabase, WithoutDamageActions;
+    use AssertsRefusals, BuildsPhotoSessions, RefreshDatabase, WithoutDamageActions;
 
     private User $employee;
 
@@ -117,9 +118,10 @@ class DamagesTest extends TestCase
             ->call('report')
             ->assertHasErrors('comment');
 
-        $this->assertThrows(
-            fn () => app(ReportDamage::class)->handle($reservation, $this->reservationView($reservation, 'Avant')->id, '  ', $this->employee),
+        $this->assertRefused(
             DamageNotReportableException::class,
+            'Le commentaire est obligatoire.',
+            fn () => app(ReportDamage::class)->handle($reservation, $this->reservationView($reservation, 'Avant')->id, '  ', $this->employee),
         );
     }
 
@@ -155,7 +157,7 @@ class DamagesTest extends TestCase
         app(ResolveDamage::class)->handle($damage, $this->employee);
 
         $this->assertTrue($damage->refresh()->isResolved());
-        $this->assertThrows(fn () => app(ResolveDamage::class)->handle($damage, $this->employee), DamageAlreadyResolvedException::class);
+        $this->assertRefused(DamageAlreadyResolvedException::class, 'Ce dégât a déjà été traité.', fn () => app(ResolveDamage::class)->handle($damage, $this->employee));
     }
 
     public function test_registered_damage_actions_replace_the_resolve_button_on_both_screens(): void

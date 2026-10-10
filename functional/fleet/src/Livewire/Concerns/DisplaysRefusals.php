@@ -14,7 +14,7 @@ trait DisplaysRefusals
             return;
         }
 
-        $this->addError('refusal', $e->getMessage());
+        $this->addError('refusal', $e->userMessage());
         $stopPropagation();
     }
 }

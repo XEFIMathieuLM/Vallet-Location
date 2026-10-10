@@ -63,8 +63,8 @@ class ReservationScreensTest extends TestCase
             ->assertOk()
             ->assertSee('NAC-0001')
             ->assertSee($reservation->customer->name)
-            ->assertSee(__('booking::reservations.transitions.depart'))
-            ->assertSee(__('booking::reservations.transitions.cancel'));
+            ->assertSee(__('booking::reservations.transitions.departure'))
+            ->assertSee(__('booking::reservations.transitions.cancellation'));
     }
 
     public function test_the_reservation_screens_require_the_permission(): void

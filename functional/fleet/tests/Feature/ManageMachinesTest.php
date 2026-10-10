@@ -17,6 +17,7 @@ use Functional\Fleet\Livewire\MachineIndex;
 use Functional\Fleet\Models\Agency;
 use Functional\Fleet\Models\Machine;
 use Functional\Fleet\Models\MachineCategory;
+use Functional\Fleet\Tests\Concerns\AssertsRefusals;
 use Functional\Fleet\Tests\Doubles\RefusingRetirementGuard;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -24,7 +25,7 @@ use Tests\TestCase;
 
 class ManageMachinesTest extends TestCase
 {
-    use RefreshDatabase;
+    use AssertsRefusals, RefreshDatabase;
 
     public function test_a_machine_is_created_with_a_normalized_reference(): void
     {
@@ -38,10 +39,7 @@ class ManageMachinesTest extends TestCase
     {
         Machine::factory()->create(['reference' => 'NAC-0042']);
 
-        $this->expectException(DuplicateMachineReferenceException::class);
-        $this->expectExceptionMessage('NAC-0042');
-
-        app(CreateMachine::class)->handle($this->attributes('  nac-0042'));
+        $this->assertRefused(DuplicateMachineReferenceException::class, 'NAC-0042', fn () => app(CreateMachine::class)->handle($this->attributes('  nac-0042')));
     }
 
     public function test_updating_a_machine_to_another_machine_reference_is_refused(): void

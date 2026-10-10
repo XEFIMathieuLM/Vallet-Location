@@ -4,6 +4,7 @@ namespace Functional\Inspection\Tests\Feature;
 
 use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Models\Reservation;
+use Functional\Fleet\Tests\Concerns\AssertsRefusals;
 use Functional\Inspection\Actions\DeletePhoto;
 use Functional\Inspection\Actions\FindActivePhotoSession;
 use Functional\Inspection\Actions\StorePhoto;
@@ -19,7 +20,7 @@ use Tests\TestCase;
 
 class PhotoStepLockTest extends TestCase
 {
-    use BuildsPhotoSessions, RefreshDatabase;
+    use AssertsRefusals, BuildsPhotoSessions, RefreshDatabase;
 
     protected function setUp(): void
     {
@@ -36,7 +37,7 @@ class PhotoStepLockTest extends TestCase
 
         $this->recordDepartureBehindTheScenes($reservation);
 
-        $this->assertThrows(fn () => app(DeletePhoto::class)->handle($photo, null), StepAlreadyValidatedException::class);
+        $this->assertRefused(StepAlreadyValidatedException::class, 'Les photos de départ sont déjà validées', fn () => app(DeletePhoto::class)->handle($photo, null));
         $this->assertModelExists($photo);
     }
 
@@ -45,13 +46,14 @@ class PhotoStepLockTest extends TestCase
         $reservation = $this->reservationStartingToday();
         $token = $this->openSession($reservation);
         $checkedSession = PhotoSession::query()->with(['reservation', 'author'])->where('token_hash', PhotoSession::hashToken($token))->firstOrFail();
-        $this->mock(FindActivePhotoSession::class, fn (MockInterface $mock) => $mock->shouldReceive('handle')->andReturn($checkedSession));
+        $this->partialMock(FindActivePhotoSession::class, fn (MockInterface $mock) => $mock->shouldReceive('handle')->andReturn($checkedSession));
 
         $this->recordDepartureBehindTheScenes($reservation);
 
-        $this->assertThrows(
-            fn () => app(StorePhoto::class)->handle($token, $this->firstView($reservation)->id, $this->jpeg()),
+        $this->assertRefused(
             PhotoSessionUnavailableException::class,
+            'Ce lien n\'est plus valable',
+            fn () => app(StorePhoto::class)->handle($token, $this->firstView($reservation)->id, $this->jpeg()),
         );
         $this->assertSame(0, Photo::query()->count());
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Functional\Inspection\Support;
+namespace Functional\Inspection\Completeness;
 
 use Functional\Inspection\Enums\InspectionStep;
 
@@ -17,6 +17,11 @@ final class StepCompleteness
     public function missingCount(InspectionStep $step): int
     {
         return $this->missingCountsBySteps[$step->value] ?? $this->viewsCount;
+    }
+
+    public function hasPhotosFor(InspectionStep $step): bool
+    {
+        return $this->missingCount($step) < $this->viewsCount;
     }
 
     public function isCompleteFor(InspectionStep $step): bool

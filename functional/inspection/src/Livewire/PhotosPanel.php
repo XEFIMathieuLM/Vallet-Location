@@ -6,13 +6,13 @@ use Functional\Booking\Models\Reservation;
 use Functional\Fleet\Livewire\Concerns\DisplaysRefusals;
 use Functional\Inspection\Actions\DeletePhoto;
 use Functional\Inspection\Actions\OpenPhotoSession;
-use Functional\Inspection\Actions\ViewCompleteness;
+use Functional\Inspection\Completeness\ViewCompleteness;
 use Functional\Inspection\Enums\InspectionStep;
 use Functional\Inspection\Exceptions\StepNotOpenException;
 use Functional\Inspection\Models\Photo;
 use Functional\Inspection\Models\PhotoSession;
 use Functional\Inspection\Models\ReservationView;
-use Functional\Inspection\Support\QrCodeSvg;
+use Functional\Inspection\QrCodes\QrCodeSvg;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -56,7 +56,7 @@ class PhotosPanel extends Component
     {
         Gate::authorize('reservations.manage');
 
-        $step = $this->openStep() ?? throw StepNotOpenException::forAnyStep();
+        $step = $this->openStep() ?? throw StepNotOpenException::forAnyStep($this->reservation);
 
         $this->token = app(OpenPhotoSession::class)->handle($this->reservation, $step, Auth::user() ?? abort(401));
     }
@@ -65,7 +65,7 @@ class PhotosPanel extends Component
     {
         Gate::authorize('reservations.manage');
 
-        $photo = Photo::query()->where('reservation_id', $this->reservation->id)->findOrFail($photoId);
+        $photo = Photo::query()->whereBelongsTo($this->reservation)->findOrFail($photoId);
 
         app(DeletePhoto::class)->handle($photo, Auth::user());
 
@@ -98,6 +98,7 @@ class PhotosPanel extends Component
             'activeSession' => $activeSession,
             'qrCode' => $this->token !== null ? app(QrCodeSvg::class)->for(route('inspection.phone', $this->token)) : null,
             'views' => $this->views(),
+            'canCompare' => app(ViewCompleteness::class)->for($this->reservation)->hasPhotosFor(InspectionStep::Return),
         ]);
     }
 
@@ -115,7 +116,7 @@ class PhotosPanel extends Component
         }
 
         return PhotoSession::query()
-            ->where('reservation_id', $this->reservation->id)
+            ->whereBelongsTo($this->reservation)
             ->where('step', $openStep)
             ->whereNull('revoked_at')
             ->where('expires_at', '>', now())
@@ -129,7 +130,7 @@ class PhotosPanel extends Component
     private function views(): Collection
     {
         return ReservationView::query()
-            ->where('reservation_id', $this->reservation->id)
+            ->whereBelongsTo($this->reservation)
             ->with(['photos' => fn (HasMany $photos): HasMany => $photos->with(['media', 'session.author'])->oldest('id')])
             ->orderBy('position')
             ->get();
@@ -142,7 +143,7 @@ class PhotosPanel extends Component
         foreach (InspectionStep::cases() as $step) {
             $isReady = $completeness->isCompleteFor($step);
 
-            $this->dispatch(self::READINESS_EVENT, step: $step->value, is_ready: $isReady);
+            $this->dispatch(self::READINESS_EVENT, step: $step->transition()->value, is_ready: $isReady);
         }
     }
 }

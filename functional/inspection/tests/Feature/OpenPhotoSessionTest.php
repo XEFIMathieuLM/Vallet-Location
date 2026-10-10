@@ -5,6 +5,8 @@ namespace Functional\Inspection\Tests\Feature;
 use Carbon\CarbonImmutable;
 use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Models\Reservation;
+use Functional\Fleet\Tests\Concerns\AssertsRefusals;
+use Functional\Inspection\Actions\FindActivePhotoSession;
 use Functional\Inspection\Actions\MissingViews;
 use Functional\Inspection\Enums\InspectionStep;
 use Functional\Inspection\Enums\RevocationReason;
@@ -18,7 +20,7 @@ use Tests\TestCase;
 
 class OpenPhotoSessionTest extends TestCase
 {
-    use BuildsPhotoSessions, RefreshDatabase;
+    use AssertsRefusals, BuildsPhotoSessions, RefreshDatabase;
 
     public function test_opening_a_session_freezes_the_views_and_lists_them_all_as_missing(): void
     {
@@ -51,7 +53,7 @@ class OpenPhotoSessionTest extends TestCase
 
         $firstSession = PhotoSession::query()->where('token_hash', PhotoSession::hashToken($firstToken))->firstOrFail();
         $this->assertSame(RevocationReason::Replaced, $firstSession->revoked_reason);
-        $this->assertFalse($firstSession->isActive());
+        $this->assertFalse(app(FindActivePhotoSession::class)->isActive($firstSession));
     }
 
     public function test_the_departure_session_cannot_be_opened_before_the_start_date(): void
@@ -60,22 +62,16 @@ class OpenPhotoSessionTest extends TestCase
             ->between(CarbonImmutable::tomorrow(), CarbonImmutable::tomorrow()->addDays(2))
             ->create();
 
-        $this->expectException(StepNotOpenException::class);
-
-        $this->openSession($reservation);
+        $this->assertRefused(StepNotOpenException::class, 'La prise de photos de départ n\'est pas ouverte', fn () => $this->openSession($reservation));
     }
 
     public function test_the_return_session_cannot_be_opened_on_a_confirmed_reservation(): void
     {
-        $this->expectException(StepNotOpenException::class);
-
-        $this->openSession($this->reservationStartingToday(), InspectionStep::Return);
+        $this->assertRefused(StepNotOpenException::class, 'La prise de photos de retour n\'est pas ouverte', fn () => $this->openSession($this->reservationStartingToday(), InspectionStep::Return));
     }
 
     public function test_the_departure_session_cannot_be_opened_once_the_machine_has_left(): void
     {
-        $this->expectException(StepNotOpenException::class);
-
-        $this->openSession($this->reservationStartingToday(ReservationStatus::InProgress));
+        $this->assertRefused(StepNotOpenException::class, 'La prise de photos de départ n\'est pas ouverte', fn () => $this->openSession($this->reservationStartingToday(ReservationStatus::InProgress)));
     }
 }

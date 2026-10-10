@@ -2,12 +2,13 @@
 
 namespace Functional\Inspection\Actions;
 
+use Functional\Booking\Models\Reservation;
 use Functional\Inspection\Models\Damage;
 
 class CountUnresolvedDamages
 {
-    public function for(int $reservationId): int
+    public function for(Reservation $reservation): int
     {
-        return Damage::query()->where('reservation_id', $reservationId)->whereNull('resolved_at')->count();
+        return Damage::query()->whereBelongsTo($reservation)->whereNull('resolved_at')->count();
     }
 }

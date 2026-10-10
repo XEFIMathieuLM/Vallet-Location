@@ -19,6 +19,11 @@ class FindActivePhotoSession
             ->where('token_hash', PhotoSession::hashToken($token))
             ->first();
 
-        return $session?->isActive() === true ? $session : null;
+        return $session !== null && $this->isActive($session) ? $session : null;
+    }
+
+    public function isActive(PhotoSession $session): bool
+    {
+        return ! $session->isRevokedOrExpired() && $session->step->isOpenFor($session->reservation);
     }
 }

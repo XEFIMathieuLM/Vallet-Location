@@ -4,11 +4,18 @@
     "type": "layer",
     "version": "1.0.0",
     "require": {
-        "xefi/laravel-osdd": "*",
+        "php": "^8.3",
+        "xefi/laravel-osdd": "^2.0",
+        "laravel/framework": "^13.17",
+        "livewire/livewire": "^4.1",
+        "livewire/flux": "^2.13.1",
         "functional/booking": "*",
         "functional/fleet": "*",
-        "bacon/bacon-qr-code": "^3.0",
         "spatie/laravel-medialibrary": "^11.23",
+        "spatie/laravel-activitylog": "^5.1",
+        "spatie/laravel-permission": "^8.3",
+        "lomkit/laravel-access-control": "^0.6.0",
+        "bacon/bacon-qr-code": "^3.0",
         "league/flysystem-aws-s3-v3": "^3.0"
     },
     "autoload": {
@@ -24,6 +31,11 @@
         "laravel": {
             "providers": [
                 "Functional\\Inspection\\Providers\\InspectionServiceProvider"
+            ]
+        },
+        "faker": {
+            "providers": [
+                "Functional\\Inspection\\Faker\\InspectionFakerServiceProvider"
             ]
         }
     }

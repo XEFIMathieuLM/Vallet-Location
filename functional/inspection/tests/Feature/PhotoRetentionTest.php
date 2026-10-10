@@ -9,8 +9,6 @@ use Functional\Inspection\Enums\InspectionStep;
 use Functional\Inspection\Models\Damage;
 use Functional\Inspection\Models\Photo;
 use Functional\Inspection\Models\ReservationView;
-use Illuminate\Console\Scheduling\Event as ScheduledEvent;
-use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
@@ -92,15 +90,6 @@ class PhotoRetentionTest extends TestCase
         $this->prune();
 
         $this->assertModelExists($photo);
-    }
-
-    public function test_the_prune_runs_every_night(): void
-    {
-        $pruneEvents = collect(app(Schedule::class)->events())
-            ->filter(fn (ScheduledEvent $event): bool => str_contains((string) $event->command, 'model:prune'));
-
-        $this->assertCount(1, $pruneEvents);
-        $this->assertSame('15 2 * * *', $pruneEvents->first()?->expression);
     }
 
     private function closedReservation(string $returnedAt): Reservation

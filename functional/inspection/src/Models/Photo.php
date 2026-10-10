@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -59,6 +60,14 @@ class Photo extends Model implements HasMedia
     }
 
     /**
+     * @return HasMany<Damage, $this>
+     */
+    public function reservationDamages(): HasMany
+    {
+        return $this->hasMany(Damage::class, 'reservation_id', 'reservation_id');
+    }
+
+    /**
      * @return BelongsTo<ReservationView, $this>
      */
     public function view(): BelongsTo
@@ -79,25 +88,18 @@ class Photo extends Model implements HasMedia
      */
     public function prunable(): Builder
     {
-        $oneYearAgo = CarbonImmutable::now()->subYear();
-
-        $reservationsWithRecentDamages = Damage::query()
-            ->select('reservation_id')
-            ->where(fn (Builder $damages): Builder => $damages->whereNull('resolved_at')->orWhere('resolved_at', '>=', $oneYearAgo));
-
-        $reservationsClosedOverAYearAgo = Reservation::query()
-            ->select('id')
-            ->where('status', ReservationStatus::Closed)
-            ->where('returned_at', '<', $oneYearAgo)
-            ->whereNotIn('id', $reservationsWithRecentDamages);
-
-        $cancelledReservations = Reservation::query()->select('id')->where('status', ReservationStatus::Cancelled);
+        $retentionStart = CarbonImmutable::now()->subDays(config()->integer('inspection.photo_retention_days'));
 
         return self::query()
-            ->whereIn('reservation_id', $reservationsClosedOverAYearAgo)
+            ->where(fn (Builder $photos): Builder => $photos
+                ->whereHas('reservation', fn (Builder $reservations): Builder => $reservations
+                    ->where('status', ReservationStatus::Closed)
+                    ->where('returned_at', '<', $retentionStart))
+                ->whereDoesntHave('reservationDamages', fn (Builder $damages): Builder => $damages
+                    ->where(fn (Builder $recentDamages): Builder => $recentDamages->whereNull('resolved_at')->orWhere('resolved_at', '>=', $retentionStart))))
             ->orWhere(fn (Builder $photos): Builder => $photos
-                ->whereIn('reservation_id', $cancelledReservations)
-                ->where('created_at', '<', $oneYearAgo));
+                ->whereHas('reservation', fn (Builder $reservations): Builder => $reservations->where('status', ReservationStatus::Cancelled))
+                ->where('created_at', '<', $retentionStart));
     }
 
     public function registerMediaCollections(): void
@@ -109,18 +111,5 @@ class Photo extends Model implements HasMedia
     {
         $this->addMediaConversion(self::THUMB)->nonQueued()->width(400);
         $this->addMediaConversion(self::DISPLAY)->queued()->width(1600);
-    }
-
-    public function temporaryUrl(string $conversion): string
-    {
-        $file = $this->getFirstMedia(self::COLLECTION);
-
-        if ($file === null) {
-            return '';
-        }
-
-        $availableConversion = $file->hasGeneratedConversion($conversion) ? $conversion : '';
-
-        return $file->getTemporaryUrl(now()->addMinutes(30), $availableConversion);
     }
 }

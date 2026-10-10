@@ -4,6 +4,10 @@ includes:
     - vendor/xefi/phpstan-xefi-rules/extension.neon
 
 parameters:
+    configDirectories:
+        - %currentWorkingDirectory%/config
+        - %currentWorkingDirectory%/functional/*/config
+
     scanFiles:
         - faker_mixin.php
 
@@ -27,10 +31,6 @@ parameters:
         - functional/billing/database/
         - functional/billing/routes/
         - functional/billing/config/
-
-    configDirectories:
-        - config
-        - functional/billing/config
 
     level: 7
 

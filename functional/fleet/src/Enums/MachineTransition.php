@@ -2,10 +2,11 @@
 
 namespace Functional\Fleet\Enums;
 
+use Functional\Fleet\Contracts\HasLabel;
 use Functional\Fleet\States\MachineState;
 use Functional\Fleet\States\MachineStateFactory;
 
-enum MachineTransition: string
+enum MachineTransition: string implements HasLabel
 {
     case Depart = 'depart';
     case ReturnInGoodState = 'return_in_good_state';

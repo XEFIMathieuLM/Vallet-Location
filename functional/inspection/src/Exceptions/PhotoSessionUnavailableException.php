@@ -8,6 +8,9 @@ final class PhotoSessionUnavailableException extends RefusalException
 {
     public static function make(): self
     {
-        return new self(__('inspection::photos.refusals.link_unavailable'));
+        return new self(
+            'The photo link is unknown, expired, revoked or its step is closed.',
+            'inspection::photos.refusals.link_unavailable',
+        );
     }
 }

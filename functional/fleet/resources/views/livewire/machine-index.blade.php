@@ -1,11 +1,10 @@
 <div class="flex flex-col gap-6">
-    <div class="flex flex-wrap items-center justify-between gap-4">
-        <flux:heading size="xl" level="1">{{ __('fleet::machines.index.title') }}</flux:heading>
-        <div class="flex gap-2">
+    <x-page-heading :title="__('fleet::machines.index.title')">
+        <x-slot:actions>
             <flux:button icon="arrow-up-tray" wire:navigate :href="route('machines.import')">{{ __('fleet::machines.import.title') }}</flux:button>
             <flux:button variant="primary" icon="plus" wire:navigate :href="route('machines.create')">{{ __('fleet::machines.index.create') }}</flux:button>
-        </div>
-    </div>
+        </x-slot:actions>
+    </x-page-heading>
 
     @if (session('machine-saved'))
         <flux:callout variant="success" icon="check-circle" :heading="session('machine-saved')" />

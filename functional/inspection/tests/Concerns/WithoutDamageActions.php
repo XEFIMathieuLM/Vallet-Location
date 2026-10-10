@@ -2,7 +2,7 @@
 
 namespace Functional\Inspection\Tests\Concerns;
 
-use Functional\Inspection\Support\DamageActions;
+use Functional\Inspection\Extensions\DamageActions;
 
 trait WithoutDamageActions
 {

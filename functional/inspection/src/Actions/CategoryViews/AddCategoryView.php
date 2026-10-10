@@ -16,12 +16,12 @@ class AddCategoryView
 
         return DB::transaction(function () use ($category, $label): CategoryView {
             $views = $this->editableCategoryViews->for($category);
-            $this->editableCategoryViews->ensureLabelIsFree($views, $label);
+            $this->editableCategoryViews->ensureLabelIsFree($category, $views, $label);
 
             return CategoryView::query()->create([
                 'machine_category_id' => $category->id,
                 'label' => $label,
-                'position' => (int) $views->max('position') + 1,
+                'position' => (int) CategoryView::query()->whereBelongsTo($category, 'category')->max('position') + 1,
             ]);
         });
     }

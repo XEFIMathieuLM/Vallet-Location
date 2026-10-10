@@ -18,7 +18,7 @@ Approche : un nouveau layer OSDD **`inspection`** au-dessus de `booking` et `fle
 
 **Storage**: PostgreSQL (6 nouvelles tables : 5 pour `inspection`, plus `media` de la médiathèque) ; fichiers sur un disque privé `photos` (local en dev, S3-compatible en production)
 
-**Testing**: PHPUnit — un test Feature par scénario d'acceptation, tests Unit pour la complétude des vues et la validité du jeton. Larastan niveau ≥ 7 avec `xefi/phpstan-xefi-rules`.
+**Testing**: PHPUnit — un test Feature par scénario d'acceptation ; tests Unit, sans framework ni base, pour les règles en mémoire (`InspectionStep`, `StepCompleteness`) ; calculs faits en base (`ViewCompleteness`, rétention) testés en Feature, selon l'amendement de la constitution (principe VI) porté par la 001. Larastan niveau ≥ 7 avec `xefi/phpstan-xefi-rules`.
 
 **Target Platform**: serveur Linux (conteneurs) ; postes d'agence (navigateur) ; smartphones iOS et Android (navigateur ; l'appareil photo passe par un champ d'envoi de fichier, qui fonctionne aussi en HTTP ; HTTPS en production)
 
@@ -45,16 +45,16 @@ Vérifié contre la [constitution v1.0.0](../../.specify/memory/constitution.md)
 | Principe | Statut | Où |
 |----------|--------|----|
 | **I. Layers OSDD** — nouveau domaine = nouveau layer généré par `osdd:layer` ; sens `inspection → booking → fleet` ; points d'extension remplis depuis le service provider ; aucun fichier d'un autre layer modifié | ✅ | layer `functional/inspection` ; guards et sections réalisés dans la 001 (T079 à T084) ; registre `DamageActions` exposé à la 003 ; T065 (aucune référence à `inspection` dans `booking` ni `fleet`) |
-| **II. Garanties en base et au serveur** — refus serveur dans une transaction avec verrou ; contraintes en base ; pas de cascade ; agrégats en base | ✅ | `PhotosCompleteGuard` dans la transaction de sortie / retour ; `lockForUpdate()` sur la réservation pour l'ouverture d'une session, l'ajout et la suppression d'une photo (T068), sur la catégorie pour le réglage des vues, sur le dégât pour son traitement ; index uniques (`token_hash`, vue par catégorie, position par réservation) ; clés étrangères sans cascade ; vues manquantes et dégâts non traités comptés en SQL (`ViewCompleteness` en une requête `count(*) filter` pour les deux étapes, `CountUnresolvedDamages`) ; aucune requête dans une boucle : vues figées et vues par défaut insérées en une requête, renumérotation en un seul `decrement`, une entrée d'historique par révocation (T072) ; écritures liées (dégât et historique, révocation et historique) dans une même transaction (T073) |
+| **II. Garanties en base et au serveur** — refus serveur dans une transaction avec verrou ; contraintes en base ; pas de cascade ; agrégats en base | ✅ | `PhotosCompleteGuard` dans la transaction de sortie / retour ; `lockForUpdate()` sur la réservation pour l'ouverture d'une session, l'ajout et la suppression d'une photo (T068), sur la catégorie pour le réglage des vues, sur le dégât pour son traitement ; index uniques (`token_hash`, vue par catégorie, position par réservation) ; clés étrangères sans cascade ; vues manquantes et dégâts non traités comptés en SQL (`ViewCompleteness` en une requête `count(*) filter` pour les deux étapes, `CountUnresolvedDamages`), comme la position suivante d'une vue (`max`), la règle de la dernière vue (`count`) et les révocations (`select distinct`, nombre de lignes renvoyé par l'`update`) (T075) ; aucune requête dans une boucle : vues figées et vues par défaut insérées en une requête, renumérotation en un seul `decrement`, une entrée d'historique par révocation (T072) ; écritures liées (dégât et historique, révocation et historique) dans une même transaction (T073) |
 | **III. Cycles de vie explicites** — statuts en texte + enum ; pattern State seulement pour plusieurs états avec transitions interdites ; heure de Paris | ✅ | `InspectionStep`, `RevocationReason` en enums ; `PhotoSession` (une seule transition, la révocation) et `Damage` (signalé → traité) sans pattern State, justifié dans [data-model.md](data-model.md) ; `APP_TIMEZONE=Europe/Paris` ; aucun montant |
 | **IV. Effets de bord explicites, erreurs typées, systèmes externes isolés** | ✅ | pas d'observer : listener `RevokePhotoSessionsOnReservationChanged`, historique écrit par les actions ; pas de `try/catch` ; refus typés (sous-classes de `RefusalException`) ; stockage derrière le disque Laravel `photos` (local, S3, `Storage::fake` en test) ; purge par commande planifiée sur un état en base ; seules la grande version des photos (repli sur l'original) et les diffusions temps réel passent par la file, sans perte de donnée possible |
 | **V. Accès par permission** — permissions déclarées dans un seeder du layer et données au rôle salarié | ✅ | `InspectionPermissionSeeder` (`damages.manage`, `inspection_views.manage`) ; routes `can:` ; `DamageControl`, `CategoryViewControl` ; la page téléphone n'agit que par son jeton ([phone-link.md](contracts/phone-link.md)) |
-| **VI. Tests par scénario d'acceptation** — un test Feature par scénario, tests d'abord, factories, horloge contrôlée, PHPStan à zéro | ⚠️ | chaque scénario de US1 à US4 a son test Feature ; `travelTo()` / `setTestNow()` ; PHPStan sans erreur. **Écart** : tests de US2 écrits après le code (voir Complexity Tracking) |
-| **VII. Code simple et lisible** — anglais, textes traduits, fichiers < 200 lignes, pas de commentaire, packages justifiés | ✅ | textes dans `functional/inspection/resources/lang/fr` ; plus gros fichier de code 148 lignes ; paquets justifiés dans le Technical Context ; seuls les fichiers de configuration publiés par les paquets gardent leurs commentaires (voir Complexity Tracking) |
+| **VI. Tests par scénario d'acceptation** — un test Feature par scénario, tests d'abord, factories, horloge contrôlée, PHPStan à zéro | ⚠️ | chaque scénario de US1 à US4 a son test Feature ; les règles en mémoire ont leurs tests Unit sans framework (`InspectionStep`, `StepCompleteness`) et les calculs en base leurs tests Feature (`ViewCompleteness`, `MissingViews`, `FreezeReservationViews`, rétention), selon l'amendement « calculs en mémoire en Unit, calculs en base en Feature » (T076, T081) ; `travelTo()` / `setTestNow()` ; PHPStan sans erreur. **Écart** : tests de US2 écrits après le code (voir Complexity Tracking) |
+| **VII. Code simple et lisible** — anglais, textes traduits, fichiers < 200 lignes, pas de commentaire, packages justifiés | ✅ | textes dans `functional/inspection/resources/lang/fr` ; plus gros fichier de code 148 lignes ; paquets justifiés dans le Technical Context ; plus de configuration de paquet recopiée (T086) ; pas de dossier fourre-tout (T079) |
 | **Contraintes techniques** — stack, Docker, worker de file et planificateur en production | ✅ | temps réel Soketi sur canaux privés à charge utile explicite ([broadcast-events.md](contracts/broadcast-events.md)) ; worker et planificateur requis (temps réel, conversions, purge nocturne) |
 | **Workflow** — spec-kit dans l'ordre, prérequis déclarés, analyse sans problème critique, haut ou moyen avant l'implémentation | ⚠️ | prérequis 001 déclarés dans [tasks.md](tasks.md) ; analyses successives jusqu'à zéro problème critique ou haut. **Écart** : les parties indépendantes de la 001 ont été codées avant le premier `/speckit-analyze` (voir Complexity Tracking) |
 
-**Résultat** : aucune violation ouverte. Le premier `/speckit-analyze` mené avec la v1.0.0 avait relevé deux violations du principe II (requêtes dans des boucles, écritures liées hors transaction), corrigées par T072 et T073. Deux écarts de méthode, passés, sont documentés ci-dessous, sans effet sur le code livré.
+**Résultat** : aucune violation ouverte. Le premier `/speckit-analyze` mené avec la v1.0.0 avait relevé deux violations du principe II (requêtes dans des boucles, écritures liées hors transaction), corrigées par T072 et T073 ; l'analyse suivante a relevé des agrégats encore calculés en PHP et des calculs sans test Unit, corrigés par T075 à T077. Deux écarts de méthode, passés, sont documentés ci-dessous, sans effet sur le code livré.
 
 **Re-check post-design et post-implémentation** : le modèle de données, les contrats et le code respectent les principes I à VII.
 
@@ -90,28 +90,34 @@ functional/
 │       └── Livewire/                 # détail de réservation : rend les sections enregistrées
 └── inspection/                       # nouveau
     ├── composer.json                 # LayerManifest, dépend de booking et fleet
-    ├── config/inspection.php         # vues par défaut, durée du jeton, taille max
+    ├── config/inspection.php         # vues par défaut, durées (jeton, URL signée, rétentions), taille max des photos
+    ├── config/filesystems.php        # disque privé photos, surchargé par overrideConfigFrom (xefi/laravel-osdd v2.0.1)
     ├── src/
     │   ├── Models/                   # CategoryView, ReservationView, PhotoSession, Photo, Damage
     │   ├── Enums/                    # InspectionStep, RevocationReason
-    │   ├── Actions/                  # OpenPhotoSession, FindActivePhotoSession, RevokePhotoSessions, StorePhoto, DeletePhoto, FreezeReservationViews, ResolveRequiredViews, MissingViews, ReportDamage, ResolveDamage, CountUnresolvedDamages, CategoryViews/*
+    │   ├── Actions/                  # OpenPhotoSession, FindActivePhotoSession, RevokePhotoSessions, StorePhoto, DeletePhoto, PhotoTemporaryUrl, FreezeReservationViews, ResolveRequiredViews, MissingViews, ReportDamage, ResolveDamage, CountUnresolvedDamages, CategoryViews/*
     │   ├── Guards/                   # PhotosCompleteGuard
     │   ├── Queries/                  # ReservationsToReinvoice
-    │   ├── Support/                  # DamageActions (point d'extension pour la 003), InspectionHistory (journal), QrCodeSvg
-    │   ├── Exceptions/               # refus typés (sous-classes de RefusalException)
+    │   ├── Completeness/             # ViewCompleteness (comptage SQL), StepCompleteness (valeur)
+    │   ├── Extensions/               # DamageActions (point d'extension pour la 003)
+    │   ├── History/                  # InspectionHistory (journal), InspectionHistoryEvent
+    │   ├── QrCodes/                  # QrCodeSvg
+    │   ├── Exceptions/               # refus typés (sous-classes de RefusalException : message technique en anglais, message affiché traduit)
+    │   ├── Faker/                    # extension faker du layer (libellés de vues, empreinte de jeton)
     │   ├── Events/                   # PhotoChanged, PhotoSessionChanged, DamageChanged
     │   ├── Listeners/                # révocation des sessions sur ReservationChanged
     │   ├── Access/Controls/          # DamageControl, CategoryViewControl (les photos sont protégées par la permission des routes)
     │   ├── Http/Controllers/         # PhotoFileController : photos servies aux salariés connectés
     │   ├── Http/Middleware/          # en-têtes noindex / no-referrer sur /photos/*
     │   └── Livewire/                 # PhotosPanel, PhoneCapture, Comparison, DamagesList, CategoryViewsIndex, CategoryViews
-    ├── database/{migrations,factories,seeders}/
+    ├── database/{migrations,factories,seeders}/ # seeders : InspectionPermissionSeeder, InspectionSeeder (tous les états)
     ├── resources/{views,js,lang/fr}/ # js : réduction des photos (Alpine)
     ├── routes/web.php                # /photos/{token} (public), écrans poste
     ├── routes/channels.php           # canal privé reservation.{id}
-    ├── routes/console.php            # purge nocturne des photos (model:prune)
     └── tests/{Feature,Unit,Concerns,Fixtures}/
-config/filesystems.php                # + disque photos
+database/seeders/DatabaseSeeder.php   # + InspectionSeeder
+config/prunable.php                   # (001) Photo et PhotoSession ajoutés depuis le provider du layer
+phpstan.neon                          # + configDirectories (dossiers config des layers)
 compose.yaml                    # + S3 local (SeaweedFS, profil s3), facultatif
 ```
 
@@ -123,4 +129,5 @@ compose.yaml                    # + S3 local (SeaweedFS, profil s3), facultatif
 |-------|----------|---------------------|
 | Tests de US2 écrits après le code (principe VI) | `PhotosCompleteGuard::beforeReturn` et le figement au retour ont été codés avec US1, dont ils partagent le code | Aucun sur le comportement : T039 à T041 couvrent tous les scénarios de US2 et passent ; l'écart est signalé dans la PR |
 | Parties indépendantes codées avant le premier `/speckit-analyze` (workflow) | Reprise de la feature sur un autre poste, avant que le workflow strict soit rappelé | Régularisé : `/speckit-analyze` relancé à chaque étape jusqu'à zéro problème critique ou haut ; les constats (dont la faille de concurrence D1) ont été corrigés |
-| Commentaires dans `config/livewire.php` et `config/media-library.php` (principe VII) | Fichiers publiés tels quels par les paquets ; seules les valeurs utiles ont été modifiées | Toléré : ce ne sont pas des fichiers écrits pour le projet |
+| Configuration du layer chargée par `overrideConfigFrom` (skill `layer-owned-config`) | `xefi/laravel-osdd` v2.0.1 ne charge pas automatiquement le dossier `config/` d'un layer | Le disque `photos` est surchargé depuis `register()` ; les limites de Livewire et de la médiathèque y sont dérivées de `inspection.max_photo_kilobytes`. Ces paquets lisent leur configuration au moment de l'utilisation (vérifié dans leur code et avec `config:cache`) |
+| Deux routes de fichiers photo (`photo-fichiers` et `photo-files`) | Deux publics : salariés connectés (contrôleur `PhotoFileController`) et téléphone non connecté (URL signée temporaire servie par Laravel pour le disque local) | Aucun doublon : chaque route a son contrôle d'accès |

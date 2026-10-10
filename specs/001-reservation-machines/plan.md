@@ -18,6 +18,8 @@ Approche : une application **100 % Laravel** avec une interface Livewire, décou
 
 **Primary Dependencies**: Livewire (starter kit Livewire officiel), `xefi/laravel-osdd`, `spatie/laravel-permission`, `lomkit/laravel-access-control`, `spatie/laravel-activitylog`, `spatie/simple-excel`, `pusher/pusher-php-server` + Laravel Echo (vers Soketi), `laravel/boost` (dev), `xefi/faker-php-laravel` (dev), Larastan + `xefi/phpstan-xefi-rules` (dev)
 
+Ajout de la phase 9 : `xefi/faker-php-locales-fr-fr` (dev) fournit des données de démonstration et de test en français (noms, téléphones, adresses) au lieu de valeurs anglaises ou écrites à la main, comme le recommandent les skills Xefi faker ; paquet validé par l'utilisateur le 2026-10-10.
+
 **Storage**: PostgreSQL (contrainte d'exclusion `btree_gist` sur les réservations)
 
 **Testing**: PHPUnit, tests Feature par scénario d'acceptation et tests Unit pour les classes d'état. Larastan niveau ≥ 7.
@@ -78,6 +80,7 @@ app/                              # colle : utilisateurs, authentification, layo
 ├── Models/User.php               # agency_id, deactivated_at, HasRoles
 ├── Actions/Users/                # CreateEmployee, ChangeUserActivation
 ├── Http/Middleware/              # EnsureUserIsActive (déconnecte un compte désactivé)
+├── Access/AppPermission.php      # permission users.manage
 ├── Exceptions/                   # SelfDeactivationException
 └── Livewire/Users/               # écran Salariés (/salaries)
 functional/                       # layers métier (convention xefi/laravel-osdd)
@@ -91,11 +94,12 @@ functional/                       # layers métier (convention xefi/laravel-osdd
 │   │   ├── Data/                 # MachineAttributes, FleetImportReport
 │   │   ├── Import/               # FleetImportLineParser (validation ligne à ligne)
 │   │   ├── Uniqueness/           # MachineReferences (référence normalisée, unicité)
-│   │   ├── Contracts/            # MachineRetirementGuard (implémenté par booking)
+│   │   ├── Contracts/            # MachineRetirementGuard (implémenté par booking), AgencyMember (implémenté par User)
+│   │   ├── Faker/                # FleetFakerExtension (noms d'agence, de catégorie, références)
 │   │   ├── Guards/               # UnrestrictedRetirement (liaison par défaut)
 │   │   ├── Events/               # MachineChanged, FleetImported (diffusés sur fleet)
 │   │   ├── Exceptions/           # RefusalException (base des refus affichés) et ses sous-classes
-│   │   ├── Access/               # Controls/MachineControl, Perimeters/GlobalPerimeter
+│   │   ├── Access/               # FleetPermission, Controls/MachineControl, Perimeters/GlobalPerimeter
 │   │   └── Livewire/             # MachineIndex, MachineForm, ImportFleetForm ; Concerns/DisplaysRefusals
 │   ├── routes/{web,channels}.php # écrans du parc ; canal privé fleet
 │   ├── database/{migrations,factories,seeders}/
@@ -118,7 +122,7 @@ functional/                       # layers métier (convention xefi/laravel-osdd
     │   ├── Listeners/            # RefreshConflictsOnMachineChanged
     │   ├── Console/              # booking:flag-late-returns
     │   ├── Exceptions/           # refus typés (chevauchement, machine non réservable, sortie, dates, transition)
-    │   ├── Access/Controls/      # ReservationControl
+    │   ├── Access/               # BookingPermission, Controls/ReservationControl
     │   └── Livewire/             # AvailabilitySearch, CreateReservationForm, ReservationList, ReservationDetail, Planning
     ├── routes/{web,console}.php  # écrans booking ; planification quotidienne
     ├── database/{migrations,factories}/
@@ -127,7 +131,7 @@ functional/                       # layers métier (convention xefi/laravel-osdd
 compose.yaml                      # Sail : laravel.test, queue (worker), pgsql, soketi, mailpit
 ```
 
-Les tests des layers sont chargés par l'autoload de dev de `composer.json` et lancés par les suites `Unit` et `Feature` de `phpunit.xml`. Tailwind scanne `functional/*/resources/views` et `functional/*/src`.
+Les layers ne dépendent pas de `app/` : ils voient l'utilisateur via des contrats (`Authenticatable`, `Authorizable`, `AgencyMember`) et la classe configurée dans `auth.providers.users.model`. Les permissions sont des enums par layer, créées par le seeder du layer et attribuées au rôle « salarié » par `database/seeders/PermissionSeeder`. Les modèles prunables des layers s'enregistrent dans une configuration commune lue par la planification de `model:prune`. Les tests des layers sont chargés par l'autoload de dev de `composer.json` et lancés par les suites `Unit` et `Feature` de `phpunit.xml`. Tailwind scanne `functional/*/resources/views` et `functional/*/src`.
 
 **Structure Decision**: un seul dépôt Laravel à la racine, à côté de `.specify/` et `specs/`. Le scaffold Laravel est créé dans un dossier temporaire puis déplacé à la racine, parce que `composer create-project` refuse un dossier non vide. `booking` dépend de `fleet` (réservation → machine), jamais l'inverse : `fleet` signale ses changements par événements, et `booking` les écoute pour recalculer les conflits. Quand `fleet` a besoin d'une règle de `booking` (refuser le retrait d'une machine réservée), il déclare un contrat (`MachineRetirementGuard`) que `booking` implémente et lie dans son service provider.
 

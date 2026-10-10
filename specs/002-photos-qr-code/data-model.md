@@ -58,6 +58,7 @@ L'autorisation matérialisée par le QR code (FR-004 à FR-008).
 - Générer une session révoque (`replaced`) la session active de la même réservation et de la même étape.
 - Valider la sortie révoque les sessions `departure` actives (`step_validated`) ; valider le retour révoque les sessions `return`.
 - Annuler la réservation révoque toutes ses sessions actives (`reservation_cancelled`), via un listener sur `ReservationChanged`.
+- **Purge** (`Prunable`, FR-023) : session expirée ou révoquée depuis plus de `inspection.photo_session_retention_days` jours (30), **sans aucune photo** ; une session qui porte des photos reste, la clé étrangère `photos.photo_session_id` l'exigeant, jusqu'à la purge de ces photos.
 
 ## Photo
 
@@ -77,7 +78,7 @@ Fichier attaché par la médiathèque (collection `photo`, un seul fichier). Con
 - Depuis le téléphone, une photo ne peut être supprimée que si sa réservation **et** son étape sont celles de la session du jeton ; toute autre photo est refusée comme si elle n'existait pas.
 - Étape validée = `departure` dès que la réservation n'est plus `confirmed`, `return` dès qu'elle est `closed`. Après validation, toute écriture est refusée par exception typée.
 - **Complétude** d'une étape : chaque `ReservationView` de la réservation a au moins une `Photo` de cette étape. C'est ce que vérifie `PhotosCompleteGuard` (FR-016, FR-017). Le guard **fige d'abord les vues** si la réservation n'en a pas encore : une réservation sans vue figée n'est jamais considérée comme complète ; ce figement n'est conservé que si la transition est acceptée.
-- **Purge** (`Prunable`, FR-023) : réservation `closed` avec `returned_at` < il y a un an, sans dégât non traité, et sans dégât traité depuis moins d'un an ; ou réservation `cancelled` et photo reçue il y a plus d'un an.
+- **Purge** (`Prunable`, FR-023, durée `inspection.photo_retention_days`, 365) : réservation `closed` avec `returned_at` < il y a un an, sans dégât non traité, et sans dégât traité depuis moins d'un an ; ou réservation `cancelled` et photo reçue il y a plus d'un an.
 
 ## Damage
 
@@ -96,7 +97,7 @@ Fichier attaché par la médiathèque (collection `photo`, un seul fichier). Con
 
 ## Historique
 
-`spatie/laravel-activitylog` (déjà en place par la 001), journal `inspection`, écrit explicitement par les actions et rattaché à la réservation (`performedOn`) avec son auteur (`causedBy`) : génération de chaque QR code, chaque révocation (étapes concernées, nombre de sessions, raison), réception et suppression de chaque photo (vue, étape), signalement et traitement de chaque dégât (FR-024). Le jeton n'y figure jamais.
+`spatie/laravel-activitylog` (déjà en place par la 001), journal `inspection`, écrit explicitement par les actions (noms d'événements dans l'enum `InspectionHistoryEvent`) et rattaché à la réservation (`performedOn`) avec son auteur (`causedBy`) : génération de chaque QR code, chaque révocation (étapes concernées, nombre de sessions, raison), réception et suppression de chaque photo (vue, étape), signalement et traitement de chaque dégât (FR-024). Le jeton n'y figure jamais.
 
 ## Relations
 

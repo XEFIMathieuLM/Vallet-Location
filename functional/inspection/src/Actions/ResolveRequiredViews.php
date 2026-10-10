@@ -3,6 +3,7 @@
 namespace Functional\Inspection\Actions;
 
 use Functional\Booking\Models\Reservation;
+use Functional\Fleet\Models\MachineCategory;
 use Functional\Inspection\Models\CategoryView;
 
 class ResolveRequiredViews
@@ -12,16 +13,16 @@ class ResolveRequiredViews
      */
     public function forReservation(Reservation $reservation): array
     {
-        return $this->forCategory($reservation->machine->machine_category_id);
+        return $this->forCategory($reservation->machine->category);
     }
 
     /**
      * @return list<string>
      */
-    public function forCategory(int $machineCategoryId): array
+    public function forCategory(MachineCategory $category): array
     {
         $categoryLabels = CategoryView::query()
-            ->where('machine_category_id', $machineCategoryId)
+            ->whereBelongsTo($category, 'category')
             ->orderBy('position')
             ->pluck('label')
             ->all();

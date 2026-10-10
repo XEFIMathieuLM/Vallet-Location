@@ -16,7 +16,7 @@ class FreezeReservationViews
         DB::transaction(function () use ($reservation): void {
             Reservation::query()->whereKey($reservation->id)->lockForUpdate()->firstOrFail();
 
-            if (ReservationView::query()->where('reservation_id', $reservation->id)->exists()) {
+            if (ReservationView::query()->whereBelongsTo($reservation)->exists()) {
                 return;
             }
 

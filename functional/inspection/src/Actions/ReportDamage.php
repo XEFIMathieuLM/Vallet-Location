@@ -5,12 +5,14 @@ namespace Functional\Inspection\Actions;
 use App\Models\User;
 use Carbon\CarbonImmutable;
 use Functional\Booking\Models\Reservation;
+use Functional\Inspection\Completeness\ViewCompleteness;
 use Functional\Inspection\Enums\InspectionStep;
 use Functional\Inspection\Events\DamageChanged;
 use Functional\Inspection\Exceptions\DamageNotReportableException;
+use Functional\Inspection\History\InspectionHistory;
+use Functional\Inspection\History\InspectionHistoryEvent;
 use Functional\Inspection\Models\Damage;
 use Functional\Inspection\Models\ReservationView;
-use Functional\Inspection\Support\InspectionHistory;
 use Illuminate\Support\Facades\DB;
 
 class ReportDamage
@@ -30,10 +32,10 @@ class ReportDamage
         }
 
         if (! $this->viewCompleteness->for($reservation)->isCompleteFor(InspectionStep::Return)) {
-            throw DamageNotReportableException::returnPhotosIncomplete();
+            throw DamageNotReportableException::returnPhotosIncomplete($reservation);
         }
 
-        $view = ReservationView::query()->where('reservation_id', $reservation->id)->findOrFail($reservationViewId);
+        $view = ReservationView::query()->whereBelongsTo($reservation)->findOrFail($reservationViewId);
 
         $damage = DB::transaction(function () use ($reservation, $view, $comment, $reporter): Damage {
             $damage = Damage::query()->create([
@@ -44,7 +46,7 @@ class ReportDamage
                 'reported_at' => CarbonImmutable::now(),
             ]);
 
-            $this->inspectionHistory->record($reservation, 'damage.reported', $reporter, [
+            $this->inspectionHistory->record($reservation, InspectionHistoryEvent::DamageReported, $reporter, [
                 'damage_id' => $damage->id,
                 'view' => $view->label,
                 'comment' => $damage->comment,
@@ -53,7 +55,7 @@ class ReportDamage
             return $damage;
         });
 
-        DamageChanged::dispatch($reservation->id, $this->countUnresolvedDamages->for($reservation->id));
+        DamageChanged::dispatch($reservation->id, $this->countUnresolvedDamages->for($reservation));
 
         return $damage;
     }

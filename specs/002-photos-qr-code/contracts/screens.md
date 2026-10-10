@@ -12,7 +12,7 @@ Les écrans du poste sont réservés aux salariés connectés. La page télépho
 | Dégâts à traiter | `/degats` | lister les réservations « à refacturer » (machine, client, agence, dégâts) ; ouvrir la comparaison ; par dégât : les actions enregistrées dans `DamageActions`, ou « Marquer traité » si aucune ne l'est | — | US3, FR-021, FR-022 |
 
 Sur la comparaison comme sur la liste, les actions d'un dégât suivent la même règle : registre `DamageActions` s'il est rempli (feature 003), sinon « Marquer traité ».
-| Vues par catégorie | `/vues-photos` (liste des catégories), `/vues-photos/{categorie}` | choisir une catégorie ; ajouter, renommer, réordonner, retirer une vue ; revenir à la liste par défaut | retrait de la dernière vue, libellé en doublon dans la catégorie | US4, FR-001, FR-002 |
+| Vues par catégorie | `/vues-photos` (liste des catégories), `/vues-photos/{categorie}` | choisir une catégorie ; ajouter, renommer, réordonner, supprimer une vue ; revenir à la liste par défaut | suppression de la dernière vue, libellé en doublon dans la catégorie | US4, FR-001, FR-002 |
 
 ## Téléphone (public, par jeton)
 
@@ -21,5 +21,7 @@ Sur la comparaison comme sur la liste, les actions d'un dégât suivent la même
 | Prise de photos | `/photos/{jeton}` | voir machine (référence), client (nom), étape ; pour chaque vue : prendre une photo, voir sa miniature, la supprimer, réessayer un envoi échoué | lien expiré / remplacé / étape validée / réservation annulée (message unique : « Ce lien n'est plus valable, générez un nouveau QR code depuis le poste »), fichier non image, fichier trop lourd | US1, US2, FR-006, FR-007, FR-015 |
 
 ## Messages
+
+Les refus disent toujours quoi faire. Le texte « Photos manquantes : {vues} » et le message du lien expiré ci-dessus sont fixés par ce contrat ; les autres refus (étape déjà validée, dégât déjà traité, photos de retour incomplètes) indiquent l'action possible.
 
 Tous les libellés passent par les fichiers de traduction `fr` du layer `inspection`. La page téléphone ne révèle jamais pourquoi un jeton inconnu est refusé (même message qu'un jeton expiré).

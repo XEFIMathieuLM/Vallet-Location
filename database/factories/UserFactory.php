@@ -27,7 +27,7 @@ class UserFactory extends Factory
     {
         return [
             'name' => faker()->name(),
-            'email' => faker()->unique()->email(),
+            'email' => faker()->email(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'agency_id' => Agency::factory(),

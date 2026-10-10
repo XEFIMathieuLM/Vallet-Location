@@ -15,7 +15,7 @@ class MachineCategoryFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => faker()->unique()->machineCategoryName(),
+            'name' => faker()->machineCategoryName(),
             'is_vgp_required' => false,
         ];
     }

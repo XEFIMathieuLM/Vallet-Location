@@ -19,7 +19,7 @@ class MachineFactory extends Factory
     public function definition(): array
     {
         return [
-            'reference' => faker()->unique()->machineReference(),
+            'reference' => faker()->machineReference(),
             'machine_category_id' => MachineCategory::factory(),
             'agency_id' => Agency::factory(),
             'status' => MachineStatus::Available,

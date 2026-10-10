@@ -15,7 +15,7 @@ class AgencyFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => faker()->unique()->agencyName(),
+            'name' => faker()->agencyName(),
             'address' => null,
         ];
     }

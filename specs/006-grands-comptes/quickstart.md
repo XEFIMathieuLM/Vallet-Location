@@ -13,6 +13,12 @@ Guide de vérification de bout en bout. Les entités sont dans [data-model.md](d
 docker compose exec -u sail laravel.test php artisan queue:work
 ```
 
+Un worker démarré avant la mise à jour du code garde l'ancien enregistrement des services : sans redémarrage, l'envoi échoue avec « Target [PurchaseOrderNumbers] is not instantiable ». Après chaque mise à jour, redémarrer le worker :
+
+```bash
+docker compose exec -u sail laravel.test php artisan queue:restart
+```
+
 ## Tests automatisés
 
 ```bash

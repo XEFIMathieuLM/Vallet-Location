@@ -203,11 +203,11 @@ Celles de la 001 s'appliquent sans changement ([tasks.md de la 001](../001-reser
 
 ## Phase 7: Polish & Cross-Cutting Concerns
 
-- [ ] T055 [P] Ajouter des données de démonstration dans `functional/accounts/database/seeders/AccountsDemoSeeder.php` (deux grands comptes avec identifiant de facturation, réservations avec et sans numéro), appelé depuis `database/seeders/DatabaseSeeder.php` en environnement local
-- [ ] T056 [P] Vérifier qu'aucun fichier de `billing`, `inspection`, `booking` ni `fleet` n'importe `Functional\Accounts` (test d'architecture dans `functional/accounts/tests/Unit/LayerBoundariesTest.php` qui parcourt les fichiers de ces layers)
-- [ ] T057 Reporter le champ `purchase_order_number` dans les contrats de la 003 (`specs/003-transmission-facturation/contracts/billing-gateway.md` et `export-format.md`) si la coordination valide cette modification
-- [ ] T058 `vendor/bin/pint --dirty --format agent`, `vendor/bin/phpstan analyse` à zéro erreur, `php artisan test` vert (suite complète) ; vérifier que chaque fichier de code fait moins de 200 lignes
-- [ ] T059 Dérouler [quickstart.md](quickstart.md) dans l'environnement local et noter tout écart
+- [X] T055 [P] Ajouter des données de démonstration dans `functional/accounts/database/seeders/AccountsDemoSeeder.php` (deux grands comptes avec identifiant de facturation, réservations avec et sans numéro), appelé depuis `database/seeders/DatabaseSeeder.php` en environnement local
+- [X] T056 [P] Vérifier qu'aucun fichier de `billing`, `inspection`, `booking` ni `fleet` n'importe `Functional\Accounts` (test d'architecture dans `functional/accounts/tests/Unit/LayerBoundariesTest.php` qui parcourt les fichiers de ces layers)
+- [X] T057 Reporter le champ `purchase_order_number` dans les contrats de la 003 (`specs/003-transmission-facturation/contracts/billing-gateway.md` et `export-format.md`) si la coordination valide cette modification
+- [X] T058 `vendor/bin/pint --dirty --format agent`, `vendor/bin/phpstan analyse` à zéro erreur, `php artisan test` vert (suite complète) ; vérifier que chaque fichier de code fait moins de 200 lignes
+- [X] T059 Dérouler [quickstart.md](quickstart.md) dans l'environnement local et noter tout écart
 
 ---
 

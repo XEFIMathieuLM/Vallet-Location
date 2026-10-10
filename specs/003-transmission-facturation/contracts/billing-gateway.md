@@ -21,6 +21,7 @@ Le port entre `billing` et le logiciel de facturation du client (B2). Toute impl
 | `damage_comment` | — | commentaire du constat |
 | `label` | — | libellé de la réparation |
 | `amount_excl_tax_cents` | — (le logiciel applique ses tarifs) | montant HT en centimes |
+| `purchase_order_number` | numéro de bon de commande de la réservation, ou vide (feature 006) | idem |
 
 ## Les trois issues possibles
 

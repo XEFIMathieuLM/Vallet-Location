@@ -277,3 +277,8 @@ T040–T047 (tous [P])   puis   T048 DepositRetention ‖ T049 BilledDamagesTota
 
 - `UpdateCustomer`, `CustomerChanged` et `CustomerChangeGuards` (T008–T011) sont attendus par la 005 et la 006 : les livrer et commiter en premier, et signaler le commit à la coordination.
 - PR vers `003-transmission-facturation`, après la 003.
+
+## Phase 10: Convergence
+
+- [X] T071 Documenter dans « Complexity Tracking » de `specs/004-caution-particuliers/plan.md` la modification du test `functional/inspection/tests/Feature/PhotosPanelReadinessTest.php` (isolation du panneau photos, rendue nécessaire par la section caution gardienne du départ ; aucun code applicatif d'`inspection` modifié) per plan: Affected Repos (contradicts)
+- [X] T072 Faire de `$author` l'auteur enregistré dans l'historique du client par `UpdateCustomer::qualify()` (`functional/booking/src/Actions/UpdateCustomer.php`, causer explicite) et le vérifier dans `functional/booking/tests/Feature/UpdateCustomerQualifyTest.php` avec un auteur différent de l'utilisateur connecté per contracts/customer-contract.md (partial)

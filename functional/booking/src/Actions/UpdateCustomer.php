@@ -8,7 +8,9 @@ use Functional\Booking\Extensions\CustomerChangeGuards;
 use Functional\Booking\Models\Customer;
 use Functional\Fleet\Contracts\AgencyMember;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Spatie\Activitylog\Support\CauserResolver;
 
 final class UpdateCustomer
 {
@@ -16,7 +18,8 @@ final class UpdateCustomer
 
     public function qualify(Customer $customer, CustomerType $type, Authenticatable&AgencyMember $author): Customer
     {
-        $isChanged = DB::transaction(function () use ($customer, $type): bool {
+        $causer = $author instanceof Model ? $author : null;
+        $isChanged = app(CauserResolver::class)->withCauser($causer, fn (): bool => DB::transaction(function () use ($customer, $type): bool {
             $lockedCustomer = Customer::query()->lockForUpdate()->findOrFail($customer->id);
 
             if ($lockedCustomer->type === $type) {
@@ -30,7 +33,7 @@ final class UpdateCustomer
             $lockedCustomer->update(['type' => $type]);
 
             return true;
-        });
+        }));
 
         $customer->refresh();
 

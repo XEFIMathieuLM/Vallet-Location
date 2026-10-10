@@ -188,14 +188,14 @@ Celles de la 001 s'appliquent sans changement ([tasks.md de la 001](../001-reser
 
 > **Écrire ces tests d'abord et vérifier qu'ils échouent.**
 
-- [ ] T050 [P] [US4] Scénarios 1 et 2 (contenu, tri par date de début, mise en évidence à 3 jours ou moins en heure de Paris via `travelTo()` ; réservations annulées, en cours et de clients ordinaires absentes ; nombre de requêtes constant) dans `functional/accounts/tests/Feature/MissingPurchaseOrdersTest.php`
-- [ ] T051 [P] [US4] Scénarios 3 et 4 (saisie en ligne : la réservation sort de la liste ; filtre par agence de rattachement de la machine ; accès refusé sans `purchase_orders.manage`) dans `functional/accounts/tests/Feature/MissingPurchaseOrdersTest.php`
+- [X] T050 [P] [US4] Scénarios 1 et 2 (contenu, tri par date de début, mise en évidence à 3 jours ou moins en heure de Paris via `travelTo()` ; réservations annulées, en cours et de clients ordinaires absentes ; nombre de requêtes constant) dans `functional/accounts/tests/Feature/MissingPurchaseOrdersTest.php`
+- [X] T051 [P] [US4] Scénarios 3 et 4 (saisie en ligne : la réservation sort de la liste ; filtre par agence de rattachement de la machine ; accès refusé sans `purchase_orders.manage`) dans `functional/accounts/tests/Feature/MissingPurchaseOrdersTest.php`
 
 ### Implementation for User Story 4
 
-- [ ] T052 [US4] Créer `functional/accounts/src/Queries/MissingPurchaseOrders.php` : réservations `confirmed` dont le client a une ligne `key_accounts` et sans ligne `reservation_purchase_orders` (jointures et `whereNotExists`, pas de requête par ligne), filtre optionnel `agency_id` de la machine, tri par `start_date` (la « date de départ » de la spec est la date de début prévue), chargement de la machine, du client et de l'agence
-- [ ] T053 [US4] Créer l'écran `functional/accounts/src/Livewire/MissingPurchaseOrders.php` et sa vue `functional/accounts/resources/views/livewire/missing-purchase-orders.blade.php` selon [contracts/screens.md](contracts/screens.md) : colonnes, filtre agence, mise en évidence selon `accounts.highlight_days_before_departure`, saisie en ligne via `SetPurchaseOrder`, refus via `DisplaysRefusals`, liste vide par `x-empty-state`, saisie confirmée par `Flux::toast` ; route `/bons-de-commande` (`accounts.missing-purchase-orders`, `can:purchase_orders.manage`) dans `functional/accounts/routes/web.php` (depends on T036, T052)
-- [ ] T054 [US4] Ajouter l'entrée « Bons de commande » (visible avec `purchase_orders.manage`) dans `resources/views/layouts/app/sidebar.blade.php`
+- [X] T052 [US4] Créer `functional/accounts/src/Queries/MissingPurchaseOrders.php` : réservations `confirmed` dont le client a une ligne `key_accounts` et sans ligne `reservation_purchase_orders` (jointures et `whereNotExists`, pas de requête par ligne), filtre optionnel `agency_id` de la machine, tri par `start_date` (la « date de départ » de la spec est la date de début prévue), chargement de la machine, du client et de l'agence
+- [X] T053 [US4] Créer l'écran `functional/accounts/src/Livewire/MissingPurchaseOrders.php` et sa vue `functional/accounts/resources/views/livewire/missing-purchase-orders.blade.php` selon [contracts/screens.md](contracts/screens.md) : colonnes, filtre agence, mise en évidence selon `accounts.highlight_days_before_departure`, saisie en ligne via `SetPurchaseOrder`, refus via `DisplaysRefusals`, liste vide par `x-empty-state`, saisie confirmée par `Flux::toast` ; route `/bons-de-commande` (`accounts.missing-purchase-orders`, `can:purchase_orders.manage`) dans `functional/accounts/routes/web.php` (depends on T036, T052)
+- [X] T054 [US4] Ajouter l'entrée « Bons de commande » (visible avec `purchase_orders.manage`) dans `resources/views/layouts/app/sidebar.blade.php`
 
 **Checkpoint**: T050 et T051 passent.
 

@@ -220,7 +220,7 @@ Celles de la 001 s'appliquent sans changement (CLAUDE.md, constitution 1.0.1) : 
 - [X] T067 [P] Vérifier l'absence de dépendance inverse : `grep -rn "Functional\\\\Deposit" functional/{fleet,booking,inspection,billing}` ne renvoie rien
 - [X] T068 Lancer `vendor/bin/pint --dirty` puis `vendor/bin/pint --test`, `vendor/bin/phpstan clear-result-cache` puis `vendor/bin/phpstan analyse` (zéro erreur) et `php artisan test` (suite complète verte) ; vérifier fichiers < 200 lignes et méthodes < 40 lignes dans `functional/deposit/src` et les fichiers modifiés de `functional/booking/src`
 - [X] T069 Mettre à jour `CLAUDE.md` (section Architecture) : sens des dépendances `deposit → billing → inspection → booking → fleet`, point d'extension `Extensions/CustomerChangeGuards` de `booking`, `DepositPermissionSeeder`
-- [ ] T070 Dérouler [quickstart.md](quickstart.md) dans le navigateur (scénarios 1 à 7) et corriger les écarts
+- [X] T070 Dérouler [quickstart.md](quickstart.md) dans le navigateur (scénarios 1 à 7) et corriger les écarts — 2026-10-10 : scénarios 1, 2 et 6 déroulés dans le navigateur (encaissement, disponibilité de la sortie par section, qualification, liste et montants), sans écart ; scénarios 3, 4, 5 et 7 (retour avec photos, dégâts, annulation, rattrapage) couverts par les tests Feature de la phase 5 et 6
 
 ---
 

@@ -189,13 +189,13 @@ Lire `design-patterns:state` avant T016.
 
 ### Tests for User Story 4
 
-- [ ] T055 [P] [US4] Écrire `functional/billing/tests/Feature/BillingStatementTest.php` : scénarios 1 et 2 de l'US4 avec le jeu de l'Independent Test ; filtre par agence (agence de rattachement de la machine) ; un dégât à traiter depuis plus de `billing.damage_overdue_days` est marqué en retard ; les comptes et totaux sont calculés par la base (une seule requête par agrégat, vérifiée avec `DB::enableQueryLog()`)
+- [X] T055 [P] [US4] Écrire `functional/billing/tests/Feature/BillingStatementTest.php` : scénarios 1 et 2 de l'US4 avec le jeu de l'Independent Test ; filtre par agence (agence de rattachement de la machine) ; un dégât à traiter depuis plus de `billing.damage_overdue_days` est marqué en retard ; les comptes et totaux sont calculés par la base (une seule requête par agrégat, vérifiée avec `DB::enableQueryLog()`)
 
 ### Implementation for User Story 4
 
-- [ ] T056 [US4] Implémenter la requête `BillingStatement` dans `functional/billing/src/Queries/BillingStatement.php` : pour une agence (facultative) et une période, nombre de réservations ayant une période transmise (`sent` ou `exported`), total `amount_cents` des dégâts `billed`, liste des dégâts `waived` (motif, auteur, date), liste des dégâts non traités avec leur ancienneté ; agrégats en SQL (`count`, `sum`), pas en PHP
-- [ ] T057 [US4] Créer l'écran Livewire `Statement` (`/facturation/releve`) dans `functional/billing/src/Livewire/Statement.php` et sa vue : filtres agence et période (mois courant par défaut), montants affichés en euros, dégâts en retard mis en évidence (depends on T056)
-- [ ] T058 [P] [US4] Ajouter les textes de l'US4 dans `functional/billing/resources/lang/fr/statement.php`
+- [X] T056 [US4] Implémenter la requête `BillingStatement` dans `functional/billing/src/Queries/BillingStatement.php` : pour une agence (facultative) et une période, nombre de réservations ayant une période transmise (`sent` ou `exported`), total `amount_cents` des dégâts `billed`, liste des dégâts `waived` (motif, auteur, date), liste des dégâts non traités avec leur ancienneté ; agrégats en SQL (`count`, `sum`), pas en PHP
+- [X] T057 [US4] Créer l'écran Livewire `Statement` (`/facturation/releve`) dans `functional/billing/src/Livewire/Statement.php` et sa vue : filtres agence et période (mois courant par défaut), montants affichés en euros, dégâts en retard mis en évidence (depends on T056)
+- [X] T058 [P] [US4] Ajouter les textes de l'US4 dans `functional/billing/resources/lang/fr/statement.php`
 
 **Checkpoint** : toutes les stories passent.
 

@@ -49,6 +49,9 @@
                         <flux:sidebar.item icon="arrow-down-tray" :href="route('billing.exports')" :current="request()->routeIs('billing.exports*')" wire:navigate>
                             {{ __('billing::navigation.exports') }}
                         </flux:sidebar.item>
+                        <flux:sidebar.item icon="chart-bar" :href="route('billing.statement')" :current="request()->routeIs('billing.statement')" wire:navigate>
+                            {{ __('billing::navigation.statement') }}
+                        </flux:sidebar.item>
                     </flux:sidebar.group>
                 @endcan
 

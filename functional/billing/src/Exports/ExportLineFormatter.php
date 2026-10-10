@@ -13,8 +13,10 @@ final class ExportLineFormatter
     public function format(BillableLine $billableLine): array
     {
         $line = $billableLine->toArray();
-        unset($line['amount_excl_tax_cents']);
+        $purchaseOrderNumber = $line['purchase_order_number'] ?? null;
+        unset($line['amount_excl_tax_cents'], $line['purchase_order_number']);
         $line['amount_excl_tax'] = $billableLine instanceof DamageLine ? $billableLine->amountExclTax->format() : null;
+        $line['purchase_order_number'] = $purchaseOrderNumber;
 
         return $line;
     }

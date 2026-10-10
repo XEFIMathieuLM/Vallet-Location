@@ -45,7 +45,7 @@ final readonly class DamageLine implements BillableLine
         return [
             'idempotency_key' => $rentalContext['idempotency_key'],
             'type' => BillableLineType::Damage->value,
-            ...array_diff_key($rentalContext, ['idempotency_key' => true]),
+            ...array_diff_key($rentalContext, ['idempotency_key' => true, 'purchase_order_number' => true]),
             'period_start' => null,
             'period_end' => null,
             'period_kind' => null,
@@ -54,6 +54,7 @@ final readonly class DamageLine implements BillableLine
             'damage_comment' => $this->damageComment,
             'label' => $this->label,
             'amount_excl_tax_cents' => $this->amountExclTax->minorUnits,
+            'purchase_order_number' => $rentalContext['purchase_order_number'],
         ];
     }
 }

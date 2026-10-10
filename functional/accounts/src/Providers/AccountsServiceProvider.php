@@ -5,9 +5,11 @@ namespace Functional\Accounts\Providers;
 use Functional\Accounts\Access\Controls\KeyAccountControl;
 use Functional\Accounts\Access\Controls\PurchaseOrderControl;
 use Functional\Accounts\Badges\KeyAccountBadgeProvider;
+use Functional\Accounts\Billing\KeyAccountPurchaseOrderNumbers;
 use Functional\Accounts\Guards\KeyAccountTypeGuard;
 use Functional\Accounts\Guards\PurchaseOrderDepartureGuard;
 use Functional\Accounts\Livewire\PurchaseOrderSection;
+use Functional\Billing\Contracts\PurchaseOrderNumbers;
 use Functional\Booking\Enums\ReservationTransition;
 use Functional\Booking\Extensions\CustomerBadges;
 use Functional\Booking\Extensions\CustomerChangeGuards;
@@ -22,6 +24,7 @@ class AccountsServiceProvider extends LayerServiceProvider
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../../config/accounts.php', 'accounts');
+        $this->app->bind(PurchaseOrderNumbers::class, KeyAccountPurchaseOrderNumbers::class);
     }
 
     public function boot(): void

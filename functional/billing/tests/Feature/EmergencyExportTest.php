@@ -79,11 +79,11 @@ class EmergencyExportTest extends TestCase
         $lines = explode("\n", trim($content));
         $this->assertStringStartsWith("\xEF\xBB\xBF", $content);
         $this->assertSame(
-            'idempotency_key;type;customer_ref;reservation_ref;machine_reference;machine_category;home_agency;booking_agency;period_start;period_end;period_kind;days;damage_view;damage_comment;label;amount_excl_tax',
+            'idempotency_key;type;customer_ref;reservation_ref;machine_reference;machine_category;home_agency;booking_agency;period_start;period_end;period_kind;days;damage_view;damage_comment;label;amount_excl_tax;purchase_order_number',
             substr($lines[0], 3),
         );
         $this->assertStringStartsWith("{$transmission->uuid};damage;", $lines[1]);
-        $this->assertStringEndsWith(';"Remplacement capot";450,00', $lines[1]);
+        $this->assertStringEndsWith(';"Remplacement capot";450,00;', $lines[1]);
     }
 
     public function test_the_screen_produces_an_export_and_lists_past_exports_for_download(): void

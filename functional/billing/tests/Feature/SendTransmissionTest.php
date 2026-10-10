@@ -62,6 +62,7 @@ class SendTransmissionTest extends TestCase
             'damage_comment' => null,
             'label' => null,
             'amount_excl_tax_cents' => null,
+            'purchase_order_number' => null,
         ], $this->fakeGateway()->received()[$transmission->uuid]);
     }
 

@@ -14,9 +14,10 @@ final readonly class RentalContext
         public string $machineCategory,
         public string $homeAgency,
         public string $bookingAgency,
+        public ?string $purchaseOrderNumber,
     ) {}
 
-    public static function fromTransmission(Transmission $transmission, ?string $customerRef): self
+    public static function fromTransmission(Transmission $transmission, ?string $customerRef, ?string $purchaseOrderNumber = null): self
     {
         $reservation = $transmission->reservation;
 
@@ -28,6 +29,7 @@ final readonly class RentalContext
             machineCategory: $reservation->machine->category->name,
             homeAgency: $reservation->machine->agency->name,
             bookingAgency: $reservation->agency->name,
+            purchaseOrderNumber: $purchaseOrderNumber,
         );
     }
 
@@ -44,6 +46,7 @@ final readonly class RentalContext
             'machine_category' => $this->machineCategory,
             'home_agency' => $this->homeAgency,
             'booking_agency' => $this->bookingAgency,
+            'purchase_order_number' => $this->purchaseOrderNumber,
         ];
     }
 }

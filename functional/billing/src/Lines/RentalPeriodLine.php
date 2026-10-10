@@ -37,7 +37,7 @@ final readonly class RentalPeriodLine implements BillableLine
         return [
             'idempotency_key' => $rentalContext['idempotency_key'],
             'type' => BillableLineType::RentalPeriod->value,
-            ...array_diff_key($rentalContext, ['idempotency_key' => true]),
+            ...array_diff_key($rentalContext, ['idempotency_key' => true, 'purchase_order_number' => true]),
             'period_start' => $this->period->start->toDateString(),
             'period_end' => $this->period->end->toDateString(),
             'period_kind' => $this->kind->value,
@@ -46,6 +46,7 @@ final readonly class RentalPeriodLine implements BillableLine
             'damage_comment' => null,
             'label' => null,
             'amount_excl_tax_cents' => null,
+            'purchase_order_number' => $rentalContext['purchase_order_number'],
         ];
     }
 }

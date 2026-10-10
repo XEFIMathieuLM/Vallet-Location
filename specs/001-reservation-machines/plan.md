@@ -14,7 +14,7 @@ Approche : une application **100 % Laravel** avec une interface Livewire, décou
 
 ## Technical Context
 
-**Language/Version**: PHP 8.5 (conteneur Sail), Laravel 13, Livewire 4 ; PHP 8.4 (Herd) accepté en local pour Composer et PHPStan
+**Language/Version**: PHP 8.5 (conteneur Sail), Laravel 13, Livewire 4
 
 **Primary Dependencies**: Livewire (starter kit Livewire officiel), `xefi/laravel-osdd`, `spatie/laravel-permission`, `lomkit/laravel-access-control`, `spatie/laravel-activitylog`, `spatie/simple-excel`, `pusher/pusher-php-server` + Laravel Echo (vers Soketi), `laravel/boost` (dev), `xefi/faker-php-laravel` (dev), Larastan + `xefi/phpstan-xefi-rules` (dev)
 
@@ -36,23 +36,20 @@ Approche : une application **100 % Laravel** avec une interface Livewire, décou
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-`.specify/memory/constitution.md` est encore le modèle vide : aucun principe projet n'est ratifié. À défaut, les conventions Xefi servent de portes :
+Vérifié contre la constitution du projet (`.specify/memory/constitution.md`, v1.0.0, ratifiée le 2026-10-10), après la livraison :
 
-| Porte | Statut |
-|-------|--------|
-| Stack Laravel + Livewire, layout OSDD | ✅ R1, R2 |
-| Packages obligatoires (permission, access-control, boost, faker Xefi) ; `lomkit/laravel-rest-api` sans objet (aucune API CRUD exposée) | ✅ R6, R11 |
-| Contrôles par permission, jamais par nom de rôle | ✅ R6 |
-| Statuts en colonne texte + enum PHP, transitions en pattern State | ✅ R5 |
-| Pas d'observers, réactions par événements / listeners | ✅ R9 |
-| Pas de cascade en base | ✅ data-model |
-| Temps réel Soketi, canal privé, payload explicite | ✅ R4, contrats |
-| Garanties portées par le code ou la base, pas seulement par la doc | ✅ R3 (contrainte d'exclusion) |
-| Fichiers de code < 200 lignes, code en anglais, textes traduits | ✅ vérifié (T076) |
+| Principe | Statut |
+|----------|--------|
+| I. Architecture en layers OSDD | ✅ `fleet` et `booking` dans `functional/` ; `booking → fleet` uniquement ; `fleet` passe par le contrat `MachineRetirementGuard` ; points d'extension génériques pour les layers supérieurs (R12) |
+| II. Garanties portées par la base et le serveur | ✅ contrainte d'exclusion et index unique normalisé, `lockForUpdate()` sur la machine, aucune cascade ; écritures ligne à ligne justifiées ci-dessous |
+| III. Cycles de vie explicites | ✅ statuts texte + enums, pattern State pour la machine et la réservation, `Europe/Paris` |
+| IV. Effets de bord explicites et erreurs typées | ✅ événements + listener + commande planifiée, aucun observer, `rescue()` qui relance, refus typés (`RefusalException`), conflits persistés et rattrapés chaque nuit |
+| V. Accès par permission | ✅ permissions déclarées par layer (`FleetPermissionSeeder`, `BookingPermissionSeeder`) et `users.manage` dans `app/`, toutes attribuées au rôle « salarié » |
+| VI. Tests par scénario d'acceptation | ✅ un test Feature par scénario, tests Unit des états, tests écrits d'abord, PHPStan à zéro erreur |
+| VII. Code simple et lisible | ✅ fichiers < 200 lignes (T076), code en anglais, textes traduits, pas de commentaire de code |
+| Contraintes techniques | ✅ Laravel + Livewire + Flux, PostgreSQL, Soketi, tout dans Docker (`compose.yaml`), worker de file |
 
-**Résultat** : aucune violation. Recommandation : lancer `/speckit-constitution` avant la 2e feature pour inscrire ces principes dans le projet.
-
-**Re-check post-design** : le modèle de données et les contrats respectent toutes les portes ci-dessus.
+**Résultat** : aucune violation non justifiée (voir Complexity Tracking).
 
 ## Project Structure
 
@@ -136,4 +133,6 @@ Les tests des layers sont chargés par l'autoload de dev de `composer.json` et l
 
 ## Complexity Tracking
 
-Aucune violation à justifier.
+| Écart | Pourquoi | Alternative plus simple écartée |
+|-------|----------|----------------------------------|
+| Principe II « aucune requête dans une boucle » : l'import du parc crée les machines une par une, et le recalcul des conflits enregistre une par une les réservations dont le motif change | Chaque création et chaque changement passe par Eloquent pour être journalisé (FR-022, `spatie/laravel-activitylog`) et diffusé (`MachineChanged`, `ReservationChanged`) ; une ligne d'import invalide ne doit pas annuler les autres. Les lectures sont groupées (une requête pour toutes les machines ou toutes les réservations concernées). | Insertion ou mise à jour en masse : contourne l'historique et les événements temps réel |

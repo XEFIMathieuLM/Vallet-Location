@@ -2,6 +2,7 @@
 
 namespace Functional\Billing\Livewire;
 
+use Functional\Billing\Models\BillablePeriod;
 use Functional\Billing\Models\DamageSettlement;
 use Functional\Billing\Models\Transmission;
 use Functional\Booking\Models\Reservation;
@@ -20,10 +21,10 @@ class ReservationBillingSection extends Component
         return view('billing::livewire.reservation-billing-section', [
             'periodTransmissions' => Transmission::query()
                 ->whereBelongsTo($this->reservation)
-                ->whereNotNull('billable_period_id')
+                ->has('billablePeriod')
                 ->with('billablePeriod')
-                ->get()
-                ->sortBy(fn (Transmission $transmission): string => $transmission->billablePeriod?->start_date->toDateString() ?? ''),
+                ->orderBy(BillablePeriod::query()->select('start_date')->whereColumn('billable_periods.id', 'transmissions.billable_period_id'))
+                ->get(),
             'damageSettlements' => DamageSettlement::query()
                 ->whereIn('damage_id', Damage::query()->select('id')->whereBelongsTo($this->reservation))
                 ->with(['damage.view', 'settler', 'transmission'])

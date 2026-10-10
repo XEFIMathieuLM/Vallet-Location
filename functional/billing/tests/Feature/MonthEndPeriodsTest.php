@@ -6,11 +6,13 @@ use Carbon\CarbonImmutable;
 use Functional\Billing\Enums\BillablePeriodKind;
 use Functional\Billing\Enums\TransmissionStatus;
 use Functional\Billing\Exceptions\MissingGoLiveDateException;
+use Functional\Billing\Livewire\ReservationBillingSection;
 use Functional\Billing\Models\Transmission;
 use Functional\Billing\Tests\Concerns\BuildsBillingFixtures;
 use Functional\Billing\Tests\Concerns\RecordsReservationLifecycle;
 use Functional\Booking\Enums\ReservationStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class MonthEndPeriodsTest extends TestCase
@@ -140,5 +142,15 @@ class MonthEndPeriodsTest extends TestCase
             ->expectsOutputToContain("Closing elapsed months of reservation #{$reservation->id}.")
             ->expectsOutputToContain('Closed elapsed months of 1 running rental(s).')
             ->assertSuccessful();
+    }
+
+    public function test_the_reservation_section_lists_periods_in_date_order(): void
+    {
+        $reservation = $this->inProgressReservation('2026-10-15 08:00:00');
+        $this->closeMonthsOn('2026-12-01 00:15:00');
+        $this->recordReturn($reservation, '2026-12-10 11:00:00');
+
+        Livewire::test(ReservationBillingSection::class, ['reservation' => $reservation])
+            ->assertSeeInOrder(['Du 15/10/2026 au 31/10/2026', 'Du 01/11/2026 au 30/11/2026', 'Du 01/12/2026 au 10/12/2026']);
     }
 }

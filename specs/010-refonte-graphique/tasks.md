@@ -81,15 +81,15 @@ description: "Task list for the full visual redesign (feature 010)"
 
 ### Tests for User Story 1
 
-- [ ] T010 [P] [US1] Écrire `tests/Unit/Design/DesignTokensContrastTest.php` (échoue d'abord : `tokens.css` vide). Il lit `resources/css/vallet/tokens.css`, en extrait les valeurs hexadécimales des jetons par nom, calcule le contraste WCAG et vérifie chaque couple du tableau « Couples vérifiés » de `contracts/design-tokens.md`, y compris le garde-fou « jaune sur blanc < 3 ». Les mélanges à x % se font en sRGB sur le fond donné.
-- [ ] T011 [P] [US1] Écrire `tests/Feature/Design/ButtonVariantsTest.php`. Rendu Blade de `<flux:button variant="primary">`, `filled`, `outline`, `danger` et `ghost` :
+- [X] T010 [P] [US1] Écrire `tests/Unit/Design/DesignTokensContrastTest.php` (échoue d'abord : `tokens.css` vide). Il lit `resources/css/vallet/tokens.css`, en extrait les valeurs hexadécimales des jetons par nom, calcule le contraste WCAG et vérifie chaque couple du tableau « Couples vérifiés » de `contracts/design-tokens.md`, y compris le garde-fou « jaune sur blanc < 3 ». Les mélanges à x % se font en sRGB sur le fond donné.
+- [X] T011 [P] [US1] Écrire `tests/Feature/Design/ButtonVariantsTest.php`. Rendu Blade de `<flux:button variant="primary">`, `filled`, `outline`, `danger` et `ghost` :
   - chacun porte `data-variant="<variante>"` ;
   - aucun ne contient `shadow-` ;
   - la chaîne `--color-accent` (fond) et la chaîne `--color-accent-foreground` (texte) n'apparaissent que dans le `primary`.
 
 ### Implementation for User Story 1
 
-- [ ] T012 [US1] Remplir `resources/css/vallet/tokens.css` (`@theme`) selon `contracts/design-tokens.md` :
+- [X] T012 [US1] Remplir `resources/css/vallet/tokens.css` (`@theme`) selon `contracts/design-tokens.md` :
   - `--font-sans` Inter Tight ;
   - accent, accent-pressed, accent-foreground, accent-content ;
   - gamme `zinc` et alias `neutral` ;
@@ -97,7 +97,7 @@ description: "Task list for the full visual redesign (feature 010)"
   - `--radius-xs: 2px`.
 
   T010 passe.
-- [ ] T013 [US1] Remplir `resources/css/vallet/components.css` (R3, R9) :
+- [X] T013 [US1] Remplir `resources/css/vallet/components.css` (R3, R9) :
   - utilitaires `.display-xl`, `.display-lg`, `.display-md`, `.heading-lg`, `.heading-md`, `.heading-sm`, `.eyebrow` (`@utility`, valeurs de design-tokens.md, réductions sous 640 px) ;
   - `[data-flux-heading]` en 700 / 0,95 ;
   - `[data-flux-control]` : bordure basse 1 px `zinc-950` (blanche sous `.dark`), autres bordures 0, rayon 0, sans ombre, fond transparent ; focus : bordure basse 2 px. Remplace la règle de focus actuelle en anneau (`ring-accent`) ;
@@ -105,7 +105,7 @@ description: "Task list for the full visual redesign (feature 010)"
   - `[data-flux-sidebar-item]` dans `.dark` (blanc à 80 %, survol `zinc-900`, `[data-current]` fond blanc, texte noir, 700) ;
   - `[data-flux-navbar-item][data-current]` souligné 2 px ;
   - `:focus-visible { outline: 2px solid currentColor; outline-offset: 2px }`.
-- [ ] T014 [US1] Modifier `resources/views/flux/button/index.blade.php` (R3) :
+- [X] T014 [US1] Modifier `resources/views/flux/button/index.blade.php` (R3) :
   - `primary` : `bg-(--color-accent) hover:bg-(--color-accent-pressed) active:bg-(--color-accent-pressed) text-(--color-accent-foreground)` ;
   - `filled` : `bg-black text-white hover:bg-zinc-800`, inversé sous `dark:` ;
   - `outline` : `bg-white border border-black hover:bg-zinc-50`, sous `dark:` fond noir et contour blanc ;
@@ -115,11 +115,11 @@ description: "Task list for the full visual redesign (feature 010)"
   - attribut `data-variant="{{ $variant }}"` sur `flux:button-or-link-pure`.
 
   T011 passe.
-- [ ] T015 [US1] Remplir `resources/css/vallet/dark.css` (R11) : sous `.dark`, `--color-accent-content: #fff`, fonds de page `#000`, surfaces `zinc-900`, séparateurs `white/16`, cartes et champs ; `[data-flux-control]` à bordure basse blanche. Dans `resources/views/layouts/app.blade.php` et `layouts/app/sidebar.blade.php`, le `body` passe de `dark:bg-zinc-800` à `dark:bg-black`.
-- [ ] T016 [P] [US1] Refaire `resources/views/components/page-heading.blade.php` : prop facultative `eyebrow` ; `h1` en `.display-md lg:display-lg`, 700 ; `data-flux-heading` conservé ; actions à droite, passage à la ligne. Props et slot existants inchangés.
-- [ ] T017 [P] [US1] Refaire `resources/views/components/section-heading.blade.php` (niveaux 2 / 3 / 4 → `.heading-lg` / `.heading-md` / `.heading-sm`) et `resources/views/components/empty-state.blade.php` (bloc `bg-zinc-50` à angle droit, sans pointillés, `dark:bg-zinc-900`). Props inchangées.
-- [ ] T018 [P] [US1] Créer `resources/views/components/tile.blade.php` (`x-tile`, props `variant` = `light|soft|dark|accent`, défaut `soft`, et `href` facultatif) selon contracts/ui-components.md. Rendu en `<a>` si `href` est donné, en `<div>` sinon ; `focus-visible` hérité.
-- [ ] T019 [US1] `npm run build`, captures `05-reservations`, `07-transmissions` et `08-cautions` (bureau et téléphone) ; vérifier l'Independent Test. `composer ci:check` code 0, puis commit « Refonte graphique : fondations (police, jetons, composants) ».
+- [X] T015 [US1] Remplir `resources/css/vallet/dark.css` (R11) : sous `.dark`, `--color-accent-content: #fff`, fonds de page `#000`, surfaces `zinc-900`, séparateurs `white/16`, cartes et champs ; `[data-flux-control]` à bordure basse blanche. Dans `resources/views/layouts/app.blade.php` et `layouts/app/sidebar.blade.php`, le `body` passe de `dark:bg-zinc-800` à `dark:bg-black`.
+- [X] T016 [P] [US1] Refaire `resources/views/components/page-heading.blade.php` : prop facultative `eyebrow` ; `h1` en `.display-md lg:display-lg`, 700 ; `data-flux-heading` conservé ; actions à droite, passage à la ligne. Props et slot existants inchangés.
+- [X] T017 [P] [US1] Refaire `resources/views/components/section-heading.blade.php` (niveaux 2 / 3 / 4 → `.heading-lg` / `.heading-md` / `.heading-sm`) et `resources/views/components/empty-state.blade.php` (bloc `bg-zinc-50` à angle droit, sans pointillés, `dark:bg-zinc-900`). Props inchangées.
+- [X] T018 [P] [US1] Créer `resources/views/components/tile.blade.php` (`x-tile`, props `variant` = `light|soft|dark|accent`, défaut `soft`, et `href` facultatif) selon contracts/ui-components.md. Rendu en `<a>` si `href` est donné, en `<div>` sinon ; `focus-visible` hérité.
+- [X] T019 [US1] `npm run build`, captures `05-reservations`, `07-transmissions` et `08-cautions` (bureau et téléphone) ; vérifier l'Independent Test. `composer ci:check` code 0, puis commit « Refonte graphique : fondations (police, jetons, composants) ».
 
 **Checkpoint** : US1 livrable seule. Tous les écrans ont la nouvelle apparence de base.
 

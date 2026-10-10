@@ -2,10 +2,10 @@
 
 @php
     $sizeClass = match ((int) $level) {
-        3 => 'text-xl',
-        4 => 'text-base font-semibold',
-        default => 'text-2xl',
+        3 => 'heading-md',
+        4 => 'heading-sm',
+        default => 'heading-lg',
     };
 @endphp
 
-<h{{ (int) $level }} {{ $attributes->class([$sizeClass, 'font-medium text-zinc-800 dark:text-white']) }} data-flux-heading>{{ $title }}</h{{ (int) $level }}>
+<h{{ (int) $level }} {{ $attributes->class([$sizeClass, 'text-zinc-950 dark:text-white']) }} data-flux-heading>{{ $title }}</h{{ (int) $level }}>

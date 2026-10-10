@@ -1,7 +1,42 @@
 @layer theme {
     .dark {
-        --color-accent: var(--color-white);
-        --color-accent-content: var(--color-white);
-        --color-accent-foreground: var(--color-neutral-800);
+        --color-accent-content: #ffffff;
+        --color-accent-foreground: #000000;
+    }
+}
+
+.dark {
+    :is(input, select, textarea)[data-flux-control]:not([type='checkbox'], [type='radio']) {
+        border-color: #ffffff;
+
+        &:focus {
+            background-color: rgb(255 255 255 / 0.08);
+        }
+    }
+
+    :is([data-flux-checkbox-indicator], [data-flux-radio-indicator], [data-flux-switch]) {
+        --color-accent: #ffffff;
+        --color-accent-foreground: #000000;
+    }
+
+    [data-flux-card] {
+        border-color: rgb(255 255 255 / 0.16);
+        background-color: var(--color-zinc-900);
+    }
+
+    [data-flux-table] {
+        border-top-color: #ffffff;
+    }
+
+    [data-flux-column] {
+        color: rgb(255 255 255 / 0.72);
+    }
+
+    [data-flux-cell] {
+        border-color: rgb(255 255 255 / 0.16);
+    }
+
+    [data-flux-navbar] a[data-current] {
+        color: #ffffff;
     }
 }

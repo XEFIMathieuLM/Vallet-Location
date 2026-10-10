@@ -66,7 +66,7 @@
   | `ghost` / `subtle` | sans fond, soulignement au survol |
   | `danger` | `red-600`, texte blanc (5,24:1) |
 
-  Toutes les variantes : rayon 2 px, sans ombre, 700, `letter-spacing: 0.01em`. Hauteur 44 px sur téléphone (`max-sm:h-11`), 40 px au-dessus. L'attribut `data-variant="{{ $variant }}"` est ajouté.
+  Toutes les variantes : rayon 2 px, sans ombre, 700, `letter-spacing: 0.01em`. Hauteur 44 px sur téléphone (`max-sm:h-11`), 40 px au-dessus. L'attribut `data-variant="{{ $variant }}"` est ajouté. Les options que l'application n'utilise pas (prop `color`, groupes de boutons) sont retirées de la copie publiée, qui passe sous 200 lignes.
 - **Rationale** : les attributs `data-flux-*` sont l'API stable de Flux pour le style. Le bouton n'expose pas sa variante, et ses classes de couleur sont calculées en PHP.
 - **Alternatives** :
   - Publier tous les composants : une trentaine de fichiers à maintenir à chaque mise à jour de Flux.

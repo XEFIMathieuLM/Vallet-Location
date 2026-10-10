@@ -62,7 +62,7 @@ Aucune migration, aucune route, aucune permission, aucune règle ni aucun texte 
 - FR-017 : aucun comportement ni texte existant modifié ; les textes ajoutés sont listés en R12.
 - Contraste AA calculé pour chaque couple de jetons (R2).
 - 375 px sans défilement horizontal de la page.
-- Fichiers de code de moins de 200 lignes : exception du bouton Flux publié, voir Complexity Tracking.
+- Fichiers de code de moins de 200 lignes, bouton Flux publié compris (variantes et options inutilisées retirées).
 
 **Scale/Scope**:
 - 79 vues de layers et 49 vues d'`app/`/`resources` passées en revue, dont 44 avec un bouton `primary` à arbitrer ; environ 30 modifiées en profondeur.
@@ -87,9 +87,9 @@ Dépôt unique : l'application Laravel à la racine, sans `repos.yml`, comme pou
 | IV. Effets de bord explicites | Sans objet. Les e-mails gardent leurs Mailables et leurs files ; seul leur thème Markdown change. | ✅ |
 | V. Accès par permission | Inchangé : la navigation garde ses `@can` / `@canany`, vérifiés par test entrée par entrée. | ✅ |
 | VI. Tests par scénario | Un test Feature par scénario vérifiable sans navigateur : présence, ordre, liens, permissions, bouton jaune unique, logotype, absence de la marque. Les scénarios purement visuels (couleurs rendues, défilement horizontal) sont vérifiés par les captures du quickstart, joints au statut final. Unit pour `MachineFamily`, `PlanningCellKind` et les contrastes. Tests écrits d'abord dans chaque phase. | ✅ voir Complexity Tracking |
-| VII. Code simple | Code en anglais, textes ajoutés dans `lang/fr` et `functional/<layer>/resources/lang/fr`, pas de commentaire, pas de package nouveau. Fichiers de moins de 200 lignes, sauf le bouton Flux publié. | ⚠️ justifié |
+| VII. Code simple | Code en anglais, textes ajoutés dans `lang/fr` et `functional/<layer>/resources/lang/fr`, pas de commentaire, pas de package nouveau. Fichiers de moins de 200 lignes : le bouton Flux publié est réduit aux variantes utilisées (156 lignes). | ✅ |
 
-**Re-check après la phase 1** : les contrats ([contracts/](contracts/)) n'ajoutent aucune dépendance entre layers et aucune donnée. Les deux écarts sont justifiés ci-dessous.
+**Re-check après la phase 1** : les contrats ([contracts/](contracts/)) n'ajoutent aucune dépendance entre layers et aucune donnée. Le seul écart est justifié ci-dessous.
 
 ## Project Structure
 
@@ -181,5 +181,4 @@ Chaque phase se termine par `composer ci:check` (code 0) et un commit, sans push
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |
 |-----------|------------|-------------------------------------|
-| `resources/views/flux/button/index.blade.php` publié depuis Flux fait environ 260 lignes (règle VII : moins de 200) | Le bouton Flux n'expose pas sa variante au CSS. Il faut changer ses classes (jaune à texte noir, noir, contour noir, rayon 2 px, sans ombre, 44 px sur téléphone) et ajouter `data-variant`, qui sert aussi au test du bouton jaune unique. C'est la méthode de personnalisation prévue par Flux, comme `flux/navlist/group.blade.php` déjà publié. | Cibler les classes générées (`.bg-zinc-800\/5`…) casse à chaque mise à jour de Flux. Découper le fichier publié le rendrait impossible à comparer à l'original lors des mises à jour. |
 | Scénarios purement visuels non couverts par PHPUnit (règle VI) | Couleurs effectivement rendues, défilement horizontal à 375 px et lisibilité ne se mesurent qu'avec un navigateur, et le projet n'a pas de suite navigateur. | Ajouter Dusk ou Playwright au projet est un nouveau package (règle VII) pour une seule feature. Les captures automatisées du quickstart (script hors projet) détectent le défilement horizontal et sont jointes au statut. Tout ce qui se vérifie sur le HTML rendu a un test PHPUnit. |

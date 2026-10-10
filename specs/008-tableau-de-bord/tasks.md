@@ -72,6 +72,8 @@ Chaque phase se termine par `composer ci:check` en code 0 (après `vendor/bin/ph
   - `returns` : `in_progress` dont la fin est le 10/10.
   - `lateReturns` : `in_progress` dont la fin est le 09/10 ou avant, triées par fin croissante.
   - `conflicts` : `confirmed` avec `conflict_reason` non nul ; pas une réservation annulée.
+  - Réservation d'une seule journée (début et fin le 10/10) : dans `departures` tant que `confirmed`, dans `returns` une fois `in_progress`.
+  - Tri des départs : `start_date`, puis référence de la machine.
   - Filtre par agence de rattachement de la machine, et non par `reservations.agency_id`.
   - `null` = toutes les agences.
 - [ ] T005 [P] `functional/fleet/tests/Feature/FleetStatusCountsTest.php` :
@@ -136,9 +138,10 @@ Chaque phase se termine par `composer ci:check` en code 0 (après `vendor/bin/ph
   6. Départ dans 3 jours listé sous sa date dans « Départs à venir » ; départ dans 8 jours absent.
   7. Le composant écoute `echo-private:fleet,.reservation.changed` ; après la sortie d'une réservation (`status` → `in_progress`) et un `$refresh`, elle n'est plus dans les départs.
 
-  S'y ajoutent deux tests :
+  S'y ajoutent trois tests :
   - la réservation d'une autre agence est absente ;
-  - un salarié sans `reservations.manage` reçoit 403 sur le composant, et la section est absente de la page.
+  - un salarié sans `reservations.manage` reçoit 403 sur le composant, et la section est absente de la page ;
+  - FR-010 : avec 21 départs du jour, 20 lignes sont affichées avec « 20 sur 21 » et un lien vers `reservations.index`.
 
 ### Implémentation
 
@@ -254,9 +257,10 @@ Chaque phase se termine par `composer ci:check` en code 0 (après `vendor/bin/ph
   4. Mise à jour après le passage d'une machine en panne et un `$refresh` ; écouteur `.machine.changed`.
   5. Une ligne VGP pointe vers `route('certification.machines.show', $machine)`.
 
-  S'y ajoutent deux tests :
+  S'y ajoutent trois tests :
   - sans `machines.manage`, les chiffres sont masqués (403 sur `FleetStatus`) ;
-  - sans `certification.manage`, la liste VGP est masquée.
+  - sans `certification.manage`, la liste VGP est masquée ;
+  - FR-015a : avec 21 machines à surveiller, 20 lignes et un lien vers `route('certification.machines', ['agence' => $agency->id])`.
 
 ### Implémentation
 
@@ -293,7 +297,9 @@ Chaque phase se termine par `composer ci:check` en code 0 (après `vendor/bin/ph
   3. `set('agency', 'toutes')` : les départs des deux agences sont affichés, avec le nom de l'agence sur chaque ligne.
   4. `GET /dashboard?agence=<id d'Évreux>` affiche Évreux.
 
-  S'y ajoute un test : `?agence=999999` ou `?agence=abc` affiche l'agence du salarié.
+  S'y ajoutent deux tests :
+  - `?agence=999999` ou `?agence=abc` affiche l'agence du salarié ;
+  - Principe V : le sélecteur d'agence n'est rendu qu'au salarié qui a au moins une des permissions `reservations.manage`, `machines.manage` ou `certification.manage` ; un salarié sans permission ne voit que l'état vide.
 
 ### Implémentation
 
@@ -302,7 +308,7 @@ Chaque phase se termine par `composer ci:check` en code 0 (après `vendor/bin/ph
   - la propriété calculée `agencyId` (`?int`) applique la table « Agence sélectionnée » de [data-model.md](data-model.md) ;
   - passer `agencies` (par nom) à la vue.
 - [ ] T034 [US5] Dans `resources/views/livewire/dashboard/dashboard.blade.php` :
-  - `flux:select wire:model.live="agency"` dans les actions de `x-page-heading`, avec les agences et `toutes` ;
+  - `flux:select wire:model.live="agency"` dans les actions de `x-page-heading`, avec les agences et `toutes`, rendu sous `@canany` des trois permissions des sections filtrées par agence ;
   - `wire:key` des enfants dépendant de l'agence.
 
   Compléter `lang/fr/dashboard.php`.
@@ -313,7 +319,9 @@ Chaque phase se termine par `composer ci:check` en code 0 (après `vendor/bin/ph
 
 ## Phase 8: Polish & Cross-Cutting Concerns
 
-- [ ] T035 `tests/Feature/Dashboard/DashboardQueryCountTest.php` (FR-020) : le nombre de requêtes du rendu complet de la page est identique avec 2 puis 30 réservations et machines par section (`DB::enableQueryLog()`), en vue agence comme en vue « Toutes les agences ».
+- [ ] T035 `tests/Feature/Dashboard/DashboardQueryCountTest.php` (FR-020, SC-003) :
+  - le nombre de requêtes du rendu complet de la page est identique avec 2 puis 30 réservations et machines par section (`DB::enableQueryLog()`), en vue agence comme en vue « Toutes les agences » ;
+  - avec le volume de SC-003 (400 machines dans 7 agences, 3 000 réservations sur un an, par factories), le rendu complet en vue « Toutes les agences » prend moins de 2 secondes.
 - [ ] T036 [P] Vérifier qu'aucun fichier existant de `functional/*` n'est modifié par la branche (`git diff --stat origin/main -- functional` ne liste que les dix fichiers ajoutés), et que les bandeaux `billing.alert` et `certification.alert` sont toujours rendus sur `/dashboard` (FR-003, à ajouter à `tests/Feature/DashboardTest.php`).
 - [ ] T037 Recette manuelle de [quickstart.md](quickstart.md) avec les données du client chargées dans `vallet-008` (scripts copiés depuis le dossier principal, sans toucher l'environnement 8080) ; contrôle visuel en clair et en sombre, et à largeur de téléphone.
 - [ ] T038 `vendor/bin/pint --dirty`, `vendor/bin/phpstan clear-result-cache`, puis `composer ci:check` en code 0 ; commit « Tableau de bord : finitions ».

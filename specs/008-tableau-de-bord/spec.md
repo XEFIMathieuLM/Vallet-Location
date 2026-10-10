@@ -160,7 +160,7 @@ Par défaut, la page d'accueil montre l'agence du salarié connecté. Le salari�
 
 **Listes de suivi**
 
-- **FR-012**: Le système DOIT afficher un compteur pour chaque liste de suivi existante, égal au nombre d'éléments qu'affiche cette liste : transmissions à traiter (003, 007), attestations VGP à traiter (005), cautions en attente d'action (004), bons de commande manquants (006), dégâts à traiter (002, 003), ventes réservées dont la date de remise prévue est dépassée (007).
+- **FR-012**: Le système DOIT afficher un compteur pour chaque liste de suivi existante, égal au nombre d'éléments qu'affiche cette liste : transmissions à traiter (003, 007), attestations VGP à traiter (005), cautions en attente d'action (004), bons de commande manquants (006), dégâts à traiter (002, 003), ventes réservées dont la date de remise prévue est dépassée (007), c'est-à-dire les ventes que la liste des ventes réservées met en évidence.
 - **FR-013**: Chaque compteur DOIT renvoyer vers l'écran de sa liste ; un compteur nul DOIT être affiché de façon neutre et un compteur non nul mis en évidence.
 - **FR-014**: Les compteurs DOIVENT porter sur l'ensemble du réseau, quelle que soit l'agence affichée, et renvoyer vers leur liste sans filtre, comme les bandeaux actuels.
 

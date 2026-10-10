@@ -10,13 +10,13 @@ Paramètres communs :
 
 | Méthode | Renvoie `Builder<Reservation>` | Filtre | Tri |
 |---|---|---|---|
-| `departures(?int $homeAgencyId, CarbonImmutable $today)` | départs du jour | `status = confirmed`, `start_date <= today` | `start_date`, `id` |
-| `upcomingDepartures(?int $homeAgencyId, CarbonImmutable $today, int $days)` | départs à venir | `status = confirmed`, `start_date` entre `today + 1` et `today + days` | `start_date`, `id` |
-| `returns(?int $homeAgencyId, CarbonImmutable $today)` | retours du jour | `status = in_progress`, `end_date = today` | `id` |
+| `departures(?int $homeAgencyId, CarbonImmutable $today)` | départs du jour | `status = confirmed`, `start_date <= today` | `start_date`, référence machine |
+| `upcomingDepartures(?int $homeAgencyId, CarbonImmutable $today, int $days)` | départs à venir | `status = confirmed`, `start_date` entre `today + 1` et `today + days` | `start_date`, référence machine |
+| `returns(?int $homeAgencyId, CarbonImmutable $today)` | retours du jour | `status = in_progress`, `end_date = today` | référence machine |
 | `lateReturns(?int $homeAgencyId, CarbonImmutable $today)` | retours en retard | `status = in_progress`, `end_date < today` | `end_date`, `id` |
 | `conflicts(?int $homeAgencyId)` | réservations en conflit | `status = confirmed`, `conflict_reason` non nul | `start_date`, `id` |
 
-Chaque `Builder` charge par anticipation `machine.category`, `machine.agency` et `customer`.
+Le tri par référence machine passe par une sous-requête `orderBy(Machine::query()->select('reference')->whereColumn('machines.id', 'reservations.machine_id'))`, sans jointure. Chaque `Builder` charge par anticipation `machine.category`, `machine.agency` et `customer`.
 
 ## fleet — `Functional\Fleet\Queries\FleetStatusCounts`
 

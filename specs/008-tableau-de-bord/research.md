@@ -50,14 +50,14 @@ Toutes les dates se calculent avec `CarbonImmutable::today()` en `Europe/Paris`.
 |---|---|---|---|
 | Départs du jour | `confirmed` | `start_date <= today` | `start_date`, puis référence machine |
 | Départs à venir | `confirmed` | `start_date` entre `today + 1` et `today + 7` | `start_date`, puis référence ; regroupés par date à l'affichage |
-| Retours du jour | `in_progress` | `end_date = today` | référence |
+| Retours du jour | `in_progress` | `end_date = today` | référence machine |
 | Retours en retard | `in_progress` | `end_date < today` | `end_date` croissant (plus anciens d'abord) |
 | Réservations en conflit | `confirmed` | `conflict_reason` non nul | `start_date` |
 
 Précisions :
 - Le nombre de jours de retard vaut `end_date->diffInDays(today)`.
 - Le motif de conflit est affiché par `ConflictReason::label()`.
-- Chaque section charge les 20 premières lignes (`config('dashboard.section_limit')`) et un `count()`.
+- Chaque section charge les 20 premières lignes (`config('dashboard.section_limit')`) et un comptage sans tri (`getCountForPagination()`).
 - Le lien « voir tout » mène à `reservations.index` avec les filtres de statut et de période existants, au plus près de la section. C'est un raccourci : il n'affiche pas exactement la même liste.
 
 ## R5. État du parc et VGP à surveiller

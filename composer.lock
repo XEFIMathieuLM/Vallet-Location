@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5111572edffe7b63ab9712eb369cbf93",
+    "content-hash": "50b829dc3e57c903a808b20830ff9b07",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -962,6 +962,48 @@
                 }
             ],
             "time": "2025-12-03T09:33:47+00:00"
+        },
+        {
+            "name": "functional/accounts",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "./functional/accounts",
+                "reference": "20034cd9acaffb48a89e6ff8bb395f462d492c74"
+            },
+            "require": {
+                "functional/billing": "*",
+                "functional/booking": "*",
+                "functional/fleet": "*",
+                "functional/inspection": "*",
+                "livewire/flux": "^2.13.1",
+                "livewire/livewire": "^4.1",
+                "lomkit/laravel-access-control": "^0.6.0",
+                "spatie/laravel-activitylog": "^5.1",
+                "spatie/laravel-permission": "^8.3",
+                "xefi/laravel-osdd": "*"
+            },
+            "require-dev": {
+                "xefi/faker-php-laravel": "^1.2"
+            },
+            "type": "layer",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Functional\\Accounts\\Providers\\AccountsServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Functional\\Accounts\\": "src/",
+                    "Functional\\Accounts\\Database\\Seeders\\": "database/seeders/",
+                    "Functional\\Accounts\\Database\\Factories\\": "database/factories/"
+                }
+            },
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "functional/billing",

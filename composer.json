@@ -10,6 +10,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.5",
+        "functional/accounts": "*",
         "functional/billing": "*",
         "functional/booking": "*",
         "functional/fleet": "*",
@@ -53,6 +54,7 @@
     "autoload-dev": {
         "psr-4": {
             "Tests\\": "tests/",
+            "Functional\\Accounts\\Tests\\": "functional/accounts/tests/",
             "Functional\\Fleet\\Tests\\": "functional/fleet/tests/",
             "Functional\\Billing\\Tests\\": "functional/billing/tests/",
             "Functional\\Booking\\Tests\\": "functional/booking/tests/",

@@ -3,6 +3,7 @@
 namespace Tests;
 
 use Database\Seeders\PermissionSeeder;
+use Functional\Accounts\Database\Seeders\AccountsPermissionSeeder;
 use Functional\Billing\Database\Seeders\BillingPermissionSeeder;
 use Functional\Booking\Database\Seeders\BookingPermissionSeeder;
 use Functional\Fleet\Database\Seeders\FleetPermissionSeeder;
@@ -14,7 +15,7 @@ abstract class TestCase extends BaseTestCase
 {
     protected function seedPermissions(): void
     {
-        $this->seed([FleetPermissionSeeder::class, BookingPermissionSeeder::class, InspectionPermissionSeeder::class, BillingPermissionSeeder::class, PermissionSeeder::class]);
+        $this->seed([FleetPermissionSeeder::class, BookingPermissionSeeder::class, InspectionPermissionSeeder::class, BillingPermissionSeeder::class, AccountsPermissionSeeder::class, PermissionSeeder::class]);
     }
 
     protected function skipUnlessFortifyHas(string $feature, ?string $message = null): void

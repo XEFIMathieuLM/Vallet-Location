@@ -129,7 +129,7 @@ Chaque phase se termine par `composer ci:check` en code 0 (après `vendor/bin/ph
 
 ### Tests (écrits d'abord, en échec)
 
-- [ ] T017 [US1] `tests/Feature/Dashboard/DayOperationsTest.php` : un test par scénario de la US1.
+- [X] T017 [US1] `tests/Feature/Dashboard/DayOperationsTest.php` : un test par scénario de la US1.
   1. Deux départs du jour listés avec la référence, la catégorie, le client et les dates.
   2. Retour du jour listé.
   3. Le lien de la ligne pointe vers `route('reservations.show', $reservation)`.
@@ -145,12 +145,12 @@ Chaque phase se termine par `composer ci:check` en code 0 (après `vendor/bin/ph
 
 ### Implémentation
 
-- [ ] T018 [US1] Créer `app/Livewire/Dashboard/DayOperations.php` :
+- [X] T018 [US1] Créer `app/Livewire/Dashboard/DayOperations.php` :
   - `#[Reactive] public ?int $agencyId` ;
   - `mount()` avec `Gate::authorize(BookingPermission::ManageReservations->value)` ;
   - écoute `#[On('echo-private:fleet,.reservation.changed')]` et `#[On('echo-private:fleet,.machine.changed')]` ;
   - `render()` construit les sections `departures`, `upcomingDepartures` et `returns` avec `DashboardSection::fromQuery()`, `CarbonImmutable::today()`, `config('dashboard.upcoming_departure_days')` et `config('dashboard.section_limit')`.
-- [ ] T019 [US1] Créer `resources/views/livewire/dashboard/day-operations.blade.php` et `resources/views/livewire/dashboard/partials/reservation-row.blade.php` :
+- [X] T019 [US1] Créer `resources/views/livewire/dashboard/day-operations.blade.php` et `resources/views/livewire/dashboard/partials/reservation-row.blade.php` :
   - `wire:poll.60s` ;
   - une `x-section-heading level=3` par section ;
   - départs à venir groupés par `start_date` (`groupBy` sur la collection affichée, au plus 20 lignes) sous un intitulé `isoFormat('dddd D MMMM')` ;
@@ -158,7 +158,7 @@ Chaque phase se termine par `composer ci:check` en code 0 (après `vendor/bin/ph
   - agence affichée quand `agencyId` est nul ;
   - « 20 sur N » et lien vers `reservations.index` quand `hasMore()` ;
   - textes vides de `lang/fr/dashboard.php`.
-- [ ] T020 [US1] Insérer `<livewire:dashboard.day-operations :agency-id="$this->agencyId" />` dans `dashboard.blade.php`, sous `@can(BookingPermission::ManageReservations->value)`, et compléter `lang/fr/dashboard.php` (`operations.*`).
+- [X] T020 [US1] Insérer `<livewire:dashboard.day-operations :agency-id="$this->agencyId" />` dans `dashboard.blade.php`, sous `@can(BookingPermission::ManageReservations->value)`, et compléter `lang/fr/dashboard.php` (`operations.*`).
 
 **Checkpoint**: `DayOperationsTest` vert ; `composer ci:check` vert ; commit « Tableau de bord : départs et retours du jour ».
 

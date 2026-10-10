@@ -44,6 +44,21 @@
         </div>
     </flux:card>
 
+    @if ($sale->status === \Functional\Sales\Enums\SaleStatus::Reserved)
+        <flux:card class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+                <flux:heading>{{ __('sales::sales.detail.reserved_for', ['buyer' => $sale->buyer?->name, 'price' => $sale->final_price?->format()]) }}</flux:heading>
+                <flux:text>{{ __('sales::sales.detail.planned_handover', ['date' => $sale->planned_handover_date?->format('d/m/Y')]) }}</flux:text>
+            </div>
+            <div class="flex flex-wrap gap-2">
+                <flux:modal.trigger name="change-handover-date"><flux:button size="sm">{{ __('sales::sales.detail.change_handover_date') }}</flux:button></flux:modal.trigger>
+                <flux:modal.trigger name="release-reservation"><flux:button size="sm" variant="ghost">{{ __('sales::sales.detail.release_reservation') }}</flux:button></flux:modal.trigger>
+            </div>
+        </flux:card>
+    @endif
+
+    <livewire:sales.sale-offers :sale="$sale" :key="'offers-'.$sale->id.'-'.$sale->status->value" />
+
     <section class="flex flex-col gap-2">
         <x-section-heading level="3" :title="__('sales::sales.detail.history')" />
         <ul class="flex flex-col gap-1">
@@ -57,6 +72,29 @@
             @endforeach
         </ul>
     </section>
+
+    <flux:modal name="change-handover-date" class="md:w-lg">
+        <form wire:submit="changePlannedHandoverDate" class="flex flex-col gap-4">
+            <flux:heading size="lg">{{ __('sales::sales.detail.change_handover_date') }}</flux:heading>
+            <flux:input type="date" wire:model="newPlannedHandoverDate" :label="__('sales::sales.offers.planned_handover_date')" />
+            <div class="flex justify-end gap-2">
+                <flux:modal.close><flux:button variant="ghost">{{ __('sales::sales.form.back') }}</flux:button></flux:modal.close>
+                <flux:button type="submit" variant="primary">{{ __('sales::sales.detail.save_listing') }}</flux:button>
+            </div>
+        </form>
+    </flux:modal>
+
+    <flux:modal name="release-reservation" class="md:w-lg">
+        <form wire:submit="releaseReservation" class="flex flex-col gap-4">
+            <flux:heading size="lg">{{ __('sales::sales.detail.release_reservation') }}</flux:heading>
+            <flux:text>{{ __('sales::sales.detail.release_help') }}</flux:text>
+            <flux:input wire:model="releaseReason" :label="__('sales::sales.detail.reason')" />
+            <div class="flex justify-end gap-2">
+                <flux:modal.close><flux:button variant="ghost">{{ __('sales::sales.form.back') }}</flux:button></flux:modal.close>
+                <flux:button type="submit" variant="danger">{{ __('sales::sales.detail.release_reservation') }}</flux:button>
+            </div>
+        </form>
+    </flux:modal>
 
     <flux:modal name="edit-listing" class="md:w-xl">
         <form wire:submit="updateListing" class="flex flex-col gap-4">

@@ -20,7 +20,7 @@ class SaleConstraintsTest extends TestCase
     {
         $sale = Sale::factory()->listed()->create();
 
-        $this->assertRefusedByTheDatabase(fn () => DB::table('sales')->whereKey($sale->id)->update(['asking_price_cents' => 0]));
+        $this->assertRefusedByTheDatabase(fn () => DB::table('sales')->where('id', $sale->id)->update(['asking_price_cents' => 0]));
     }
 
     public function test_the_database_refuses_a_second_open_sale_of_the_same_machine(): void
@@ -57,21 +57,21 @@ class SaleConstraintsTest extends TestCase
     {
         $sale = Sale::factory()->listed()->create();
 
-        $this->assertRefusedByTheDatabase(fn () => DB::table('sales')->whereKey($sale->id)->update(['status' => 'reserved']));
+        $this->assertRefusedByTheDatabase(fn () => DB::table('sales')->where('id', $sale->id)->update(['status' => 'reserved']));
     }
 
     public function test_the_database_refuses_a_sold_sale_without_handover(): void
     {
         $sale = Sale::factory()->reserved()->create();
 
-        $this->assertRefusedByTheDatabase(fn () => DB::table('sales')->whereKey($sale->id)->update(['status' => 'sold']));
+        $this->assertRefusedByTheDatabase(fn () => DB::table('sales')->where('id', $sale->id)->update(['status' => 'sold']));
     }
 
     public function test_the_database_refuses_a_cancelled_sale_without_reason(): void
     {
         $sale = Sale::factory()->listed()->create();
 
-        $this->assertRefusedByTheDatabase(fn () => DB::table('sales')->whereKey($sale->id)->update(['status' => 'cancelled']));
+        $this->assertRefusedByTheDatabase(fn () => DB::table('sales')->where('id', $sale->id)->update(['status' => 'cancelled']));
     }
 
     public function test_the_database_refuses_a_non_positive_offer_and_a_decided_offer_without_author(): void
@@ -88,5 +88,6 @@ class SaleConstraintsTest extends TestCase
         $refusal = rescue(fn () => DB::transaction($write), fn (Throwable $exception): Throwable => $exception, report: false);
 
         $this->assertInstanceOf(QueryException::class, $refusal);
+        $this->assertStringStartsWith('23', (string) $refusal->getCode(), $refusal->getMessage());
     }
 }

@@ -2,9 +2,13 @@
 
 namespace Functional\Sales\Providers;
 
+use Functional\Booking\Extensions\ReservationRequestGuards;
 use Functional\Fleet\Extensions\MachineBadges;
 use Functional\Sales\Access\Controls\SaleControl;
 use Functional\Sales\Badges\SaleMachineBadges;
+use Functional\Sales\Guards\ReservedSaleReservationGuard;
+use Functional\Sales\Livewire\SaleOffers;
+use Livewire\Livewire;
 use Lomkit\Access\Access;
 use Xefi\LaravelOSDD\LayerServiceProvider;
 
@@ -17,7 +21,9 @@ class SalesServiceProvider extends LayerServiceProvider
         $this->loadViewsFrom(__DIR__.'/../../resources/views', 'sales');
 
         (new Access)->addControls([new SaleControl]);
+        Livewire::component('sales.sale-offers', SaleOffers::class);
         $this->app->make(MachineBadges::class)->register(SaleMachineBadges::class);
+        $this->app->make(ReservationRequestGuards::class)->register(ReservedSaleReservationGuard::class);
 
         $this->withRouting(
             web: __DIR__.'/../../routes/web.php',

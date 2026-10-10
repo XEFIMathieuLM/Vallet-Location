@@ -9,6 +9,7 @@ use Functional\Inspection\Livewire\Concerns\ActsAsAgencyMember;
 use Functional\Sales\Access\SalesPermission;
 use Functional\Sales\Actions\UpdateSaleListing;
 use Functional\Sales\Livewire\Concerns\EditsSaleListing;
+use Functional\Sales\Livewire\Concerns\ManagesSaleReservation;
 use Functional\Sales\Models\Sale;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
@@ -24,7 +25,7 @@ use Spatie\Activitylog\Models\Activity;
  */
 class SaleDetail extends Component
 {
-    use ActsAsAgencyMember, DisplaysRefusals, EditsSaleListing;
+    use ActsAsAgencyMember, DisplaysRefusals, EditsSaleListing, ManagesSaleReservation;
 
     #[Locked]
     public Sale $sale;
@@ -64,6 +65,7 @@ class SaleDetail extends Component
     public function refreshSale(): void
     {
         $this->sale->refresh();
+        $this->newPlannedHandoverDate = (string) $this->sale->planned_handover_date?->toDateString();
         unset($this->history);
     }
 
@@ -81,5 +83,6 @@ class SaleDetail extends Component
         $this->operatingHours = (string) $this->sale->operating_hours;
         $this->condition = $this->sale->condition;
         $this->comment = (string) $this->sale->comment;
+        $this->newPlannedHandoverDate = (string) $this->sale->planned_handover_date?->toDateString();
     }
 }

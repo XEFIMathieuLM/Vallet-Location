@@ -71,6 +71,7 @@ class TransmissionSourceConstraintsTest extends TestCase
         $refusal = rescue(fn () => DB::transaction(fn () => $this->insert($attributes)), fn (Throwable $exception): Throwable => $exception, report: false);
 
         $this->assertInstanceOf(QueryException::class, $refusal);
+        $this->assertStringStartsWith('23', (string) $refusal->getCode(), $refusal->getMessage());
     }
 
     /**

@@ -54,20 +54,20 @@ description: "Task list for the full visual redesign (feature 010)"
 
 **Purpose** : outils de test et pictogrammes, utilisés par US1 à US5.
 
-- [ ] T005 [P] Créer le trait `tests/Concerns/InspectsPrimaryActions.php` avec `assertAtMostOnePrimaryAction(string $html): void`. Il charge le HTML dans `DOMDocument` (erreurs libxml ignorées), compte par XPath les éléments `[@data-flux-button][@data-variant="primary"][not(ancestor::ui-modal)]` et échoue au-delà de 1 avec la liste des libellés trouvés (contracts/ui-components.md, Vérification).
-- [ ] T006 [P] Écrire `functional/fleet/tests/Unit/MachineFamilyTest.php` (échoue d'abord). Cas attendus :
+- [X] T005 [P] Créer le trait `tests/Concerns/InspectsPrimaryActions.php` avec `assertAtMostOnePrimaryAction(string $html): void`. Il charge le HTML dans `DOMDocument` (erreurs libxml ignorées), compte par XPath les éléments `[@data-flux-button][@data-variant="primary"][not(ancestor::ui-modal)]` et échoue au-delà de 1 avec la liste des libellés trouvés (contracts/ui-components.md, Vérification).
+- [X] T006 [P] Écrire `functional/fleet/tests/Unit/MachineFamilyTest.php` (échoue d'abord). Cas attendus :
   - « Nacelle 12 m », « Nacelle 20 m » → `Nacelle` ;
   - « Mini-pelle 1.8 t », « Minipelle », « Pelle 8 t » → `MiniExcavator` ;
   - « Compacteur », « Rouleau tandem », « Plaque vibrante » → `Compactor` ;
   - « Échafaudage 40 m² » → `Scaffolding` ;
   - « Groupe électrogène », chaîne vide → `Neutral` ;
   - `pictogramView()` renvoie `fleet::pictograms.<famille>`.
-- [ ] T007 Créer l'enum `functional/fleet/src/Enums/MachineFamily.php` : cas `Nacelle = 'nacelle'`, `MiniExcavator = 'mini_excavator'`, `Compactor = 'compactor'`, `Scaffolding = 'scaffolding'`, `Neutral = 'neutral'`.
+- [X] T007 Créer l'enum `functional/fleet/src/Enums/MachineFamily.php` : cas `Nacelle = 'nacelle'`, `MiniExcavator = 'mini_excavator'`, `Compactor = 'compactor'`, `Scaffolding = 'scaffolding'`, `Neutral = 'neutral'`.
   - `fromCategoryName(string $categoryName): self` : nom normalisé avec `Str::ascii()` et `Str::lower()`, mots-clés de data-model.md testés dans l'ordre du tableau, `Neutral` par défaut.
   - `pictogramView(): string`.
   - T006 passe.
-- [ ] T008 [P] Créer les pictogrammes `functional/fleet/resources/views/pictograms/nacelle.blade.php`, `mini-pelle.blade.php`, `compacteur.blade.php`, `echafaudage.blade.php` (SVG de `specs/010-refonte-graphique/maquettes/illustrations/`) et `neutral.blade.php` (caisse géométrique, même style, viewBox `0 0 240 160`). Tous en `fill="currentColor"`, sans `width` ni `height` fixes ; ils reçoivent `$attributes` du composant.
-- [ ] T009 Créer le composant anonyme `functional/fleet/resources/views/components/pictogram.blade.php` (`<x-fleet::pictogram :category="…" class="…" />`). Il inclut la vue de `MachineFamily::fromCategoryName($category)` avec `aria-hidden="true"`, `focusable="false"` et les attributs reçus. Vérifier qu'il se résout par le `loadViewsFrom(…, 'fleet')` existant de `FleetServiceProvider`.
+- [X] T008 [P] Créer les pictogrammes `functional/fleet/resources/views/pictograms/nacelle.blade.php`, `mini-pelle.blade.php`, `compacteur.blade.php`, `echafaudage.blade.php` (SVG de `specs/010-refonte-graphique/maquettes/illustrations/`) et `neutral.blade.php` (caisse géométrique, même style, viewBox `0 0 240 160`). Tous en `fill="currentColor"`, sans `width` ni `height` fixes ; ils reçoivent `$attributes` du composant.
+- [X] T009 Créer le composant anonyme `functional/fleet/resources/views/components/pictogram.blade.php` (`<x-fleet::pictogram :category="…" class="…" />`). Il inclut la vue de `MachineFamily::fromCategoryName($category)` avec `aria-hidden="true"`, `focusable="false"` et les attributs reçus. Vérifier qu'il se résout par le `loadViewsFrom(…, 'fleet')` existant de `FleetServiceProvider`.
 
 **Checkpoint** : T006 vert ; `<x-fleet::pictogram category="Nacelle 12 m" class="size-10" />` rend un SVG.
 

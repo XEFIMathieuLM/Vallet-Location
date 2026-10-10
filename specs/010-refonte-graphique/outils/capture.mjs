@@ -28,6 +28,7 @@ const portalPages = [
     ['23-espace-client-reservations', '/espace-client/reservations'],
 ];
 const viewports = { desktop: { width: 1440, height: 900 }, mobile: { width: 375, height: 812 } };
+const theme = process.env.DARK ? '-sombre' : '';
 
 const wanted = (name) => !only || only.some((prefix) => name.startsWith(prefix));
 
@@ -36,12 +37,15 @@ const shoot = async (page, name, vp) => {
     await page.waitForTimeout(400);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     if (overflow > 0) console.log(`OVERFLOW ${name} ${vp}: ${overflow}px`);
-    await page.screenshot({ path: `${out}/${name}-${vp}.png`, fullPage: true });
+    await page.screenshot({ path: `${out}/${name}-${vp}${theme}.png`, fullPage: true });
 };
 
 const browser = await chromium.launch({ channel: 'chrome', headless: true });
 for (const [vp, size] of Object.entries(viewports)) {
     const context = await browser.newContext({ viewport: size, deviceScaleFactor: 1, colorScheme: 'light' });
+    if (theme) {
+        await context.addInitScript(() => localStorage.setItem('flux.appearance', 'dark'));
+    }
     const page = await context.newPage();
 
     if (wanted('01')) {

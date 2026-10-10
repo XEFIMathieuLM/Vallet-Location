@@ -3,6 +3,7 @@
 namespace App\Livewire\Dashboard;
 
 use App\Dashboard\DashboardSection;
+use App\Dashboard\UpcomingDays;
 use Carbon\CarbonImmutable;
 use Functional\Booking\Access\BookingPermission;
 use Functional\Booking\Models\Reservation;
@@ -32,13 +33,15 @@ class DayOperations extends Component
     {
         $today = CarbonImmutable::today();
         $upcomingDays = config()->integer('dashboard.upcoming_departure_days');
+        $upcomingDepartures = $this->section($dayOperations->upcomingDepartures($this->agencyId, $today, $upcomingDays));
 
         return view('livewire.dashboard.day-operations', [
             'today' => $today,
             'upcomingDays' => $upcomingDays,
+            'upcomingDayList' => UpcomingDays::after($today, $upcomingDays, $upcomingDepartures->items),
             'isAllAgencies' => $this->agencyId === null,
             'departures' => $this->section($dayOperations->departures($this->agencyId, $today)),
-            'upcomingDepartures' => $this->section($dayOperations->upcomingDepartures($this->agencyId, $today, $upcomingDays)),
+            'upcomingDepartures' => $upcomingDepartures,
             'returns' => $this->section($dayOperations->returns($this->agencyId, $today)),
             'lateReturns' => $this->section($dayOperations->lateReturns($this->agencyId, $today)),
             'conflicts' => $this->section($dayOperations->conflicts($this->agencyId)),

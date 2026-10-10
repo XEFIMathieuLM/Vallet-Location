@@ -150,7 +150,7 @@
             </x-slot:start>
 
             <x-slot:end>
-                <x-mobile-user-menu class="lg:hidden" />
+                <x-mobile-user-menu class="ms-auto lg:hidden" />
             </x-slot:end>
         </x-top-bar>
 

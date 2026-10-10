@@ -172,7 +172,7 @@ description: "Task list for the full visual redesign (feature 010)"
 
 ### Tests for User Story 3
 
-- [ ] T028 [P] [US3] Écrire `tests/Feature/Dashboard/DashboardLayoutTest.php` (`travelTo('2026-10-10 08:00')`, factories de la 008) :
+- [X] T028 [P] [US3] Écrire `tests/Feature/Dashboard/DashboardLayoutTest.php` (`travelTo('2026-10-10 08:00')`, factories de la 008) :
   - (1) 3 départs, 1 retour et 2 retards du jour → le résumé « 3 départs, 1 retour et 2 retours en retard aujourd'hui. » ;
   - (2) la frise affiche autant de colonnes que `config('dashboard.upcoming_departure_days')` (7 : du dimanche 11 au samedi 17 octobre ; avec `config(['dashboard.upcoming_departure_days' => 3])` : 3 colonnes, du 11 au 13), jours vides compris (« Aucun départ » pour lecteur d'écran). Un départ du 14 mène à `reservations.show`, et « Voir tout » apparaît quand `section_limit` est dépassé ;
   - (3) avec au moins un retour en retard, la tuile des retours en retard a `data-tile="accent"` ; sans retour en retard, aucune tuile `accent` ;
@@ -184,26 +184,26 @@ description: "Task list for the full visual redesign (feature 010)"
 
 ### Implementation for User Story 3
 
-- [ ] T029 [US3] Ajouter les textes de R12 dans `lang/fr/dashboard.php` : `welcome.title`, `welcome.summary` (avec `trans_choice` par total), `upcoming.no_departure`, `fleet.total`.
-- [ ] T030 [US3] Dans `render()` de `app/Livewire/Dashboard/DayOperations.php`, passer deux nouvelles variables de vue, sans requête supplémentaire :
+- [X] T029 [US3] Ajouter les textes de R12 dans `lang/fr/dashboard.php` : `welcome.title`, `welcome.summary` (avec `trans_choice` par total), `upcoming.no_departure`, `fleet.total`.
+- [X] T030 [US3] Dans `render()` de `app/Livewire/Dashboard/DayOperations.php`, passer deux nouvelles variables de vue, sans requête supplémentaire :
   - `daySummary` : totaux des départs, retours et retards, déjà calculés par `DashboardSection::$total` ;
   - `upcomingDays` : la liste ordonnée des dates de `$today->addDay()` à `$today->addDays($upcomingDays)` (la plage de `DayOperationsQuery::upcomingDepartures`), chacune avec ses réservations prises dans `upcomingDepartures->items`, regroupées par `start_date`.
 
   Extraire au besoin une classe `app/Dashboard/UpcomingDays.php` (fabrique statique, testée par T028). Fichiers sous 200 lignes ; T028 (1) et (2) passent.
-- [ ] T031 [US3] Refaire `resources/views/livewire/dashboard/dashboard.blade.php` :
+- [X] T031 [US3] Refaire `resources/views/livewire/dashboard/dashboard.blade.php` :
   - le sélecteur d'agence en pastille, enveloppé dans `@teleport('#top-bar-actions')` ;
   - mêmes `wire:model.live`, `@canany`, `wire:key` et état vide ;
   - grille des sections ;
   - `h1` « Tableau de bord » conservé pour les lecteurs d'écran (`sr-only`) si le bandeau d'accueil n'est pas rendu.
-- [ ] T032 [US3] Refaire `resources/views/livewire/dashboard/day-operations.blade.php` :
+- [X] T032 [US3] Refaire `resources/views/livewire/dashboard/day-operations.blade.php` :
   - bandeau d'accueil (bloc `zinc-50` avec titre `.display-xl` et résumé ; bloc noir illustré par `x-fleet::pictogram` nacelle et mini-pelle sur une ligne de sol) ;
   - quatre `x-tile` (`accent` pour les retours en retard s'il y en a, avec `data-tile`), total en `.display-lg` ;
   - frise de 7 colonnes (empilées sous 640 px).
 
   Refaire aussi `resources/views/livewire/dashboard/partials/reservation-row.blade.php` (pictogramme 56 px, référence, client, dates, note en badge) et `partials/section-more.blade.php`. Liens et `wire:key` inchangés.
-- [ ] T033 [P] [US3] Refaire `resources/views/livewire/dashboard/pending-work.blade.php` : bloc noir, grille 3 × 2 (1 colonne sur téléphone) à filets `white/16`. Compteur `isHighlighted()` : nombre dans un carré `bg-accent text-black`. `data-counter` et `data-highlighted` conservés.
-- [ ] T034 [P] [US3] Refaire `resources/views/livewire/dashboard/fleet-status.blade.php` (barre de répartition aux largeurs proportionnelles, colonnes avec pastille du statut et chiffre en display, liens inchangés, `dashboard.fleet.total`) et `resources/views/livewire/dashboard/vgp-watch.blade.php` (liste à filets, badges inchangés).
-- [ ] T035 [US3] Captures du tableau de bord en 1440 et 375 px, thèmes clair et sombre, comparées à la maquette 1 v3. `composer ci:check` code 0, puis commit « Refonte graphique : tableau de bord ».
+- [X] T033 [P] [US3] Refaire `resources/views/livewire/dashboard/pending-work.blade.php` : bloc noir, grille 3 × 2 (1 colonne sur téléphone) à filets `white/16`. Compteur `isHighlighted()` : nombre dans un carré `bg-accent text-black`. `data-counter` et `data-highlighted` conservés.
+- [X] T034 [P] [US3] Refaire `resources/views/livewire/dashboard/fleet-status.blade.php` (barre de répartition aux largeurs proportionnelles, colonnes avec pastille du statut et chiffre en display, liens inchangés, `dashboard.fleet.total`) et `resources/views/livewire/dashboard/vgp-watch.blade.php` (liste à filets, badges inchangés).
+- [X] T035 [US3] Captures du tableau de bord en 1440 et 375 px, thèmes clair et sombre, comparées à la maquette 1 v3. `composer ci:check` code 0, puis commit « Refonte graphique : tableau de bord ».
 
 **Checkpoint** : tableau de bord conforme à la maquette validée.
 

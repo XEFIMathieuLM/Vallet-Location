@@ -146,51 +146,51 @@ description: "Task list for the customer portal and online booking requests feat
 
 ### Tests d'abord
 
-- [ ] T020 [P] [US1] `functional/portal/tests/Feature/RegistrationTest.php` :
+- [X] T020 [P] [US1] `functional/portal/tests/Feature/RegistrationTest.php` :
   - scénario 1 : compte créé, e-mail normalisé, `VerifyCustomerEmail` envoyée, redirection vers `portal.verification.notice` ;
   - scénario 2 : sans type, refus de validation ;
   - scénario 3 : e-mail déjà pris, refus ;
   - aucune fiche `Customer` n'est créée (FR-005).
-- [ ] T021 [P] [US1] `functional/portal/tests/Feature/EmailVerificationTest.php` :
+- [X] T021 [P] [US1] `functional/portal/tests/Feature/EmailVerificationTest.php` :
   - scénario 4 : compte non confirmé sur `portal.search`, `portal.requests` et `portal.reservations`, redirigé vers la page de confirmation ; le renvoi du lien envoie une nouvelle notification ;
   - le lien signé pose `email_verified_at` ; un lien expiré ou altéré est refusé (FR-002).
-- [ ] T022 [P] [US1] `functional/portal/tests/Feature/LoginTest.php` :
+- [X] T022 [P] [US1] `functional/portal/tests/Feature/LoginTest.php` :
   - scénario 5 : connexion puis redirection vers `portal.search` ;
   - mauvais mot de passe refusé ;
   - 6ᵉ tentative en une minute bloquée (FR-004) ;
   - déconnexion.
-- [ ] T023 [P] [US1] `functional/portal/tests/Feature/PasswordResetTest.php` :
+- [X] T023 [P] [US1] `functional/portal/tests/Feature/PasswordResetTest.php` :
   - scénario 8 : `ResetCustomerPassword` envoyée avec un lien `portal.password.reset` ;
   - la réinitialisation change le mot de passe ;
   - une adresse inconnue donne la même réponse ;
   - les liens de réinitialisation des salariés (`password.reset`) sont inchangés.
-- [ ] T024 [P] [US1] `functional/portal/tests/Feature/SpaceSeparationTest.php` :
+- [X] T024 [P] [US1] `functional/portal/tests/Feature/SpaceSeparationTest.php` :
   - scénario 6 : `actingAs($account, 'customer')` sur `dashboard`, `reservations.index`, `planning.index`, `machines.index`, `portal.staff.requests` et `portal.staff.prices`, toujours redirigé vers `login` (FR-003) ;
   - scénario 7 : les identifiants d'un salarié sur `portal.login` sont refusés ;
   - un salarié connecté sur `/espace-client` est redirigé vers `portal.login`.
-- [ ] T025 [P] [US1] `functional/portal/tests/Feature/AccountSettingsTest.php` :
+- [X] T025 [P] [US1] `functional/portal/tests/Feature/AccountSettingsTest.php` :
   - modification du nom et du téléphone ;
   - changement de mot de passe avec le mot de passe actuel ;
   - la fiche `Customer` rattachée n'est pas modifiée (FR-004).
 
 ### Implémentation
 
-- [ ] T026 [US1] `functional/portal/src/Actions/RegisterCustomerAccount.php` (e-mail en minuscules et sans espaces, `Password::defaults()`, type obligatoire). Puis le composant `functional/portal/src/Livewire/Auth/Register.php` et sa vue : radio type sans défaut, connexion du compte après l'inscription, redirection vers `portal.verification.notice`.
-- [ ] T027 [US1] Confirmation de l'adresse :
+- [X] T026 [US1] `functional/portal/src/Actions/RegisterCustomerAccount.php` (e-mail en minuscules et sans espaces, `Password::defaults()`, type obligatoire). Puis le composant `functional/portal/src/Livewire/Auth/Register.php` et sa vue : radio type sans défaut, connexion du compte après l'inscription, redirection vers `portal.verification.notice`.
+- [X] T027 [US1] Confirmation de l'adresse :
   - notification `functional/portal/src/Notifications/VerifyCustomerEmail.php`, dont `toMail()` rend `Mail/VerifyCustomerEmailMail.php` (lien `URL::temporarySignedRoute('portal.verification.verify', 60 min)`) ;
   - `CustomerAccount::sendEmailVerificationNotification()` ;
   - `Http/Controllers/VerifyCustomerEmailController.php` ;
   - composant `Livewire/Auth/VerifyEmailNotice.php`, renvoi limité à 6 par minute.
-- [ ] T028 [US1] Connexion et déconnexion :
+- [X] T028 [US1] Connexion et déconnexion :
   - `functional/portal/src/Auth/CustomerLoginThrottle.php` (`RateLimiter`, 5 par minute par e-mail et adresse IP) ;
   - `Livewire/Auth/Login.php` (`Auth::guard('customer')->attempt()`, régénération de session) ;
   - `Http/Controllers/LogoutController.php`.
-- [ ] T029 [US1] Mot de passe oublié :
+- [X] T029 [US1] Mot de passe oublié :
   - `Livewire/Auth/ForgotPassword.php` et `ResetPassword.php` (`Password::broker('customer_accounts')`) ;
   - notification `Notifications/ResetCustomerPassword.php` et `Mail/ResetCustomerPasswordMail.php` ;
   - `CustomerAccount::sendPasswordResetNotification()`.
-- [ ] T030 [US1] `functional/portal/src/Livewire/Customer/AccountSettings.php` et sa vue (nom, téléphone, mot de passe).
-- [ ] T031 [US1] `functional/portal/routes/web.php` : groupes `guest:customer`, `auth:customer`, `auth:customer` + `verified:portal.verification.notice`, avec les routes et les noms de [contracts/screens.md](contracts/screens.md). `portal.search` affiche provisoirement un écran vide, remplacé en US2.
+- [X] T030 [US1] `functional/portal/src/Livewire/Customer/AccountSettings.php` et sa vue (nom, téléphone, mot de passe).
+- [X] T031 [US1] `functional/portal/routes/web.php` : groupes `guest:customer`, `auth:customer`, `auth:customer` + `verified:portal.verification.notice`, avec les routes et les noms de [contracts/screens.md](contracts/screens.md). `portal.search` affiche provisoirement un écran vide, remplacé en US2.
 
 **Checkpoint**: T020 à T025 verts, `tests/Feature/Auth/*` verts ; `composer ci:check` vert ; commit « Espace client : comptes clients ».
 
@@ -307,7 +307,7 @@ description: "Task list for the customer portal and online booking requests feat
 - [ ] T054 [US3] `functional/portal/src/Livewire/Staff/ConfirmRequestModal.php` (machines de la même catégorie via `AvailableMachinesQuery`, la demandée en tête ; choix de la fiche ; `DisplaysRefusals`) et `RefuseRequestModal.php`, avec leurs vues.
 - [ ] T055 [US3] `functional/portal/src/Livewire/Staff/PendingRequestsBadge.php` (un `count()`) et, dans `resources/views/layouts/app/sidebar.blade.php`, le groupe « Espace client » sous `@canany` des deux permissions. Pour cette phase, il contient l'entrée « Demandes en ligne » et son badge.
 - [ ] T056 [US3] `functional/portal/src/Livewire/Staff/ReservationOriginSection.php` et sa vue. Le composant est enregistré par `ReservationDetailSections::register('portal.reservation-origin-section', 5)`, sans transition gardée. La demande est lue par `reservation_id` en une requête.
-- [ ] T057 [US3] Route salarié `GET /demandes-en-ligne` (`portal.staff.requests`, `auth`, `verified`, `can:portal.handle-requests`) dans `functional/portal/routes/web.php`. T040 à T046 doivent passer.
+- [ ] T057 [US3] Route salarié `GET /demandes-en-ligne` (`portal.staff.requests`, `auth`, `verified`, `can:portal.handle-requests`) dans `functional/portal/routes/web.php`, et ajout de cette route au jeu de données de `SpaceSeparationTest`. T040 à T046 doivent passer.
 
 **Checkpoint**: T040 à T046 verts ; suite complète verte (non-régression des 001 à 008) ; `composer ci:check` vert ; commit « Espace client : traitement des demandes en agence ».
 
@@ -406,7 +406,8 @@ description: "Task list for the customer portal and online booking requests feat
 - [ ] T072 [US6] Écran et navigation :
   - `functional/portal/src/Livewire/Staff/IndicativePrices.php` et sa vue (validation `^\d+([.,]\d{1,2})?$`) ;
   - route `GET /prix-indicatifs` (`portal.staff.prices`, `can:portal.manage-prices`) ;
-  - entrée « Prix indicatifs » dans le groupe « Espace client » de `resources/views/layouts/app/sidebar.blade.php`.
+  - entrée « Prix indicatifs » dans le groupe « Espace client » de `resources/views/layouts/app/sidebar.blade.php` ;
+  - ajout de `portal.staff.prices` au jeu de données de `SpaceSeparationTest`.
 
   T069 et T070 doivent passer.
 

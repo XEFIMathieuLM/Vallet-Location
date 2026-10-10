@@ -10,6 +10,7 @@ use Functional\Fleet\Models\MachineCategory;
 use Functional\Fleet\Tests\Concerns\CreatesUsers;
 use Functional\Portal\Models\CustomerAccount;
 use Functional\Portal\Models\ReservationRequest;
+use Illuminate\Support\Facades\Auth;
 
 trait BuildsPortalFixtures
 {
@@ -31,6 +32,12 @@ trait BuildsPortalFixtures
     protected function attachedCustomerAccount(?Customer $customer = null): CustomerAccount
     {
         return CustomerAccount::factory()->attachedTo($customer ?? Customer::factory()->create())->create();
+    }
+
+    protected function signInAsCustomerOnly(CustomerAccount $account): void
+    {
+        Auth::guard('customer')->setUser($account);
+        Auth::shouldUse('web');
     }
 
     /**

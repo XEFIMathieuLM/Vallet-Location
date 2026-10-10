@@ -1,0 +1,16 @@
+<?php
+
+namespace Functional\Portal\Livewire\Customer;
+
+use Illuminate\Contracts\View\View;
+use Livewire\Attributes\Layout;
+use Livewire\Component;
+
+#[Layout('portal::layouts.portal')]
+class MyReservations extends Component
+{
+    public function render(): View
+    {
+        return view('portal::livewire.customer.my-reservations')->title(__('portal::navigation.reservations'));
+    }
+}

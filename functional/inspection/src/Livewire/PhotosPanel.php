@@ -5,8 +5,8 @@ namespace Functional\Inspection\Livewire;
 use Functional\Booking\Models\Reservation;
 use Functional\Fleet\Livewire\Concerns\DisplaysRefusals;
 use Functional\Inspection\Actions\DeletePhoto;
-use Functional\Inspection\Actions\MissingViews;
 use Functional\Inspection\Actions\OpenPhotoSession;
+use Functional\Inspection\Actions\ViewCompleteness;
 use Functional\Inspection\Enums\InspectionStep;
 use Functional\Inspection\Exceptions\StepNotOpenException;
 use Functional\Inspection\Models\Photo;
@@ -137,10 +137,10 @@ class PhotosPanel extends Component
 
     private function announceReadiness(): void
     {
-        $hasFrozenViews = ReservationView::query()->where('reservation_id', $this->reservation->id)->exists();
+        $completeness = app(ViewCompleteness::class)->for($this->reservation);
 
         foreach (InspectionStep::cases() as $step) {
-            $isReady = $hasFrozenViews && app(MissingViews::class)->for($this->reservation, $step)->isEmpty();
+            $isReady = $completeness->isCompleteFor($step);
 
             $this->dispatch(self::READINESS_EVENT, step: $step->value, is_ready: $isReady);
         }

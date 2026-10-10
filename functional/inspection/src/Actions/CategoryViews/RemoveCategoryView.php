@@ -22,10 +22,10 @@ class RemoveCategoryView
 
             $views->firstOrFail('position', $position)->delete();
 
-            $views
-                ->reject(fn (CategoryView $view): bool => $view->position === $position)
-                ->values()
-                ->each(fn (CategoryView $view, int $offset) => $view->update(['position' => $offset + 1]));
+            CategoryView::query()
+                ->where('machine_category_id', $category->id)
+                ->where('position', '>', $position)
+                ->decrement('position');
         });
     }
 }

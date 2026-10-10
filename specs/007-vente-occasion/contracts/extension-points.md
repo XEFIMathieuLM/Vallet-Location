@@ -125,7 +125,8 @@ interface BillableSource
 
     public function line(Transmission $transmission): BillableLine;
 
-    public function subject(Transmission $transmission): TransmissionSubject;
+    /** @param Collection<int, Transmission> $transmissions @return array<int, TransmissionSubject> indexé par id de transmission (résolution par lot) */
+    public function subjects(Collection $transmissions): array;
 }
 ```
 
@@ -152,7 +153,7 @@ final class BillableSources   // singleton
     /** @param class-string<BillableSource> $sourceClass */
     public function register(string $sourceClass): void;
 
-    /** @throws UnknownBillableSourceException  final, étend RefusalException, factory forType() */
+    /** @throws UnknownBillableSourceException  erreur de configuration (DomainException), factory forType() */
     public function for(BillableLineType $type): BillableSource;
 }
 ```

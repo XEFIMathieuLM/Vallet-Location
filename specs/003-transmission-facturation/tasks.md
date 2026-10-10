@@ -211,6 +211,47 @@ Lire `design-patterns:state` avant T016.
 
 ---
 
+## Phase 8: Conformité aux skills Xefi
+
+**Purpose**: corriger les écarts relevés par l'audit de conformité du 2026-10-10 (skills `laravel`, `global`, `design-patterns`, `design`) avant la fusion des PR. Périmètre : `functional/billing` ; un fichier racine partagé n'est touché que si c'est nécessaire, et c'est signalé dans le commit. Lire le `SKILL.md` du skill cité avant chaque tâche. Pour les points comportementaux, écrire le test d'abord.
+
+**Hors périmètre (décision de l'audit)** : nommage de `SendTransmissionJob`, attribut `#[Test]`, `no-db-enums` face aux CHECK exigés par la constitution, API REST lomkit (décision utilisateur : pas d'API).
+
+### HAUTE
+
+- [ ] T064 [Conf] `transaction-boundaries` + `no-unenforced-guarantees` : écrire d'abord dans `functional/billing/tests/Feature/SendTransmissionTest.php` les tests « aucun appel au logiciel sous verrou » (un export lancé pendant l'appel n'attend pas et n'inclut pas la transmission réservée), « une réservation expirée est reprise » et « rien n'est écrit si le règlement échoue » ; puis découper `SendTransmission` en **réserver → commit → appel externe → régler** : une 1re transaction courte verrouille la transmission, vérifie `canBeSent()` et l'absence de réservation en cours, incrémente `attempts`, renseigne `last_attempt_at` et `reserved_until` (nouvelle colonne nullable de `transmissions`) ; l'appel à `BillingGateway::send()` se fait hors transaction ; une 2e transaction courte verrouille à nouveau, règle l'issue (`sent`, `failed`, nouvelle échéance) et efface `reserved_until`. `CreateBillingExport` et `billing:reconcile` ignorent une transmission dont `reserved_until` est dans le futur. Remplacer la clé morte `billing.http_timeout_seconds` par `billing.gateway_timeout_seconds`, réellement appliquée : durée de la réservation (`reserved_until` = maintenant + délai + marge `billing.reservation_margin_seconds`) et `$timeout` de `SendTransmissionJob` (le worker interrompt un envoi trop long) ; le contrat `BillingGateway` exige que l'adaptateur réel borne son appel HTTP avec cette clé (T063)
+- [ ] T065 [Conf] Passerelle factice interdite hors `local` / `testing` : test d'abord (`functional/billing/tests/Feature/BillingGatewayBindingTest.php` : en environnement `production` ou `staging`, résoudre `BillingGateway` configurée sur `fake` lève `FakeBillingGatewayNotAllowedException` et aucune transmission ne passe `sent` ; en `local` et `testing` la résolution réussit) ; implémenter le contrôle dans la liaison du service provider ; `billing.gateway` n'a plus de valeur par défaut (`.env.example` garde `fake` pour le local)
+- [ ] T066 [Conf] `seed-new-features` + `seeder-conventions` : `functional/billing/database/seeders/BillingSeeder.php` par factories, sans orphelin, sur les agences et machines du `FleetSeeder` : comptes clients de facturation et clients sans compte (motif `customer_unknown`), périodes `intermediate` et `final`, transmissions dans les 4 statuts et les 2 motifs d'échec, règlements `billed` et `waived`, un `BillingExport`, des dégâts encore à traiter dont un en retard ; appelé depuis `database/seeders/DatabaseSeeder.php` (fichier racine, nécessaire) ; test `functional/billing/tests/Feature/BillingSeederTest.php` vérifiant chaque statut, motif et issue
+
+### MOYENNE
+
+- [ ] T067 [Conf] `no-queries-in-loops` : `CreateBillingExport` charge en une fois tout ce que les lignes lisent (réservation, machine, catégorie, agences, période, règlement, dégât, vue) et les références clients en une requête ; `MakeBillableLine` ne fait plus aucune requête quand les relations sont chargées ; test : le nombre de requêtes de l'export ne dépend pas du nombre de lignes
+- [ ] T068 [Conf] `value-object` (décision utilisateur) : value object `Money` (`final readonly`, centimes entiers + enum `Currency`, aucun float, `fromInput()` qui refuse une saisie invalide, `fromStored()`, `plus()`, `isPositive()`, `equals()`, `format()`) et son cast Eloquent sur `damage_settlements.amount_cents` ; `BillableLine`, `StatementFigures`, `BillDamage` et l'export manipulent `Money` ; `EuroAmount` disparaît ; value object `DateRange` à la place des tuples de `PeriodSplitter` et des paires de dates de `RecordBillablePeriod`. `brick/money` n'est pas ajouté (nouvelle dépendance non validée) : `Money` maison selon la variante prévue par le skill, à signaler
+- [ ] T069 [Conf] `no-god-classes` : supprimer le dossier `functional/billing/src/Support/` ; ranger par concept : `Calendar/BillingCalendar`, `Periods/PeriodSplitter` + `Periods/DateRange`, `History/BillingHistory`, `Transmissions/TransmissionLifecycle`, `Exports/ExportLineFormatter`, `Money/Money` + `Money/Currency` + `Money/MoneyCast`
+- [ ] T070 [Conf] `no-generic-exceptions` + `code-in-english` : messages d'exception en anglais pour les développeurs ; le texte affiché à l'écran reste traduit et est résolu séparément (méthode `userMessage()` lue par l'écran) ; `MissingGoLiveDateException` en anglais ; `InvalidDamageSettlementException::because(string)` remplacée par des constructeurs nommés (`amountNotPositive()`, `labelMissing()`, `waiverReasonMissing()`) ; sortie console, descriptions et arguments des commandes `billing:*` en anglais
+- [ ] T071 [Conf] `artisan-command-conventions` : `billing:reconcile` et `billing:close-months` affichent une ligne par élément traité avant de le traiter et une ligne de fin (résumé) ; tests de sortie avec `expectsOutputToContain`
+- [ ] T072 [Conf] `always-use-models` : remplacer `->from('transmissions')` et la jointure manuelle de `BillingStatement`, et `->from('billable_periods')` de `ReconcileCommand`, par des requêtes sur les modèles (`whereHas`, `whereRelation`, sous-requêtes `Model::query()`)
+- [ ] T073 [Conf] `no-magic-strings` : enum `BillingHistoryEvent` pour les événements d'historique ; enum `BillingPermission` (cas `Manage`) à la place des 7 occurrences de `'billing.manage'` dans le code (les routes et vues lisent l'enum) ; `whereBelongsTo` à la place des clés étrangères en chaîne (`SettleDamage`, `RecordBillablePeriod`, `ReservationBillingSection`, `MakeBillableLine`)
+- [ ] T074 [Conf] `object-construction` : remplacer `BillableLine` (16 paramètres dont 8 nullables selon le type) par une interface `BillableLine` et deux types `RentalPeriodLine` et `DamageLine`, chacun composé d'un `RentalContext` construit par `RentalContext::fromReservation()` ; la forme envoyée (`toArray()`) et le contrat [billing-gateway.md](contracts/billing-gateway.md) sont inchangés
+- [ ] T075 [Conf] `custom-faker-extensions` : extension `functional/billing/src/Faker/BillingExtension.php` (référence client du logiciel, nom de fichier d'export, référence renvoyée par le faux logiciel) enregistrée par un provider Faker déclaré dans `functional/billing/composer.json` ; les factories `BillingExportFactory`, `CustomerBillingAccountFactory` et `TransmissionFactory` n'appellent plus qu'un générateur par attribut
+- [ ] T076 [Conf] `layer-owned-config` : le disque `billing-exports` quitte `config/filesystems.php` (fichier racine) pour `functional/billing/config/filesystems.php`, chargé par `overrideConfigFrom()` de `xefi/laravel-osdd` (fusion des `disks`) ; nom du fichier d'export tiré d'une traduction avec interpolation ; test : la configuration lue par l'application est celle déclarée par le layer
+- [ ] T077 [Conf] `osdd` : `functional/billing/composer.json` déclare toutes ses dépendances (`functional/inspection`, `functional/booking`, `functional/fleet`, `spatie/simple-excel`, `spatie/laravel-activitylog`, `spatie/laravel-permission`, `lomkit/laravel-access-control`, `livewire/livewire`, `xefi/faker-php-laravel` en dev)
+- [ ] T078 [Conf] `aggregate-in-the-database` : `ReservationBillingSection` trie en SQL (`orderBy` sur la période via sous-requête) et filtre avec `has('billablePeriod')` au lieu de `whereNotNull` + `sortBy` en PHP
+- [ ] T079 [Conf] Contrat d'écran : test d'abord, puis bouton « Relancer » d'une transmission en échec dans la section « Facturation » du détail de réservation (FR-010, [screens.md](contracts/screens.md)) ; aligner le libellé du relevé dans `screens.md` sur FR-018 (« locations transmises »)
+- [ ] T080 [Conf] Tests manquants : échec de l'écriture du fichier d'export (aucune transmission ne change d'état, aucun `BillingExport`), échec du règlement d'un dégât (rien d'écrit, rien envoyé), commande `billing:fake-gateway` (bascule de mode, liste des clés reçues, refus hors `local` / `testing`)
+
+### UI (skills `design`)
+
+- [ ] T081 [Conf] `accessibility` : libellé visible pour le champ « référence client » de l'écran des transmissions ; erreurs affichées par le composant d'erreur de Flux (variante sombre comprise) au lieu de `text-red-600` ; l'état d'une transmission n'est jamais porté par la seule couleur
+- [ ] T082 [Conf] `buttons` : un seul bouton primaire par contexte ; dans les actions d'un dégât, « Refacturer » et « Ne pas refacturer » restent secondaires tant qu'aucun formulaire n'est ouvert, et le formulaire ouvert n'a qu'un primaire ; tailles selon le contexte (liste dense : XS, carte : S)
+- [ ] T083 [Conf] `screen-states` : états vides avec une issue (relevé : changer d'agence ou de mois ; transmissions : lien vers le relevé) ; message de succès après refacturer, ne pas refacturer, relancer une transmission et enregistrer une référence client
+- [ ] T084 [Conf] `spacing` / `foundations` : espacements de l'échelle Xefi (4, 8, 16, 24, 32, 48 px ; pas de `space-y-3`) ; chiffres du relevé affichés en texte mis en valeur et non en titres ; échelle des titres alignée sur la convention de la 001 dès sa fusion
+- [ ] T085 [Conf] `ux-writing` : libellés explicites (« Classer non refacturé » au lieu de « Valider ») ; le message « injoignable » dit que la relance est automatique ; le motif brut renvoyé par le logiciel tiers n'est plus affiché tel quel : message maîtrisé et détail technique repliable
+
+**Checkpoint** : la suite complète, PHPStan et Pint passent ; `migrate:fresh --seed` montre chaque état de la facturation.
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies
@@ -222,6 +263,7 @@ Lire `design-patterns:state` avant T016.
 - **US3 (Phase 5)** : après la phase 2 ; T053 attend T034 (US1). Parallélisable avec US2.
 - **US4 (Phase 6)** : après US1 et US3 (le relevé lit périodes et dégâts réglés).
 - **Polish (Phase 7)** : après les stories voulues. T063 attend le client, indépendamment du reste.
+- **Conformité (Phase 8)** : après la phase 7. T064 et T065 d'abord (HAUTE), puis T069 (rangement) avant T068, T073 et T074 qui déplacent les mêmes classes ; T081 à T085 après T079 (mêmes vues).
 
 ### Story Completion Order
 

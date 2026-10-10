@@ -20,4 +20,4 @@ Mêmes champs que la ligne facturable de [billing-gateway.md](billing-gateway.md
 
 ## Contenu
 
-Toutes les transmissions `pending` ou `failed` au moment de l'export, prises sous verrou. Les transmissions `sent` ou déjà `exported` n'y figurent jamais (FR-023).
+Toutes les transmissions `pending` ou `failed` au moment de l'export, non réservées par un envoi en cours, prises sous verrou. Les transmissions `sent` ou déjà `exported` n'y figurent jamais (FR-023).

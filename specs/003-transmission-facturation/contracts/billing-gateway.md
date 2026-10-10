@@ -35,7 +35,7 @@ Toute autre exception est un bug : elle remonte et la transmission reste `pendin
 ## Obligations de toute implémentation
 
 1. **Idempotence** : deux envois de la même `idempotency_key` ne créent qu'une ligne chez le logiciel. Si le logiciel ne dédoublonne pas lui-même, l'implémentation cherche la clé avant de créer, et renvoie l'identifiant existant.
-2. **Délai borné** : aucun appel ne dépasse `billing.http_timeout_seconds`.
+2. **Délai borné** : aucun appel ne dépasse `billing.gateway_timeout_seconds` ; l'adaptateur l'applique à son client HTTP. L'appel est fait hors transaction (B4).
 3. **Pas de secret dans les messages** : `last_error` est affiché aux salariés ; il ne contient ni jeton ni URL authentifiée.
 4. **Rattachement** : le logiciel peut retrouver, à partir de `reservation_ref`, toutes les lignes (périodes et dégâts) d'une même location.
 
@@ -55,7 +55,7 @@ docker compose exec -u sail laravel.test php artisan billing:fake-gateway accept
 docker compose exec -u sail laravel.test php artisan billing:fake-gateway --received
 ```
 
-La commande refuse de s'exécuter hors des environnements `local` et `testing`. Pour une clé déjà reçue, le faux logiciel renvoie le même identifiant sans ajouter de ligne.
+La commande refuse de s'exécuter hors des environnements `local` et `testing`, et la passerelle `fake` ne peut pas être liée ailleurs (`FakeBillingGatewayNotAllowedException`) : en production, une transmission ne peut jamais être marquée transmise par le faux logiciel. Pour une clé déjà reçue, le faux logiciel renvoie le même identifiant sans ajouter de ligne.
 
 ## Critère d'arrêt pour l'adaptateur réel
 

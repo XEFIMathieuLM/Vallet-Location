@@ -47,7 +47,7 @@ Portes tirées de la constitution v1.0.0 (`.specify/memory/constitution.md`) :
 | Principe | Porte | Statut |
 |----------|-------|--------|
 | I. Layers OSDD | nouveau domaine = nouveau layer `functional/billing` ; dépendances `billing → inspection → booking → fleet` ; aucun fichier d'un autre layer modifié, extension par `ReservationDetailSections` et `DamageActions` | ✅ B1, B6, B7 |
-| II. Garanties en base et serveur | exclusion sur les périodes, unicité des transmissions et des règlements, CHECK, envoi et export sous `lockForUpdate()` ; pas de cascade ; agrégats du relevé en SQL | ✅ B4, B9, B10, data-model |
+| II. Garanties en base et serveur | exclusion sur les périodes, unicité des transmissions et des règlements, CHECK, envoi en trois temps (réserver, appel hors transaction, régler) et export sous `lockForUpdate()` des transmissions non réservées ; pas de cascade ; agrégats du relevé en SQL | ✅ B4, B9, B10, data-model |
 | III. Cycles de vie explicites | `Transmission` en pattern State (4 états, transitions interdites) ; statuts texte + enum ; dates en heure de Paris ; montants en centimes | ✅ B5, data-model |
 | IV. Effets de bord et erreurs typées | listener sur `ReservationChanged`, job, commandes planifiées ; pas d'observer ; `rescue()` et exceptions typées ; logiciel de facturation derrière `BillingGateway` avec `FakeBillingGateway` ; file d'envoi persistée et rattrapée chaque minute | ✅ B2, B3, B5, B6 |
 | V. Accès par permission | `billing.manage` attribuée au rôle salarié ; aucun nom de rôle dans le code | ✅ B11 |
@@ -87,30 +87,38 @@ resources/views/layouts/
 composer.json, phpunit.xml, phpstan.neon, database/seeders/DatabaseSeeder.php  # enregistrement du layer (modifiés)
 functional/
 └── billing/                       # nouveau
-    ├── composer.json              # LayerManifest, dépend de inspection, booking, fleet
-    ├── config/billing.php         # go_live_date, gateway, délais, seuils, disque
+    ├── composer.json              # LayerManifest : inspection, booking, fleet, paquets utilisés, provider Faker
+    ├── config/
+    │   ├── billing.php            # go_live_date, gateway, délais, seuils, disque
+    │   └── filesystems.php        # disque privé billing-exports (fusionné par overrideConfigFrom)
     ├── src/
     │   ├── Models/                # BillablePeriod, Transmission, DamageSettlement, CustomerBillingAccount, BillingExport
-    │   ├── Enums/                 # BillablePeriodKind, TransmissionStatus, TransmissionFailureReason, DamageOutcome
+    │   ├── Enums/                 # BillablePeriodKind, TransmissionStatus, TransmissionFailureReason, DamageOutcome, BillingHistoryEvent, BillingPermission
     │   ├── States/                # une classe par état de Transmission
+    │   ├── Transmissions/         # TransmissionLifecycle (écritures d'état et historique d'une transmission)
     │   ├── Contracts/             # BillingGateway
     │   ├── Gateways/              # FakeBillingGateway ; adaptateur du logiciel client (quand identifié)
-    │   ├── ValueObjects/          # BillableLine (ligne envoyée au logiciel)
+    │   ├── Lines/                 # BillableLine, RentalPeriodLine, DamageLine, RentalContext (ligne envoyée au logiciel)
+    │   ├── Money/                 # Money, Currency, MoneyCast
+    │   ├── Periods/               # DateRange, PeriodSplitter
+    │   ├── Calendar/              # BillingCalendar (heure de Paris, date de mise en service)
+    │   ├── History/               # BillingHistory (historique de la réservation)
+    │   ├── Exports/               # ExportLineFormatter
+    │   ├── ValueObjects/          # StatementFigures (résultat du relevé)
     │   ├── Actions/               # RecordFinalPeriod, RecordMonthEndPeriods, SendTransmission, RetryTransmission, BillDamage, WaiveDamage, CreateBillingExport, SetCustomerBillingRef
-    │   ├── Queries/               # BillingStatement (agrégats du relevé)
+    │   ├── Queries/               # BillingStatement, TransmissionsToHandle
     │   ├── Jobs/                  # SendTransmissionJob
     │   ├── Listeners/             # période finale sur ReservationChanged
     │   ├── Console/               # billing:close-months, billing:reconcile, billing:fake-gateway (local et tests)
-    │   ├── Exceptions/            # BillingSoftwareRejectedException, BillingSoftwareUnreachableException, IllegalTransmissionTransitionException, DamageAlreadySettledException, NothingToExportException, MissingGoLiveDateException
+    │   ├── Exceptions/            # exceptions typées de billing
+    │   ├── Faker/                 # BillingExtension et son provider (générateurs des factories)
     │   ├── Access/Controls/       # TransmissionControl, DamageSettlementControl, BillingExportControl
-    │   ├── Support/               # BillingGoLive (lecture unique de go_live_date), BillingHistory (historique de la réservation)
-    │   ├── Providers/             # BillingServiceProvider (enregistrements dans les registres, liaison du gateway, planification)
+    │   ├── Providers/             # BillingServiceProvider (enregistrements dans les registres, liaison du gateway)
     │   └── Livewire/              # ReservationBillingSection, DamageBillingActions, Transmissions, Exports, Statement, BillingAlert
     ├── database/{migrations,factories,seeders}/
     ├── resources/{views,lang/fr}/
-    ├── routes/web.php             # /facturation/*
+    ├── routes/{web,console}.php   # /facturation/*, planification
     └── tests/{Feature,Unit}/
-config/filesystems.php             # + disque billing-exports
 ```
 
 **Structure Decision**: un layer `billing` dans le même dépôt que la 001 et la 002. `booking` n'est pas modifié : la période finale est créée par un listener sur `ReservationChanged`, et la section « Facturation » passe par le registre des sections du détail exposé par `booking` (point d'extension livré par la 001). `inspection` n'est pas modifié non plus : le chiffrage remplace « Marquer traité » en s'enregistrant dans le registre `DamageActions` livré par la 002, sans qu'`inspection` connaisse `billing`. Le layout de `app/` inclut le bandeau d'alerte, puisque `app/` est la colle entre les layers.

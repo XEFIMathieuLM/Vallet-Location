@@ -48,7 +48,7 @@ Le règlement d'un dégât de la 002 (FR-012 à FR-016).
 | id | identifiant | |
 | damage_id | référence → Damage | obligatoire, unique |
 | outcome | `DamageOutcome` | obligatoire |
-| amount_cents | entier | obligatoire et > 0 si `billed`, vide si `waived` (contrainte CHECK) |
+| amount_cents | entier, lu et écrit comme `Money` (cast) | obligatoire et > 0 si `billed`, vide si `waived` (contrainte CHECK) ; montant HT en centimes, devise EUR |
 | label | texte | obligatoire si `billed` |
 | waiver_reason | texte | obligatoire si `waived` |
 | settled_by | référence → User | obligatoire |
@@ -95,6 +95,7 @@ L'envoi d'un élément facturable (FR-005 à FR-010, FR-021 à FR-023).
 | external_ref | texte | identifiant renvoyé par le logiciel, renseigné si `sent` |
 | sent_at | date-heure | nullable |
 | billing_export_id | référence → BillingExport | nullable, renseigné si `exported` |
+| reserved_until | date-heure | nullable ; posé pendant un envoi en cours (B4), effacé au règlement ; une transmission réservée n'est ni exportée ni renvoyée |
 
 **Contraintes en base** : exactement un de `billable_period_id` et `damage_settlement_id` est renseigné (CHECK).
 
@@ -136,13 +137,19 @@ User 1──* DamageSettlement (settled_by)
 User 1──* BillingExport (created_by)
 ```
 
+## Value objects
+
+- `Money` : montant exact en centimes entiers plus une `Currency` (enum, EUR seul) ; jamais de float. Persisté par un cast sur `damage_settlements.amount_cents`.
+- `DateRange` : une période de dates bornes incluses (début ≤ fin), avec son nombre de jours.
+
 ## Configuration (`functional/billing/config/billing.php`)
 
 | Clé | Défaut | Rôle |
 |-----|--------|------|
 | `go_live_date` | aucun, obligatoire (AAAA-MM-JJ) | réservations rendues avant cette date : non transmises ; aucune clôture mensuelle avant cette date ; vide → rien n'est transmis |
-| `gateway` | `fake` | implémentation de `BillingGateway` |
-| `http_timeout_seconds` | 10 | borne l'attente du logiciel sous verrou (B4) |
+| `gateway` | aucun (`.env.example` : `fake`) | implémentation de `BillingGateway` ; `fake` refusé hors `local` et `testing` |
+| `gateway_timeout_seconds` | 10 | borne l'appel au logiciel : durée de la réservation, `$timeout` du job, délai HTTP de l'adaptateur réel (B4) |
+| `reservation_margin_seconds` | 30 | marge ajoutée au délai pour la durée d'une réservation d'envoi |
 | `retry_delays_minutes` | `[1, 5, 15, 60]` | puis 60 min à chaque tentative |
 | `alert_after_hours` | 24 | FR-009, FR-011 |
 | `damage_overdue_days` | 7 | FR-019 |

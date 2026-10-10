@@ -27,11 +27,11 @@ Les décisions de la 001 (R1–R11) et de la 002 (P1–P13) restent valables : L
 - **Decision**: trois garanties en base, plus une côté logiciel.
   1. `billable_periods` : contrainte d'exclusion PostgreSQL sur `reservation_id` + `daterange(start_date, end_date, '[]')`. Deux périodes d'une même location ne peuvent pas partager un jour.
   2. `transmissions` : au plus une transmission par période et par chiffrage de dégât (index uniques).
-  3. Envoi sous verrou : le job prend `lockForUpdate()` sur la transmission, vérifie qu'elle est encore `pending`, envoie, puis change l'état dans la même transaction. L'export de secours prend le même verrou ; il attend donc la fin d'un envoi en cours et exclut ce qui vient d'être transmis.
+  3. Envoi en trois temps (réserver → commit → appel → régler) : une transaction courte verrouille la transmission, vérifie qu'elle est `pending` et non réservée, puis pose une réservation `reserved_until` ; l'appel au logiciel se fait **hors transaction** ; une seconde transaction courte règle l'issue et lève la réservation. L'export de secours et le rattrapage ignorent une transmission réservée : un élément ne peut pas être à la fois envoyé et exporté, sans qu'aucun verrou soit tenu pendant l'appel.
   4. Chaque envoi porte une **clé d'idempotence** stable (l'UUID de la transmission). L'adaptateur l'utilise pour que le logiciel ignore un second envoi de la même clé ; si le logiciel ne sait pas dédoublonner, l'adaptateur cherche d'abord la clé chez lui avant de créer.
 - **Rationale**: SC-003 (zéro jour facturé en double) et le cas limite « la réponse se perd ». Les garanties 1 à 3 sont portées par la base, pas par une convention. La 4 couvre le seul trou restant : un envoi accepté dont la réponse n'arrive jamais.
 - **Alternatives considered**: vérifier « déjà transmis ? » en PHP avant d'envoyer (course entre deux workers) ; s'en remettre au comptable pour repérer les doublons.
-- **Délai d'envoi** : le verrou est tenu pendant l'appel au logiciel ; le délai HTTP est donc borné (10 s, configurable).
+- **Délai d'envoi** : `billing.gateway_timeout_seconds` (10 s) borne l'appel : il fixe la durée de la réservation (plus une marge) et le `$timeout` du job d'envoi, et l'adaptateur réel l'applique à son client HTTP. Une réservation expirée (worker tombé pendant l'appel) est reprise par le rattrapage ; la clé d'idempotence évite alors le doublon chez le logiciel.
 
 ## B5 — Cycle de vie d'une transmission (pattern State)
 
@@ -77,7 +77,7 @@ Les décisions de la 001 (R1–R11) et de la 002 (P1–P13) restent valables : L
 ## B9 — Export de secours
 
 - **Decision**: un export CSV produit par `spatie/simple-excel` (déjà installé), enregistré comme `BillingExport` (auteur, date, fichier sur un disque privé `billing-exports`). Toutes les transmissions `pending` et `failed` sont prises sous verrou, écrites dans le fichier, puis passent `exported` dans la même transaction. Le fichier reste téléchargeable depuis l'écran des exports.
-- **Rationale**: FR-022 et FR-023. Le verrou commun avec l'envoi (B4) empêche qu'un élément soit à la fois envoyé et exporté. Le format exact sera aligné sur le format d'import du logiciel du client une fois connu ([contracts/export-format.md](contracts/export-format.md)) ; seule la mise en forme d'une ligne change.
+- **Rationale**: FR-022 et FR-023. La réservation posée par l'envoi (B4) empêche qu'un élément soit à la fois envoyé et exporté : l'export ignore les transmissions réservées. Le format exact sera aligné sur le format d'import du logiciel du client une fois connu ([contracts/export-format.md](contracts/export-format.md)) ; seule la mise en forme d'une ligne change.
 - **Alternatives considered**: un export qui ne change pas l'état (chaque export suivant reprendrait les mêmes lignes : doublons).
 - **Fichier en échec d'écriture** : la transaction est annulée, aucun élément ne passe `exported`.
 

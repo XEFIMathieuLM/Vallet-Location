@@ -3,6 +3,8 @@
 namespace Functional\Sales\Livewire;
 
 use Flux\Flux;
+use Functional\Billing\Enums\BillableLineType;
+use Functional\Billing\Models\Transmission;
 use Functional\Billing\Money\Money;
 use Functional\Fleet\Livewire\Concerns\DisplaysRefusals;
 use Functional\Inspection\Livewire\Concerns\ActsAsAgencyMember;
@@ -22,6 +24,7 @@ use Spatie\Activitylog\Models\Activity;
 
 /**
  * @property-read Collection<int, Activity> $history
+ * @property-read Transmission|null $transmission
  */
 class SaleDetail extends Component
 {
@@ -49,6 +52,12 @@ class SaleDetail extends Component
             ->get();
     }
 
+    #[Computed]
+    public function transmission(): ?Transmission
+    {
+        return Transmission::query()->where('source_type', BillableLineType::UsedMachineSale)->where('source_id', $this->sale->id)->first();
+    }
+
     public function updateListing(UpdateSaleListing $updateSaleListing): void
     {
         Gate::authorize(SalesPermission::Manage->value);
@@ -65,6 +74,7 @@ class SaleDetail extends Component
     public function refreshSale(): void
     {
         $this->sale->refresh();
+        unset($this->transmission);
         $this->newPlannedHandoverDate = (string) $this->sale->planned_handover_date?->toDateString();
         unset($this->history);
     }

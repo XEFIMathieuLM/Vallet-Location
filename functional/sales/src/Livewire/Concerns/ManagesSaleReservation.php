@@ -6,6 +6,7 @@ use Carbon\CarbonImmutable;
 use Flux\Flux;
 use Functional\Sales\Access\SalesPermission;
 use Functional\Sales\Actions\ChangePlannedHandoverDate;
+use Functional\Sales\Actions\HandOverSale;
 use Functional\Sales\Actions\ReleaseSaleReservation;
 use Illuminate\Support\Facades\Gate;
 
@@ -34,6 +35,15 @@ trait ManagesSaleReservation
 
         $this->reset('releaseReason');
         $this->closeModalWithToast('release-reservation', 'sales::sales.detail.reservation_released');
+    }
+
+    public function handOver(HandOverSale $handOverSale): void
+    {
+        Gate::authorize(SalesPermission::Manage->value);
+
+        $this->sale = $handOverSale->handle($this->agencyMember(), $this->sale);
+
+        $this->closeModalWithToast('hand-over', 'sales::sales.detail.handed_over');
     }
 
     private function closeModalWithToast(string $modalName, string $messageKey): void

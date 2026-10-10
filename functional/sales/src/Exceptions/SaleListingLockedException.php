@@ -16,6 +16,11 @@ final class SaleListingLockedException extends RefusalException
         );
     }
 
+    public static function sold(Sale $sale): self
+    {
+        return new self("Sale {$sale->id} is sold and can no longer change.", 'sales::refusals.sold_sale_locked');
+    }
+
     public static function description(Sale $sale): self
     {
         return new self(

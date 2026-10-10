@@ -176,16 +176,16 @@ description: "Task list for the used machine sales feature"
 
 ### Tests for User Story 3
 
-- [ ] T058 [P] [US3] `functional/sales/tests/Feature/HandOverSaleTest.php` : US3-1 (vendue, date et prix final, machine `retired`), US3-2 (refus si machine sortie), US3-3 (refus si location confirmée, liste des réservations), US3-4 (machine absente de la recherche et non réservable), US3-5 (une transmission `used_machine_sale` en attente, ligne conforme à `contracts/billing-sale-line.md`), FR-013 (remise avant et après la date prévue acceptée), machine déjà retirée : statut inchangé, refus en cascade : ni vente conclue ni transmission si `RetireMachine` refuse
-- [ ] T059 [P] [US3] `functional/sales/tests/Feature/SoldSaleIsFrozenTest.php` : US3-6 (prix et acheteur non modifiables, message avoir), annulation refusée, aucune nouvelle offre
-- [ ] T060 [P] [US3] `functional/sales/tests/Feature/OpenSaleBlocksRetirementTest.php` : FR-016, retrait manuel d'une machine `listed` ou `reserved` refusé ; après annulation, retrait accepté ; le garde des réservations de booking s'applique toujours
+- [X] T058 [P] [US3] `functional/sales/tests/Feature/HandOverSaleTest.php` : US3-1 (vendue, date et prix final, machine `retired`), US3-2 (refus si machine sortie), US3-3 (refus si location confirmée, liste des réservations), US3-4 (machine absente de la recherche et non réservable), US3-5 (une transmission `used_machine_sale` en attente, ligne conforme à `contracts/billing-sale-line.md`), FR-013 (remise avant et après la date prévue acceptée), machine déjà retirée : statut inchangé, refus en cascade : ni vente conclue ni transmission si `RetireMachine` refuse
+- [X] T059 [P] [US3] `functional/sales/tests/Feature/SoldSaleIsFrozenTest.php` : US3-6 (prix et acheteur non modifiables, message avoir), annulation refusée, aucune nouvelle offre
+- [X] T060 [P] [US3] `functional/sales/tests/Feature/OpenSaleBlocksRetirementTest.php` : FR-016, retrait manuel d'une machine `listed` ou `reserved` refusé ; après annulation, retrait accepté ; le garde des réservations de booking s'applique toujours
 
 ### Implementation for User Story 3
 
-- [ ] T061 [US3] `functional/sales/src/Guards/OpenSaleRetirementGuard.php` (E2) + `MachineHasOpenSaleException` ; enregistrement dans `MachineRetirementGuards` depuis `SalesServiceProvider`
-- [ ] T062 [US3] `functional/sales/src/Billing/SaleLine.php` (implémente `BillableLine`) et `functional/sales/src/Billing/SaleBillableSource.php` (E4) : `type()` = `UsedMachineSale` ; `line()` renvoie une `SaleLine` selon `contracts/billing-sale-line.md` (identifiant client via `CustomerBillingAccount`) ; `subject()` (« Vente {référence} », acheteur, `route('sales.show')`, la vente comme sujet d'historique) ; enregistrement dans `BillableSources`
-- [ ] T063 [US3] `functional/sales/src/Actions/HandOverSale.php` selon « Déroulé de la remise » de `plan.md` : verrous `machines` puis `sales`, `sell()`, refus si réservation `in_progress` ou `confirmed` (`SaleHandoverRefusedException`), champs de remise, `RetireMachine` si la machine n'est pas déjà retirée, `QueueSourceTransmission`, historique, `SaleChanged`
-- [ ] T064 [US3] Bouton « Enregistrer la remise » et état figé dans `functional/sales/src/Livewire/SaleDetail.php` et sa vue (prix final, date de remise, état de transmission)
+- [X] T061 [US3] `functional/sales/src/Guards/OpenSaleRetirementGuard.php` (E2) + `MachineHasOpenSaleException` ; enregistrement dans `MachineRetirementGuards` depuis `SalesServiceProvider`
+- [X] T062 [US3] `functional/sales/src/Billing/SaleLine.php` (implémente `BillableLine`) et `functional/sales/src/Billing/SaleBillableSource.php` (E4) : `type()` = `UsedMachineSale` ; `line()` renvoie une `SaleLine` selon `contracts/billing-sale-line.md` (identifiant client via `CustomerBillingAccount`) ; `subject()` (« Vente {référence} », acheteur, `route('sales.show')`, la vente comme sujet d'historique) ; enregistrement dans `BillableSources`
+- [X] T063 [US3] `functional/sales/src/Actions/HandOverSale.php` selon « Déroulé de la remise » de `plan.md` : verrous `machines` puis `sales`, `sell()`, refus si réservation `in_progress` ou `confirmed` (`SaleHandoverRefusedException`), champs de remise, `RetireMachine` si la machine n'est pas déjà retirée, `QueueSourceTransmission`, historique, `SaleChanged`
+- [X] T064 [US3] Bouton « Enregistrer la remise » et état figé dans `functional/sales/src/Livewire/SaleDetail.php` et sa vue (prix final, date de remise, état de transmission)
 
 **Checkpoint**: le cycle complet mise en vente → offre → réservation → remise fonctionne.
 

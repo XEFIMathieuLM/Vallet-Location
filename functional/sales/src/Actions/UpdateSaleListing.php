@@ -5,6 +5,7 @@ namespace Functional\Sales\Actions;
 use Functional\Fleet\Contracts\AgencyMember;
 use Functional\Sales\Data\SaleListing;
 use Functional\Sales\Enums\SaleHistoryEvent;
+use Functional\Sales\Enums\SaleStatus;
 use Functional\Sales\Events\SaleChanged;
 use Functional\Sales\Exceptions\InvalidSaleListingException;
 use Functional\Sales\Exceptions\SaleListingLockedException;
@@ -25,6 +26,10 @@ final class UpdateSaleListing
 
         $updatedSale = DB::transaction(function () use ($author, $sale, $listing): Sale {
             $lockedSale = Sale::query()->lockForUpdate()->findOrFail($sale->id);
+
+            if ($lockedSale->status === SaleStatus::Sold) {
+                throw SaleListingLockedException::sold($lockedSale);
+            }
 
             $this->changeAskingPrice($author, $lockedSale, $listing);
             $this->changeDescription($author, $lockedSale, $listing);

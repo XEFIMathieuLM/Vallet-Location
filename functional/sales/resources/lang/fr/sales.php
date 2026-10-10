@@ -24,6 +24,10 @@ return [
         'reject' => 'refuser',
         'withdraw' => 'retirer',
     ],
+    'billing' => [
+        'label' => 'Vente machine d\'occasion :reference',
+        'subject' => 'Vente :reference',
+    ],
     'navigation' => [
         'heading' => 'Vente d\'occasion',
         'sales' => 'Ventes d\'occasion',
@@ -79,6 +83,12 @@ return [
         'release_help' => 'La vente repasse « en vente », l\'offre acceptée est retirée et la machine redevient louable au-delà de la date de remise.',
         'reservation_released' => 'Réservation levée : la machine est de nouveau en vente.',
         'reason' => 'Motif',
+        'hand_over' => 'Enregistrer la remise',
+        'hand_over_help' => 'La vente sera conclue aujourd\'hui, la machine sortira définitivement du parc et la vente sera transmise au logiciel de facturation.',
+        'handed_over' => 'Remise enregistrée : la vente est conclue.',
+        'sold_to' => 'Vendue à :buyer pour :price € HT, remise le :date',
+        'frozen' => 'Toute correction d\'une vente conclue se fait par un avoir dans le logiciel de facturation.',
+        'transmission' => 'Facturation : :status',
     ],
     'offers' => [
         'title' => 'Offres',

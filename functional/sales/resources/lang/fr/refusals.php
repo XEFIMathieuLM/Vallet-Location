@@ -17,4 +17,9 @@ return [
     'handover_conflicts_with_reservation' => 'Remise prévue le :date impossible : la machine est louée du :start au :end (agence :agency, client :customer).',
     'machine_reserved_for_sale' => 'Machine vendue sous réserve, remise prévue le :date : elle ne peut pas être louée jusqu\'à cette date ni au-delà.',
     'reason_required' => 'Un motif est obligatoire.',
+    'sold_sale_locked' => 'Cette vente est conclue : son prix, son acheteur et son descriptif ne sont plus modifiables. Toute correction se fait par un avoir dans le logiciel de facturation.',
+    'sold_sale_not_cancellable' => 'Cette vente est conclue : elle ne peut pas être annulée. Toute correction se fait par un avoir dans le logiciel de facturation.',
+    'handover_machine_rented_out' => 'Remise impossible : la machine est louée (sortie le :start, retour prévu le :end). Enregistrez d\'abord son retour.',
+    'handover_active_reservations' => 'Remise impossible : la machine a des locations confirmées à annuler ou à déplacer : :reservations.',
+    'machine_has_open_sale' => 'Retrait de :reference impossible : la machine a une vente « :status ». Concluez ou annulez la vente.',
 ];

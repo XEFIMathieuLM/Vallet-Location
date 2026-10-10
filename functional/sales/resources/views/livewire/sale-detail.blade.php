@@ -52,8 +52,21 @@
             </div>
             <div class="flex flex-wrap gap-2">
                 <flux:modal.trigger name="change-handover-date"><flux:button size="sm">{{ __('sales::sales.detail.change_handover_date') }}</flux:button></flux:modal.trigger>
+                <flux:modal.trigger name="hand-over"><flux:button size="sm" variant="primary">{{ __('sales::sales.detail.hand_over') }}</flux:button></flux:modal.trigger>
                 <flux:modal.trigger name="release-reservation"><flux:button size="sm" variant="ghost">{{ __('sales::sales.detail.release_reservation') }}</flux:button></flux:modal.trigger>
             </div>
+        </flux:card>
+    @endif
+
+    @if ($sale->status === \Functional\Sales\Enums\SaleStatus::Sold)
+        <flux:card class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+                <flux:heading>{{ __('sales::sales.detail.sold_to', ['buyer' => $sale->buyer?->name, 'price' => $sale->final_price?->format(), 'date' => $sale->handed_over_on?->format('d/m/Y')]) }}</flux:heading>
+                <flux:text>{{ __('sales::sales.detail.frozen') }}</flux:text>
+            </div>
+            @if ($this->transmission !== null)
+                <flux:badge :color="$this->transmission->status->color()">{{ __('sales::sales.detail.transmission', ['status' => $this->transmission->status->label()]) }}</flux:badge>
+            @endif
         </flux:card>
     @endif
 
@@ -80,6 +93,17 @@
             <div class="flex justify-end gap-2">
                 <flux:modal.close><flux:button variant="ghost">{{ __('sales::sales.form.back') }}</flux:button></flux:modal.close>
                 <flux:button type="submit" variant="primary">{{ __('sales::sales.detail.save_listing') }}</flux:button>
+            </div>
+        </form>
+    </flux:modal>
+
+    <flux:modal name="hand-over" class="md:w-lg">
+        <form wire:submit="handOver" class="flex flex-col gap-4">
+            <flux:heading size="lg">{{ __('sales::sales.detail.hand_over') }}</flux:heading>
+            <flux:text>{{ __('sales::sales.detail.hand_over_help') }}</flux:text>
+            <div class="flex justify-end gap-2">
+                <flux:modal.close><flux:button variant="ghost">{{ __('sales::sales.form.back') }}</flux:button></flux:modal.close>
+                <flux:button type="submit" variant="primary">{{ __('sales::sales.detail.hand_over') }}</flux:button>
             </div>
         </form>
     </flux:modal>

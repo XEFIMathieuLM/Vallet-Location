@@ -23,9 +23,9 @@ class ReservationDetail extends Component
     public Reservation $reservation;
 
     /**
-     * @var array<string, bool>
+     * @var array<string, array<string, bool>>
      */
-    public array $readinessBySteps = [];
+    public array $readinessBySections = [];
 
     public function mount(Reservation $reservation): void
     {
@@ -53,22 +53,26 @@ class ReservationDetail extends Component
     }
 
     #[On('reservation-transition-readiness')]
-    public function updateTransitionReadiness(string $step, bool $is_ready): void
+    public function updateTransitionReadiness(string $step, string $section, bool $is_ready): void
     {
         $transition = ReservationTransition::tryFrom($step);
 
-        if ($transition !== null) {
-            $this->readinessBySteps[$transition->value] = $is_ready;
+        if ($transition === null || ! app(ReservationDetailSections::class)->isGuardedBy($section, $transition)) {
+            return;
         }
+
+        $this->readinessBySections[$transition->value][$section] = $is_ready;
     }
 
     public function isReadyFor(ReservationTransition $transition): bool
     {
-        if (app(ReservationDetailSections::class)->isEmpty()) {
-            return true;
+        foreach (app(ReservationDetailSections::class)->sectionsGuarding($transition) as $section) {
+            if (($this->readinessBySections[$transition->value][$section] ?? false) !== true) {
+                return false;
+            }
         }
 
-        return $this->readinessBySteps[$transition->value] ?? false;
+        return true;
     }
 
     public function render(): View

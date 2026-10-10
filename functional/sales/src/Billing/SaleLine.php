@@ -57,6 +57,7 @@ final readonly class SaleLine implements BillableLine
             'amount_excl_tax_cents' => $this->price->minorUnits,
             'source_ref' => $this->saleRef,
             'sale_date' => $this->saleDate,
+            'purchase_order_number' => null,
         ];
     }
 }

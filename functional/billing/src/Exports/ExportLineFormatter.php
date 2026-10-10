@@ -9,7 +9,7 @@ final class ExportLineFormatter
     public const COLUMNS = [
         'idempotency_key', 'type', 'customer_ref', 'reservation_ref', 'machine_reference', 'machine_category',
         'home_agency', 'booking_agency', 'period_start', 'period_end', 'period_kind', 'days',
-        'damage_view', 'damage_comment', 'label', 'amount_excl_tax', 'source_ref', 'sale_date',
+        'damage_view', 'damage_comment', 'label', 'amount_excl_tax', 'source_ref', 'sale_date', 'purchase_order_number',
     ];
 
     /**

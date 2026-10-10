@@ -88,6 +88,21 @@
                     </flux:sidebar.group>
                 @endcan
 
+                @canany([\Functional\Accounts\Access\AccountsPermission::ManageKeyAccounts->value, \Functional\Accounts\Access\AccountsPermission::ManagePurchaseOrders->value])
+                    <flux:sidebar.group :heading="__('accounts::key_accounts.navigation.heading')" class="grid">
+                        @can(\Functional\Accounts\Access\AccountsPermission::ManageKeyAccounts->value)
+                            <flux:sidebar.item icon="building-office-2" :href="route('accounts.key-accounts')" :current="request()->routeIs('accounts.key-accounts')" wire:navigate>
+                                {{ __('accounts::key_accounts.navigation.key_accounts') }}
+                            </flux:sidebar.item>
+                        @endcan
+                        @can(\Functional\Accounts\Access\AccountsPermission::ManagePurchaseOrders->value)
+                            <flux:sidebar.item icon="document-text" :href="route('accounts.missing-purchase-orders')" :current="request()->routeIs('accounts.missing-purchase-orders')" wire:navigate>
+                                {{ __('accounts::purchase_orders.missing.navigation') }}
+                            </flux:sidebar.item>
+                        @endcan
+                    </flux:sidebar.group>
+                @endcanany
+
                 @can(\Functional\Fleet\Access\FleetPermission::ManageMachines->value)
                     <flux:sidebar.group :heading="__('fleet::machines.navigation.fleet')" class="grid">
                         <flux:sidebar.item icon="truck" :href="route('machines.index')" :current="request()->routeIs('machines.*')" wire:navigate>

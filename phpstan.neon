@@ -42,6 +42,10 @@ parameters:
         - functional/sales/src/
         - functional/sales/database/
         - functional/sales/routes/
+        - functional/accounts/src/
+        - functional/accounts/database/
+        - functional/accounts/routes/
+        - functional/accounts/config/
 
     level: 7
 

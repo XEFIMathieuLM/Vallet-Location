@@ -6,7 +6,9 @@ use Carbon\CarbonImmutable;
 use Functional\Booking\Actions\CreateReservation;
 use Functional\Booking\Data\NewCustomer;
 use Functional\Booking\Enums\CustomerType;
+use Functional\Booking\Extensions\CustomerBadges;
 use Functional\Booking\Models\Customer;
+use Functional\Booking\ValueObjects\CustomerBadge;
 use Functional\Fleet\Contracts\AgencyMember;
 use Functional\Fleet\Livewire\Concerns\DisplaysRefusals;
 use Functional\Fleet\Models\Machine;
@@ -24,6 +26,7 @@ use Livewire\Component;
 /**
  * @property-read Machine $machine
  * @property-read Collection<int, Customer> $customers
+ * @property-read array<int, list<CustomerBadge>> $customerBadges
  */
 class CreateReservationForm extends Component
 {
@@ -72,6 +75,29 @@ class CreateReservationForm extends Component
             ->orderBy('name')
             ->limit(self::CUSTOMER_SEARCH_LIMIT)
             ->get();
+    }
+
+    /**
+     * @return array<int, list<CustomerBadge>>
+     */
+    #[Computed]
+    public function customerBadges(): array
+    {
+        $customerIds = $this->customers->modelKeys();
+
+        if ($this->customerId !== null) {
+            $customerIds[] = $this->customerId;
+        }
+
+        return app(CustomerBadges::class)->forCustomers(array_values(array_unique($customerIds)));
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected function getListeners(): array
+    {
+        return array_fill_keys(app(CustomerBadges::class)->refreshListeners(), '$refresh');
     }
 
     public function save(CreateReservation $createReservation): void

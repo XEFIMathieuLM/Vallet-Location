@@ -97,11 +97,16 @@ class UpdateCustomerQualifyTest extends TestCase
         $this->assertSame([['previous' => null, 'next' => CustomerType::Professional]], RecordingCustomerChangeGuard::$calls);
     }
 
-    public function test_no_guard_is_registered_by_default(): void
+    public function test_booking_registers_no_guard_of_its_own(): void
     {
         $this->refreshApplication();
 
-        $this->assertSame([], app(CustomerChangeGuards::class)->all());
+        $bookingGuards = array_filter(
+            app(CustomerChangeGuards::class)->all(),
+            fn (object $guard): bool => str_starts_with($guard::class, 'Functional\\Booking\\'),
+        );
+
+        $this->assertSame([], $bookingGuards);
     }
 
     private function lastActivityOf(Customer $customer): Activity

@@ -100,7 +100,7 @@ class BillableSourcesTest extends TestCase
         $lines = explode("\n", trim(Storage::disk('billing-exports')->get($billingExport->file_path) ?? ''));
         $this->assertStringContainsString('source_ref;sale_date', $lines[0]);
         $this->assertStringStartsWith("{$transmission->uuid};used_machine_sale;", $lines[1]);
-        $this->assertStringEndsWith(";16500,00;TEST-{$this->customer->id};2026-11-15", $lines[1]);
+        $this->assertStringEndsWith(";16500,00;TEST-{$this->customer->id};2026-11-15;", $lines[1]);
     }
 
     public function test_an_unregistered_source_type_is_refused(): void

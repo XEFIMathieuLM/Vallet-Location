@@ -9,10 +9,12 @@ use Functional\Billing\Console\CloseMonthsCommand;
 use Functional\Billing\Console\FakeGatewayCommand;
 use Functional\Billing\Console\ReconcileCommand;
 use Functional\Billing\Contracts\BillingGateway;
+use Functional\Billing\Contracts\PurchaseOrderNumbers;
 use Functional\Billing\Exceptions\FakeBillingGatewayNotAllowedException;
 use Functional\Billing\Exceptions\UnknownBillingGatewayException;
 use Functional\Billing\Extensions\BillableSources;
 use Functional\Billing\Gateways\FakeBillingGateway;
+use Functional\Billing\Lines\NullPurchaseOrderNumbers;
 use Functional\Billing\Listeners\RecordFinalPeriodOnReservationClosed;
 use Functional\Billing\Livewire\BillingAlert;
 use Functional\Billing\Livewire\DamageBillingActions;
@@ -33,6 +35,7 @@ class BillingServiceProvider extends LayerServiceProvider
         $this->overrideConfigFrom(__DIR__.'/../../config/filesystems.php', 'filesystems');
         $this->app->singleton(FakeBillingGateway::class);
         $this->app->singleton(BillableSources::class);
+        $this->app->bindIf(PurchaseOrderNumbers::class, NullPurchaseOrderNumbers::class);
         $this->app->bind(BillingGateway::class, function (): BillingGateway {
             $gatewayName = config('billing.gateway');
             $gatewayClass = is_string($gatewayName) ? config()->array('billing.gateways')[$gatewayName] ?? null : null;

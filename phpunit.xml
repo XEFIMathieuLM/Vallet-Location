@@ -24,6 +24,7 @@
             <directory>functional/certification/src</directory>
             <directory>functional/deposit/src</directory>
             <directory>functional/sales/src</directory>
+            <directory>functional/accounts/src</directory>
         </include>
     </source>
     <php>

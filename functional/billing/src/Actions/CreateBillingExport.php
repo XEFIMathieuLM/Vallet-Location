@@ -72,9 +72,9 @@ final class CreateBillingExport
             shouldAddBom: true,
         );
 
-        $transmissions->each(fn (Transmission $transmission) => $writer->addRow(
-            $this->exportLineFormatter->format($this->makeBillableLine->handle($transmission)),
-        ));
+        foreach ($this->makeBillableLine->handleAll($transmissions) as $billableLine) {
+            $writer->addRow($this->exportLineFormatter->format($billableLine));
+        }
 
         $writer->close();
     }

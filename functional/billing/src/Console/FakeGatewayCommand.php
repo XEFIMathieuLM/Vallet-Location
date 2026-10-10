@@ -29,8 +29,8 @@ final class FakeGatewayCommand extends Command
         $this->info("Fake billing software mode: {$fakeBillingGateway->mode()->value}.");
 
         if ($this->option('received')) {
-            $this->table(['idempotency_key', 'type', 'reservation_ref'], array_map(
-                fn (array $receivedLine): array => [$receivedLine['idempotency_key'], $receivedLine['type'], $receivedLine['reservation_ref']],
+            $this->table(['idempotency_key', 'type', 'reservation_ref', 'purchase_order_number'], array_map(
+                fn (array $receivedLine): array => [$receivedLine['idempotency_key'], $receivedLine['type'], $receivedLine['reservation_ref'], $receivedLine['purchase_order_number'] ?? ''],
                 array_values($fakeBillingGateway->received()),
             ));
         }

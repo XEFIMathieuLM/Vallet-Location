@@ -16,6 +16,7 @@ use Functional\Booking\Exceptions\IllegalReservationTransitionException;
 use Functional\Booking\Exceptions\MachineNotReservableException;
 use Functional\Booking\Models\Customer;
 use Functional\Booking\Models\Reservation;
+use Functional\Booking\Tests\Concerns\WithoutTransitionExtensions;
 use Functional\Fleet\Enums\MachineStatus;
 use Functional\Fleet\Models\Machine;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -23,7 +24,7 @@ use Tests\TestCase;
 
 class ReservationLifecycleTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, WithoutTransitionExtensions;
 
     private Machine $machine;
 

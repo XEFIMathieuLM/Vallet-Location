@@ -10,6 +10,7 @@ use Functional\Booking\Extensions\ReservationDetailSections;
 use Functional\Booking\Extensions\ReservationTransitionGuards;
 use Functional\Booking\Livewire\ReservationDetail;
 use Functional\Booking\Models\Reservation;
+use Functional\Booking\Tests\Concerns\WithoutTransitionExtensions;
 use Functional\Booking\Tests\Doubles\RefusingGuard;
 use Functional\Booking\Tests\Doubles\TestReservationSection;
 use Functional\Fleet\Enums\MachineStatus;
@@ -21,7 +22,7 @@ use Tests\TestCase;
 
 class ReservationDetailActionsTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, WithoutTransitionExtensions;
 
     protected function setUp(): void
     {

@@ -25,6 +25,9 @@
                         <flux:sidebar.item icon="calendar-days" :href="route('reservations.index')" :current="request()->routeIs('reservations.*')" wire:navigate>
                             {{ __('booking::reservations.navigation.reservations') }}
                         </flux:sidebar.item>
+                        <flux:sidebar.item icon="table-cells" :href="route('planning.index')" :current="request()->routeIs('planning.*')" wire:navigate>
+                            {{ __('booking::reservations.navigation.planning') }}
+                        </flux:sidebar.item>
                     </flux:sidebar.group>
                 @endcan
 

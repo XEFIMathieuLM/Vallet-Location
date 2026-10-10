@@ -63,7 +63,7 @@ description: "Task list for feature 001-reservation-machines"
 - [x] T017 [P] Créer les Controls `lomkit/laravel-access-control` `functional/fleet/src/Controls/MachineControl.php` (perimètre global si `machines.manage`) et brancher `HasControl` sur `Machine`
 - [x] T018 Créer `database/seeders/DatabaseSeeder.php` qui appelle : les 7 agences (`functional/fleet/database/seeders/AgencySeeder.php`), les catégories dont « Nacelle » avec `is_vgp_required = true` (`functional/fleet/database/seeders/MachineCategorySeeder.php`), 40 machines de démonstration, `PermissionSeeder`, un salarié par agence avec le rôle `salarie`
 - [x] T019 Créer le canal privé `fleet` dans `routes/channels.php`, autorisé pour tout utilisateur ayant la permission `reservations.manage`
-- [ ] T020 Ajouter dans le layout du starter kit (`resources/views/components/layouts/app/sidebar.blade.php`) les entrées de navigation des écrans de [contracts/screens.md](contracts/screens.md) : Disponibilités, Réservations, Parc, Planning, Salariés ; libellés traduits — **en cours** : Disponibilités, Réservations et Parc ajoutées (fichier réel `resources/views/layouts/app/sidebar.blade.php`) ; Planning, Salariés à ajouter avec leurs écrans
+- [ ] T020 Ajouter dans le layout du starter kit (`resources/views/components/layouts/app/sidebar.blade.php`) les entrées de navigation des écrans de [contracts/screens.md](contracts/screens.md) : Disponibilités, Réservations, Parc, Planning, Salariés ; libellés traduits — **en cours** : Disponibilités, Réservations, Parc et Planning ajoutées (fichier réel `resources/views/layouts/app/sidebar.blade.php`) ; Salariés à ajouter avec T073
 
 **Checkpoint**: `sail artisan migrate:fresh --seed` passe ; un salarié se connecte et voit la navigation.
 
@@ -196,15 +196,15 @@ description: "Task list for feature 001-reservation-machines"
 
 ### Tests for User Story 5 ⚠️
 
-- [ ] T067 [P] [US5] Tests Feature broadcasting (`Event::fake` / `Broadcast` assertions) : `reservation.changed` et `machine.changed` émis sur le canal privé `fleet` avec exactement les payloads de [contracts/broadcast-events.md](contracts/broadcast-events.md) ; canal refusé à un utilisateur sans `reservations.manage` dans `functional/booking/tests/Feature/BroadcastingTest.php`
-- [ ] T068 [P] [US5] Test Feature du planning (filtres catégorie / agence / période ; réservations et indisponibilités atelier, panne, VGP non valide affichées par machine) dans `functional/booking/tests/Feature/PlanningTest.php`
+- [X] T067 [P] [US5] Tests Feature broadcasting (`Event::fake` / `Broadcast` assertions) : `reservation.changed` et `machine.changed` émis sur le canal privé `fleet` avec exactement les payloads de [contracts/broadcast-events.md](contracts/broadcast-events.md) ; canal refusé à un utilisateur sans `reservations.manage` dans `functional/booking/tests/Feature/BroadcastingTest.php`
+- [X] T068 [P] [US5] Test Feature du planning (filtres catégorie / agence / période ; réservations et indisponibilités atelier, panne, VGP non valide affichées par machine) dans `functional/booking/tests/Feature/PlanningTest.php`
 
 ### Implementation for User Story 5
 
-- [ ] T069 [US5] Rendre `ReservationChanged` et `MachineChanged` diffusables : `ShouldBroadcast`, `broadcastOn()` → `PrivateChannel('fleet')`, `broadcastAs()` → `reservation.changed` / `machine.changed`, `broadcastWith()` = allow-list de [contracts/broadcast-events.md](contracts/broadcast-events.md) ; idem `FleetImported` → `fleet.imported` `{ created_count }` (fichiers `functional/booking/src/Events/ReservationChanged.php`, `functional/fleet/src/Events/MachineChanged.php`, `functional/fleet/src/Events/FleetImported.php`)
-- [ ] T070 [US5] Ajouter un worker de queue au `docker-compose.yml` (service Sail exécutant `php artisan queue:work`) pour le broadcasting
-- [ ] T071 [US5] Créer l'écran Livewire « Planning » (`/planning`) dans `functional/booking/src/Livewire/Planning.php` et sa vue : une ligne par machine, jours en colonnes sur la période filtrée, réservations et indisponibilités colorées, requêtes groupées (pas de requête par machine)
-- [ ] T072 [US5] Brancher l'écoute temps réel (`#[On('echo-private:fleet,.reservation.changed')]`, `.machine.changed`, `.fleet.imported`) sur `AvailabilitySearch`, `ReservationList`, `MachineIndex` et `Planning` dans leurs classes Livewire respectives
+- [X] T069 [US5] Rendre `ReservationChanged` et `MachineChanged` diffusables : `ShouldBroadcast`, `broadcastOn()` → `PrivateChannel('fleet')`, `broadcastAs()` → `reservation.changed` / `machine.changed`, `broadcastWith()` = allow-list de [contracts/broadcast-events.md](contracts/broadcast-events.md) ; idem `FleetImported` → `fleet.imported` `{ created_count }` (fichiers `functional/booking/src/Events/ReservationChanged.php`, `functional/fleet/src/Events/MachineChanged.php`, `functional/fleet/src/Events/FleetImported.php`)
+- [X] T070 [US5] Ajouter un worker de queue au `docker-compose.yml` (service Sail exécutant `php artisan queue:work`) pour le broadcasting
+- [X] T071 [US5] Créer l'écran Livewire « Planning » (`/planning`) dans `functional/booking/src/Livewire/Planning.php` et sa vue : une ligne par machine, jours en colonnes sur la période filtrée, réservations et indisponibilités colorées, requêtes groupées (pas de requête par machine)
+- [X] T072 [US5] Brancher l'écoute temps réel (`#[On('echo-private:fleet,.reservation.changed')]`, `.machine.changed`, `.fleet.imported`) sur `AvailabilitySearch`, `ReservationList`, `MachineIndex` et `Planning` dans leurs classes Livewire respectives
 
 **Checkpoint**: T067–T068 passent ; vérification manuelle n°1 du [quickstart.md](quickstart.md) en deux navigateurs.
 

@@ -9,6 +9,7 @@ use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Enums\ReturnCondition;
 use Functional\Booking\Events\ReservationChanged;
 use Functional\Booking\Models\Reservation;
+use Functional\Booking\Tests\Concerns\WithoutTransitionExtensions;
 use Functional\Fleet\Actions\ChangeMachineStatus;
 use Functional\Fleet\Actions\UpdateMachineVgp;
 use Functional\Fleet\Enums\MachineStatus;
@@ -20,7 +21,7 @@ use Tests\TestCase;
 
 class ReservationConflictsTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, WithoutTransitionExtensions;
 
     protected function setUp(): void
     {

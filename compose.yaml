@@ -25,6 +25,21 @@ services:
             - pgsql
             - mailpit
             - soketi
+    queue:
+        image: 'sail-8.5/app'
+        command: ['php', '/var/www/html/artisan', 'queue:work', '--tries=3', '--sleep=1']
+        restart: unless-stopped
+        environment:
+            WWWUSER: '${WWWUSER}'
+            LARAVEL_SAIL: 1
+        volumes:
+            - '.:/var/www/html'
+        networks:
+            - sail
+        depends_on:
+            - laravel.test
+            - pgsql
+            - soketi
     soketi:
         image: 'quay.io/soketi/soketi:latest-16-alpine'
         environment:

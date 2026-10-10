@@ -5,6 +5,18 @@ return [
         'heading' => 'Réservations',
         'availability' => 'Disponibilités',
         'reservations' => 'Réservations',
+        'planning' => 'Planning',
+    ],
+
+    'planning' => [
+        'title' => 'Planning',
+        'cells' => [
+            'free' => 'Libre',
+            'reserved' => 'Réservée',
+            'workshop' => 'Atelier',
+            'out_of_order' => 'En panne',
+            'vgp_invalid' => 'VGP non valide',
+        ],
     ],
 
     'fields' => [

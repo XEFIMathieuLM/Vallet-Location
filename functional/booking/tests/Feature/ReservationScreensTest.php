@@ -9,6 +9,7 @@ use Functional\Booking\Enums\ConflictReason;
 use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Livewire\ReservationList;
 use Functional\Booking\Models\Reservation;
+use Functional\Booking\Tests\Concerns\WithoutTransitionExtensions;
 use Functional\Fleet\Models\Machine;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -16,7 +17,7 @@ use Tests\TestCase;
 
 class ReservationScreensTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, WithoutTransitionExtensions;
 
     protected function setUp(): void
     {

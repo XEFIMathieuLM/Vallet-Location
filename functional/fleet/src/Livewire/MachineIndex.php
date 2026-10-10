@@ -13,6 +13,7 @@ use Functional\Fleet\Models\MachineCategory;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -76,6 +77,10 @@ class MachineIndex extends Component
 
         $changeMachineStatus->handle($machine, $transition);
     }
+
+    #[On('echo-private:fleet,.machine.changed')]
+    #[On('echo-private:fleet,.fleet.imported')]
+    public function refreshOnFleetChange(): void {}
 
     public function render(): View
     {

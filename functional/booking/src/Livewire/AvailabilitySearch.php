@@ -11,6 +11,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Validator;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 
@@ -64,6 +65,11 @@ class AvailabilitySearch extends Component
             $this->agencyId,
         );
     }
+
+    #[On('echo-private:fleet,.reservation.changed')]
+    #[On('echo-private:fleet,.machine.changed')]
+    #[On('echo-private:fleet,.fleet.imported')]
+    public function refreshOnFleetChange(): void {}
 
     public function render(): View
     {

@@ -28,9 +28,4 @@ final readonly class DashboardSection
     {
         return $this->total > $this->items->count();
     }
-
-    public function isEmpty(): bool
-    {
-        return $this->total === 0;
-    }
 }

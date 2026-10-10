@@ -33,7 +33,6 @@ return [
     ],
     'pending' => [
         'heading' => 'À traiter',
-        'open' => 'Ouvrir',
         'transmissions' => 'Transmissions à traiter',
         'certificates' => 'Attestations VGP à traiter',
         'deposits' => 'Cautions en attente',

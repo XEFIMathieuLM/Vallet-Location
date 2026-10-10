@@ -11,7 +11,6 @@ use Functional\Deposit\Enums\DepositStatus;
 use Functional\Deposit\Models\Deposit;
 use Functional\Fleet\Models\Agency;
 use Functional\Fleet\Models\Machine;
-use Functional\Fleet\Models\MachineCategory;
 use Functional\Inspection\Models\Damage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
@@ -67,9 +66,9 @@ class DashboardQueryCountTest extends TestCase
             $this->reservationOf($this->machineIn($this->rouen), ReservationStatus::InProgress, '2026-10-01', '2026-10-10');
             $this->reservationOf($this->machineIn($this->rouen), ReservationStatus::InProgress, '2026-10-01', '2026-10-05');
             $this->reservationOf($this->machineIn($this->rouen), ReservationStatus::Confirmed, '2026-10-20', '2026-10-22', ['conflict_reason' => ConflictReason::MachineUnavailable]);
-            Machine::factory()->for($this->rouen)->vgpExpired()->create();
-            Deposit::factory()->withStatus(DepositStatus::ToRefund)->create();
-            Damage::factory()->create();
+            Machine::factory()->for($this->rouen)->recycle($this->sharedCategory())->vgpExpired()->create();
+            Deposit::factory()->recycle([$this->rouen, $this->sharedCategory()])->withStatus(DepositStatus::ToRefund)->create();
+            Damage::factory()->recycle([$this->rouen, $this->sharedCategory()])->create();
         });
     }
 
@@ -85,9 +84,10 @@ class DashboardQueryCountTest extends TestCase
 
     private function seedAYearOfActivity(): void
     {
-        $agencies = Agency::factory()->count(6)->create()->push($this->rouen);
-        $category = MachineCategory::factory()->create();
-        $machines = Machine::factory()->count(400)->recycle($agencies)->for($category, 'category')->create();
+        $agencies = collect(['Lyon Est', 'Villeurbanne', 'Grenoble', 'Saint-Étienne', 'Clermont-Ferrand', 'Annecy'])
+            ->map(fn (string $agencyName): Agency => $this->agencyNamed($agencyName))
+            ->push($this->rouen);
+        $machines = Machine::factory()->count(400)->recycle($agencies)->recycle($this->sharedCategory())->create();
         $customer = Customer::factory()->create();
         $firstDay = CarbonImmutable::today()->subYear();
 

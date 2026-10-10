@@ -348,3 +348,8 @@ Chaque phase se termine par `composer ci:check` en code 0 (après `vendor/bin/ph
 - **MVP** : Phases 1 à 3 (US1). La page d'accueil montre déjà les départs et retours de l'agence.
 - **Incréments** : US2 (anomalies), US3 (compteurs), US4 (parc et VGP), US5 (choix d'agence). Chaque incrément est testable seul et fait l'objet d'un commit de phase.
 - **Périmètre gelé** : rien au-delà de la spec. Aucune action, aucun graphique, aucun filtre ajouté aux écrans existants.
+
+## Phase 9: Convergence
+
+- [X] T039 Remove the unused `isEmpty()` method from `app/Dashboard/DashboardSection.php` per plan: DashboardSection (unrequested)
+- [X] T040 Remove the unused `pending.open` key from `lang/fr/dashboard.php` per contracts/screens.md (unrequested)

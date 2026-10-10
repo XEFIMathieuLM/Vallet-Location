@@ -1,5 +1,5 @@
 <div class="space-y-6">
-    <flux:heading size="xl">{{ __('billing::transmissions.screen.title') }}</flux:heading>
+    <x-page-heading :title="__('billing::transmissions.screen.title')" />
     <flux:text>{{ __('billing::transmissions.screen.intro', ['hours' => config('billing.alert_after_hours')]) }}</flux:text>
 
     @error('refusal')

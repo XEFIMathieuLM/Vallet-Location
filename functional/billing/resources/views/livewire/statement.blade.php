@@ -1,5 +1,5 @@
 <div class="space-y-6">
-    <flux:heading size="xl">{{ __('billing::statement.title') }}</flux:heading>
+    <x-page-heading :title="__('billing::statement.title')" />
 
     <div class="flex flex-wrap gap-4">
         <flux:select wire:model.live="agencyId" :label="__('billing::statement.agency')" class="max-w-xs">
@@ -23,7 +23,7 @@
     </div>
 
     <section class="space-y-2">
-        <flux:heading size="lg">{{ __('billing::statement.waived_damages') }}</flux:heading>
+        <x-section-heading :title="__('billing::statement.waived_damages')" />
         @forelse ($statementFigures->waivedDamages as $damageSettlement)
             <flux:text>
                 {{ __('billing::statement.waived_line', [
@@ -40,7 +40,7 @@
     </section>
 
     <section class="space-y-2">
-        <flux:heading size="lg">{{ __('billing::statement.unresolved_damages') }}</flux:heading>
+        <x-section-heading :title="__('billing::statement.unresolved_damages')" />
         @forelse ($statementFigures->unresolvedDamages as $damage)
             <div class="flex flex-wrap items-center gap-2">
                 <flux:link :href="route('inspection.comparison', $damage->reservation)" wire:navigate>{{ $damage->reservation->machine->reference }}</flux:link>

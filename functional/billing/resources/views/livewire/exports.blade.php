@@ -1,5 +1,5 @@
 <div class="space-y-6">
-    <flux:heading size="xl">{{ __('billing::exports.title') }}</flux:heading>
+    <x-page-heading :title="__('billing::exports.title')" />
     <flux:text>{{ __('billing::exports.intro') }}</flux:text>
 
     @error('refusal')

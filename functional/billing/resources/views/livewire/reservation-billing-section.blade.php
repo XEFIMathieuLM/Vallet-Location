@@ -3,14 +3,14 @@
         <flux:callout variant="danger" icon="x-circle" :heading="$message" />
     @enderror
 
-    <flux:heading size="lg">{{ __('billing::periods.section.title') }}</flux:heading>
+    <x-section-heading :title="__('billing::periods.section.title')" />
 
     @if ($periodTransmissions->isEmpty() && $damageSettlements->isEmpty())
         <flux:text>{{ __('billing::periods.section.empty') }}</flux:text>
     @endif
 
     @if ($periodTransmissions->isNotEmpty())
-        <flux:heading size="sm">{{ __('billing::periods.section.periods') }}</flux:heading>
+        <x-section-heading :title="__('billing::periods.section.periods')" level="3" />
         <ul class="space-y-2">
             @foreach ($periodTransmissions as $transmission)
                 <li class="flex flex-wrap items-center gap-2">
@@ -24,7 +24,7 @@
     @endif
 
     @if ($damageSettlements->isNotEmpty())
-        <flux:heading size="sm">{{ __('billing::damages.section.title') }}</flux:heading>
+        <x-section-heading :title="__('billing::damages.section.title')" level="3" />
         <ul class="space-y-2">
             @foreach ($damageSettlements as $damageSettlement)
                 <li class="flex flex-wrap items-center gap-2">

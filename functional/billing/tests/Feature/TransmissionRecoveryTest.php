@@ -75,6 +75,19 @@ class TransmissionRecoveryTest extends TestCase
         $this->assertSame(1, $transmission->attempts);
     }
 
+    public function test_reconcile_reports_each_caught_up_reservation_and_resent_transmission(): void
+    {
+        $reservation = $this->closedReservation('2026-11-10 08:00:00', '2026-11-14 17:00:00');
+        $pendingTransmission = Transmission::factory()->create();
+        CarbonImmutable::setTestNow('2026-11-14 17:05:00');
+
+        $this->artisan('billing:reconcile')
+            ->expectsOutputToContain("Recording the final period of reservation #{$reservation->id}.")
+            ->expectsOutputToContain("Sending transmission #{$pendingTransmission->id}.")
+            ->expectsOutputToContain('Reconciled 1 reservation(s) and queued 1 transmission(s).')
+            ->assertSuccessful();
+    }
+
     private function reconcileOn(string $moment): void
     {
         CarbonImmutable::setTestNow($moment);

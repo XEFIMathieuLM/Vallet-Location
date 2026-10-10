@@ -7,6 +7,7 @@ use Functional\Billing\Calendar\BillingCalendar;
 use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Models\Reservation;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Collection;
 
 final class CloseMonthsCommand extends Command
 {
@@ -22,11 +23,19 @@ final class CloseMonthsCommand extends Command
             return self::SUCCESS;
         }
 
+        $runningRentalsCount = 0;
+
         Reservation::query()
             ->where('status', ReservationStatus::InProgress)
-            ->chunkById(100, fn ($reservations) => $reservations->each(
-                fn (Reservation $reservation) => $recordMonthEndPeriods->handle($reservation),
-            ));
+            ->chunkById(100, function (Collection $reservations) use ($recordMonthEndPeriods, &$runningRentalsCount): void {
+                $reservations->each(function (Reservation $reservation) use ($recordMonthEndPeriods): void {
+                    $this->line("Closing elapsed months of reservation #{$reservation->id}.");
+                    $recordMonthEndPeriods->handle($reservation);
+                });
+                $runningRentalsCount += $reservations->count();
+            });
+
+        $this->info("Closed elapsed months of {$runningRentalsCount} running rental(s).");
 
         return self::SUCCESS;
     }

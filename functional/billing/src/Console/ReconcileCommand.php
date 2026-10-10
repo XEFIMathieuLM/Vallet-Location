@@ -13,6 +13,7 @@ use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Models\Reservation;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 
 final class ReconcileCommand extends Command
@@ -23,6 +24,8 @@ final class ReconcileCommand extends Command
 
     public function handle(BillingCalendar $billingCalendar, RecordFinalPeriod $recordFinalPeriod): int
     {
+        $caughtUpReservationsCount = 0;
+
         Reservation::query()
             ->where('status', ReservationStatus::Closed)
             ->where('returned_at', '>=', $billingCalendar->goLiveDate()->setTimezone(config()->string('app.timezone')))
@@ -31,11 +34,15 @@ final class ReconcileCommand extends Command
                 ->from('billable_periods')
                 ->whereColumn('billable_periods.reservation_id', 'reservations.id')
                 ->where('billable_periods.kind', BillablePeriodKind::Final->value))
-            ->chunkById(100, fn ($reservations) => $reservations->each(
-                fn (Reservation $reservation) => $recordFinalPeriod->handle($reservation),
-            ));
+            ->chunkById(100, function (Collection $reservations) use ($recordFinalPeriod, &$caughtUpReservationsCount): void {
+                $reservations->each(function (Reservation $reservation) use ($recordFinalPeriod): void {
+                    $this->line("Recording the final period of reservation #{$reservation->id}.");
+                    $recordFinalPeriod->handle($reservation);
+                });
+                $caughtUpReservationsCount += $reservations->count();
+            });
 
-        Transmission::query()
+        $dueTransmissionIds = Transmission::query()
             ->where('status', TransmissionStatus::Pending)
             ->where(fn (Builder $dueTransmissions): Builder => $dueTransmissions
                 ->whereNull('next_attempt_at')
@@ -43,8 +50,14 @@ final class ReconcileCommand extends Command
             ->where(fn (Builder $unreservedTransmissions): Builder => $unreservedTransmissions
                 ->whereNull('reserved_until')
                 ->orWhere('reserved_until', '<=', CarbonImmutable::now()))
-            ->pluck('id')
-            ->each(fn (int $transmissionId) => SendTransmissionJob::dispatch($transmissionId));
+            ->pluck('id');
+
+        $dueTransmissionIds->each(function (int $transmissionId): void {
+            $this->line("Sending transmission #{$transmissionId}.");
+            SendTransmissionJob::dispatch($transmissionId);
+        });
+
+        $this->info("Reconciled {$caughtUpReservationsCount} reservation(s) and queued {$dueTransmissionIds->count()} transmission(s).");
 
         return self::SUCCESS;
     }

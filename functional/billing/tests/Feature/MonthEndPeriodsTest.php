@@ -2,6 +2,7 @@
 
 namespace Functional\Billing\Tests\Feature;
 
+use Carbon\CarbonImmutable;
 use Functional\Billing\Enums\BillablePeriodKind;
 use Functional\Billing\Enums\TransmissionStatus;
 use Functional\Billing\Exceptions\MissingGoLiveDateException;
@@ -128,5 +129,16 @@ class MonthEndPeriodsTest extends TestCase
             [self::INTERMEDIATE, '2026-11-20', '2026-11-30', 11],
             [self::FINAL, '2026-12-01', '2026-12-05', 5],
         ], $this->periodsOf($reservation));
+    }
+
+    public function test_close_months_reports_each_running_rental_and_a_summary(): void
+    {
+        $reservation = $this->inProgressReservation('2026-11-20 08:00:00');
+        CarbonImmutable::setTestNow('2026-12-01 00:15:00');
+
+        $this->artisan('billing:close-months')
+            ->expectsOutputToContain("Closing elapsed months of reservation #{$reservation->id}.")
+            ->expectsOutputToContain('Closed elapsed months of 1 running rental(s).')
+            ->assertSuccessful();
     }
 }

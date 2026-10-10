@@ -3,12 +3,19 @@
 namespace Functional\Certification\Providers;
 
 use Functional\Booking\Enums\ReservationTransition;
+use Functional\Booking\Events\CustomerChanged;
 use Functional\Booking\Events\ReservationChanged;
 use Functional\Booking\Extensions\ReservationDetailSections;
+use Functional\Booking\Extensions\ReservationTransitionGuards;
+use Functional\Certification\Access\Controls\ReservationCertificateControl;
 use Functional\Certification\Access\Controls\VgpReportControl;
 use Functional\Certification\Events\VgpReportDeposited;
+use Functional\Certification\Guards\CertificateDeliveredGuard;
 use Functional\Certification\Listeners\OpenCertificateOnReservationChanged;
+use Functional\Certification\Listeners\ResolveCertificatesOnCustomerChanged;
 use Functional\Certification\Listeners\ResolveCertificatesOnReportDeposited;
+use Functional\Certification\Livewire\CustomerEmailForm;
+use Functional\Certification\Livewire\HandDeliveryButton;
 use Functional\Certification\Livewire\ReservationCertificateSection;
 use Illuminate\Support\Facades\Event;
 use Livewire\Livewire;
@@ -29,12 +36,16 @@ class CertificationServiceProvider extends LayerServiceProvider
         $this->loadTranslationsFrom(__DIR__.'/../../resources/lang', 'certification');
         $this->loadViewsFrom(__DIR__.'/../../resources/views', 'certification');
 
-        (new Access)->addControls([new VgpReportControl]);
+        (new Access)->addControls([new VgpReportControl, new ReservationCertificateControl]);
 
         Livewire::component(ReservationCertificateSection::NAME, ReservationCertificateSection::class);
+        Livewire::component(CustomerEmailForm::NAME, CustomerEmailForm::class);
+        Livewire::component(HandDeliveryButton::NAME, HandDeliveryButton::class);
+        $this->app->make(ReservationTransitionGuards::class)->register(CertificateDeliveredGuard::class);
         $this->app->make(ReservationDetailSections::class)->register(ReservationCertificateSection::NAME, 30, ReservationTransition::Departure);
         Event::listen(ReservationChanged::class, OpenCertificateOnReservationChanged::class);
         Event::listen(VgpReportDeposited::class, ResolveCertificatesOnReportDeposited::class);
+        Event::listen(CustomerChanged::class, ResolveCertificatesOnCustomerChanged::class);
 
         $this->withRouting(web: __DIR__.'/../../routes/web.php');
     }

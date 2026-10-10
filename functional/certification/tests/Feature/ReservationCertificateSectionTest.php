@@ -3,6 +3,8 @@
 namespace Functional\Certification\Tests\Feature;
 
 use Functional\Booking\Enums\ReservationTransition;
+use Functional\Booking\Extensions\ReservationDetailSections;
+use Functional\Booking\Livewire\ReservationDetail;
 use Functional\Booking\Models\Reservation;
 use Functional\Certification\Enums\CertificateStatus;
 use Functional\Certification\Livewire\ReservationCertificateSection;
@@ -68,5 +70,36 @@ class ReservationCertificateSectionTest extends TestCase
             ->assertDispatched('reservation-transition-readiness', step: ReservationTransition::Departure->value, section: ReservationCertificateSection::NAME, is_ready: true);
         Livewire::test(ReservationCertificateSection::class, ['reservation' => $pending])
             ->assertDispatched('reservation-transition-readiness', step: ReservationTransition::Departure->value, section: ReservationCertificateSection::NAME, is_ready: false);
+    }
+
+    public function test_the_section_announces_readiness_again_when_the_certificate_changes(): void
+    {
+        $reservation = Reservation::factory()->for(Machine::factory()->vgpValid())->create();
+        $certificate = ReservationCertificate::factory()->for($reservation)->create();
+        $section = Livewire::test(ReservationCertificateSection::class, ['reservation' => $reservation]);
+
+        $certificate->update(['status' => CertificateStatus::Sent, 'delivered_at' => now()]);
+        $section->call('refreshCertificate', ['reservation_id' => $reservation->id])
+            ->assertDispatched('reservation-transition-readiness', step: ReservationTransition::Departure->value, section: ReservationCertificateSection::NAME, is_ready: true);
+
+        $certificate->update(['status' => CertificateStatus::Pending, 'delivered_at' => null]);
+        $section->dispatch('certificate-updated')
+            ->assertDispatched('reservation-transition-readiness', step: ReservationTransition::Departure->value, section: ReservationCertificateSection::NAME, is_ready: false);
+    }
+
+    public function test_the_departure_button_waits_for_every_guarding_section(): void
+    {
+        $sections = new ReservationDetailSections;
+        $sections->register(ReservationCertificateSection::NAME, 30, ReservationTransition::Departure);
+        $sections->register('inspection.photos-panel', 10, ReservationTransition::Departure);
+        $this->app->instance(ReservationDetailSections::class, $sections);
+        $reservation = Reservation::factory()->for(Machine::factory()->vgpValid())->create();
+
+        $detail = Livewire::test(ReservationDetail::class, ['reservation' => $reservation]);
+        $detail->dispatch('reservation-transition-readiness', step: 'departure', section: 'inspection.photos-panel', is_ready: true);
+        $this->assertFalse($detail->instance()->isReadyFor(ReservationTransition::Departure));
+
+        $detail->dispatch('reservation-transition-readiness', step: 'departure', section: ReservationCertificateSection::NAME, is_ready: true);
+        $this->assertTrue($detail->instance()->isReadyFor(ReservationTransition::Departure));
     }
 }

@@ -4,8 +4,11 @@ namespace Functional\Certification\Tests\Concerns;
 
 use Carbon\CarbonImmutable;
 use Functional\Booking\Actions\CreateReservation;
+use Functional\Booking\Extensions\ReservationTransitionGuards;
 use Functional\Booking\Models\Customer;
 use Functional\Booking\Models\Reservation;
+use Functional\Certification\Actions\OpenReservationCertificate;
+use Functional\Certification\Guards\CertificateDeliveredGuard;
 use Functional\Certification\Models\ReservationCertificate;
 use Functional\Certification\Models\VgpReport;
 use Functional\Fleet\Contracts\AgencyMember;
@@ -50,5 +53,25 @@ trait BuildsCertificateScenarios
     protected function certificateOf(Reservation $reservation): ReservationCertificate
     {
         return ReservationCertificate::query()->whereBelongsTo($reservation)->firstOrFail();
+    }
+
+    protected function reservationStartingToday(Machine $machine, Customer $customer): Reservation
+    {
+        $reservation = Reservation::factory()->for($machine)->for($customer)->between(CarbonImmutable::today(), CarbonImmutable::today()->addDays(3))->create();
+        app(OpenReservationCertificate::class)->handle($reservation);
+
+        return $reservation;
+    }
+
+    protected function keepOnlyTheCertificateGuard(string ...$otherGuardClasses): void
+    {
+        $transitionGuards = new ReservationTransitionGuards;
+        $transitionGuards->register(CertificateDeliveredGuard::class);
+
+        foreach ($otherGuardClasses as $otherGuardClass) {
+            $transitionGuards->register($otherGuardClass);
+        }
+
+        $this->app->instance(ReservationTransitionGuards::class, $transitionGuards);
     }
 }

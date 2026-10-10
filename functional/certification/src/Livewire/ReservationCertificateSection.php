@@ -2,6 +2,7 @@
 
 namespace Functional\Certification\Livewire;
 
+use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Enums\ReservationTransition;
 use Functional\Booking\Models\Reservation;
 use Functional\Certification\Calendar\CertificationCalendar;
@@ -9,6 +10,7 @@ use Functional\Certification\Models\ReservationCertificate;
 use Functional\Fleet\Livewire\Concerns\DisplaysRefusals;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Locked;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class ReservationCertificateSection extends Component
@@ -46,11 +48,18 @@ class ReservationCertificateSection extends Component
         }
     }
 
+    #[On('certificate-updated')]
+    public function certificateUpdated(): void
+    {
+        $this->announceReadiness();
+    }
+
     public function render(): View
     {
         return view('certification::livewire.reservation-certificate-section', [
             'isConcerned' => $this->isConcerned(),
             'certificate' => $this->certificate(),
+            'isActive' => in_array($this->reservation->status, [ReservationStatus::Confirmed, ReservationStatus::InProgress], true),
         ]);
     }
 

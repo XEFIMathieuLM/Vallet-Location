@@ -77,6 +77,17 @@
                     </flux:sidebar.group>
                 @endcan
 
+                @can(\Functional\Certification\Enums\CertificationPermission::Manage->value)
+                    <flux:sidebar.group :heading="__('certification::navigation.heading')" class="grid">
+                        <flux:sidebar.item icon="shield-check" :href="route('certification.machines')" :current="request()->routeIs('certification.machines*')" wire:navigate>
+                            {{ __('certification::navigation.reports') }}
+                        </flux:sidebar.item>
+                        <flux:sidebar.item icon="envelope" :href="route('certification.certificates')" :current="request()->routeIs('certification.certificates')" wire:navigate>
+                            {{ __('certification::navigation.certificates') }}
+                        </flux:sidebar.item>
+                    </flux:sidebar.group>
+                @endcan
+
                 @canany([\Functional\Accounts\Access\AccountsPermission::ManageKeyAccounts->value, \Functional\Accounts\Access\AccountsPermission::ManagePurchaseOrders->value])
                     <flux:sidebar.group :heading="__('accounts::key_accounts.navigation.heading')" class="grid">
                         @can(\Functional\Accounts\Access\AccountsPermission::ManageKeyAccounts->value)

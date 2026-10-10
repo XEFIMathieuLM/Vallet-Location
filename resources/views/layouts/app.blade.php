@@ -7,6 +7,9 @@
         @can(\Functional\Billing\Enums\BillingPermission::Manage->value)
             <livewire:billing.alert />
         @endcan
+        @can(\Functional\Certification\Enums\CertificationPermission::Manage->value)
+            <livewire:certification.alert />
+        @endcan
         {{ $slot }}
     </flux:main>
 </x-layouts::app.sidebar>

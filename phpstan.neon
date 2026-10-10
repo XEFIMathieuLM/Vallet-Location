@@ -31,6 +31,10 @@ parameters:
         - functional/billing/database/
         - functional/billing/routes/
         - functional/billing/config/
+        - functional/certification/src/
+        - functional/certification/database/
+        - functional/certification/routes/
+        - functional/certification/config/
         - functional/deposit/src/
         - functional/deposit/database/
         - functional/deposit/routes/

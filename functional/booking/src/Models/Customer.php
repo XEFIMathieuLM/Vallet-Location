@@ -48,7 +48,7 @@ class Customer extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['type'])
+            ->logOnly(['type', 'email'])
             ->logOnlyDirty()
             ->dontLogEmptyChanges();
     }

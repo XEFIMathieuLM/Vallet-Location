@@ -66,7 +66,7 @@ Chaque phase se termine par `composer ci:check` en code 0 (après `vendor/bin/ph
 
 ### Tests (écrits d'abord, en échec)
 
-- [ ] T004 [P] `functional/booking/tests/Feature/DayOperationsQueryTest.php`. Vérifier, pour chaque méthode de `DayOperations`, avec `travelTo('2026-10-10')` :
+- [X] T004 [P] `functional/booking/tests/Feature/DayOperationsQueryTest.php`. Vérifier, pour chaque méthode de `DayOperations`, avec `travelTo('2026-10-10')` :
   - `departures` : `confirmed` avec un début le 10/10 ou avant ; pas un début le 11/10 ni une réservation `in_progress`.
   - `upcomingDepartures(…, 7)` : débuts du 11/10 au 17/10 inclus ; pas le 10/10 ni le 18/10.
   - `returns` : `in_progress` dont la fin est le 10/10.
@@ -76,46 +76,46 @@ Chaque phase se termine par `composer ci:check` en code 0 (après `vendor/bin/ph
   - Tri des départs : `start_date`, puis référence de la machine.
   - Filtre par agence de rattachement de la machine, et non par `reservations.agency_id`.
   - `null` = toutes les agences.
-- [ ] T005 [P] `functional/fleet/tests/Feature/FleetStatusCountsTest.php` :
+- [X] T005 [P] `functional/fleet/tests/Feature/FleetStatusCountsTest.php` :
   - nombres par statut pour une agence, retirées exclues ;
   - 0 pour un statut absent ;
   - `null` = toutes les agences ;
   - une seule requête (`DB::enableQueryLog()`).
-- [ ] T006 [P] `functional/fleet/tests/Feature/VgpWatchListTest.php` :
+- [X] T006 [P] `functional/fleet/tests/Feature/VgpWatchListTest.php` :
   - inclus : échéance passée, non renseignée, échéance au 09/11 (`until` = 10/10 + 30 jours) ;
   - exclus : échéance au 10/11 ; machine non soumise à VGP ; machine retirée ; autre agence ;
   - tri : non renseignées d'abord, puis échéance croissante.
-- [ ] T007 [P] `functional/inspection/tests/Feature/DamagesToHandleTest.php` : le nombre est égal au nombre total de dégâts renvoyés par `ReservationsToReinvoice::get()` (somme des groupes). Il exclut un dégât dont `resolved_at` est renseigné.
-- [ ] T008 [P] `functional/sales/tests/Feature/OverdueSalesTest.php` :
+- [X] T007 [P] `functional/inspection/tests/Feature/DamagesToHandleTest.php` : le nombre est égal au nombre total de dégâts renvoyés par `ReservationsToReinvoice::get()` (somme des groupes). Il exclut un dégât dont `resolved_at` est renseigné.
+- [X] T008 [P] `functional/sales/tests/Feature/OverdueSalesTest.php` :
   - inclus : vente `reserved` avec une remise prévue le 09/10 ;
   - exclus : remise le 10/10, vente `listed`, `sold` ou `cancelled`.
 
 ### Implémentation
 
-- [ ] T009 [P] Créer `functional/booking/src/Queries/DayOperations.php` (`final`), conformément à `contracts/layer-queries.md` :
+- [X] T009 [P] Créer `functional/booking/src/Queries/DayOperations.php` (`final`), conformément à `contracts/layer-queries.md` :
   - méthodes `departures`, `upcomingDepartures`, `returns`, `lateReturns`, `conflicts`, chacune renvoyant un `Builder<Reservation>` ;
   - filtre d'agence par sous-requête `Machine::query()->select('id')->where('agency_id', …)` ;
   - `with(['machine.category', 'machine.agency', 'customer'])`.
-- [ ] T010 [P] Créer `functional/fleet/src/Queries/FleetStatusCounts.php` (`final`) :
+- [X] T010 [P] Créer `functional/fleet/src/Queries/FleetStatusCounts.php` (`final`) :
   - `count(?int $agencyId): array<string, int>` ;
   - une requête `select status, count(*)`, `where status <> retired`, `groupBy('status')` ;
   - clés `available`, `rented_out`, `workshop`, `out_of_order` complétées à 0.
-- [ ] T011 [P] Créer `functional/fleet/src/Queries/VgpWatchList.php` (`final`) :
+- [X] T011 [P] Créer `functional/fleet/src/Queries/VgpWatchList.php` (`final`) :
   - `query(?int $agencyId, CarbonImmutable $until): Builder<Machine>` ;
   - tri `orderByRaw('vgp_due_date asc nulls first')`, puis `reference` ;
   - `with('category')`.
-- [ ] T012 [P] Créer `functional/inspection/src/Queries/DamagesToHandle.php` (`final`) : `query(): Builder<Damage>`, `whereNull('resolved_at')`.
-- [ ] T013 [P] Créer `functional/sales/src/Queries/OverdueSales.php` (`final`) : `query(CarbonImmutable $today): Builder<Sale>`, `where('status', SaleStatus::Reserved)`, `whereDate('planned_handover_date', '<', $today)`.
-- [ ] T014 Créer `app/Dashboard/DashboardSection.php` (`final readonly`) :
+- [X] T012 [P] Créer `functional/inspection/src/Queries/DamagesToHandle.php` (`final`) : `query(): Builder<Damage>`, `whereNull('resolved_at')`.
+- [X] T013 [P] Créer `functional/sales/src/Queries/OverdueSales.php` (`final`) : `query(CarbonImmutable $today): Builder<Sale>`, `where('status', SaleStatus::Reserved)`, `whereDate('planned_handover_date', '<', $today)`.
+- [X] T014 Créer `app/Dashboard/DashboardSection.php` (`final readonly`) :
   - `items` (Collection) et `total` (int) ;
   - fabrique `fromQuery(Builder $query, int $limit)` qui exécute `(clone $query)->limit($limit)->get()` et `$query->toBase()->getCountForPagination()`, soit 2 requêtes plus les chargements anticipés ;
   - `hasMore(): bool`.
-- [ ] T015 Créer `app/Livewire/Dashboard/Dashboard.php` et `resources/views/livewire/dashboard/dashboard.blade.php` :
+- [X] T015 Créer `app/Livewire/Dashboard/Dashboard.php` et `resources/views/livewire/dashboard/dashboard.blade.php` :
   - `x-page-heading` « Tableau de bord » ;
   - propriété calculée `agencyId` égale à l'agence du salarié connecté (`agencyId()` de `AgencyMember`) ;
   - `x-empty-state` quand le salarié n'a aucune des permissions de [research.md](research.md) R7 ;
   - titre de page `__('dashboard.title')`.
-- [ ] T016 Dans `routes/web.php`, remplacer `Route::view('dashboard', 'dashboard')` par `Route::livewire('dashboard', Dashboard::class)->name('dashboard')`. Supprimer `resources/views/dashboard.blade.php`. `tests/Feature/DashboardTest.php` reste vert (redirection des invités, accès d'un salarié connecté).
+- [X] T016 Dans `routes/web.php`, remplacer `Route::view('dashboard', 'dashboard')` par `Route::livewire('dashboard', Dashboard::class)->name('dashboard')`. Supprimer `resources/views/dashboard.blade.php`. `tests/Feature/DashboardTest.php` reste vert (redirection des invités, accès d'un salarié connecté).
 
 **Checkpoint**: tests T004 à T008 et `DashboardTest` verts ; `composer ci:check` vert ; commit « Requêtes de lecture et page du tableau de bord ».
 

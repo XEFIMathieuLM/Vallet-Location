@@ -99,7 +99,7 @@ functional/
 │   └── src/
 │       ├── Contracts/PurchaseOrderNumbers.php
 │       ├── Gateways/NullPurchaseOrderNumbers.php   # liée avec bindIf ; emplacement repris au rebase de la 003
-│       ├── ValueObjects/BillableLine.php      # + purchaseOrderNumber (modifié)
+│       ├── Lines/RentalContext.php, RentalPeriodLine.php, DamageLine.php  # + purchaseOrderNumber (modifiés)
 │       ├── Actions/MakeBillableLine.php       # + lecture du port (modifié)
 │       └── Providers/BillingServiceProvider.php  # + liaison par défaut (modifié)
 │       ├── Exports/ExportLineFormatter.php    # + colonne purchase_order_number (modifié, emplacement après correction de la 003)

@@ -17,6 +17,8 @@ interface PurchaseOrderNumbers
 
 ## Ligne facturable : champ ajouté
 
+Après la correction de la 003, `BillableLine` est une interface (`Functional\Billing\Lines`) implémentée par `RentalPeriodLine` et `DamageLine`, qui partagent `RentalContext`. Le numéro est un champ `?string $purchaseOrderNumber` de `RentalContext`, et chaque ligne l'expose en dernière clé de `toArray()`.
+
 À ajouter au tableau de [billing-gateway.md](../../003-transmission-facturation/contracts/billing-gateway.md) :
 
 | Champ | Période de location | Dégât refacturé |

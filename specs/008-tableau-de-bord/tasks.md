@@ -43,18 +43,18 @@ Chaque phase se termine par `composer ci:check` en code 0 (après `vendor/bin/ph
 
 **Purpose**: paramètres, textes et outillage de test partagés.
 
-- [ ] T001 [P] Créer `config/dashboard.php` avec trois clés :
+- [X] T001 [P] Créer `config/dashboard.php` avec trois clés :
   - `'upcoming_departure_days' => 7` (FR-006a) ;
   - `'vgp_watch_days' => 30` (FR-015a) ;
   - `'section_limit' => 20` (FR-010).
-- [ ] T002 [P] Créer `lang/fr/dashboard.php` avec les textes de [contracts/screens.md](contracts/screens.md), complété au fil des phases :
+- [X] T002 [P] Créer `lang/fr/dashboard.php` avec les textes de [contracts/screens.md](contracts/screens.md), complété au fil des phases :
   - `title` (« Tableau de bord »), `agency.label`, `agency.all` (« Toutes les agences »), `empty.heading`, `empty.description` ;
   - sections `operations.*`, `pending.*`, `fleet.*`, `vgp.*`.
-- [ ] T003 [P] Créer `tests/Feature/Dashboard/Concerns/BuildsDashboardFixtures.php`. Ce trait utilise `CreatesUsers` et expose les aides suivantes, toutes par factories :
+- [X] T003 [P] Créer `tests/Feature/Dashboard/Concerns/BuildsDashboardFixtures.php`. Ce trait utilise `CreatesUsers` et expose les aides suivantes, toutes par factories :
   - `agencyNamed(string)` ;
   - `machineIn(Agency, array $attributes = [])` ;
   - `reservationOf(Machine, ReservationStatus, string $start, string $end, array $attributes = [])` ;
-  - `employeeOf(Agency, BackedEnum ...$permissions)`, qui renvoie un utilisateur rattaché à l'agence avec ces permissions.
+  - `employeeOf(Agency)` (rôle salarié, toutes les permissions) et `memberOf(Agency, BackedEnum ...$permissions)` (seulement ces permissions).
 
 **Checkpoint**: `composer ci:check` vert ; commit « Paramètres et outillage du tableau de bord ».
 

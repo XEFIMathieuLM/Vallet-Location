@@ -45,12 +45,12 @@ class SecurityTest extends TestCase
         $response->assertOk();
 
         /* @chisel-passkeys */
-        $response->assertSee('Passkeys');
-        $response->assertSee('No passkeys yet');
+        $response->assertSee(__('Passkeys'));
+        $response->assertSee(__('No passkeys yet'));
         /* @end-chisel-passkeys */
         /* @chisel-2fa */
-        $response->assertSee('Two-factor authentication');
-        $response->assertSee('Enable 2FA');
+        $response->assertSee(__('Two-factor authentication'));
+        $response->assertSee(__('Enable 2FA'));
         /* @end-chisel-2fa */
     }
 

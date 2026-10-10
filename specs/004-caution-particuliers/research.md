@@ -45,7 +45,7 @@ Transitions :
 
 ## D5 — Encaissement unique et sérialisé
 
-**Décision** : `CollectDeposit::handle(Reservation, PaymentMethod, ?string $reference, Authenticatable&AgencyMember $author): Deposit` : transaction, `Reservation::lockForUpdate()`, refus si la réservation n'est pas confirmée, si le client n'est pas particulier, ou si une caution existe ; montant = `ResolveDepositAmount::forReservation()` au moment de l'encaissement. Index unique `deposits.reservation_id` en dernier rempart (FR-008).
+**Décision** : `CollectDeposit::handle(Reservation, PaymentMethod, ?string $reference, Model&AgencyMember $author): Deposit` : transaction, `Reservation::lockForUpdate()`, refus si la réservation n'est pas confirmée, si le client n'est pas particulier, ou si une caution existe ; montant = `ResolveDepositAmount::forReservation()` au moment de l'encaissement. Index unique `deposits.reservation_id` en dernier rempart (FR-008).
 
 **Raison** : principe II ; le verrou sur la réservation sérialise aussi avec `DepartReservation` et `CancelReservation`, qui verrouillent la même ligne.
 
@@ -69,8 +69,8 @@ Transitions :
 ## D8 — Restitution et solde
 
 **Décision** :
-- `RefundDeposit::handle(Deposit, bool $isNoDamageConfirmed, Authenticatable&AgencyMember $author)` : transaction, verrou sur la caution, appelle d'abord `SyncDepositStatus` puis exige l'état `ToRefund` ; si la réservation est clôturée, `$isNoDamageConfirmed` doit être vrai (`DepositRefusedException::noDamageNotConfirmed()`) ; enregistre `refunded_cents = amount_cents`, `retained_cents = 0`, `closed_by`, `closed_at`, `is_no_damage_confirmed`.
-- `SettleDeposit::handle(Deposit, Authenticatable&AgencyMember $author)` : même verrou, exige `ToSettle`, recalcule la retenue (D7) au moment de la validation et l'enregistre ; aucun montant n'est saisi.
+- `RefundDeposit::handle(Deposit, bool $isNoDamageConfirmed, Model&AgencyMember $author)` : transaction, verrou sur la caution, appelle d'abord `SyncDepositStatus` puis exige l'état `ToRefund` ; si la réservation est clôturée, `$isNoDamageConfirmed` doit être vrai (`DepositRefusedException::noDamageNotConfirmed()`) ; enregistre `refunded_cents = amount_cents`, `retained_cents = 0`, `closed_by`, `closed_at`, `is_no_damage_confirmed`.
+- `SettleDeposit::handle(Deposit, Model&AgencyMember $author)` : même verrou, exige `ToSettle`, recalcule la retenue (D7) au moment de la validation et l'enregistre ; aucun montant n'est saisi.
 
 **Raison** : FR-012, FR-013, FR-014 ; le recalcul au solde empêche d'utiliser une retenue périmée.
 
@@ -82,13 +82,13 @@ Transitions :
 
 ## D10 — Correction d'un encaissement
 
-**Décision** : `CorrectDepositPayment::handle(Deposit, PaymentMethod, ?string $reference, string $reason, Authenticatable&AgencyMember $author)` : autorisé dans les états `Collected`, `ToRefund`, `BlockedByDamage`, `ToSettle` ; motif obligatoire ; l'historique conserve l'ancienne et la nouvelle valeur. Le montant n'est jamais corrigé.
+**Décision** : `CorrectDepositPayment::handle(Deposit, PaymentMethod, ?string $reference, string $reason, Model&AgencyMember $author)` : autorisé dans les états `Collected`, `ToRefund`, `BlockedByDamage`, `ToSettle` ; motif obligatoire ; l'historique conserve l'ancienne et la nouvelle valeur. Le montant n'est jamais corrigé.
 
 **Raison** : clarification du 2026-10-10 (FR-010).
 
 ## D11 — Historique
 
-**Décision** : `DepositHistory::record(Reservation, DepositHistoryEvent, Authenticatable&AgencyMember $author, array $details)` sur le modèle de `BillingHistory` : `activity('deposit')->performedOn($reservation)->causedBy($author)`, propriété `author_agency_id`. Événements : `collected`, `payment_corrected` (motif, ancien, nouveau), `refunded` (confirmation « aucun dégât »), `settled` (retenu, restitué), `blocked_by_damage`, `released`. La qualification du client est tracée par `booking` sur le client (`Customer` passe en `LogsActivity` + `RecordsAuthorAgency`, `logOnly(['type'])`) : un client a plusieurs réservations, la qualification lui appartient.
+**Décision** : `DepositHistory::record(Reservation, DepositHistoryEvent, Model&AgencyMember $author, array $details)` sur le modèle de `BillingHistory` : `activity('deposit')->performedOn($reservation)->causedBy($author)`, propriété `author_agency_id`. Événements : `collected`, `payment_corrected` (motif, ancien, nouveau), `refunded` (confirmation « aucun dégât »), `settled` (retenu, restitué), `blocked_by_damage`, `released`. La qualification du client est tracée par `booking` sur le client (`Customer` passe en `LogsActivity` + `RecordsAuthorAgency`, `logOnly(['type'])`) : un client a plusieurs réservations, la qualification lui appartient.
 
 **Raison** : FR-021 ; même mécanisme que les 002 et 003. La spec est alignée : la qualification est tracée dans l'historique du client.
 

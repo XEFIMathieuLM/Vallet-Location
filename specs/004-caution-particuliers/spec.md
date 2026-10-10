@@ -20,6 +20,11 @@ Aujourd'hui, rien n'empêche une machine de partir chez un particulier sans caut
 
 - Q: Le montant de la caution est-il un forfait unique, un montant par catégorie de machine, ou saisi au cas par cas ? → A: Un montant par catégorie de machine, avec un montant par défaut, paramétrés sur un écran dédié comme les vues photo de la feature 002 (US6, FR-017).
 - Q: L'outil enregistre-t-il un encaissement fait hors outil ou pilote-t-il une pré-autorisation bancaire ? → A: Il enregistre un encaissement fait hors outil (moyen et référence) ; la pré-autorisation bancaire fera l'objet d'une spec ultérieure (FR-006, Out of Scope).
+- Q: Quand les dégâts d'une réservation sont réglés, combien l'outil propose-t-il de retenir sur la caution ? → A: Le total hors taxes des dégâts refacturés, plafonné au montant de la caution ; le reste est restitué ; le salarié valide ce solde sans pouvoir le modifier. La TVA et le solde éventuel au-delà de la caution sont réclamés par la facture du dégât émise par le logiciel de facturation, qui rapproche la caution retenue (FR-013, FR-014).
+- Q: Que faut-il pour qu'un salarié puisse restituer la caution d'une réservation clôturée sans dégât ? → A: Au moment de restituer, le salarié confirme « comparaison départ / retour faite, aucun dégât constaté » ; cette confirmation est inscrite dans l'historique avec son auteur et sa date (FR-012).
+- Q: Que fait-on d'un client sans type au moment de la sortie ? → A: La sortie est refusée jusqu'à ce qu'un salarié le qualifie particulier ou professionnel (FR-005).
+- Q: La caution est-elle transmise au logiciel de facturation ? → A: Non ; le rapprochement entre la caution retenue et la facture du dégât se fait dans le logiciel de facturation (Assumptions).
+- Q: Peut-on corriger un encaissement après la sortie ? → A: Oui, le moyen et la référence, jusqu'à la restitution ou au solde, avec un motif obligatoire ; l'historique conserve l'ancienne et la nouvelle valeur (FR-010).
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -71,11 +76,12 @@ Au retour de la machine, la caution n'est pas rendue automatiquement : l'outil i
 **Acceptance Scenarios**:
 
 1. **Given** une réservation clôturée sans dégât à traiter et une caution encaissée, **When** le salarié consulte la réservation, **Then** la caution est « à restituer ».
-2. **Given** une caution « à restituer », **When** le salarié enregistre sa restitution, **Then** la caution passe « restituée » avec l'auteur, l'agence et la date.
+2. **Given** une caution « à restituer » d'une réservation clôturée, **When** le salarié enregistre sa restitution en confirmant « comparaison départ / retour faite, aucun dégât constaté », **Then** la caution passe « restituée » avec l'auteur, l'agence et la date, et la confirmation est inscrite dans l'historique.
+8. **Given** une caution « à restituer » d'une réservation clôturée, **When** le salarié tente d'enregistrer la restitution sans cocher la confirmation, **Then** l'outil refuse.
 3. **Given** une réservation clôturée portant au moins un dégât à traiter, **When** le salarié tente de restituer la caution, **Then** l'outil refuse et liste les dégâts à régler d'abord.
 4. **Given** une caution de 1 500 € et un dégât refacturé 450 € (feature 003), **When** tous les dégâts de la réservation sont réglés, **Then** la caution passe « à solder » avec une retenue proposée de 450 € et une restitution de 1 050 €.
-5. **Given** une caution « à solder », **When** le salarié valide le solde, **Then** la caution passe « soldée » avec le montant retenu, le montant restitué, l'auteur et la date.
-6. **Given** une caution de 1 500 € et des dégâts refacturés pour 2 000 €, **When** les dégâts sont réglés, **Then** la retenue proposée est de 1 500 € et la restitution de 0 € ; les 500 € restants sont facturés au client par le logiciel de facturation (feature 003).
+5. **Given** une caution « à solder », **When** le salarié valide le solde, **Then** la caution passe « soldée » avec le montant retenu et le montant restitué calculés par l'outil, l'auteur et la date ; le salarié ne peut pas modifier ces montants.
+6. **Given** une caution de 1 500 € et des dégâts refacturés pour 2 000 €, **When** les dégâts sont réglés, **Then** la retenue proposée est de 1 500 € et la restitution de 0 € ; les 500 € restants et la TVA sont réclamés au client par la facture du dégât émise par le logiciel de facturation (feature 003).
 7. **Given** une caution dont le seul dégât est classé « non refacturé », **When** le dégât est réglé, **Then** la caution passe « à restituer » en entier.
 
 ---
@@ -138,11 +144,12 @@ Un salarié définit un montant de caution par défaut, et peut fixer pour chaqu
 - **Réservation créée avant la mise en service mais pas encore sortie** : la caution est exigée avant sa sortie si le client est particulier.
 - **Montant paramétré modifié après encaissement** : sans effet sur la caution encaissée ; aucun complément ni remboursement partiel n'est demandé.
 - **Sortie refusée pour une autre raison** (VGP, photos manquantes) après encaissement : la caution reste encaissée, rattachée à la réservation.
-- **Dégât signalé après la restitution de la caution** : la caution est déjà rendue ; le dégât suit le circuit de la feature 003 (facturation au client) sans retenue possible. L'historique montre que la restitution a précédé le signalement.
+- **Dégât signalé après la restitution de la caution** : la caution est déjà rendue ; le dégât suit le circuit de la feature 003 (facturation au client) sans retenue possible. L'historique montre qui a confirmé « aucun dégât constaté » et quand, avant le signalement.
+- **Restitution après annulation** : la réservation n'est jamais sortie, il n'y a pas de photos à comparer ; la confirmation « aucun dégât constaté » n'est pas demandée.
 - **Dégât signalé avant la clôture mais clôture pas encore enregistrée** : la caution n'est pas restituable tant que la réservation n'est pas clôturée.
 - **Plusieurs réservations du même particulier** : une caution par réservation ; une caution encaissée sur une réservation ne couvre pas une autre.
 - **Retour en retard** : sans effet sur la caution ; les jours supplémentaires sont facturés par la feature 003.
-- **Erreur de saisie de l'encaissement** (mauvais moyen, mauvaise référence) : corrigeable tant que la machine n'est pas sortie, avec trace de la correction dans l'historique ; non modifiable après la sortie.
+- **Erreur de saisie de l'encaissement** (mauvais moyen, mauvaise référence) : corrigeable jusqu'à la restitution ou au solde de la caution, y compris après la sortie, avec un motif obligatoire ; l'historique conserve l'ancienne et la nouvelle valeur. Le montant n'est pas corrigeable : il est celui exigé à l'encaissement.
 - **Encaissement saisi sur une réservation en cours, clôturée ou annulée** : refusé ; une caution s'encaisse uniquement sur une réservation confirmée.
 
 ## Requirements *(mandatory)*
@@ -163,14 +170,14 @@ Un salarié définit un montant de caution par défaut, et peut fixer pour chaqu
 - **FR-007**: Le montant encaissé DOIT être égal au montant exigé pour la réservation au moment de l'encaissement ; le salarié ne peut pas encaisser un montant inférieur.
 - **FR-008**: Le système DOIT garantir qu'une réservation n'a jamais plus d'une caution encaissée, y compris en cas de validations simultanées.
 - **FR-009**: Le système DOIT afficher, dans le détail de chaque réservation, une section « Caution » indiquant l'état de la caution (non requise, type de client à renseigner, à encaisser, encaissée, à restituer, bloquée par un dégât, à solder, restituée, soldée) et signaler l'étape « départ » prête dès que la caution est encaissée ou non requise.
-- **FR-010**: Les salariés DOIVENT pouvoir corriger le moyen ou la référence d'un encaissement tant que la réservation n'est pas sortie ; après la sortie, l'encaissement n'est plus modifiable.
+- **FR-010**: Les salariés DOIVENT pouvoir corriger le moyen ou la référence d'un encaissement jusqu'à la restitution ou au solde de la caution, avec un motif obligatoire ; le système DOIT conserver dans l'historique l'ancienne et la nouvelle valeur. Le montant encaissé n'est pas corrigeable.
 
 **Restitution et retenue**
 
 - **FR-011**: À la clôture d'une réservation, la caution encaissée DOIT passer « à restituer » si aucun dégât à traiter ne porte sur la réservation, ou « bloquée par un dégât » sinon.
-- **FR-012**: Le système DOIT refuser la restitution d'une caution tant que la réservation n'est pas clôturée (hors annulation) ou qu'un dégât de la réservation est à traiter.
-- **FR-013**: Quand tous les dégâts d'une réservation sont réglés (feature 003), la caution DOIT passer « à solder » si au moins un dégât est refacturé, avec une retenue proposée égale au total hors taxes des dégâts refacturés plafonné au montant de la caution, et une restitution égale au reste ; « à restituer » en entier si aucun dégât n'est refacturé.
-- **FR-014**: Les salariés DOIVENT pouvoir enregistrer la restitution d'une caution « à restituer » et le solde d'une caution « à solder » (montant retenu, montant restitué) ; la somme du retenu et du restitué DOIT égaler le montant encaissé.
+- **FR-012**: Le système DOIT refuser la restitution d'une caution tant que la réservation n'est pas clôturée (hors annulation) ou qu'un dégât de la réservation est à traiter. Pour une réservation clôturée, la restitution DOIT exiger que le salarié confirme « comparaison départ / retour faite, aucun dégât constaté » ; cette confirmation est inscrite dans l'historique avec son auteur et sa date.
+- **FR-013**: Quand tous les dégâts d'une réservation sont réglés (feature 003), la caution DOIT passer « à solder » si au moins un dégât est refacturé, avec une retenue égale au total hors taxes des dégâts refacturés plafonné au montant de la caution, et une restitution égale au reste ; « à restituer » en entier si aucun dégât n'est refacturé.
+- **FR-014**: Les salariés DOIVENT pouvoir enregistrer la restitution d'une caution « à restituer » et valider le solde d'une caution « à solder » ; les montants retenu et restitué sont ceux calculés selon FR-013 et NE DOIVENT PAS être modifiables par le salarié ; leur somme DOIT égaler le montant encaissé.
 - **FR-015**: L'annulation d'une réservation confirmée dont la caution est encaissée DOIT être acceptée et faire passer la caution « à restituer ».
 - **FR-016**: Une caution restituée ou soldée NE DOIT plus être modifiable.
 
@@ -183,7 +190,7 @@ Un salarié définit un montant de caution par défaut, et peut fixer pour chaqu
 
 - **FR-019**: Le système DOIT présenter à toutes les agences la liste des cautions en attente d'action (à restituer, à solder, bloquées par un dégât), filtrable par agence, avec la réservation, le client, le montant, l'état et la date depuis laquelle la caution attend.
 - **FR-020**: Le système DOIT mettre en évidence les cautions à restituer ou à solder depuis plus de 7 jours.
-- **FR-021**: Le système DOIT enregistrer dans l'historique de la réservation chaque qualification du type de client, chaque encaissement, correction, restitution et solde de caution, avec l'auteur, l'agence et la date.
+- **FR-021**: Le système DOIT enregistrer dans l'historique de la réservation chaque qualification du type de client, chaque encaissement, correction (motif, ancienne et nouvelle valeur), restitution (avec la confirmation « aucun dégât constaté ») et solde de caution, avec l'auteur, l'agence et la date.
 - **FR-022**: Toutes ces actions sont ouvertes à tous les salariés dans cette version, chacune contrôlée par une autorisation dédiée.
 
 ### Key Entities
@@ -210,7 +217,8 @@ Un salarié définit un montant de caution par défaut, et peut fixer pour chaqu
 
 - Grands comptes : tarifs négociés et bon de commande (spec séparée) ; le type « professionnel » de cette feature ne porte aucune de ces règles.
 - Émission de factures, encaissement des loyers et relance des impayés : ils restent dans le logiciel de facturation (feature 003).
-- Retenue sur caution pour un autre motif qu'un dégât refacturé (retard, carburant, nettoyage).
+- Retenue sur caution pour un autre motif qu'un dégât refacturé (retard, carburant, nettoyage), et ajustement manuel de la retenue (geste commercial).
+- Calcul de la TVA sur la retenue et recouvrement du solde des dégâts au-delà de la caution : ils sont portés par la facture du dégât émise par le logiciel de facturation, qui rapproche la caution retenue.
 - Dérogation à la caution pour un particulier (client fidèle, accord de la direction).
 - Caution exigée des professionnels.
 - Pré-autorisation ou paiement bancaire piloté par l'outil (empreinte bancaire en ligne, prestataire de paiement) : fera l'objet d'une spec ultérieure ; dans cette version, l'outil enregistre un encaissement réalisé hors outil.
@@ -219,10 +227,10 @@ Un salarié définit un montant de caution par défaut, et peut fixer pour chaqu
 
 ## Assumptions
 
-- La caution est une garantie, pas un paiement : elle n'est pas transmise au logiciel de facturation comme une location ; la retenue vient en règlement des dégâts refacturés par la feature 003, et son rapprochement comptable avec la facture du dégât se fait dans le logiciel de facturation. À confirmer avec la comptabilité de M. Vallet.
-- Le montant de la retenue proposé par l'outil est hors taxes, comme le montant des dégâts transmis par la feature 003 ; le traitement de la TVA reste dans le logiciel de facturation.
+- La caution est une garantie, pas un paiement : elle n'est pas transmise au logiciel de facturation comme une location ; la retenue vient en règlement des dégâts refacturés par la feature 003. À confirmer avec la comptabilité de M. Vallet.
+- La retenue calculée par l'outil est hors taxes, comme le montant des dégâts transmis par la feature 003. La facture du dégât émise par le logiciel de facturation reste la référence pour la TVA : elle réclame au client la TVA et le solde éventuel au-delà de la caution, et rapproche la caution retenue.
 - Une caution par réservation : un particulier qui loue deux machines en même temps verse deux cautions.
 - Les clients existants (feature 001) n'ont pas de type ; aucune reprise automatique n'est faite, chaque client est qualifié par un salarié au plus tard à la sortie de sa prochaine réservation.
 - Le seuil de 7 jours pour une caution en attente est une proposition à confirmer avec M. Vallet.
-- Le blocage de la sortie s'ajoute à ceux des features 001 (VGP, disponibilité) et 002 (photos de départ), sans les remplacer. Selon la règle de la feature 001, le bouton de sortie s'active dès qu'une section a signalé l'étape prête : il peut donc être actif alors que la caution n'est pas encaissée, et c'est le refus serveur, avec son message, qui garantit la règle.
+- Le blocage de la sortie s'ajoute à ceux des features 001 (VGP, disponibilité) et 002 (photos de départ), sans les remplacer. La disponibilité du bouton de sortie se décide section par section : la section « Caution », comme celles des photos (002) et de l'attestation (005), indique si l'étape « départ » est prête de son point de vue, et le bouton ne s'active que si toutes le sont. Le refus serveur, avec son message, reste la seule garantie.
 - Cette fonctionnalité s'appuie sur la feature 001 (clients, réservations, sortie, retour, annulation, historique), la feature 002 (dégâts signalés au retour) et la feature 003 (règlement des dégâts : refacturé avec montant, ou non refacturé).

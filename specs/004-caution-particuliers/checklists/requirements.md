@@ -32,4 +32,4 @@
 ## Notes
 
 - Markers resolved 2026-10-10: amount per machine category with a default (US6, FR-017); the tool records a deposit collected outside it, bank pre-authorisation deferred to a later spec (FR-006).
-- FR-013 retention rule and the "sortie blocked while customer type is unset" rule (FR-005) are defaults to confirm in `/speckit-clarify`.
+- Clarify 2026-10-10 confirmed: FR-013 retention (HT, capped, not editable), restitution needs an explicit "no damage" confirmation (FR-012), departure blocked while customer type is unset (FR-005), deposit not sent to billing, payment correction allowed until settlement with a reason (FR-010).

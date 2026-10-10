@@ -6,6 +6,7 @@ use App\Models\User;
 use Functional\Fleet\Database\Seeders\FleetSeeder;
 use Functional\Fleet\Models\Agency;
 use Functional\Inspection\Database\Seeders\InspectionPermissionSeeder;
+use Functional\Inspection\Database\Seeders\InspectionSeeder;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
@@ -24,5 +25,7 @@ class DatabaseSeeder extends Seeder
                 ])
                 ->assignRole(PermissionSeeder::EMPLOYEE_ROLE);
         });
+
+        $this->call(InspectionSeeder::class);
     }
 }

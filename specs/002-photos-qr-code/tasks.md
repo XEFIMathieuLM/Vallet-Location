@@ -230,7 +230,7 @@ Les tâches T007 à T012 ne sont pas réalisées dans cette branche : génériqu
 
 ### Haute
 
-- [ ] T078 [seed-new-features, seeder-conventions] Créer `functional/inspection/database/seeders/InspectionSeeder.php`, enregistré dans `DatabaseSeeder` : vues personnalisées pour une catégorie, vues figées, photos de départ et de retour avec fichier, dégâts traités et non traités, sessions actives, expirées et révoquées (chaque `RevocationReason`) ; uniquement via les factories (états nommés), sans orphelin ; vérifier `migrate:fresh --seed` ; `DatabaseSeeder` n'appelle pas `BookingSeeder` : l'`InspectionSeeder` crée ses réservations avec les factories de `booking` (confirmée, en cours, close, annulée) ; ajouter les états nommés nécessaires (session expirée, session révoquée avec raison, photo avec fichier) ; l'ajout dans `DatabaseSeeder` (fichier racine) est signalé
+- [X] T078 [seed-new-features, seeder-conventions] Créer `functional/inspection/database/seeders/InspectionSeeder.php`, enregistré dans `DatabaseSeeder` : vues personnalisées pour une catégorie, vues figées, photos de départ et de retour avec fichier, dégâts traités et non traités, sessions actives, expirées et révoquées (chaque `RevocationReason`) ; uniquement via les factories (états nommés), sans orphelin ; vérifier `migrate:fresh --seed` ; `DatabaseSeeder` n'appelle pas `BookingSeeder` : l'`InspectionSeeder` crée ses réservations avec les factories de `booking` (confirmée, en cours, close, annulée) ; ajouter les états nommés nécessaires (session expirée, session révoquée avec raison, photo avec fichier) ; l'ajout dans `DatabaseSeeder` (fichier racine) est signalé
 
 ### Moyenne
 

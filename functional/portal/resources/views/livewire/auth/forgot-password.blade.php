@@ -10,7 +10,7 @@
         <flux:button type="submit" variant="primary" class="w-full">{{ __('portal::auth.forgot.submit') }}</flux:button>
     </form>
 
-    <flux:text class="text-center">
+    <flux:text>
         <flux:link :href="route('portal.login')" wire:navigate>{{ __('portal::auth.forgot.back') }}</flux:link>
     </flux:text>
 </div>

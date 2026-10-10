@@ -1,5 +1,8 @@
-<div class="flex max-w-xl flex-col gap-8">
-    <x-page-heading :title="__('portal::auth.account.title')" />
+<div class="flex flex-col">
+    <x-portal::hero :title="__('portal::auth.account.title')" />
+
+    <div class="mx-auto flex w-full max-w-[90rem] flex-col gap-10 px-4 py-12 sm:px-10">
+    <div class="flex max-w-xl flex-col gap-10">
 
     <flux:card class="flex flex-col gap-2">
         <flux:text>{{ __('portal::auth.account.email', ['email' => $account->email]) }}</flux:text>
@@ -19,6 +22,8 @@
         <flux:input wire:model="currentPassword" :label="__('portal::auth.fields.current_password')" type="password" required autocomplete="current-password" viewable />
         <flux:input wire:model="password" :label="__('portal::auth.fields.new_password')" type="password" required autocomplete="new-password" viewable />
         <flux:input wire:model="password_confirmation" :label="__('portal::auth.fields.password_confirmation')" type="password" required autocomplete="new-password" viewable />
-        <div><flux:button type="submit" variant="primary">{{ __('portal::auth.account.save_password') }}</flux:button></div>
+        <div><flux:button type="submit" variant="filled">{{ __('portal::auth.account.save_password') }}</flux:button></div>
     </form>
+    </div>
+    </div>
 </div>

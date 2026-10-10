@@ -171,3 +171,15 @@ body {
     text-transform: uppercase;
     color: rgb(255 255 255 / 0.55);
 }
+
+[data-flux-avatar] {
+    border-radius: 9999px;
+    background-color: var(--color-zinc-950);
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.dark [data-flux-avatar] {
+    background-color: #ffffff;
+    color: #000000;
+}

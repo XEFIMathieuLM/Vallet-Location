@@ -20,7 +20,7 @@
         </flux:button>
     </form>
 
-    <flux:text class="text-center">
+    <flux:text>
         {{ __('portal::auth.register.has_account') }}
         <flux:link :href="route('portal.login')" wire:navigate>{{ __('portal::auth.login.submit') }}</flux:link>
     </flux:text>

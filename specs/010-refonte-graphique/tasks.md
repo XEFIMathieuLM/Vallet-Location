@@ -217,7 +217,7 @@ description: "Task list for the full visual redesign (feature 010)"
 
 ### Tests for User Story 4
 
-- [ ] T036 [P] [US4] Écrire `functional/portal/tests/Feature/PortalLayoutTest.php` (`actingAs($account, 'customer')`) :
+- [X] T036 [P] [US4] Écrire `functional/portal/tests/Feature/PortalLayoutTest.php` (`actingAs($account, 'customer')`) :
   - (1) `portal.search` contient le logotype, les entrées « Rechercher une machine », « Mes demandes », « Mes réservations », le `x-portal::hero` (`data-hero`) et le pied de page (`data-portal-footer`) ;
   - (2) la page ne contient ni `class="dark"` sur `<html>` ni le script d'apparence de Flux ;
   - (3) avec deux machines disponibles, deux cartes portent un pictogramme (`svg[aria-hidden]`) et un bouton `data-variant="filled"`, et `assertAtMostOnePrimaryAction` passe ;
@@ -227,22 +227,22 @@ description: "Task list for the full visual redesign (feature 010)"
 
 ### Implementation for User Story 4
 
-- [ ] T037 [US4] Ajouter le paramètre `hasAppearanceChoice` (défaut `true`) à `resources/views/partials/head.blade.php` : `@fluxAppearance` n'est inclus que s'il est vrai.
-- [ ] T038 [P] [US4] Créer `functional/portal/resources/views/components/hero.blade.php` (`x-portal::hero`, props `title` et `eyebrow` avec repli sur `portal::navigation.space_name`, slot, `data-hero`) : bande noire pleine largeur, conteneur 1440 px, `.display-xl`.
-- [ ] T039 [US4] Réécrire `functional/portal/resources/views/layouts/portal.blade.php` (R7) :
+- [X] T037 [US4] Ajouter le paramètre `hasAppearanceChoice` (défaut `true`) à `resources/views/partials/head.blade.php` : `@fluxAppearance` n'est inclus que s'il est vrai.
+- [X] T038 [P] [US4] Créer `functional/portal/resources/views/components/hero.blade.php` (`x-portal::hero`, props `title` et `eyebrow` avec repli sur `portal::navigation.space_name`, slot, `data-hero`) : bande noire pleine largeur, conteneur 1440 px, `.display-xl`.
+- [X] T039 [US4] Réécrire `functional/portal/resources/views/layouts/portal.blade.php` (R7) :
   - `<html>` sans `dark`, `partials.head` avec `hasAppearanceChoice: false` ;
   - barre de 60 px (logotype, `flux:navbar` existante, profil et menu mobile existants) ;
   - `<main>` pleine largeur ;
   - pied de page noir (`data-portal-footer` : logotype inversé, liens de l'espace, `portal::navigation.footer.copyright`).
-- [ ] T040 [US4] Réécrire `functional/portal/resources/views/layouts/guest.blade.php` en deux panneaux (panneau noir avec logotype inversé, « Espace client » et pictogramme ; formulaire sur blanc ; bande noire sur téléphone), thème clair forcé.
-- [ ] T041 [US4] Refaire `functional/portal/resources/views/livewire/customer/search.blade.php` :
+- [X] T040 [US4] Réécrire `functional/portal/resources/views/layouts/guest.blade.php` en deux panneaux (panneau noir avec logotype inversé, « Espace client » et pictogramme ; formulaire sur blanc ; bande noire sur téléphone), thème clair forcé.
+- [X] T041 [US4] Refaire `functional/portal/resources/views/livewire/customer/search.blade.php` :
   - `x-portal::hero` contenant les quatre filtres (mêmes `wire:model.live`, `min`, libellés), bordure basse blanche sur fond noir, et la mention de prix ;
   - nombre de résultats (`portal::search.results_count`) ;
   - cartes : zone `zinc-50` en 16:9 avec `x-fleet::pictogram :category="$offer->categoryName"`, référence, catégorie et agence, prix indicatif, bouton `filled` « Demander » pleine largeur (même `wire:click`) ;
   - modale inchangée.
-- [ ] T042 [P] [US4] Refaire `functional/portal/resources/views/livewire/customer/my-requests.blade.php`, `my-reservations.blade.php` et `account-settings.blade.php` avec `x-portal::hero` et des listes à filets. Dans `account-settings`, le second formulaire (mot de passe) passe en `filled` ; actions, `data-test` et textes inchangés.
-- [ ] T043 [P] [US4] Ajuster les vues `functional/portal/resources/views/livewire/auth/*.blade.php` au layout en deux panneaux (`x-auth-header` partagé), sans changer champs, actions ni `data-test`.
-- [ ] T044 [US4] Ajouter `navigation.footer.copyright` et `search.results_count` dans `functional/portal/resources/lang/fr/`. Captures 20 à 23 en 1440 et 375 px, aucun `OVERFLOW`. `composer ci:check` code 0, puis commit « Refonte graphique : espace client ».
+- [X] T042 [P] [US4] Refaire `functional/portal/resources/views/livewire/customer/my-requests.blade.php`, `my-reservations.blade.php` et `account-settings.blade.php` avec `x-portal::hero` et des listes à filets. Dans `account-settings`, le second formulaire (mot de passe) passe en `filled` ; actions, `data-test` et textes inchangés.
+- [X] T043 [P] [US4] Ajuster les vues `functional/portal/resources/views/livewire/auth/*.blade.php` au layout en deux panneaux (`x-auth-header` partagé), sans changer champs, actions ni `data-test`.
+- [X] T044 [US4] Ajouter `navigation.footer.copyright` et `search.results_count` dans `functional/portal/resources/lang/fr/`. Captures 20 à 23 en 1440 et 375 px, aucun `OVERFLOW`. `composer ci:check` code 0, puis commit « Refonte graphique : espace client ».
 
 **Checkpoint** : espace client conforme à la maquette 3.
 
@@ -317,7 +317,7 @@ description: "Task list for the full visual redesign (feature 010)"
 
 ### Implementation for User Story 6
 
-- [ ] T061 [US6] Réécrire `resources/views/layouts/auth/simple.blade.php` en deux panneaux (R8). Ajuster `resources/views/components/auth-header.blade.php` (titre `.display-md`, description `zinc-500`).
+- [X] T061 [US6] Réécrire `resources/views/layouts/auth/simple.blade.php` en deux panneaux (R8), via le composant partagé `resources/views/components/auth-split.blade.php` (aussi utilisé par `portal::layouts.guest`, fait en US4). Ajuster `resources/views/components/auth-header.blade.php` (titre `.display-md`, description `zinc-500`).
 - [ ] T062 [US6] Réécrire `resources/views/welcome.blade.php` (`@vite`, `partials.head`, barre de 60 px, bande noire avec titre display et deux `x-tile`, pied de page noir). Ajouter `lang/fr/welcome.php` (titre, accroche, deux tuiles, R12).
 - [ ] T063 [P] [US6] Vérifier les pages `resources/views/pages/auth/*.blade.php` (connexion, mot de passe oublié, réinitialisation, vérification, double authentification, confirmation) : composants partagés seulement, `data-test` inchangés. `passkey-*` et le code de récupération : un seul jaune hors modale.
 - [ ] T064 [US6] Captures 01 et `/` en 1440 et 375 px. `composer ci:check` code 0, puis commit « Refonte graphique : connexion et accueil ».

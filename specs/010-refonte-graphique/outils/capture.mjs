@@ -24,6 +24,7 @@ const staffPages = [
 ];
 const portalPages = [
     ['21-espace-client-recherche', '/espace-client'],
+    ['21b-espace-client-resultats', '/espace-client?categorie=1&agence=1&du=2026-10-26&au=2026-10-30'],
     ['22-espace-client-demandes', '/espace-client/demandes'],
     ['23-espace-client-reservations', '/espace-client/reservations'],
 ];

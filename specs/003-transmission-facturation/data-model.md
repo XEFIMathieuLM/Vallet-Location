@@ -122,7 +122,7 @@ L'envoi d'un élément facturable (FR-005 à FR-010, FR-021 à FR-023).
 
 ## Historique
 
-`spatie/laravel-activitylog` sur `BillablePeriod` (création), `Transmission` (chaque tentative, échec, relance manuelle, export) et `DamageSettlement` (création), rattaché à la réservation (FR-020).
+Entrées `spatie/laravel-activitylog` du journal `billing`, sujet = la réservation, écrites explicitement par les actions : création d'une période, chaque tentative, échec, relance manuelle, export, chiffrage et classement « non refacturé » (FR-020).
 
 ## Relations
 

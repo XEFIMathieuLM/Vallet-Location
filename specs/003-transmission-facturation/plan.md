@@ -12,7 +12,7 @@ Approche : un nouveau layer OSDD **`billing`** au-dessus de `inspection`, `booki
 
 ## Technical Context
 
-**Language/Version**: PHP 8.4, Laravel 13, Livewire 4 + Flux (identique à la 001 et la 002)
+**Language/Version**: PHP 8.5 (runtime Sail), Laravel 13, Livewire 4 + Flux (identique à la 001 et la 002)
 
 **Primary Dependencies**: existantes (001, 002). Aucun nouveau package : `spatie/simple-excel` (export CSV), `spatie/laravel-activitylog` (historique), client HTTP de Laravel pour l'adaptateur réel. Le pilote du logiciel de facturation sera choisi une fois le logiciel identifié (B2).
 
@@ -36,31 +36,25 @@ Approche : un nouveau layer OSDD **`billing`** au-dessus de `inspection`, `booki
 
 Dépôt unique : l'application Laravel à la racine du dépôt (pas de `repos.yml`, comme pour la 001 et la 002). Aucun autre dépôt touché.
 
-**Dépendances** : cette feature s'appuie sur le code de la 001 (`Reservation`, `ReservationChanged`, et les points d'extension de `booking` : registre `ReservationDetailSections` des sections du détail de réservation, déplacé de la 002 vers la 001) et de la 002 (`Damage`, `ResolveDamage`, registre `DamageActions` des actions d'un dégât, B7). Elle ne modifie aucun fichier de ces deux features. Son implémentation démarre **après** que la 001 et la 002 sont commitées et que cette branche est mise à jour par-dessus.
+**Dépendances** : cette feature s'appuie sur le code de la 001 (`Reservation`, `ReservationChanged`, et les points d'extension de `booking` : registre `ReservationDetailSections` des sections du détail de réservation, déplacé de la 002 vers la 001) et de la 002 (`Damage`, `ResolveDamage`, registre `DamageActions` des actions d'un dégât, B7). Emplacements vérifiés sur `fb3e51a` : `Functional\Booking\Extensions\ReservationDetailSections`, `Functional\Booking\Events\ReservationChanged` (`ShouldDispatchAfterCommit`), `Functional\Booking\Actions\ReturnReservation`, `Functional\Inspection\Support\DamageActions`, `Functional\Inspection\Actions\ResolveDamage` (lève `DamageAlreadyResolvedException`), `Functional\Inspection\Models\Damage` (vue : `ReservationView::label`). Elle ne modifie aucun fichier de ces deux features. Son implémentation démarre **après** que la 001 et la 002 sont commitées et que cette branche est mise à jour par-dessus.
 
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-`.specify/memory/constitution.md` est toujours le modèle vide. Comme pour la 001 et la 002, les conventions Xefi servent de portes :
+Portes tirées de la constitution v1.0.0 (`.specify/memory/constitution.md`) :
 
-| Porte | Statut |
-|-------|--------|
-| Stack et layout OSDD de la 001, nouveau domaine = nouveau layer | ✅ B1 |
-| Sens de dépendance des layers respecté (`billing → inspection → booking → fleet`) | ✅ B1, B6, B7 (listener et points d'extension, aucune dépendance inverse) |
-| Système externe isolé derrière une interface, testable sans lui | ✅ B2 |
-| Packages existants plutôt que code maison (export, historique) | ✅ B9, B11 |
-| Contrôles par permission, jamais par nom de rôle | ✅ B11 |
-| Nouveau cycle de vie à plusieurs états et transitions interdites → pattern State | ✅ B5 (`Transmission`) |
-| Pas d'observers ; réactions par listeners et commandes planifiées | ✅ B6 |
-| Pas de `try/catch` : `rescue()` et exceptions typées | ✅ B5, contrat du gateway |
-| Pas de cascade en base | ✅ data-model |
-| Garanties portées par la base (exclusion, unicité, CHECK, verrou), pas par la doc | ✅ B4 |
-| Montants en entiers (centimes) | ✅ data-model |
-| Agrégats calculés en base pour le relevé | ✅ B10 |
-| Fichiers de code < 200 lignes, code en anglais, textes traduits | à vérifier pendant l'implémentation |
+| Principe | Porte | Statut |
+|----------|-------|--------|
+| I. Layers OSDD | nouveau domaine = nouveau layer `functional/billing` ; dépendances `billing → inspection → booking → fleet` ; aucun fichier d'un autre layer modifié, extension par `ReservationDetailSections` et `DamageActions` | ✅ B1, B6, B7 |
+| II. Garanties en base et serveur | exclusion sur les périodes, unicité des transmissions et des règlements, CHECK, envoi et export sous `lockForUpdate()` ; pas de cascade ; agrégats du relevé en SQL | ✅ B4, B9, B10, data-model |
+| III. Cycles de vie explicites | `Transmission` en pattern State (4 états, transitions interdites) ; statuts texte + enum ; dates en heure de Paris ; montants en centimes | ✅ B5, data-model |
+| IV. Effets de bord et erreurs typées | listener sur `ReservationChanged`, job, commandes planifiées ; pas d'observer ; `rescue()` et exceptions typées ; logiciel de facturation derrière `BillingGateway` avec `FakeBillingGateway` ; file d'envoi persistée et rattrapée chaque minute | ✅ B2, B3, B5, B6 |
+| V. Accès par permission | `billing.manage` attribuée au rôle salarié ; aucun nom de rôle dans le code | ✅ B11 |
+| VI. Tests par scénario | un test Feature par scénario d'acceptation, écrit d'abord ; horloge contrôlée, faux logiciel ; Larastan à zéro erreur | ✅ tasks.md |
+| VII. Code simple et lisible | packages existants (`simple-excel`, `activitylog`, client HTTP) ; code en anglais, textes traduits ; fichiers < 200 lignes, sans commentaire | à vérifier pendant l'implémentation (T061) |
 
-**Résultat** : aucune violation. `/speckit-constitution` n'a toujours pas été lancé ; trois features reposent maintenant sur les mêmes portes implicites, c'est le moment de les inscrire.
+**Résultat** : aucune violation.
 
 **Re-check post-design** : le modèle de données et les contrats respectent toutes les portes.
 
@@ -87,8 +81,10 @@ specs/003-transmission-facturation/
 ### Source Code (repository root)
 
 ```text
-app/
-└── resources/views/…/layout       # + bandeau d'alerte billing (modifié)
+resources/views/layouts/
+├── app.blade.php                  # + bandeau d'alerte billing (modifié)
+└── app/sidebar.blade.php          # + menu Facturation (modifié)
+composer.json, phpunit.xml, phpstan.neon, database/seeders/DatabaseSeeder.php  # enregistrement du layer (modifiés)
 functional/
 └── billing/                       # nouveau
     ├── composer.json              # LayerManifest, dépend de inspection, booking, fleet
@@ -107,7 +103,7 @@ functional/
     │   ├── Console/               # billing:close-months, billing:reconcile, billing:fake-gateway (local et tests)
     │   ├── Exceptions/            # BillingSoftwareRejectedException, BillingSoftwareUnreachableException, IllegalTransmissionTransitionException, DamageAlreadySettledException, NothingToExportException, MissingGoLiveDateException
     │   ├── Access/Controls/       # TransmissionControl, DamageSettlementControl, BillingExportControl
-    │   ├── Support/               # BillingGoLive (lecture unique de go_live_date)
+    │   ├── Support/               # BillingGoLive (lecture unique de go_live_date), BillingHistory (historique de la réservation)
     │   ├── Providers/             # BillingServiceProvider (enregistrements dans les registres, liaison du gateway, planification)
     │   └── Livewire/              # ReservationBillingSection, DamageBillingActions, Transmissions, Exports, Statement, BillingAlert
     ├── database/{migrations,factories,seeders}/

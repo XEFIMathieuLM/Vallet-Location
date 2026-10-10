@@ -91,5 +91,5 @@ Les décisions de la 001 (R1–R11) et de la 002 (P1–P13) restent valables : L
 
 ## B11 — Droits et traçabilité
 
-- **Decision**: une permission `billing.manage` (chiffrer, classer non refacturé, relancer, renseigner la référence client, exporter, consulter le relevé), ajoutée au rôle unique « salarié » (même règle que la 001). `spatie/laravel-activitylog` sur `Transmission` (chaque tentative, échec, relance, export), `BillablePeriod` et `DamageSettlement`, rattaché à la réservation (FR-020).
+- **Decision**: une permission `billing.manage` (chiffrer, classer non refacturé, relancer, renseigner la référence client, exporter, consulter le relevé), ajoutée au rôle unique « salarié » (même règle que la 001). `spatie/laravel-activitylog` (v5) : écritures explicites `activity('billing')->performedOn($reservation)` depuis les actions de `billing` (période créée, tentative, échec, relance, export, chiffrage, non-refacturation), pour que tout soit rattaché à la réservation (FR-020). Le trait `LogsActivity` sur les modèles de `billing` rattacherait l'entrée au modèle lui-même, pas à la réservation.
 - **Rationale**: Out of Scope « droits différenciés par rôle » ; le code teste une permission, jamais un nom de rôle.

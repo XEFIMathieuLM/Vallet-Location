@@ -2,12 +2,10 @@
 
 namespace Functional\Billing\Exceptions;
 
-use Functional\Fleet\Exceptions\RefusalException;
-
-final class DamageAlreadySettledException extends RefusalException
+final class DamageAlreadySettledException extends BillingRefusalException
 {
-    public static function make(): self
+    public static function for(int $damageId): self
     {
-        return new self(__('billing::damages.refusals.already_settled'));
+        return new self("Damage #{$damageId} is already settled.", 'billing::damages.refusals.already_settled');
     }
 }

@@ -98,8 +98,7 @@ class DamageBillingTest extends TestCase
 
         $this->assertThrows(
             fn () => app(BillDamage::class)->handle($damage, Money::fromStored(30000), 'remplacement capot', $this->employee),
-            DamageAlreadySettledException::class,
-            'avoir',
+            fn (DamageAlreadySettledException $exception): bool => str_contains($exception->userMessage(), 'avoir') && $exception->getMessage() === "Damage #{$damage->id} is already settled.",
         );
         $this->assertSame(45000, DamageSettlement::query()->sole()->amount?->minorUnits);
     }

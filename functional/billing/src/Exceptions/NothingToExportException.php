@@ -2,12 +2,10 @@
 
 namespace Functional\Billing\Exceptions;
 
-use Functional\Fleet\Exceptions\RefusalException;
-
-final class NothingToExportException extends RefusalException
+final class NothingToExportException extends BillingRefusalException
 {
     public static function make(): self
     {
-        return new self(__('billing::exports.refusals.nothing_to_export'));
+        return new self('No pending or failed transmission to export.', 'billing::exports.refusals.nothing_to_export');
     }
 }

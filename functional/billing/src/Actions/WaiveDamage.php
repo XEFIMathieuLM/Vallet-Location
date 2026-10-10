@@ -20,7 +20,7 @@ final class WaiveDamage
     public function handle(Damage $damage, string $waiverReason, User $settler): DamageSettlement
     {
         if (trim($waiverReason) === '') {
-            throw InvalidDamageSettlementException::because('waiver_reason_required');
+            throw InvalidDamageSettlementException::waiverReasonMissing();
         }
 
         return DB::transaction(function () use ($damage, $waiverReason, $settler): DamageSettlement {

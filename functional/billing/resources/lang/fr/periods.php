@@ -1,7 +1,6 @@
 <?php
 
 return [
-    'not_live_yet' => 'La facturation démarre le :date : aucune période n\'est créée avant.',
     'section' => [
         'title' => 'Facturation',
         'empty' => 'Rien n\'a encore été transmis au logiciel de facturation pour cette réservation.',

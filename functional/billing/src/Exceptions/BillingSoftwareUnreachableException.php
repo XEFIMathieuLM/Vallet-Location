@@ -8,6 +8,6 @@ final class BillingSoftwareUnreachableException extends RuntimeException
 {
     public static function make(): self
     {
-        return new self(__('billing::transmissions.unreachable'));
+        return new self('The billing software is unreachable.');
     }
 }

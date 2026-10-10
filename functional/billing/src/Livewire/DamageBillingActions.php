@@ -4,8 +4,8 @@ namespace Functional\Billing\Livewire;
 
 use Functional\Billing\Actions\BillDamage;
 use Functional\Billing\Actions\WaiveDamage;
+use Functional\Billing\Livewire\Concerns\DisplaysBillingRefusals;
 use Functional\Billing\Money\Money;
-use Functional\Fleet\Livewire\Concerns\DisplaysRefusals;
 use Functional\Inspection\Models\Damage;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
@@ -15,7 +15,7 @@ use Livewire\Component;
 
 class DamageBillingActions extends Component
 {
-    use DisplaysRefusals;
+    use DisplaysBillingRefusals;
 
     #[Locked]
     public Damage $damage;

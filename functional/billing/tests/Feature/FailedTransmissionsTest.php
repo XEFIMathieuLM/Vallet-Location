@@ -56,7 +56,7 @@ class FailedTransmissionsTest extends TestCase
 
         Livewire::test(Transmissions::class)
             ->call('retry', $transmission->id)
-            ->assertHasErrors('refusal');
+            ->assertHasErrors(['refusal' => 'Impossible de relancer une transmission à l\'état « Transmise ».']);
 
         $this->assertSame(TransmissionStatus::Sent, $transmission->refresh()->status);
     }

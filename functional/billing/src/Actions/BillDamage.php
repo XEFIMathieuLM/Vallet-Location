@@ -23,11 +23,11 @@ final class BillDamage
     public function handle(Damage $damage, Money $amount, string $label, User $settler): DamageSettlement
     {
         if (! $amount->isPositive()) {
-            throw InvalidDamageSettlementException::because('amount_required');
+            throw InvalidDamageSettlementException::amountNotPositive();
         }
 
         if (trim($label) === '') {
-            throw InvalidDamageSettlementException::because('label_required');
+            throw InvalidDamageSettlementException::labelMissing();
         }
 
         return DB::transaction(function () use ($damage, $amount, $label, $settler): DamageSettlement {

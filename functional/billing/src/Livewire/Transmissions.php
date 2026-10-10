@@ -4,17 +4,17 @@ namespace Functional\Billing\Livewire;
 
 use Functional\Billing\Actions\RetryTransmission;
 use Functional\Billing\Actions\SetCustomerBillingRef;
+use Functional\Billing\Livewire\Concerns\DisplaysBillingRefusals;
 use Functional\Billing\Models\Transmission;
 use Functional\Billing\Queries\TransmissionsToHandle;
 use Functional\Booking\Models\Customer;
-use Functional\Fleet\Livewire\Concerns\DisplaysRefusals;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Component;
 
 class Transmissions extends Component
 {
-    use DisplaysRefusals;
+    use DisplaysBillingRefusals;
 
     /**
      * @var array<int|string, string>

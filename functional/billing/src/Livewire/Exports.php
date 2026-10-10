@@ -3,8 +3,8 @@
 namespace Functional\Billing\Livewire;
 
 use Functional\Billing\Actions\CreateBillingExport;
+use Functional\Billing\Livewire\Concerns\DisplaysBillingRefusals;
 use Functional\Billing\Models\BillingExport;
-use Functional\Fleet\Livewire\Concerns\DisplaysRefusals;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -12,7 +12,7 @@ use Livewire\Component;
 
 class Exports extends Component
 {
-    use DisplaysRefusals;
+    use DisplaysBillingRefusals;
 
     public function export(CreateBillingExport $createBillingExport): void
     {

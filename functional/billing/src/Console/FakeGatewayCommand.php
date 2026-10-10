@@ -8,14 +8,14 @@ use Illuminate\Console\Command;
 
 final class FakeGatewayCommand extends Command
 {
-    protected $signature = 'billing:fake-gateway {mode? : accept ou unreachable} {--received : liste les clés reçues}';
+    protected $signature = 'billing:fake-gateway {mode? : accept or unreachable} {--received : list the idempotency keys received}';
 
     protected $description = 'Switch the fake billing software mode or list the lines it received (local and testing only)';
 
     public function handle(FakeBillingGateway $fakeBillingGateway): int
     {
         if (! app()->environment(['local', 'testing'])) {
-            $this->error(__('billing::fake_gateway.refused'));
+            $this->error('The fake billing software is only available in the local and testing environments.');
 
             return self::FAILURE;
         }
@@ -26,7 +26,7 @@ final class FakeGatewayCommand extends Command
             $fakeBillingGateway->switchTo(FakeGatewayMode::from($requestedMode));
         }
 
-        $this->info(__('billing::fake_gateway.mode', ['mode' => $fakeBillingGateway->mode()->value]));
+        $this->info("Fake billing software mode: {$fakeBillingGateway->mode()->value}.");
 
         if ($this->option('received')) {
             $this->table(['idempotency_key', 'type', 'reservation_ref'], array_map(

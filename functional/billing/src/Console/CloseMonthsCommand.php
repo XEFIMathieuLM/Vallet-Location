@@ -17,7 +17,7 @@ final class CloseMonthsCommand extends Command
     public function handle(BillingCalendar $billingCalendar, RecordMonthEndPeriods $recordMonthEndPeriods): int
     {
         if (! $billingCalendar->isLive()) {
-            $this->info(__('billing::periods.not_live_yet', ['date' => $billingCalendar->goLiveDate()->format('d/m/Y')]));
+            $this->info("Billing goes live on {$billingCalendar->goLiveDate()->toDateString()}: no period is recorded before.");
 
             return self::SUCCESS;
         }

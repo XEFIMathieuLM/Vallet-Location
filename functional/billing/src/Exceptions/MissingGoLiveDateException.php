@@ -8,6 +8,6 @@ final class MissingGoLiveDateException extends RuntimeException
 {
     public static function make(): self
     {
-        return new self(__('billing::transmissions.missing_go_live_date'));
+        return new self('The billing go-live date (BILLING_GO_LIVE_DATE) is missing or invalid: nothing is transmitted.');
     }
 }

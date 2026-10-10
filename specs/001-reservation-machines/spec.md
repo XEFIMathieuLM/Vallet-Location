@@ -6,7 +6,7 @@
 
 **Status**: Draft
 
-**Input**: User description: fiche `spec.md.txt` (Vallet Location) — périmètre retenu : le cœur de réservation (parc de machines à référence unique, statuts, réservations sans chevauchement, disponibilité partagée entre les 7 agences, blocage VGP). Les autres capacités de la fiche feront l'objet de specs séparées.
+**Input**: User description: fiche `specs/brief-client.md` (Vallet Location) — périmètre retenu : le cœur de réservation (parc de machines à référence unique, statuts, réservations sans chevauchement, disponibilité partagée entre les 7 agences, blocage VGP). Les autres capacités de la fiche feront l'objet de specs séparées.
 
 ## Contexte
 

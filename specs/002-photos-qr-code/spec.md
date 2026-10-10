@@ -96,14 +96,14 @@ Un salarié définit, pour chaque catégorie de machine, la liste des vues à ph
 - **Réservation annulée pendant la prise de photos** : le lien devient invalide ; les photos déjà reçues sont supprimées 1 an après leur réception (FR-023).
 - **Retour anticipé** (feature 001) : la prise de photos de retour est possible dès que la réservation est en cours.
 - **Réservation sortie avant la mise en service de cette fonctionnalité** : sa clôture n'exige pas de photos de départ (il n'y en a pas), mais exige les photos de retour.
-- **Liste de vues modifiée avant la sortie** : tant que la liste d'une réservation n'est pas figée (aucun QR code lancé, aucune tentative de sortie), une modification des vues de la catégorie s'applique à cette réservation ; après, elle ne s'applique plus.
+- **Liste de vues modifiée avant la sortie** : tant que la liste d'une réservation n'est pas figée (aucun QR code lancé, aucune sortie acceptée), une modification des vues de la catégorie s'applique à cette réservation, même après une sortie refusée ; après, elle ne s'applique plus.
 - **Lien partagé à un tiers** : le lien ne donne accès qu'à l'ajout de photos sur cette réservation et cette étape ; il ne montre ni coordonnées complètes du client ni autres réservations.
 
 ## Clarifications
 
 ### Session 2026-10-10
 
-- Q: À quel moment la liste des vues d'une réservation est-elle figée, si la sortie est tentée sans QR code ou si la réservation est sortie avant la mise en service ? → A: Au premier de ces moments : lancement d'une prise de photos, ou première tentative de sortie ou de retour (FR-003).
+- Q: À quel moment la liste des vues d'une réservation est-elle figée, si la sortie est tentée sans QR code ou si la réservation est sortie avant la mise en service ? → A: Au premier de ces moments : lancement d'une prise de photos, ou sortie ou retour acceptés. Une sortie ou un retour refusés ne figent rien, le contrôle se faisant dans la transaction annulée par le refus (FR-003, révisé après branchement sur la 001).
 - Q: Deux vues d'une même catégorie dont les noms ne diffèrent que par la casse sont-elles un doublon ? → A: Oui, la comparaison ignore les majuscules et les espaces en début et fin (FR-001).
 
 ## Requirements *(mandatory)*
@@ -114,7 +114,7 @@ Un salarié définit, pour chaque catégorie de machine, la liste des vues à ph
 
 - **FR-001**: Le système DOIT permettre de définir, pour chaque catégorie de machine, une liste ordonnée de vues à photographier (nom de la vue) ; au moins une vue est requise par catégorie ; deux vues d'une même catégorie ne peuvent pas porter le même nom, sans tenir compte des majuscules ni des espaces en début et fin (« Gauche » et « gauche » sont un doublon).
 - **FR-002**: Le système DOIT appliquer une liste de vues par défaut (avant, arrière, gauche, droite, compteur d'heures) à toute catégorie sans paramétrage propre.
-- **FR-003**: Le système DOIT figer la liste des vues requises d'une réservation au premier de ces moments : le lancement d'une prise de photos (départ, ou retour pour une réservation sortie avant la mise en service, FR-018), ou la première tentative de sortie ou de retour ; une fois figée, la liste ne change plus et le retour exige exactement ces vues.
+- **FR-003**: Le système DOIT figer la liste des vues requises d'une réservation au premier de ces moments : le lancement d'une prise de photos (départ, ou retour pour une réservation sortie avant la mise en service, FR-018), ou une sortie ou un retour acceptés ; une sortie ou un retour refusés ne figent rien (les vues manquantes listées sont celles qui seraient figées à cet instant) ; une fois figée, la liste ne change plus et le retour exige exactement ces vues.
 
 **QR code et lien temporaire**
 

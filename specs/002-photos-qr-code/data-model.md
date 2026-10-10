@@ -35,7 +35,7 @@ La liste de vues figée pour une réservation (FR-003).
 | label | texte | copié de la catégorie ou du défaut |
 | position | entier | |
 
-Créée en une fois, au **premier** de ces deux moments : l'ouverture de la première session de la réservation, ou la première vérification de complétude par le guard (sortie ou retour tentés sans QR code jamais lancé). Pour une réservation sortie avant la mise en service, c'est donc au retour (FR-018). Jamais modifiée ensuite.
+Créée en une fois, au **premier** de ces deux moments : l'ouverture de la première session de la réservation, ou la vérification de complétude par le guard lors d'une sortie ou d'un retour **acceptés**. Le guard s'exécute dans la transaction de la transition (001) : si la transition est refusée, le figement est annulé avec elle, et le refus liste les vues qui auraient été figées. Pour une réservation sortie avant la mise en service, la liste est figée au lancement du QR code de retour (FR-018). Jamais modifiée ensuite.
 
 ## PhotoSession
 
@@ -76,7 +76,7 @@ Fichier attaché par la médiathèque (collection `photo`, un seul fichier). Con
 - Ajout et suppression possibles seulement par une session active de la même étape (téléphone), ou depuis le poste tant que l'étape n'est pas validée (FR-014).
 - Depuis le téléphone, une photo ne peut être supprimée que si sa réservation **et** son étape sont celles de la session du jeton ; toute autre photo est refusée comme si elle n'existait pas.
 - Étape validée = `departure` dès que la réservation n'est plus `confirmed`, `return` dès qu'elle est `closed`. Après validation, toute écriture est refusée par exception typée.
-- **Complétude** d'une étape : chaque `ReservationView` de la réservation a au moins une `Photo` de cette étape. C'est ce que vérifie `PhotosCompleteGuard` (FR-016, FR-017). Le guard **fige d'abord les vues** si la réservation n'en a pas encore : une réservation sans vue figée n'est jamais considérée comme complète.
+- **Complétude** d'une étape : chaque `ReservationView` de la réservation a au moins une `Photo` de cette étape. C'est ce que vérifie `PhotosCompleteGuard` (FR-016, FR-017). Le guard **fige d'abord les vues** si la réservation n'en a pas encore : une réservation sans vue figée n'est jamais considérée comme complète ; ce figement n'est conservé que si la transition est acceptée.
 - **Purge** (`Prunable`, FR-023) : réservation `closed` avec `returned_at` < il y a un an, sans dégât non traité, et sans dégât traité depuis moins d'un an ; ou réservation `cancelled` et photo reçue il y a plus d'un an.
 
 ## Damage

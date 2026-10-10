@@ -123,15 +123,15 @@ Les tâches T007 à T012 ne sont pas réalisées dans cette branche : génériqu
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T039 [P] [US2] Tests Feature des scénarios 1 à 4 de US2 dans `functional/inspection/tests/Feature/ReturnPhotosTest.php` (nouveau QR code d'étape « retour » avec les mêmes vues qu'au départ ; retour refusé avec vues manquantes ; retour accepté puis photos figées ; QR code de départ scanné pendant la location → « lien plus valable »)
-- [ ] T040 [P] [US2] Test Feature « réservation sortie avant la mise en service » (FR-018) dans `functional/inspection/tests/Feature/LegacyReservationReturnTest.php` : réservation `in_progress` sans `ReservationView` → l'ouverture de la session de retour fige les vues de la catégorie ; le retour exige les photos de retour seulement ; **retour tenté sans avoir jamais lancé de QR code → refusé, toutes les vues de la catégorie listées comme manquantes, rien n'est figé**
-- [ ] T041 [P] [US2] Test Feature « liste de la catégorie modifiée entre départ et retour » (US4 scénario 3) dans `functional/inspection/tests/Feature/FrozenViewsTest.php` : le retour exige les vues photographiées au départ, pas la nouvelle liste
+- [X] T039 [P] [US2] Tests Feature des scénarios 1 à 4 de US2 dans `functional/inspection/tests/Feature/ReturnPhotosTest.php` (nouveau QR code d'étape « retour » avec les mêmes vues qu'au départ ; retour refusé avec vues manquantes ; retour accepté puis photos figées ; QR code de départ scanné pendant la location → « lien plus valable »)
+- [X] T040 [P] [US2] Test Feature « réservation sortie avant la mise en service » (FR-018) dans `functional/inspection/tests/Feature/LegacyReservationReturnTest.php` : réservation `in_progress` sans `ReservationView` → l'ouverture de la session de retour fige les vues de la catégorie ; le retour exige les photos de retour seulement ; **retour tenté sans avoir jamais lancé de QR code → refusé, toutes les vues de la catégorie listées comme manquantes, rien n'est figé**
+- [X] T041 [P] [US2] Test Feature « liste de la catégorie modifiée entre départ et retour » (US4 scénario 3) dans `functional/inspection/tests/Feature/FrozenViewsTest.php` : le retour exige les vues photographiées au départ, pas la nouvelle liste
 
 ### Implementation for User Story 2
 
-- [ ] T042 [US2] Compléter `PhotosCompleteGuard::beforeReturn` dans `functional/inspection/src/Guards/PhotosCompleteGuard.php` : appelle **d'abord `FreezeReservationViews`**, puis lève `MissingPhotosException` si `MissingViews` pour `return` n'est pas vide
-- [ ] T043 [US2] Dans `functional/inspection/src/Actions/OpenPhotoSession.php`, l'ouverture d'une session `return` sur une réservation sans `ReservationView` fige les vues courantes de la catégorie, sans exiger de photos de départ (FR-018) ; T040 passe
-- [ ] T044 [US2] Étendre `PhotosPanel` (`functional/inspection/src/Livewire/PhotosPanel.php`) à l'étape « retour » : quand la réservation est `in_progress`, proposer le QR code de retour ; afficher les photos de départ en lecture seule à côté ; émettre `reservation-transition-readiness` `{ step: 'return', is_ready }` dès le montage et à chaque `photo.changed`
+- [X] T042 [US2] Compléter `PhotosCompleteGuard::beforeReturn` dans `functional/inspection/src/Guards/PhotosCompleteGuard.php` : appelle **d'abord `FreezeReservationViews`**, puis lève `MissingPhotosException` si `MissingViews` pour `return` n'est pas vide
+- [X] T043 [US2] Dans `functional/inspection/src/Actions/OpenPhotoSession.php`, l'ouverture d'une session `return` sur une réservation sans `ReservationView` fige les vues courantes de la catégorie, sans exiger de photos de départ (FR-018) ; T040 passe
+- [X] T044 [US2] Étendre `PhotosPanel` (`functional/inspection/src/Livewire/PhotosPanel.php`) à l'étape « retour » : quand la réservation est `in_progress`, proposer le QR code de retour ; afficher les photos de départ en lecture seule à côté ; émettre `reservation-transition-readiness` `{ step: 'return', is_ready }` dès le montage et à chaque `photo.changed`
 
 **Checkpoint**: T039–T041 passent ; US1 toujours vert.
 

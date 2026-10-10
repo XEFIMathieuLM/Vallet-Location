@@ -74,10 +74,10 @@ description: "Task list for the customer portal and online booking requests feat
 
 ### Tests d'abord
 
-- [ ] T006 [P] Écrire `functional/portal/tests/Unit/ReservationRequestStateTest.php` (Unit, sans framework) :
+- [X] T006 [P] Écrire `functional/portal/tests/Unit/ReservationRequestStateTest.php` (Unit, sans framework) :
   - depuis `pending`, `confirm`, `refuse`, `cancel` et `expire` donnent l'état attendu ;
   - depuis chacun des 4 états finaux, toute transition lève `IllegalReservationRequestTransitionException`.
-- [ ] T007 [P] Écrire `functional/portal/tests/Feature/PortalConstraintsTest.php` :
+- [X] T007 [P] Écrire `functional/portal/tests/Feature/PortalConstraintsTest.php` :
   - deux demandes `pending` du même compte sur la même machine avec des dates qui se chevauchent : la seconde est refusée par la contrainte d'exclusion ;
   - la même chose avec une demande `cancelled` ou d'un autre compte : acceptée ;
   - `reservation_id` dupliqué refusé (index unique) ;
@@ -87,48 +87,48 @@ description: "Task list for the customer portal and online booking requests feat
 
 ### Implémentation
 
-- [ ] T008 Migration `functional/portal/database/migrations/2026_10_11_000100_create_customer_accounts_table.php` :
+- [X] T008 Migration `functional/portal/database/migrations/2026_10_11_000100_create_customer_accounts_table.php` :
   - colonnes de [data-model.md](data-model.md#customer_accounts--compte-client) : `email` string(255) **unique**, `phone` string(30), `declared_type` avec CHECK `IN ('individual','professional')`, `customer_id` FK nullable vers `customers` sans cascade et indexée, `email_verified_at`, `password`, `remember_token` ;
   - plus la table `customer_password_reset_tokens` (`email` PK, `token`, `created_at`).
-- [ ] T009 Migration `functional/portal/database/migrations/2026_10_11_000101_create_reservation_requests_table.php`, selon [data-model.md](data-model.md#reservation_requests--demande-de-réservation) :
+- [X] T009 Migration `functional/portal/database/migrations/2026_10_11_000101_create_reservation_requests_table.php`, selon [data-model.md](data-model.md#reservation_requests--demande-de-réservation) :
   - `comment` string(500) nullable, `refusal_reason` string(500) nullable, `indicative_daily_price_cents` integer nullable avec CHECK `> 0` ;
   - `status` avec CHECK sur `pending, confirmed, refused, cancelled, expired` ;
   - `reservation_id` **unique** ; CHECK `(status = 'confirmed') = (reservation_id IS NOT NULL)` et `(status = 'refused') = (refusal_reason IS NOT NULL)` ; CHECK `end_date >= start_date` ;
   - `EXCLUDE USING gist (customer_account_id WITH =, machine_id WITH =, daterange(start_date, end_date, '[]') WITH &&) WHERE (status = 'pending')` ;
   - index `(status, start_date)` et `(customer_account_id, status)` ;
   - FK sans cascade vers `customer_accounts`, `machines`, `reservations`, `users` (`decided_by`), `agencies` (`decided_agency_id`).
-- [ ] T010 Migration `functional/portal/database/migrations/2026_10_11_000102_create_category_indicative_prices_table.php` : `machine_category_id` FK **unique**, `daily_price_cents` integer CHECK `> 0`, `updated_by` FK `users`, `updated_agency_id` FK `agencies`, timestamps.
-- [ ] T011 [P] Enums dans `functional/portal/src/Enums/` (`HasLabel` de `fleet`, libellés traduits) :
+- [X] T010 Migration `functional/portal/database/migrations/2026_10_11_000102_create_category_indicative_prices_table.php` : `machine_category_id` FK **unique**, `daily_price_cents` integer CHECK `> 0`, `updated_by` FK `users`, `updated_agency_id` FK `agencies`, timestamps.
+- [X] T011 [P] Enums dans `functional/portal/src/Enums/` (`HasLabel` de `fleet`, libellés traduits) :
   - `ReservationRequestStatus` : `Pending`, `Confirmed`, `Refused`, `Cancelled`, `Expired` ;
   - `CustomerReservationStatus::fromReservationStatus(ReservationStatus)` : confirmée, en cours, terminée, annulée ;
   - `PortalHistoryEvent` : `RequestSent`, `RequestConfirmed`, `AccountAttached`, `RequestRefused`, `RequestCancelled`, `RequestExpired`, `IndicativePriceSet`, `IndicativePriceRemoved`.
-- [ ] T012 Modèles et factories :
+- [X] T012 Modèles et factories :
   - `functional/portal/src/Models/CustomerAccount.php` : `Authenticatable`, `MustVerifyEmail`, `CanResetPassword`, `Notifiable` ; casts `declared_type` → `CustomerType`, `password` → `hashed`, `email_verified_at` → `immutable_datetime` ; relations `customer()`, `reservationRequests()`. Factory avec les états `unverified()` et `attachedTo(Customer)`.
   - `ReservationRequest.php` : casts, relations `account()`, `machine()`, `reservation()`, `decidedBy()`, méthode `state()` par la fabrique. Factory avec les états `confirmed()`, `refused()`, `cancelled()`, `expired()`.
-  - `CategoryIndicativePrice.php` : `LogsActivity` sur `daily_price_cents`. Avec sa factory.
-- [ ] T013 États dans `functional/portal/src/States/` :
+  - `CategoryIndicativePrice.php` : modifications tracées par `PortalHistory` (ancien et nouveau montant). Avec sa factory.
+- [X] T013 États dans `functional/portal/src/States/` :
   - `ReservationRequestState` (contrat), `PendingRequestState`, `ConfirmedRequestState`, `RefusedRequestState`, `CancelledRequestState`, `ExpiredRequestState` ;
   - le trait `RefusesRequestTransitions` et la fabrique `ReservationRequestStateFactory` ;
   - l'exception `functional/portal/src/Exceptions/IllegalReservationRequestTransitionException.php` (`RefusalException`, clé `portal::refusals.illegal_transition`).
 
   T006 doit passer.
-- [ ] T014 [P] Permissions :
+- [X] T014 [P] Permissions :
   - `functional/portal/src/Access/PortalPermission.php` : `HandleRequests = 'portal.handle-requests'`, `ManagePrices = 'portal.manage-prices'` ;
   - `functional/portal/database/seeders/PortalPermissionSeeder.php` : crée les permissions sans toucher au rôle ;
   - l'appeler avant `PermissionSeeder` dans `database/seeders/DatabaseSeeder.php` ;
   - l'ajouter à `Tests\TestCase::seedPermissions()` dans `tests/TestCase.php`.
-- [ ] T015 Colle d'authentification :
+- [X] T015 Colle d'authentification :
   - dans `config/auth.php` : guard `customer` (`session`, provider `customer_accounts`), provider `customer_accounts` (`eloquent`, `Functional\Portal\Models\CustomerAccount`), broker `customer_accounts` (table `customer_password_reset_tokens`, `expire` 60, `throttle` 60) ;
   - dans `bootstrap/app.php` : `$middleware->redirectGuestsTo(...)` et `redirectUsersTo(...)` renvoient vers `portal.login` et `portal.search` pour une requête `portal.*` ou sous `espace-client/*`, et vers `login` et `dashboard` sinon.
-- [ ] T016 [P] `functional/portal/src/History/PortalHistory.php` : `record(Model $subject, PortalHistoryEvent, Model|null $author, array $details)` sur `activity('portal')`, sur le modèle de `functional/accounts/src/Support/AccountsHistory.php`. L'auteur est un salarié (avec son agence), un compte client, ou `null` pour « automatique ».
-- [ ] T017 [P] Diffusion temps réel :
+- [X] T016 [P] `functional/portal/src/History/PortalHistory.php` : `record(Model $subject, PortalHistoryEvent, Model|null $author, array $details)` sur `activity('portal')`, sur le modèle de `functional/accounts/src/Support/AccountsHistory.php`. L'auteur est un salarié (avec son agence), un compte client, ou `null` pour « automatique ».
+- [X] T017 [P] Diffusion temps réel :
   - `functional/portal/src/Events/ReservationRequestChanged.php` : `ShouldBroadcast`, `ShouldDispatchAfterCommit`, canal `PrivateChannel('portal-requests')`, `broadcastAs` `reservation-request.changed`, charge utile `{id, status, machine_id, start_date}` ;
   - `functional/portal/routes/channels.php` : `Broadcast::channel('portal-requests', fn (Authorizable $user): bool => $user->can(PortalPermission::HandleRequests->value))`.
-- [ ] T018 [P] Accès dans `functional/portal/src/Access/` :
+- [X] T018 [P] Accès dans `functional/portal/src/Access/` :
   - `Perimeters/OwnAccountPerimeter.php` ;
   - `Controls/ReservationRequestControl.php` : `GlobalPerimeter` pour un salarié avec `portal.handle-requests` ; `OwnAccountPerimeter` pour un `CustomerAccount`, requête `where customer_account_id = id` ;
   - `Controls/IndicativePriceControl.php` (`portal.manage-prices`).
-- [ ] T019 Layout et provider :
+- [X] T019 Layout et provider :
   - `functional/portal/resources/views/layouts/portal.blade.php` : `partials.head`, `x-app-logo`, en-tête Flux avec les liens Rechercher, Mes demandes, Mes réservations, Mon compte et Déconnexion pour un compte connecté ; pas de barre latérale salarié ;
   - `PortalServiceProvider::boot()` : migrations, traductions, vues, contrôles, enregistrement des composants Livewire au fil des phases, `withRouting(web, channels, commands)`.
 

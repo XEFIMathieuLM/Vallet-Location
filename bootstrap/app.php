@@ -15,6 +15,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [EnsureUserIsActive::class]);
+        $middleware->redirectGuestsTo(fn (Request $request): string => $request->is('espace-client', 'espace-client/*') ? route('portal.login') : route('login'));
+        $middleware->redirectUsersTo(fn (Request $request): string => $request->is('espace-client', 'espace-client/*') ? route('portal.search') : route('dashboard'));
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

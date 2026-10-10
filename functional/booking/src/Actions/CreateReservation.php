@@ -4,6 +4,7 @@ namespace Functional\Booking\Actions;
 
 use App\Models\User;
 use Carbon\CarbonImmutable;
+use Functional\Booking\Eligibility\MachineEligibility;
 use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Events\ReservationChanged;
 use Functional\Booking\Exceptions\InvalidReservationDatesException;
@@ -18,6 +19,8 @@ use Throwable;
 final class CreateReservation
 {
     private const EXCLUSION_VIOLATION = '23P01';
+
+    public function __construct(private readonly MachineEligibility $machineEligibility) {}
 
     public function handle(User $author, Machine $machine, Customer $customer, CarbonImmutable $startDate, CarbonImmutable $endDate): Reservation
     {
@@ -47,7 +50,9 @@ final class CreateReservation
 
     private function reserve(User $author, Machine $machine, Customer $customer, CarbonImmutable $startDate, CarbonImmutable $endDate): Reservation
     {
-        Machine::query()->whereKey($machine->id)->lockForUpdate()->firstOrFail();
+        $lockedMachine = Machine::query()->whereKey($machine->id)->lockForUpdate()->firstOrFail();
+
+        $this->machineEligibility->ensureReservableUntil($lockedMachine, $endDate);
 
         $conflictingReservation = Reservation::query()
             ->with('agency')

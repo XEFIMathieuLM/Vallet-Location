@@ -44,10 +44,10 @@ Dépôt unique : l'application Laravel à la racine du dépôt (pas de `repos.ym
 
 Elle ne dépend pas de la 002 ni de la 003 ; elle se cumule avec leurs gardes de sortie (photos 002, caution 004) par le registre de la 001.
 
-**Points d'extension manquants dans la 001** (voir [research.md](research.md) C9, C10) — à livrer dans `booking` avant l'implémentation, par la session de coordination ou en phase de prérequis de cette feature :
+**Points d'extension manquants dans la 001** (voir [research.md](research.md) C9, C10), arbitrés par la session de coordination :
 
-1. **Modification de l'e-mail d'un client** : action `UpdateCustomerEmail` et événement `CustomerChanged` (`ShouldDispatchAfterCommit`) dans `booking`. Sans eux, `certification` devrait écrire dans la table `customers` d'un autre layer (interdit par le principe I).
-2. **Disponibilité d'une étape agrégée par section** : aujourd'hui `ReservationDetail::$readinessBySteps[$step]` garde le dernier booléen reçu, toutes sections confondues ; avec deux sections ou plus qui conditionnent la sortie (photos, caution, attestation), la dernière qui parle l'emporte. Il faut un état par section et par étape, l'étape étant prête quand toutes les sections qui se sont prononcées le sont. En attendant, la section attestation n'émet pas de disponibilité et le refus serveur reste la garantie.
+1. **Modification de l'e-mail d'un client** : action `UpdateCustomer::changeEmail()` et événement `CustomerChanged` (`ShouldDispatchAfterCommit`) dans `booking`. Sans eux, `certification` devrait écrire dans la table `customers` d'un autre layer (interdit par le principe I). **Livrés par cette feature** dans `booking` (phase 0, fichiers nouveaux uniquement), sous un nom générique que les features 004 et 006 réutiliseront.
+2. **Disponibilité d'une étape agrégée par section** : aujourd'hui `ReservationDetail::$readinessBySteps[$step]` garde le dernier booléen reçu, toutes sections confondues ; avec deux sections ou plus qui conditionnent la sortie (photos, caution, attestation), la dernière qui parle l'emporte. Il faut un état par section et par étape, l'étape étant prête quand toutes les sections qui se sont prononcées le sont. **Livrée par la 001** dans son point d'extension. En attendant, la section attestation n'émet pas de disponibilité et le refus serveur reste la garantie.
 
 ## Constitution Check
 
@@ -57,7 +57,7 @@ Portes tirées de la constitution v1.0.0 (et des précisions 1.0.1 annoncées : 
 
 | Principe | Porte | Statut |
 |----------|-------|--------|
-| I. Layers OSDD | nouveau domaine = nouveau layer `functional/certification` ; dépendances `certification → booking → fleet` ; extension par `ReservationTransitionGuards`, `ReservationDetailSections` et les événements `ReservationChanged` / `CustomerChanged` ; appels aux actions publiques des layers inférieurs (`UpdateMachineVgp`, `UpdateCustomerEmail`) ; aucun fichier ni table d'un autre layer modifié par `certification` | ✅ C1, C9, C10 (les deux points d'extension sont livrés dans `booking` lui-même) |
+| I. Layers OSDD | nouveau domaine = nouveau layer `functional/certification` ; dépendances `certification → booking → fleet` ; extension par `ReservationTransitionGuards`, `ReservationDetailSections` et les événements `ReservationChanged` / `CustomerChanged` ; appels aux actions publiques des layers inférieurs (`UpdateMachineVgp`, `UpdateCustomer::changeEmail()`) ; aucun fichier ni table d'un autre layer modifié par `certification` | ✅ C1, C9, C10 (les deux points d'extension sont livrés dans `booking` lui-même) |
 | II. Garanties en base et serveur | une attestation par réservation (index unique) ; un seul envoi automatique réussi (état sous `lockForUpdate()`, index unique partiel sur l'envoi automatique réussi) ; garde de sortie dans la transaction verrouillée de `DepartReservation` ; CHECK sur les états et les canaux ; pas de cascade ; compteurs et liste en SQL | ✅ C4, C5, C6, data-model |
 | III. Cycles de vie explicites | attestation en pattern State (6 états, transitions interdites, `IllegalCertificateTransitionException`) ; statuts texte + enums ; dates en heure de Paris | ✅ C4, data-model |
 | IV. Effets de bord et erreurs typées | listeners sur événements typés, job, commande planifiée ; pas d'observer ; `rescue()` et exceptions typées (`RefusalException` pour les refus) ; service d'envoi isolé derrière le mailer de Laravel, avec transport factice pour les tests et Mailpit en local ; état persisté + rattrapage chaque minute | ✅ C3, C5, C7 |
@@ -98,8 +98,8 @@ resources/views/layouts/
 composer.json, phpunit.xml, phpstan.neon, database/seeders/DatabaseSeeder.php  # enregistrement du layer (modifiés)
 config/filesystems.php             # + disque privé vgp-reports
 functional/
-├── booking/                       # points d'extension demandés (si livrés par cette feature)
-│   └── src/{Actions/UpdateCustomerEmail.php, Events/CustomerChanged.php}, Livewire/ReservationDetail.php (disponibilité par section)
+├── booking/                       # phase 0 : fichiers nouveaux uniquement
+│   └── src/{Actions/UpdateCustomer.php, Events/CustomerChanged.php, Exceptions/InvalidCustomerEmailException.php}
 └── certification/                 # nouveau
     ├── composer.json              # LayerManifest, dépend de booking et fleet
     ├── config/certification.php   # go_live_date, délais de relance, seuil d'alerte, formats et taille, disque

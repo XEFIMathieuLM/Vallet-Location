@@ -26,7 +26,7 @@ Cette feature s'appuie sur la 001 telle que corrigée par la session de coordina
 Avant T004 :
 
 1. la 003 corrigée est commitée et la branche `005-attestation-vgp` est mise à jour par-dessus (feu vert de la session de coordination) ;
-2. les points d'extension de la phase 0 sont livrés (dans la 001 par la session de coordination, ou ici en phase 0 selon sa décision) ;
+2. la phase 0 est terminée (action d'écriture du client et `CustomerChanged` ajoutés dans `booking`) ;
 3. `docker compose exec -u sail laravel.test php artisan test` passe sur la branche mise à jour ;
 4. l'environnement Sail de la feature est isolé : `.env` copié depuis `/Users/macbook/Documents/Vallet-Location/.env`, `COMPOSE_PROJECT_NAME=vallet-005` et ports libres ([quickstart.md](quickstart.md#prérequis)).
 
@@ -40,7 +40,7 @@ Avant T004 :
 Celles de la 001 s'appliquent ([tasks.md de la 001](../001-reservation-machines/tasks.md#conventions-pour-toutes-les-tâches)) : commandes via `docker compose exec -u sail laravel.test …`, code en anglais, textes dans `functional/certification/resources/lang/fr/*.php`, statuts en `string` castés en enum, pas de cascade, pas d'observer, pas de `try/catch` (`rescue()` qui relance tout ce qui n'est pas l'exception attendue), pas de commentaire, factories avec `faker()`, contrôles par permission, fichiers < 200 lignes, agrégats en base, pas de requête dans une boucle. En plus :
 
 - `certification` dépend de `booking` et `fleet` ; **aucun fichier de `booking`, `fleet`, `inspection` ni `billing` n'importe une classe de `certification`** ; `Machine`, `Reservation` et `Customer` ne déclarent aucune relation vers les tables de `certification`.
-- `certification` n'écrit dans aucune table d'un autre layer : l'échéance passe par `UpdateMachineVgp`, l'e-mail par `UpdateCustomerEmail`.
+- `certification` n'écrit dans aucune table d'un autre layer : l'échéance passe par `UpdateMachineVgp`, l'e-mail par `UpdateCustomer::changeEmail()`.
 - Tout e-mail passe par `VgpCertificateNotification` (`toMail()` rend `VgpCertificateMail`) et `Notification::route('mail', …)` ; jamais `Mail::to()`.
 - Chaque refus est une sous-classe `final` de `RefusalException` à factory nommée, testée avec `assertRefused`.
 - Les tests utilisent `$this->travelTo()`, `Storage::fake('vgp-reports')`, `Notification::fake()` / `Mail::fake()` et le transport factice de T020 ; jamais d'envoi réel.
@@ -48,13 +48,13 @@ Celles de la 001 s'appliquent ([tasks.md de la 001](../001-reservation-machines/
 
 ---
 
-## Phase 0: Points d'extension de la 001 (si la session de coordination les confie à cette feature)
+## Phase 0: Prérequis dans `booking` (arbitrage de la session de coordination)
 
-**Purpose**: [contracts/extension-points.md](contracts/extension-points.md#demandés-à-la-001-à-livrer-avant-limplémentation). À sauter si la 001 corrigée les livre.
+**Purpose**: [contracts/extension-points.md](contracts/extension-points.md#demandés-à-la-001-à-livrer-avant-limplémentation). L'action d'écriture du client et `CustomerChanged` sont ajoutés par cette feature dans `booking` (fichiers nouveaux uniquement) ; la disponibilité par section est livrée par la 001. Avant T001, relire les plans des features 004 et 006 (qui écrivent aussi dans `Customer`) et réutiliser leurs noms s'ils prévoient déjà une action ou un événement équivalent ; signaler tout doublon à la session de coordination.
 
-- [ ] T001 Écrire `functional/booking/tests/Feature/UpdateCustomerEmailTest.php` : mise à jour de `customers.email` ; refus d'un e-mail vide ou invalide (`assertRefused`) ; trace dans le journal d'activité du client ; `CustomerChanged` émis après commit (`Event::fake([CustomerChanged::class])`)
-- [ ] T002 Créer `functional/booking/src/Actions/UpdateCustomerEmail.php` (`handle(User $author, Customer $customer, string $email): Customer`), `functional/booking/src/Events/CustomerChanged.php` (`ShouldDispatchAfterCommit`, `public readonly Customer $customer`) et `functional/booking/src/Exceptions/InvalidCustomerEmailException.php` (`final`, hérite de `RefusalException`) avec ses traductions dans `functional/booking/resources/lang/fr/customers.php` ; T001 passe
-- [ ] T003 Disponibilité par section, uniquement si la session de coordination la confie à cette feature : `functional/booking/src/Livewire/ReservationDetail.php` garde `readinessBySteps[step][section]` et `isReadyFor()` exige toutes les sections qui se sont prononcées ; l'événement `reservation-transition-readiness` porte `section` ; mettre à jour `functional/booking/tests/Feature/ReservationDetailActionsTest.php` et `functional/inspection/src/Livewire/PhotosPanel.php` + `functional/inspection/tests/Feature/PhotosPanelReadinessTest.php`
+- [ ] T001 Écrire `functional/booking/tests/Feature/UpdateCustomerTest.php` : mise à jour de `customers.email` ; refus d'un e-mail vide ou invalide (`assertRefused`) ; trace dans le journal d'activité du client ; `CustomerChanged` émis après commit (`Event::fake([CustomerChanged::class])`)
+- [ ] T002 Créer `functional/booking/src/Actions/UpdateCustomer.php` (action générique d'écriture du client ; méthode `changeEmail(User $author, Customer $customer, string $email): Customer` ; les features 004 et 006 y ajouteront leurs propres méthodes, qui émettent toutes `CustomerChanged`), `functional/booking/src/Events/CustomerChanged.php` (`ShouldDispatchAfterCommit`, `public readonly Customer $customer`) et `functional/booking/src/Exceptions/InvalidCustomerEmailException.php` (`final`, hérite de `RefusalException`) avec ses traductions dans `functional/booking/resources/lang/fr/customers.php` ; T001 passe
+- [ ] T003 Vérifier sur la branche mise à jour la forme de la disponibilité par section livrée par la 001 dans `functional/booking/src/Livewire/ReservationDetail.php` (nom des paramètres de `reservation-transition-readiness`, identifiant de section attendu) et reporter cette forme exacte dans T046 ; si elle n'est pas encore livrée, T046 applique le repli
 
 **Checkpoint**: suite complète verte ; commit de phase.
 
@@ -160,7 +160,7 @@ Celles de la 001 s'appliquent ([tasks.md de la 001](../001-reservation-machines/
 ### Tests for User Story 3 ⚠️
 
 - [ ] T037 [P] [US3] Écrire `functional/certification/tests/Feature/DepartureGuardTest.php` : sc. 1 (`awaiting_email` affiché), sc. 2 (sortie refusée pour chacun des motifs `awaiting_email`, `awaiting_report`, `pending`, `failed`, attestation absente → ouverte et refus « en attente », via `DepartReservation` et `assertRefused`), sc. 4 (attestation `sent` : la garde laisse passer, les autres gardes enregistrées restent appelées — garde factice qui refuse enregistrée dans le test), sc. 5 (machine non soumise : passe), avant la mise en service : passe, retour jamais bloqué
-- [ ] T038 [P] [US3] Écrire `functional/certification/tests/Feature/CustomerEmailFromReservationTest.php` : sc. 3 (saisie de l'e-mail depuis la section → `UpdateCustomerEmail` → `CustomerChanged` → attestation `pending` puis `sent`, historique `customer_email_updated`), e-mail invalide refusé, l'attestation d'une autre réservation confirmée du même client part aussi
+- [ ] T038 [P] [US3] Écrire `functional/certification/tests/Feature/CustomerEmailFromReservationTest.php` : sc. 3 (saisie de l'e-mail depuis la section → `UpdateCustomer::changeEmail()` → `CustomerChanged` → attestation `pending` puis `sent`, historique `customer_email_updated`), e-mail invalide refusé, l'attestation d'une autre réservation confirmée du même client part aussi
 - [ ] T039 [P] [US3] Écrire `functional/certification/tests/Feature/HandDeliveryTest.php` : sc. 7 (remise → `hand_delivered`, `delivered_at`, trace `channel = hand` avec auteur et rapport, historique, sortie acceptée, absente de la liste à traiter), sc. 8 (sans rapport : `assertRefused` `HandDeliveryRefusedException`), réservation non confirmée refusée, attestation déjà livrée refusée
 - [ ] T040 [P] [US3] Écrire `functional/certification/tests/Feature/DepartureConcurrencyTest.php` : sc. 6 — la garde lit l'attestation sous `lockForUpdate()` ; une sortie vérifiée pendant que l'attestation est `pending` est refusée, et acceptée une fois `sent` commitée (deux connexions ou vérification du verrou par `DB::listen` sur `for update`)
 
@@ -170,8 +170,8 @@ Celles de la 001 s'appliquent ([tasks.md de la 001](../001-reservation-machines/
 - [ ] T042 [US3] Créer `functional/certification/src/Guards/CertificateDeliveredGuard.php` ([research.md](research.md#c6--la-garde-de-sortie-dans-la-transaction-de-la-001) C6) et l'enregistrer dans `ReservationTransitionGuards` depuis le provider ; T037 et T040 passent
 - [ ] T043 [US3] Créer `functional/certification/src/Actions/RecordHandDelivery.php` (verrou, contrôles, trace `channel = hand`, `handDeliver()`, historique `certificate_hand_delivered`) ; T039 passe
 - [ ] T044 [US3] Créer `functional/certification/src/Listeners/ResolveCertificatesOnCustomerChanged.php` (attestations `awaiting_email` ou `failed` des réservations confirmées du client, en une requête, puis `ResolveCertificateReadiness`) et l'enregistrer sur `CustomerChanged` dans le provider
-- [ ] T045 [US3] Ajouter à `ReservationCertificateSection` la saisie de l'e-mail du client (appel de `UpdateCustomerEmail`, historique `customer_email_updated`) et le bouton « Rapport VGP remis en main propre » avec confirmation (`flux:modal`), refus affichés par `DisplaysRefusals`, contrôle `functional/certification/src/Access/Controls/ReservationCertificateControl.php` ; T038 passe
-- [ ] T046 [US3] Si la disponibilité par section est livrée (T003 ou 001) : la section émet `reservation-transition-readiness` (`step = ReservationTransition::Departure->value`, `section = certification.reservation-section`, `is_ready` = attestation livrée) ; sinon, rien à faire (repli de [research.md](research.md#c10--disponibilité-de-la-sortie-agrégée-par-section) C10) ; dans `functional/certification/src/Livewire/ReservationCertificateSection.php`, test correspondant dans `functional/certification/tests/Feature/ReservationCertificateSectionTest.php`
+- [ ] T045 [US3] Ajouter à `ReservationCertificateSection` la saisie de l'e-mail du client (appel de `UpdateCustomer::changeEmail()`, historique `customer_email_updated`) et le bouton « Rapport VGP remis en main propre » avec confirmation (`flux:modal`), refus affichés par `DisplaysRefusals`, contrôle `functional/certification/src/Access/Controls/ReservationCertificateControl.php` ; T038 passe
+- [ ] T046 [US3] Si la disponibilité par section est livrée par la 001 (constaté en T003) : la section émet `reservation-transition-readiness` (`step = ReservationTransition::Departure->value`, `section = certification.reservation-section`, `is_ready` = attestation livrée) ; sinon, rien à faire (repli de [research.md](research.md#c10--disponibilité-de-la-sortie-agrégée-par-section) C10) ; dans `functional/certification/src/Livewire/ReservationCertificateSection.php`, test correspondant dans `functional/certification/tests/Feature/ReservationCertificateSectionTest.php`
 
 **Checkpoint**: la règle « pas de sortie sans attestation » est garantie ; suite verte ; commit de phase.
 
@@ -234,7 +234,7 @@ Celles de la 001 s'appliquent ([tasks.md de la 001](../001-reservation-machines/
 
 ### Phase Dependencies
 
-- **Phase 0** : seulement si la session de coordination la confie à cette feature ; bloque US3 (T038, T044, T045) et T046.
+- **Phase 0** : obligatoire, après la mise à jour de la branche ; bloque US3 (T038, T044, T045) ; T003 conditionne T046.
 - **Phase 1 (Setup)** : après le feu vert de coordination et la mise à jour de la branche.
 - **Phase 2 (Foundational)** : après la phase 1 ; bloque toutes les stories.
 - **US1 (phase 3)** : après la phase 2 — MVP.

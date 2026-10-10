@@ -89,7 +89,7 @@ Une tentative d'envoi par e-mail ou une remise en main propre ; journal immuable
 |---|---|---|
 | `Machine` (`is_subject_to_vgp`, `vgp_due_date`, `reference`, `category`) | fleet | décider si une attestation est due ; échéance mise à jour par `UpdateMachineVgp` |
 | `Reservation` (`status`, `start_date`, `end_date`, `agency`, `customer`, `machine`) | booking | ouverture, contenu de l'e-mail, liste triée par date de départ |
-| `Customer` (`name`, `email`) | booking | destinataire ; e-mail modifié par `UpdateCustomerEmail` (point d'extension C9) |
+| `Customer` (`name`, `email`) | booking | destinataire ; e-mail modifié par `UpdateCustomer::changeEmail()` (point d'extension C9) |
 | `activity_log` | app (spatie) | historique de la réservation (journal `certification`) et de la machine |
 
 ## Historique

@@ -73,15 +73,15 @@ Décisions de conception de la feature 005. Chaque décision est numérotée (C1
 
 ## C9 — Modifier l'e-mail du client : point d'extension dans `booking`
 
-- **Decision** : `booking` expose `UpdateCustomerEmail` (e-mail obligatoire et valide, journal d'activité sur le client) et émet `CustomerChanged` (`ShouldDispatchAfterCommit`). La section attestation du détail de réservation appelle cette action ; `certification` écoute `CustomerChanged` et résout les attestations `AwaitingEmail` ou `Failed` des réservations confirmées de ce client (elles passent `Pending` et partent).
+- **Decision** : `booking` expose `UpdateCustomer::changeEmail()` (e-mail obligatoire et valide, journal d'activité sur le client) et émet `CustomerChanged` (`ShouldDispatchAfterCommit`). La section attestation du détail de réservation appelle cette action ; `certification` écoute `CustomerChanged` et résout les attestations `AwaitingEmail` ou `Failed` des réservations confirmées de ce client (elles passent `Pending` et partent).
 - **Rationale** : `customers` appartient à `booking` ; `certification` ne peut pas y écrire (principe I). Modifier l'e-mail d'un client est une capacité de `booking`, utile au-delà de cette feature.
-- **À coordonner** : livré dans `booking` par la session de coordination avec les corrections de la 001, ou par cette feature en phase de prérequis (deux fichiers ajoutés dans `booking`, aucun fichier existant modifié).
+- **Arbitrage** : livré par cette feature en phase 0, dans `booking`, fichiers nouveaux uniquement. Nom générique : `UpdateCustomer` (méthode `changeEmail()`), pour que les features 004 (type de client) et 006 (grands comptes) y ajoutent leurs méthodes et émettent le même `CustomerChanged`. À la date du plan, ni la 004 ni la 006 n'ont de plan ; leurs noms sont à revérifier avant l'implémentation.
 
 ## C10 — Disponibilité de la sortie agrégée par section
 
 - **Decision demandée à la 001** : `ReservationDetail` garde `readinessBySteps[step][section] = bool` ; l'événement `reservation-transition-readiness` porte `step`, `section` et `is_ready` ; l'étape est prête quand toutes les sections qui se sont prononcées pour cette étape le sont (sans section enregistrée, les boutons restent actifs, comme aujourd'hui).
 - **Rationale** : avec les photos (002), la caution (004) et l'attestation (005), le booléen unique actuel est écrasé par la dernière section qui parle ; le bouton peut s'activer alors qu'une autre condition bloque. Le refus serveur reste correct, mais l'interface ment.
-- **À coordonner** : modifie `ReservationDetail` et le test de la 001 qui émet l'événement ; à livrer par la session de coordination dans la 001 (les sections de la 002 et de la 004 doivent aussi passer `section`).
+- **Arbitrage** : livré par la 001 dans son point d'extension (forme exacte transmise par la session de coordination) ; les sections de la 002 et de la 004 passent aussi `section`.
 - **Repli** : tant que la 001 n'agrège pas, `ReservationCertificateSection` n'émet pas de disponibilité ; elle affiche le blocage, et la garde refuse côté serveur avec le motif.
 
 ## C11 — Permission

@@ -12,10 +12,10 @@
 
 ## Demandés à la 001 (à livrer avant l'implémentation)
 
-### 1. `UpdateCustomerEmail` et `CustomerChanged` (booking) — [research.md](../research.md) C9
+### 1. `UpdateCustomer::changeEmail()` et `CustomerChanged` (booking) — livrés par la 005 (phase 0) — [research.md](../research.md) C9
 
 ```text
-Functional\Booking\Actions\UpdateCustomerEmail::handle(User $author, Customer $customer, string $email): Customer
+Functional\Booking\Actions\UpdateCustomer::changeEmail(User $author, Customer $customer, string $email): Customer
   - refuse un e-mail vide ou invalide (RefusalException dédiée, traduite)
   - met à jour customers.email, journal d'activité sur le client
   - émet CustomerChanged après commit
@@ -24,7 +24,7 @@ Functional\Booking\Events\CustomerChanged(public readonly Customer $customer)  /
 
 `certification` écoute `CustomerChanged` (`ResolveCertificatesOnCustomerChanged`) et résout les attestations `awaiting_email` ou `failed` des réservations confirmées du client.
 
-### 2. Disponibilité d'une étape par section (booking) — [research.md](../research.md) C10
+### 2. Disponibilité d'une étape par section (booking) — livrée par la 001 — [research.md](../research.md) C10
 
 ```text
 événement Livewire reservation-transition-readiness : { step: ReservationTransition value, section: string, is_ready: bool }

@@ -14,4 +14,6 @@ return [
     'pickup' => 'Retrait à l\'agence de :agency',
     'contact_agency' => 'Pour modifier ou annuler cette réservation, contactez l\'agence de :agency.',
     'cancel_reservation' => 'Annuler la réservation',
+    'download_certificate' => 'Télécharger l\'attestation VGP',
+    'certificate_not_available' => 'Attestation VGP pas encore disponible',
 ];

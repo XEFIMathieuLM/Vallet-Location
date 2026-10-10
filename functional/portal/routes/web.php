@@ -1,6 +1,7 @@
 <?php
 
 use Functional\Portal\Access\PortalPermission;
+use Functional\Portal\Http\Controllers\CustomerCertificateDownloadController;
 use Functional\Portal\Http\Controllers\LogoutController;
 use Functional\Portal\Http\Controllers\VerifyCustomerEmailController;
 use Functional\Portal\Livewire\Auth\ForgotPassword;
@@ -36,6 +37,7 @@ Route::prefix('espace-client')->name('portal.')->group(function () {
         Route::livewire('/', Search::class)->name('search');
         Route::livewire('demandes', MyRequests::class)->name('requests');
         Route::livewire('reservations', MyReservations::class)->name('reservations');
+        Route::get('reservations/{reservation}/attestation-vgp', CustomerCertificateDownloadController::class)->whereNumber('reservation')->name('reservations.certificate');
         Route::livewire('compte', AccountSettings::class)->name('account');
     });
 });

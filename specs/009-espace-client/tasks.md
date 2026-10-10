@@ -365,7 +365,7 @@ description: "Task list for the customer portal and online booking requests feat
 
 ### Tests d'abord
 
-- [ ] T066 [P] [US5] `functional/portal/tests/Feature/CustomerCertificateDownloadTest.php` (`Storage::fake('vgp-reports')`) :
+- [X] T066 [P] [US5] `functional/portal/tests/Feature/CustomerCertificateDownloadTest.php` (`Storage::fake('vgp-reports')`) :
   - scénario 1 : envoi e-mail réussi, téléchargement du rapport de ce dispatch ; remise en main propre, rapport remis ; plusieurs envois, rapport du dernier réussi ;
   - scénario 2 : « Attestation pas encore disponible » ;
   - scénario 3 : machine non soumise à VGP, rien ;
@@ -375,8 +375,8 @@ description: "Task list for the customer portal and online booking requests feat
 
 ### Implémentation
 
-- [ ] T067 [US5] `functional/portal/src/Queries/AccountCertificateDocuments.php` : pour les réservations d'une page de `AccountReservations`, le dernier `CertificateDispatch` réussi par attestation (`outcome` réussi, canal e-mail ou main propre). Une seule requête avec une sous-requête de dernier envoi, sans boucle.
-- [ ] T068 [US5] `functional/portal/src/Http/Controllers/CustomerCertificateDownloadController.php` : réservation de la fiche du compte, non annulée, rapport du dernier envoi, puis `Storage::disk('vgp-reports')->download()`. Route `portal.reservations.certificate`. Liens et mentions dans la vue de `MyReservations`. T066 doit passer.
+- [X] T067 [US5] `functional/portal/src/Queries/AccountCertificateDocuments.php` : pour les réservations d'une page de `AccountReservations`, le dernier `CertificateDispatch` réussi par attestation (`outcome` réussi, canal e-mail ou main propre). Une seule requête avec une sous-requête de dernier envoi, sans boucle.
+- [X] T068 [US5] `functional/portal/src/Http/Controllers/CustomerCertificateDownloadController.php` : réservation de la fiche du compte, non annulée, rapport du dernier envoi, puis `Storage::disk('vgp-reports')->download()`. Route `portal.reservations.certificate`. Liens et mentions dans la vue de `MyReservations`. T066 doit passer.
 
 **Checkpoint**: T066 vert ; `composer ci:check` vert ; commit « Espace client : attestations VGP ».
 

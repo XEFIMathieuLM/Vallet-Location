@@ -2,7 +2,6 @@
 
 namespace Functional\Booking\Tests\Feature;
 
-use App\Models\User;
 use Carbon\CarbonImmutable;
 use Database\Seeders\PermissionSeeder;
 use Functional\Booking\Actions\CreateReservation;
@@ -14,13 +13,14 @@ use Functional\Booking\Queries\AvailableMachinesQuery;
 use Functional\Fleet\Enums\MachineStatus;
 use Functional\Fleet\Models\Machine;
 use Functional\Fleet\Tests\Concerns\AssertsRefusals;
+use Functional\Fleet\Tests\Concerns\CreatesUsers;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class ReservationEligibilityTest extends TestCase
 {
-    use AssertsRefusals, RefreshDatabase;
+    use AssertsRefusals, CreatesUsers, RefreshDatabase;
 
     protected function setUp(): void
     {
@@ -137,7 +137,7 @@ class ReservationEligibilityTest extends TestCase
     private function reserve(Machine $machine, string $startDate, string $endDate): Reservation
     {
         return app(CreateReservation::class)->handle(
-            User::factory()->employee()->create(),
+            $this->employee(),
             $machine,
             Customer::factory()->create(),
             CarbonImmutable::parse($startDate),

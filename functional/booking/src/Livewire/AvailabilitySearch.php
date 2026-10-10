@@ -61,8 +61,8 @@ class AvailabilitySearch extends Component
         return app(AvailableMachinesQuery::class)->get(
             CarbonImmutable::parse($this->startDate),
             CarbonImmutable::parse($this->endDate),
-            $this->categoryId,
-            $this->agencyId,
+            MachineCategory::query()->find($this->categoryId),
+            Agency::query()->find($this->agencyId),
         );
     }
 

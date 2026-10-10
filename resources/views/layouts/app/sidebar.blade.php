@@ -17,7 +17,7 @@
                     </flux:sidebar.item>
                 </flux:sidebar.group>
 
-                @can('reservations.manage')
+                @can(\Functional\Booking\Access\BookingPermission::ManageReservations->value)
                     <flux:sidebar.group :heading="__('booking::reservations.navigation.heading')" class="grid">
                         <flux:sidebar.item icon="magnifying-glass" :href="route('availability.index')" :current="request()->routeIs('availability.*')" wire:navigate>
                             {{ __('booking::reservations.navigation.availability') }}
@@ -31,7 +31,7 @@
                     </flux:sidebar.group>
                 @endcan
 
-                @can('machines.manage')
+                @can(\Functional\Fleet\Access\FleetPermission::ManageMachines->value)
                     <flux:sidebar.group :heading="__('fleet::machines.navigation.fleet')" class="grid">
                         <flux:sidebar.item icon="truck" :href="route('machines.index')" :current="request()->routeIs('machines.*')" wire:navigate>
                             {{ __('fleet::machines.index.title') }}
@@ -39,7 +39,7 @@
                     </flux:sidebar.group>
                 @endcan
 
-                @can('users.manage')
+                @can(\App\Access\AppPermission::ManageUsers->value)
                     <flux:sidebar.group :heading="__('users.title')" class="grid">
                         <flux:sidebar.item icon="users" :href="route('users.index')" :current="request()->routeIs('users.*')" wire:navigate>
                             {{ __('users.title') }}

@@ -9,6 +9,7 @@ use Functional\Booking\Events\ReservationChanged;
 use Functional\Booking\Models\Reservation;
 use Functional\Fleet\Models\Machine;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 
 final class RefreshReservationConflicts
 {
@@ -23,14 +24,16 @@ final class RefreshReservationConflicts
     public function handleMachines(Collection $machines): void
     {
         $machinesById = $machines->keyBy('id');
+        /** @var Collection<int, Model> $relatedMachines */
+        $relatedMachines = $machines;
         $upcomingReservations = Reservation::query()
-            ->whereIn('machine_id', $machinesById->keys())
+            ->whereBelongsTo($relatedMachines)
             ->where('status', ReservationStatus::Confirmed)
             ->orderBy('machine_id')
             ->orderBy('start_date')
             ->get();
         $overdueMachineIds = Reservation::query()
-            ->whereIn('machine_id', $machinesById->keys())
+            ->whereBelongsTo($relatedMachines)
             ->where('status', ReservationStatus::InProgress)
             ->whereDate('end_date', '<', CarbonImmutable::today())
             ->pluck('machine_id')

@@ -58,7 +58,10 @@ class Planning extends Component
             ['start_date' => $this->startDate, 'end_date' => $this->endDate],
             ['start_date' => ['required', 'date_format:Y-m-d'], 'end_date' => ['required', 'date_format:Y-m-d', 'after_or_equal:start_date']],
         )->passes();
-        $machines = PlanningGrid::machinesQuery($this->categoryId, $this->agencyId)->paginate(self::MACHINES_PER_PAGE);
+        $machines = PlanningGrid::machinesQuery(
+            MachineCategory::query()->find($this->categoryId),
+            Agency::query()->find($this->agencyId),
+        )->paginate(self::MACHINES_PER_PAGE);
         $grid = null;
 
         if ($isValidPeriod) {

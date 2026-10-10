@@ -10,6 +10,7 @@ use Functional\Fleet\Livewire\Concerns\DisplaysRefusals;
 use Functional\Fleet\Models\Agency;
 use Functional\Fleet\Models\Machine;
 use Functional\Fleet\Models\MachineCategory;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Computed;
@@ -53,8 +54,8 @@ class MachineIndex extends Component
         return Machine::query()
             ->with(['category', 'agency'])
             ->when($this->referenceSearch !== '', fn ($query) => $query->whereLike('reference', "%{$this->referenceSearch}%"))
-            ->when($this->categoryId !== null, fn ($query) => $query->where('machine_category_id', $this->categoryId))
-            ->when($this->agencyId !== null, fn ($query) => $query->where('agency_id', $this->agencyId))
+            ->when(MachineCategory::query()->find($this->categoryId), fn ($query, MachineCategory $category) => $query->whereBelongsTo($category, 'category'))
+            ->when(Agency::query()->find($this->agencyId), fn ($query, Agency $agency) => $query->whereBelongsTo($agency))
             ->when(MachineStatus::tryFrom($this->status), fn ($query, MachineStatus $status) => $query->where('status', $status))
             ->orderBy('reference')
             ->paginate(self::PER_PAGE);
@@ -72,7 +73,7 @@ class MachineIndex extends Component
         }
 
         if (! $transition->isManual()) {
-            abort(403);
+            throw new AuthorizationException;
         }
 
         $changeMachineStatus->handle($machine, $transition);

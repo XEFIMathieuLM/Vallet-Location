@@ -2,7 +2,6 @@
 
 namespace Functional\Booking\Tests\Feature;
 
-use App\Models\User;
 use Carbon\CarbonImmutable;
 use Database\Seeders\PermissionSeeder;
 use Functional\Booking\Enums\ReservationStatus;
@@ -16,6 +15,7 @@ use Functional\Booking\Tests\Doubles\RefusingGuard;
 use Functional\Booking\Tests\Doubles\TestReservationSection;
 use Functional\Fleet\Enums\MachineStatus;
 use Functional\Fleet\Models\Machine;
+use Functional\Fleet\Tests\Concerns\CreatesUsers;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
@@ -23,7 +23,7 @@ use Tests\TestCase;
 
 class ReservationDetailActionsTest extends TestCase
 {
-    use RefreshDatabase, WithoutTransitionExtensions;
+    use CreatesUsers, RefreshDatabase, WithoutTransitionExtensions;
 
     protected function setUp(): void
     {
@@ -104,7 +104,7 @@ class ReservationDetailActionsTest extends TestCase
 
     private function detail(Reservation $reservation): Testable
     {
-        return Livewire::actingAs(User::factory()->employee()->create())
+        return Livewire::actingAs($this->employee())
             ->test(ReservationDetail::class, ['reservation' => $reservation]);
     }
 

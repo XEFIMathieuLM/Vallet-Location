@@ -13,7 +13,7 @@ final class ActiveReservationsRetirementGuard implements MachineRetirementGuard
     public function ensureCanRetire(Machine $machine): void
     {
         $activeReservationCount = Reservation::query()
-            ->where('machine_id', $machine->id)
+            ->whereBelongsTo($machine)
             ->whereIn('status', [ReservationStatus::Confirmed, ReservationStatus::InProgress])
             ->count();
 

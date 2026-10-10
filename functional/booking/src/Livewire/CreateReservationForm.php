@@ -2,17 +2,17 @@
 
 namespace Functional\Booking\Livewire;
 
-use App\Models\User;
 use Carbon\CarbonImmutable;
 use Functional\Booking\Actions\CreateReservation;
+use Functional\Booking\Data\NewCustomer;
 use Functional\Booking\Models\Customer;
-use Functional\Booking\Models\Reservation;
+use Functional\Fleet\Contracts\AgencyMember;
 use Functional\Fleet\Livewire\Concerns\DisplaysRefusals;
 use Functional\Fleet\Models\Machine;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\Url;
@@ -73,16 +73,19 @@ class CreateReservationForm extends Component
     {
         $this->validate();
 
-        /** @var User $author */
         $author = Auth::user();
 
-        $reservation = DB::transaction(fn (): Reservation => $createReservation->handle(
+        if (! $author instanceof AgencyMember) {
+            throw new AuthorizationException;
+        }
+
+        $reservation = $createReservation->handle(
             $author,
             $this->machine,
-            $this->resolveCustomer(),
+            $this->selectedCustomer(),
             CarbonImmutable::parse($this->startDate),
             CarbonImmutable::parse($this->endDate),
-        ));
+        );
 
         session()->flash('reservation-created', __('booking::reservations.form.created', [
             'reference' => $this->machine->reference,
@@ -134,16 +137,16 @@ class CreateReservationForm extends Component
             ->title(__('booking::reservations.form.title'));
     }
 
-    private function resolveCustomer(): Customer
+    private function selectedCustomer(): Customer|NewCustomer
     {
         if (! $this->isNewCustomer) {
             return Customer::query()->findOrFail($this->customerId);
         }
 
-        return Customer::query()->create([
-            'name' => $this->newCustomerName,
-            'phone' => $this->newCustomerPhone !== '' ? $this->newCustomerPhone : null,
-            'email' => $this->newCustomerEmail !== '' ? $this->newCustomerEmail : null,
-        ]);
+        return new NewCustomer(
+            name: $this->newCustomerName,
+            phone: $this->newCustomerPhone !== '' ? $this->newCustomerPhone : null,
+            email: $this->newCustomerEmail !== '' ? $this->newCustomerEmail : null,
+        );
     }
 }

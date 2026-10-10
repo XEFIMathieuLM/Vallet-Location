@@ -2,8 +2,8 @@
 
 namespace Functional\Booking\Actions;
 
-use App\Models\User;
 use Carbon\CarbonImmutable;
+use Functional\Booking\Data\NewCustomer;
 use Functional\Booking\Eligibility\MachineEligibility;
 use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Events\ReservationChanged;
@@ -11,7 +11,9 @@ use Functional\Booking\Exceptions\InvalidReservationDatesException;
 use Functional\Booking\Exceptions\ReservationOverlapException;
 use Functional\Booking\Models\Customer;
 use Functional\Booking\Models\Reservation;
+use Functional\Fleet\Contracts\AgencyMember;
 use Functional\Fleet\Models\Machine;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -22,7 +24,7 @@ final class CreateReservation
 
     public function __construct(private readonly MachineEligibility $machineEligibility) {}
 
-    public function handle(User $author, Machine $machine, Customer $customer, CarbonImmutable $startDate, CarbonImmutable $endDate): Reservation
+    public function handle(Authenticatable&AgencyMember $author, Machine $machine, Customer|NewCustomer $customer, CarbonImmutable $startDate, CarbonImmutable $endDate): Reservation
     {
         $this->ensureDatesAreConsistent($startDate, $endDate);
 
@@ -48,7 +50,7 @@ final class CreateReservation
         }
     }
 
-    private function reserve(User $author, Machine $machine, Customer $customer, CarbonImmutable $startDate, CarbonImmutable $endDate): Reservation
+    private function reserve(Authenticatable&AgencyMember $author, Machine $machine, Customer|NewCustomer $customer, CarbonImmutable $startDate, CarbonImmutable $endDate): Reservation
     {
         $lockedMachine = Machine::query()->whereKey($machine->id)->lockForUpdate()->firstOrFail();
 
@@ -56,7 +58,7 @@ final class CreateReservation
 
         $conflictingReservation = Reservation::query()
             ->with('agency')
-            ->where('machine_id', $machine->id)
+            ->whereBelongsTo($lockedMachine)
             ->where('status', '<>', ReservationStatus::Cancelled)
             ->whereDate('start_date', '<=', $endDate)
             ->whereDate('end_date', '>=', $startDate)
@@ -67,14 +69,27 @@ final class CreateReservation
         }
 
         return Reservation::query()->create([
-            'machine_id' => $machine->id,
-            'customer_id' => $customer->id,
-            'agency_id' => $author->agency_id,
-            'created_by' => $author->id,
+            'machine_id' => $lockedMachine->id,
+            'customer_id' => $this->persistedCustomer($customer)->id,
+            'agency_id' => $author->agencyId(),
+            'created_by' => $author->getAuthIdentifier(),
             'start_date' => $startDate,
             'end_date' => $endDate,
             'planned_end_date' => $endDate,
             'status' => ReservationStatus::Confirmed,
+        ]);
+    }
+
+    private function persistedCustomer(Customer|NewCustomer $customer): Customer
+    {
+        if ($customer instanceof Customer) {
+            return $customer;
+        }
+
+        return Customer::query()->create([
+            'name' => $customer->name,
+            'phone' => $customer->phone,
+            'email' => $customer->email,
         ]);
     }
 

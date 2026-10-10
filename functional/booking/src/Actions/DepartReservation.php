@@ -25,7 +25,7 @@ final class DepartReservation
         DB::transaction(function () use ($reservation): void {
             $lockedReservation = Reservation::query()->lockForUpdate()->findOrFail($reservation->id);
             $nextState = $lockedReservation->state()->depart();
-            $machine = Machine::query()->lockForUpdate()->findOrFail($lockedReservation->machine_id);
+            $machine = $lockedReservation->machine()->lockForUpdate()->firstOrFail();
 
             $this->ensureDepartureIsAllowed($lockedReservation, $machine);
 

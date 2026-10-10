@@ -2,7 +2,6 @@
 
 namespace Functional\Booking\Tests\Feature;
 
-use App\Models\User;
 use Carbon\CarbonImmutable;
 use Database\Seeders\PermissionSeeder;
 use Functional\Booking\Actions\CancelReservation;
@@ -14,8 +13,11 @@ use Functional\Booking\Models\Customer;
 use Functional\Booking\Models\Reservation;
 use Functional\Booking\Tests\Concerns\WithoutTransitionExtensions;
 use Functional\Fleet\Actions\ChangeMachineStatus;
+use Functional\Fleet\Contracts\AgencyMember;
 use Functional\Fleet\Enums\MachineTransition;
 use Functional\Fleet\Models\Machine;
+use Functional\Fleet\Tests\Concerns\CreatesUsers;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
@@ -24,9 +26,9 @@ use Tests\TestCase;
 
 class ActivityLogTest extends TestCase
 {
-    use RefreshDatabase, WithoutTransitionExtensions;
+    use CreatesUsers, RefreshDatabase, WithoutTransitionExtensions;
 
-    private User $author;
+    private Model&Authenticatable&AgencyMember $author;
 
     protected function setUp(): void
     {
@@ -34,7 +36,7 @@ class ActivityLogTest extends TestCase
 
         $this->seed(PermissionSeeder::class);
         $this->travelTo(CarbonImmutable::parse('2026-11-10 09:00'));
-        $this->author = User::factory()->employee()->create();
+        $this->author = $this->employee();
         $this->actingAs($this->author);
     }
 

@@ -2,7 +2,6 @@
 
 namespace Functional\Fleet\Tests\Feature;
 
-use App\Models\User;
 use Carbon\CarbonImmutable;
 use Database\Seeders\PermissionSeeder;
 use Functional\Fleet\Actions\CreateMachine;
@@ -18,6 +17,7 @@ use Functional\Fleet\Models\Agency;
 use Functional\Fleet\Models\Machine;
 use Functional\Fleet\Models\MachineCategory;
 use Functional\Fleet\Tests\Concerns\AssertsRefusals;
+use Functional\Fleet\Tests\Concerns\CreatesUsers;
 use Functional\Fleet\Tests\Doubles\RefusingRetirementGuard;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -25,7 +25,7 @@ use Tests\TestCase;
 
 class ManageMachinesTest extends TestCase
 {
-    use AssertsRefusals, RefreshDatabase;
+    use AssertsRefusals, CreatesUsers, RefreshDatabase;
 
     public function test_a_machine_is_created_with_a_normalized_reference(): void
     {
@@ -98,12 +98,12 @@ class ManageMachinesTest extends TestCase
         $this->seed(PermissionSeeder::class);
         $machine = Machine::factory()->create(['reference' => 'NAC-0042']);
 
-        Livewire::actingAs(User::factory()->employee()->create())
+        Livewire::actingAs($this->employee())
             ->test(MachineIndex::class)
             ->call('applyTransition', $machine->id, MachineTransition::MarkOutOfOrder->value)
             ->assertHasNoErrors();
 
-        $this->actingAs(User::factory()->employee()->create())
+        $this->actingAs($this->employee())
             ->get(route('machines.index'))
             ->assertOk()
             ->assertSee('NAC-0042')
@@ -122,7 +122,7 @@ class ManageMachinesTest extends TestCase
 
     public function test_the_fleet_screen_requires_the_machine_permission(): void
     {
-        $this->actingAs(User::factory()->create())
+        $this->actingAs($this->userWithoutPermission())
             ->get(route('machines.index'))
             ->assertForbidden();
     }

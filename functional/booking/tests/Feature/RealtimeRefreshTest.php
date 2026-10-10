@@ -2,7 +2,6 @@
 
 namespace Functional\Booking\Tests\Feature;
 
-use App\Models\User;
 use Carbon\CarbonImmutable;
 use Database\Seeders\PermissionSeeder;
 use Functional\Booking\Livewire\AvailabilitySearch;
@@ -10,18 +9,22 @@ use Functional\Booking\Livewire\Planning;
 use Functional\Booking\Livewire\ReservationList;
 use Functional\Booking\Models\Reservation;
 use Functional\Booking\Tests\Concerns\WithoutTransitionExtensions;
+use Functional\Fleet\Contracts\AgencyMember;
 use Functional\Fleet\Enums\MachineStatus;
 use Functional\Fleet\Livewire\MachineIndex;
 use Functional\Fleet\Models\Machine;
+use Functional\Fleet\Tests\Concerns\CreatesUsers;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
 
 class RealtimeRefreshTest extends TestCase
 {
-    use RefreshDatabase, WithoutTransitionExtensions;
+    use CreatesUsers, RefreshDatabase, WithoutTransitionExtensions;
 
-    private User $employee;
+    private Model&Authenticatable&AgencyMember $employee;
 
     protected function setUp(): void
     {
@@ -29,7 +32,7 @@ class RealtimeRefreshTest extends TestCase
 
         $this->seed(PermissionSeeder::class);
         $this->travelTo(CarbonImmutable::parse('2026-11-10 09:00'));
-        $this->employee = User::factory()->employee()->create();
+        $this->employee = $this->employee();
     }
 
     public function test_the_availability_search_refreshes_when_another_agency_reserves(): void

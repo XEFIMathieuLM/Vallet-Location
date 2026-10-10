@@ -16,6 +16,14 @@
                         {{ __('Dashboard') }}
                     </flux:sidebar.item>
                 </flux:sidebar.group>
+
+                @can('reservations.manage')
+                    <flux:sidebar.group :heading="__('booking::reservations.navigation.heading')" class="grid">
+                        <flux:sidebar.item icon="magnifying-glass" :href="route('availability.index')" :current="request()->routeIs('availability.*')" wire:navigate>
+                            {{ __('booking::reservations.navigation.availability') }}
+                        </flux:sidebar.item>
+                    </flux:sidebar.group>
+                @endcan
             </flux:sidebar.nav>
 
             <flux:spacer />

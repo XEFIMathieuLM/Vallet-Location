@@ -1,0 +1,23 @@
+<?php
+
+namespace Functional\Fleet\Livewire\Concerns;
+
+use Closure;
+use Functional\Fleet\Exceptions\RefusalException;
+use Throwable;
+
+trait DisplaysRefusals
+{
+    /**
+     * Livewire calls this hook with named arguments, hence the short parameter name.
+     */
+    public function exceptionDisplaysRefusals(Throwable $e, Closure $stopPropagation): void
+    {
+        if (! $e instanceof RefusalException) {
+            return;
+        }
+
+        $this->addError('refusal', $e->getMessage());
+        $stopPropagation();
+    }
+}

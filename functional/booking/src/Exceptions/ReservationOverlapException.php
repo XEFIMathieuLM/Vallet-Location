@@ -15,4 +15,9 @@ final class ReservationOverlapException extends RefusalException
             'agency' => $conflictingReservation->agency->name,
         ]));
     }
+
+    public static function concurrent(): self
+    {
+        return new self(__('booking::reservations.refusals.concurrent_overlap'));
+    }
 }

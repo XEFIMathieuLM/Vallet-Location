@@ -1,0 +1,149 @@
+<?php
+
+namespace Functional\Booking\Livewire;
+
+use App\Models\User;
+use Carbon\CarbonImmutable;
+use Functional\Booking\Actions\CreateReservation;
+use Functional\Booking\Models\Customer;
+use Functional\Booking\Models\Reservation;
+use Functional\Fleet\Livewire\Concerns\DisplaysRefusals;
+use Functional\Fleet\Models\Machine;
+use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Locked;
+use Livewire\Attributes\Url;
+use Livewire\Component;
+
+/**
+ * @property-read Machine $machine
+ * @property-read Collection<int, Customer> $customers
+ */
+class CreateReservationForm extends Component
+{
+    use DisplaysRefusals;
+
+    private const CUSTOMER_SEARCH_LIMIT = 20;
+
+    #[Locked]
+    #[Url(as: 'machine')]
+    public int $machineId = 0;
+
+    #[Url(as: 'du')]
+    public string $startDate = '';
+
+    #[Url(as: 'au')]
+    public string $endDate = '';
+
+    public string $customerSearch = '';
+
+    public ?int $customerId = null;
+
+    public bool $isNewCustomer = false;
+
+    public string $newCustomerName = '';
+
+    public string $newCustomerPhone = '';
+
+    public string $newCustomerEmail = '';
+
+    #[Computed]
+    public function machine(): Machine
+    {
+        return Machine::query()->with(['category', 'agency'])->findOrFail($this->machineId);
+    }
+
+    /**
+     * @return Collection<int, Customer>
+     */
+    #[Computed]
+    public function customers(): Collection
+    {
+        return Customer::query()
+            ->when($this->customerSearch !== '', fn ($query) => $query->whereLike('name', "%{$this->customerSearch}%"))
+            ->orderBy('name')
+            ->limit(self::CUSTOMER_SEARCH_LIMIT)
+            ->get();
+    }
+
+    public function save(CreateReservation $createReservation): void
+    {
+        $this->validate();
+
+        /** @var User $author */
+        $author = Auth::user();
+
+        $reservation = DB::transaction(fn (): Reservation => $createReservation->handle(
+            $author,
+            $this->machine,
+            $this->resolveCustomer(),
+            CarbonImmutable::parse($this->startDate),
+            CarbonImmutable::parse($this->endDate),
+        ));
+
+        session()->flash('reservation-created', __('booking::reservations.form.created', [
+            'reference' => $this->machine->reference,
+            'start' => $reservation->start_date->format('d/m/Y'),
+            'end' => $reservation->end_date->format('d/m/Y'),
+        ]));
+
+        $this->redirectRoute('availability.index', navigate: true);
+    }
+
+    /**
+     * @return array<string, array<int, string>>
+     */
+    protected function rules(): array
+    {
+        $dateRules = ['required', 'date_format:Y-m-d'];
+
+        if (! $this->isNewCustomer) {
+            return ['startDate' => $dateRules, 'endDate' => $dateRules, 'customerId' => ['required', 'exists:customers,id']];
+        }
+
+        return [
+            'startDate' => $dateRules,
+            'endDate' => $dateRules,
+            'newCustomerName' => ['required', 'string', 'max:255'],
+            'newCustomerPhone' => ['nullable', 'required_without:newCustomerEmail', 'string', 'max:50'],
+            'newCustomerEmail' => ['nullable', 'required_without:newCustomerPhone', 'email', 'max:255'],
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected function validationAttributes(): array
+    {
+        return [
+            'startDate' => __('booking::reservations.fields.start_date'),
+            'endDate' => __('booking::reservations.fields.end_date'),
+            'customerId' => __('booking::reservations.fields.customer'),
+            'newCustomerName' => __('booking::reservations.fields.customer_name'),
+            'newCustomerPhone' => __('booking::reservations.fields.customer_phone'),
+            'newCustomerEmail' => __('booking::reservations.fields.customer_email'),
+        ];
+    }
+
+    public function render(): View
+    {
+        return view('booking::livewire.create-reservation-form')
+            ->title(__('booking::reservations.form.title'));
+    }
+
+    private function resolveCustomer(): Customer
+    {
+        if (! $this->isNewCustomer) {
+            return Customer::query()->findOrFail($this->customerId);
+        }
+
+        return Customer::query()->create([
+            'name' => $this->newCustomerName,
+            'phone' => $this->newCustomerPhone !== '' ? $this->newCustomerPhone : null,
+            'email' => $this->newCustomerEmail !== '' ? $this->newCustomerEmail : null,
+        ]);
+    }
+}

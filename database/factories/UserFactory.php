@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\User;
+use Database\Seeders\PermissionSeeder;
 use Functional\Fleet\Models\Agency;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -48,6 +49,14 @@ class UserFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
         ]);
+    }
+
+    /**
+     * Give the user the employee role, which carries every permission.
+     */
+    public function employee(): static
+    {
+        return $this->afterCreating(fn (User $user) => $user->assignRole(PermissionSeeder::EMPLOYEE_ROLE));
     }
 
     /**

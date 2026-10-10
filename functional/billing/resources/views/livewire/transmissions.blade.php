@@ -24,23 +24,29 @@
             </flux:table.columns>
             <flux:table.rows>
                 @foreach ($transmissions as $transmission)
+                    @php($sourceSubject = $sourceSubjects[$transmission->id] ?? null)
+                    @php($customerId = $sourceSubject?->customerId ?? $transmission->reservation?->customer_id)
                     <flux:table.row :key="$transmission->id">
                         <flux:table.cell>
-                            <flux:link :href="route('reservations.show', $transmission->reservation)" wire:navigate>{{ $transmission->reservation->machine->reference }}</flux:link>
+                            @if ($sourceSubject !== null)
+                                <flux:link :href="$sourceSubject->url" wire:navigate>{{ $sourceSubject->label }}</flux:link>
+                            @else
+                                <flux:link :href="route('reservations.show', $transmission->reservation)" wire:navigate>{{ $transmission->reservation?->machine->reference }}</flux:link>
+                            @endif
                         </flux:table.cell>
                         <flux:table.cell>
                             <div class="space-y-1">
-                                <div>{{ $transmission->reservation->customer->name }}</div>
+                                <div>{{ $sourceSubject?->customerName ?? $transmission->reservation?->customer->name }}</div>
                                 @if ($transmission->failure_reason === \Functional\Billing\Enums\TransmissionFailureReason::CustomerUnknown)
                                     <div class="flex items-end gap-2">
-                                        <flux:input size="sm" wire:model="customerRefs.{{ $transmission->reservation->customer_id }}" :label="__('billing::transmissions.screen.customer_ref')" />
-                                        <flux:button size="xs" wire:click="saveCustomerRef({{ $transmission->reservation->customer_id }})">{{ __('billing::transmissions.screen.save_customer_ref') }}</flux:button>
+                                        <flux:input size="sm" wire:model="customerRefs.{{ $customerId }}" :label="__('billing::transmissions.screen.customer_ref')" />
+                                        <flux:button size="xs" wire:click="saveCustomerRef({{ $customerId }})">{{ __('billing::transmissions.screen.save_customer_ref') }}</flux:button>
                                     </div>
                                 @endif
                             </div>
                         </flux:table.cell>
                         <flux:table.cell>
-                            {{ $transmission->billablePeriod?->kind->label() ?? __('billing::transmissions.screen.damage') }}
+                            {{ $transmission->billablePeriod?->kind->label() ?? $transmission->source_type?->label() ?? __('billing::transmissions.screen.damage') }}
                         </flux:table.cell>
                         <flux:table.cell>{{ ($transmission->last_attempt_at ?? $transmission->created_at)->format('d/m/Y H:i') }}</flux:table.cell>
                         <flux:table.cell>

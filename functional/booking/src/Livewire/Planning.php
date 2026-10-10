@@ -5,6 +5,7 @@ namespace Functional\Booking\Livewire;
 use Carbon\CarbonImmutable;
 use Functional\Booking\Planning\PlanningCellKind;
 use Functional\Booking\Planning\PlanningGrid;
+use Functional\Fleet\Livewire\Concerns\DisplaysMachineBadges;
 use Functional\Fleet\Models\Agency;
 use Functional\Fleet\Models\MachineCategory;
 use Illuminate\Contracts\View\View;
@@ -16,7 +17,7 @@ use Livewire\WithPagination;
 
 class Planning extends Component
 {
-    use WithPagination;
+    use DisplaysMachineBadges, WithPagination;
 
     private const DEFAULT_DAY_COUNT = 14;
 
@@ -78,6 +79,7 @@ class Planning extends Component
         return view('booking::livewire.planning', [
             'grid' => $grid,
             'machines' => $machines,
+            'machineBadges' => $this->badgesFor($machines->items()),
             'cellKinds' => PlanningCellKind::cases(),
             'categories' => MachineCategory::query()->orderBy('name')->get(),
             'agencies' => Agency::query()->orderBy('name')->get(),

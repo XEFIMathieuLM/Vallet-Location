@@ -9,6 +9,7 @@ use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Events\ReservationChanged;
 use Functional\Booking\Exceptions\InvalidReservationDatesException;
 use Functional\Booking\Exceptions\ReservationOverlapException;
+use Functional\Booking\Extensions\ReservationRequestGuards;
 use Functional\Booking\Models\Customer;
 use Functional\Booking\Models\Reservation;
 use Functional\Fleet\Contracts\AgencyMember;
@@ -22,7 +23,10 @@ final class CreateReservation
 {
     private const EXCLUSION_VIOLATION = '23P01';
 
-    public function __construct(private readonly MachineEligibility $machineEligibility) {}
+    public function __construct(
+        private readonly MachineEligibility $machineEligibility,
+        private readonly ReservationRequestGuards $reservationRequestGuards,
+    ) {}
 
     public function handle(Authenticatable&AgencyMember $author, Machine $machine, Customer|NewCustomer $customer, CarbonImmutable $startDate, CarbonImmutable $endDate): Reservation
     {
@@ -55,6 +59,10 @@ final class CreateReservation
         $lockedMachine = Machine::query()->whereKey($machine->id)->lockForUpdate()->firstOrFail();
 
         $this->machineEligibility->ensureReservableUntil($lockedMachine, $endDate);
+
+        foreach ($this->reservationRequestGuards->all() as $reservationRequestGuard) {
+            $reservationRequestGuard->ensureCanReserve($lockedMachine, $startDate, $endDate);
+        }
 
         $conflictingReservation = Reservation::query()
             ->with('agency')

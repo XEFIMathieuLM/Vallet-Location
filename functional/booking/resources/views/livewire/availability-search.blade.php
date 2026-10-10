@@ -48,7 +48,12 @@
             <flux:table.rows>
                 @foreach ($this->machines as $machine)
                     <flux:table.row wire:key="machine-{{ $machine->id }}">
-                        <flux:table.cell variant="strong">{{ $machine->reference }}</flux:table.cell>
+                        <flux:table.cell variant="strong">
+                            <div class="flex flex-wrap items-center gap-2">
+                                {{ $machine->reference }}
+                                @include('fleet::partials.machine-badges', ['badges' => $machineBadges[$machine->id] ?? []])
+                            </div>
+                        </flux:table.cell>
                         <flux:table.cell>{{ $machine->category->name }}</flux:table.cell>
                         <flux:table.cell>{{ $machine->agency->name }}</flux:table.cell>
                         <flux:table.cell align="end">

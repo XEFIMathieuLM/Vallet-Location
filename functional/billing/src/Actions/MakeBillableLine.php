@@ -2,7 +2,9 @@
 
 namespace Functional\Billing\Actions;
 
+use Functional\Billing\Enums\BillableLineType;
 use Functional\Billing\Exceptions\TransmissionWithoutSourceException;
+use Functional\Billing\Extensions\BillableSources;
 use Functional\Billing\Lines\BillableLine;
 use Functional\Billing\Lines\DamageLine;
 use Functional\Billing\Lines\RentalContext;
@@ -21,8 +23,14 @@ final class MakeBillableLine
         'customerBillingAccount',
     ];
 
+    public function __construct(private readonly BillableSources $billableSources) {}
+
     public function handle(Transmission $transmission): BillableLine
     {
+        if ($transmission->source_type instanceof BillableLineType) {
+            return $this->billableSources->for($transmission->source_type)->line($transmission);
+        }
+
         $transmission->loadMissing(self::RELATIONS);
         $rentalContext = RentalContext::fromTransmission($transmission, $transmission->customerBillingAccount?->external_ref);
 

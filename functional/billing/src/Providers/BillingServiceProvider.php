@@ -11,6 +11,7 @@ use Functional\Billing\Console\ReconcileCommand;
 use Functional\Billing\Contracts\BillingGateway;
 use Functional\Billing\Exceptions\FakeBillingGatewayNotAllowedException;
 use Functional\Billing\Exceptions\UnknownBillingGatewayException;
+use Functional\Billing\Extensions\BillableSources;
 use Functional\Billing\Gateways\FakeBillingGateway;
 use Functional\Billing\Listeners\RecordFinalPeriodOnReservationClosed;
 use Functional\Billing\Livewire\BillingAlert;
@@ -31,6 +32,7 @@ class BillingServiceProvider extends LayerServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../../config/billing.php', 'billing');
         $this->overrideConfigFrom(__DIR__.'/../../config/filesystems.php', 'filesystems');
         $this->app->singleton(FakeBillingGateway::class);
+        $this->app->singleton(BillableSources::class);
         $this->app->bind(BillingGateway::class, function (): BillingGateway {
             $gatewayName = config('billing.gateway');
             $gatewayClass = is_string($gatewayName) ? config()->array('billing.gateways')[$gatewayName] ?? null : null;

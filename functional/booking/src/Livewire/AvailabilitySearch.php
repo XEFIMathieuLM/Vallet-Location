@@ -4,6 +4,7 @@ namespace Functional\Booking\Livewire;
 
 use Carbon\CarbonImmutable;
 use Functional\Booking\Queries\AvailableMachinesQuery;
+use Functional\Fleet\Livewire\Concerns\DisplaysMachineBadges;
 use Functional\Fleet\Models\Agency;
 use Functional\Fleet\Models\Machine;
 use Functional\Fleet\Models\MachineCategory;
@@ -21,6 +22,8 @@ use Livewire\Component;
  */
 class AvailabilitySearch extends Component
 {
+    use DisplaysMachineBadges;
+
     #[Url(as: 'categorie')]
     public ?int $categoryId = null;
 
@@ -87,6 +90,7 @@ class AvailabilitySearch extends Component
         return view('booking::livewire.availability-search', [
             'categories' => MachineCategory::query()->orderBy('name')->get(),
             'agencies' => Agency::query()->orderBy('name')->get(),
+            'machineBadges' => $this->badgesFor($this->machines),
         ])->title(__('booking::reservations.availability.title'));
     }
 }

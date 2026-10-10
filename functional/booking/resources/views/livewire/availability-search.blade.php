@@ -1,5 +1,5 @@
 <div class="flex flex-col gap-6">
-    <flux:heading size="xl" level="1">{{ __('booking::reservations.availability.title') }}</flux:heading>
+    <x-page-heading :title="__('booking::reservations.availability.title')" />
 
     <div class="grid gap-4 md:grid-cols-4">
         <flux:select wire:model.live="categoryId" :label="__('booking::reservations.fields.category')">

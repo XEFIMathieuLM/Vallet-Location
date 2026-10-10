@@ -1,10 +1,9 @@
 <div class="flex max-w-4xl flex-col gap-6">
-    <div class="flex flex-wrap items-center justify-between gap-4">
-        <flux:heading size="xl" level="1">
-            {{ __('booking::reservations.detail.title', ['reference' => $reservation->machine->reference]) }}
-        </flux:heading>
-        @include('booking::partials.reservation-status', ['reservation' => $reservation])
-    </div>
+    <x-page-heading :title="__('booking::reservations.detail.title', ['reference' => $reservation->machine->reference])">
+        <x-slot:actions>
+            @include('booking::partials.reservation-status', ['reservation' => $reservation])
+        </x-slot:actions>
+    </x-page-heading>
 
     @if (session('reservation-created'))
         <flux:callout variant="success" icon="check-circle" :heading="session('reservation-created')" />
@@ -20,7 +19,7 @@
     @enderror
 
     <flux:card>
-        <dl class="grid gap-x-6 gap-y-3 sm:grid-cols-2">
+        <dl class="grid gap-x-6 gap-y-4 sm:grid-cols-2">
             @foreach ([
                 'machine' => "{$reservation->machine->reference} · {$reservation->machine->category->name}",
                 'home_agency' => $reservation->machine->agency->name,

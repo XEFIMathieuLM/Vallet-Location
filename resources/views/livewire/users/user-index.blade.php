@@ -1,5 +1,5 @@
 <div class="flex flex-col gap-6">
-    <flux:heading size="xl" level="1">{{ __('users.title') }}</flux:heading>
+    <x-page-heading :title="__('users.title')" />
 
     @if (session('user-saved'))
         <flux:callout variant="success" icon="check-circle" :heading="session('user-saved')" />
@@ -21,7 +21,7 @@
             </flux:select>
             <flux:button type="submit" variant="primary" icon="user-plus">{{ __('users.create') }}</flux:button>
         </form>
-        <flux:text size="sm" class="mt-3">{{ __('users.create_help') }}</flux:text>
+        <flux:text size="sm" class="mt-4">{{ __('users.create_help') }}</flux:text>
     </flux:card>
 
     <flux:table>

@@ -1,8 +1,8 @@
 <div class="flex max-w-2xl flex-col gap-6">
-    <flux:heading size="xl" level="1">{{ __('booking::reservations.form.title') }}</flux:heading>
+    <x-page-heading :title="__('booking::reservations.form.title')" />
 
     <flux:card class="flex flex-col gap-1">
-        <flux:heading>{{ $this->machine->reference }}</flux:heading>
+        <x-section-heading level="4" :title="$this->machine->reference" />
         <flux:text>{{ $this->machine->category->name }} · {{ __('booking::reservations.fields.home_agency') }} : {{ $this->machine->agency->name }}</flux:text>
     </flux:card>
 
@@ -10,7 +10,7 @@
         <flux:callout variant="danger" icon="x-circle" :heading="$message" />
     @enderror
 
-    <form wire:submit="save" class="flex flex-col gap-6">
+    <form wire:submit="save" class="flex flex-col gap-4">
         <div class="grid gap-4 md:grid-cols-2">
             <flux:input type="date" wire:model="startDate" :label="__('booking::reservations.fields.start_date')" />
             <flux:input type="date" wire:model="endDate" :label="__('booking::reservations.fields.end_date')" />

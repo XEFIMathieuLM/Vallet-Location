@@ -49,7 +49,7 @@ Aucun fichier d'un layer existant n'est modifié. Hors du layer, seule la colle 
 
 **Scale/Scope**: quelques dizaines de demandes par jour, ~400 machines, 7 agences. Livrables :
 - 4 tables, 3 modèles ;
-- 11 composants Livewire clients et salariés, 1 section de réservation, 1 badge ;
+- 16 composants Livewire : 5 d'authentification, 5 clients, 6 salariés (dont la section de réservation et le badge) ;
 - 5 notifications, 1 job, 1 commande planifiée, 1 événement diffusé.
 
 ## Affected Repos

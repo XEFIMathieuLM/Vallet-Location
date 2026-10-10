@@ -215,6 +215,7 @@ description: "Task list for the customer portal and online booking requests feat
 - [ ] T034 [P] [US2] `functional/portal/tests/Feature/SendReservationRequestTest.php` :
   - scénario 3 : demande `pending` avec commentaire, prix copié (FR-014), historique `request_sent`, `ReservationRequestChanged` diffusé ;
   - scénario 4 : un salarié réserve ensuite la même machine aux mêmes dates par `CreateReservation`, accepté ;
+  - FR-013 : avec une demande en attente sur une machine, `AvailableMachinesQuery` et la recherche client présentent toujours cette machine ;
   - scénario 5 : machine devenue indisponible, `RequestedMachineUnavailableException` ;
   - scénario 6 : dates incohérentes refusées ;
   - scénario 7 : doublon en attente, `DuplicatePendingRequestException` ;
@@ -277,6 +278,7 @@ description: "Task list for the customer portal and online booking requests feat
   - une réservation saisie au comptoir n'affiche rien ;
   - FR-022 : `ReservationDetailSections::isGuardedBy('portal.reservation-origin-section', $transition)` est faux pour toutes les transitions, et la sortie n'est pas bloquée par la section.
 - [ ] T046 [P] [US3] `tests/Feature/Portal/ConfirmedRequestFollowsExistingRulesTest.php`. Ce test vit au niveau de l'application, qui voit tous les layers. Scénario 10 et FR-023 :
+  - réservation issue d'une demande : la sortie est refusée sans photos de départ (002) ;
   - réservation issue d'une demande d'un particulier : la sortie est refusée sans caution (004) ;
   - fiche grand compte : refusée sans bon de commande (006) ;
   - machine soumise à VGP : l'attestation est ouverte et envoyée à l'e-mail de la fiche (005) ;
@@ -327,7 +329,8 @@ description: "Task list for the customer portal and online booking requests feat
   - scénario 2 : les réservations de la fiche, y compris celles saisies par un salarié, avec l'état client, sans aucune information interne (conflit, caution, bon de commande, dégâts, transmissions) ;
   - scénario 3 : compte non rattaché, état vide ;
   - scénario 6 : aucune annulation proposée, mention « contactez l'agence » ;
-  - plusieurs comptes rattachés à la même fiche voient les mêmes réservations.
+  - plusieurs comptes rattachés à la même fiche voient les mêmes réservations ;
+  - cas limite : une réservation issue d'une demande, annulée ensuite par un salarié, apparaît « annulée » côté client, et la demande reste « confirmée » avec son lien.
 - [ ] T060 [P] [US4] `functional/portal/tests/Feature/ExpireReservationRequestsTest.php` :
   - scénario 7 : avec `travelTo()`, une demande `pending` dont la date de début est hier passe `expired` par `portal:reconcile`, avec l'historique « automatique » et `ReservationRequestDecided` (expiration) ;
   - une demande dont la date de début est aujourd'hui reste `pending` ;

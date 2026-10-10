@@ -1,6 +1,6 @@
 <x-layouts::app.sidebar :title="$title ?? null">
     <flux:main>
-        @can('billing.manage')
+        @can(\Functional\Billing\Enums\BillingPermission::Manage->value)
             <livewire:billing.alert />
         @endcan
         {{ $slot }}

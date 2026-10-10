@@ -41,7 +41,7 @@
                     </flux:sidebar.group>
                 @endcan
 
-                @can('billing.manage')
+                @can(\Functional\Billing\Enums\BillingPermission::Manage->value)
                     <flux:sidebar.group :heading="__('billing::navigation.heading')" class="grid">
                         <flux:sidebar.item icon="paper-airplane" :href="route('billing.transmissions')" :current="request()->routeIs('billing.transmissions')" wire:navigate>
                             {{ __('billing::navigation.transmissions') }}

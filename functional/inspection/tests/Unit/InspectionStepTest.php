@@ -4,6 +4,7 @@ namespace Functional\Inspection\Tests\Unit;
 
 use Carbon\CarbonImmutable;
 use Functional\Booking\Enums\ReservationStatus;
+use Functional\Booking\Enums\ReservationTransition;
 use Functional\Inspection\Enums\InspectionStep;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -52,5 +53,11 @@ class InspectionStepTest extends TestCase
         foreach (ReservationStatus::cases() as $status) {
             $this->assertSame($status === ReservationStatus::Closed, InspectionStep::Return->isValidatedOnceReservationIs($status));
         }
+    }
+
+    public function test_each_step_maps_to_its_reservation_transition(): void
+    {
+        $this->assertSame(ReservationTransition::Departure, InspectionStep::Departure->transition());
+        $this->assertSame(ReservationTransition::Return, InspectionStep::Return->transition());
     }
 }

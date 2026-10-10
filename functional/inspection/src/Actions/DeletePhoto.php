@@ -36,7 +36,7 @@ class DeletePhoto
             $lockedReservation = Reservation::query()->lockForUpdate()->findOrFail($photo->reservation_id);
 
             if ($photo->step->isValidatedFor($lockedReservation)) {
-                throw StepAlreadyValidatedException::for($photo->step);
+                throw StepAlreadyValidatedException::for($lockedReservation, $photo->step);
             }
 
             $photo->delete();

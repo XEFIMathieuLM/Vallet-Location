@@ -17,7 +17,7 @@ class RemoveCategoryView
             $views = $this->editableCategoryViews->for($category);
 
             if (CategoryView::query()->whereBelongsTo($category, 'category')->count() === 1) {
-                throw LastCategoryViewException::make();
+                throw LastCategoryViewException::for($category);
             }
 
             $views->firstOrFail('position', $position)->delete();

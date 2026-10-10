@@ -9,6 +9,7 @@ use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Events\ReservationChanged;
 use Functional\Booking\Livewire\ReservationDetail;
 use Functional\Fleet\Enums\MachineStatus;
+use Functional\Fleet\Tests\Concerns\AssertsRefusals;
 use Functional\Inspection\Actions\StorePhoto;
 use Functional\Inspection\Enums\InspectionStep;
 use Functional\Inspection\Enums\RevocationReason;
@@ -25,7 +26,7 @@ use Tests\TestCase;
 
 class DeparturePhotosTest extends TestCase
 {
-    use BuildsPhotoSessions, RefreshDatabase;
+    use AssertsRefusals, BuildsPhotoSessions, RefreshDatabase;
 
     private User $employee;
 
@@ -52,10 +53,10 @@ class DeparturePhotosTest extends TestCase
     {
         $reservation = $this->reservationStartingToday();
 
-        $this->assertThrows(
-            fn () => app(DepartReservation::class)->handle($reservation),
+        $this->assertRefused(
             MissingPhotosException::class,
             'Photos manquantes : Avant, Arrière, Gauche, Droite, Compteur d\'heures',
+            fn () => app(DepartReservation::class)->handle($reservation),
         );
 
         $this->assertSame(ReservationStatus::Confirmed, $reservation->fresh()?->status);
@@ -89,9 +90,10 @@ class DeparturePhotosTest extends TestCase
         app(DepartReservation::class)->handle($reservation);
 
         $this->assertSame(ReservationStatus::InProgress, $reservation->fresh()?->status);
-        $this->assertThrows(
-            fn () => app(StorePhoto::class)->handle($token, $photo->reservation_view_id, $this->jpeg()),
+        $this->assertRefused(
             PhotoSessionUnavailableException::class,
+            'Ce lien n\'est plus valable',
+            fn () => app(StorePhoto::class)->handle($token, $photo->reservation_view_id, $this->jpeg()),
         );
         Livewire::test(PhotosPanel::class, ['reservation' => $reservation->fresh()])
             ->call('deletePhoto', $photo->id)

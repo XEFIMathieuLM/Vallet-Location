@@ -7,6 +7,7 @@ use Functional\Booking\Actions\ReturnReservation;
 use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Enums\ReturnCondition;
 use Functional\Booking\Models\Reservation;
+use Functional\Fleet\Tests\Concerns\AssertsRefusals;
 use Functional\Inspection\Actions\MissingViews;
 use Functional\Inspection\Actions\StorePhoto;
 use Functional\Inspection\Enums\InspectionStep;
@@ -22,7 +23,7 @@ use Tests\TestCase;
 
 class ReturnPhotosTest extends TestCase
 {
-    use BuildsPhotoSessions, RefreshDatabase;
+    use AssertsRefusals, BuildsPhotoSessions, RefreshDatabase;
 
     protected function setUp(): void
     {
@@ -48,10 +49,10 @@ class ReturnPhotosTest extends TestCase
         $this->openSession($reservation, InspectionStep::Return);
         Photo::factory()->forView($this->firstView($reservation), InspectionStep::Return)->create();
 
-        $this->assertThrows(
-            fn () => app(ReturnReservation::class)->handle($reservation, ReturnCondition::GoodState),
+        $this->assertRefused(
             MissingPhotosException::class,
             'Photos manquantes : Arrière, Gauche, Droite, Compteur d\'heures',
+            fn () => app(ReturnReservation::class)->handle($reservation, ReturnCondition::GoodState),
         );
 
         $this->assertSame(ReservationStatus::InProgress, $reservation->fresh()?->status);
@@ -67,9 +68,10 @@ class ReturnPhotosTest extends TestCase
         app(ReturnReservation::class)->handle($reservation, ReturnCondition::GoodState);
 
         $this->assertSame(ReservationStatus::Closed, $reservation->fresh()?->status);
-        $this->assertThrows(
-            fn () => app(StorePhoto::class)->handle($token, $returnPhoto->reservation_view_id, $this->jpeg()),
+        $this->assertRefused(
             PhotoSessionUnavailableException::class,
+            'Ce lien n\'est plus valable',
+            fn () => app(StorePhoto::class)->handle($token, $returnPhoto->reservation_view_id, $this->jpeg()),
         );
         Livewire::test(PhotosPanel::class, ['reservation' => $reservation->fresh()])
             ->call('deletePhoto', $returnPhoto->id)

@@ -56,7 +56,7 @@ class PhotosPanel extends Component
     {
         Gate::authorize('reservations.manage');
 
-        $step = $this->openStep() ?? throw StepNotOpenException::forAnyStep();
+        $step = $this->openStep() ?? throw StepNotOpenException::forAnyStep($this->reservation);
 
         $this->token = app(OpenPhotoSession::class)->handle($this->reservation, $step, Auth::user() ?? abort(401));
     }
@@ -143,7 +143,7 @@ class PhotosPanel extends Component
         foreach (InspectionStep::cases() as $step) {
             $isReady = $completeness->isCompleteFor($step);
 
-            $this->dispatch(self::READINESS_EVENT, step: $step->value, is_ready: $isReady);
+            $this->dispatch(self::READINESS_EVENT, step: $step->transition()->value, is_ready: $isReady);
         }
     }
 }

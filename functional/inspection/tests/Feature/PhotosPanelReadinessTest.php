@@ -2,6 +2,7 @@
 
 namespace Functional\Inspection\Tests\Feature;
 
+use Functional\Booking\Enums\ReservationTransition;
 use Functional\Booking\Livewire\ReservationDetail;
 use Functional\Inspection\Tests\Concerns\BuildsPhotoSessions;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -25,11 +26,11 @@ class PhotosPanelReadinessTest extends TestCase
 
         $detail = Livewire::test(ReservationDetail::class, ['reservation' => $reservation]);
 
-        $this->assertFalse($detail->instance()->isReadyFor(ReservationDetail::DEPARTURE_STEP));
-        $this->assertFalse($detail->instance()->isReadyFor(ReservationDetail::RETURN_STEP));
+        $this->assertFalse($detail->instance()->isReadyFor(ReservationTransition::Departure));
+        $this->assertFalse($detail->instance()->isReadyFor(ReservationTransition::Return));
 
         $detail->dispatch('reservation-transition-readiness', step: 'departure', is_ready: true);
 
-        $this->assertTrue($detail->instance()->isReadyFor(ReservationDetail::DEPARTURE_STEP));
+        $this->assertTrue($detail->instance()->isReadyFor(ReservationTransition::Departure));
     }
 }

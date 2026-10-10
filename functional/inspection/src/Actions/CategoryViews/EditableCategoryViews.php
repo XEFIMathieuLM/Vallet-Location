@@ -46,14 +46,14 @@ class EditableCategoryViews
     /**
      * @param  Collection<int, CategoryView>  $views
      */
-    public function ensureLabelIsFree(Collection $views, string $label, ?int $ignoredViewId = null): void
+    public function ensureLabelIsFree(MachineCategory $category, Collection $views, string $label, ?int $ignoredViewId = null): void
     {
         $isTaken = $views->contains(
             fn (CategoryView $view): bool => $view->id !== $ignoredViewId && mb_strtolower($view->label) === mb_strtolower($label),
         );
 
         if ($isTaken) {
-            throw DuplicateCategoryViewLabelException::for($label);
+            throw DuplicateCategoryViewLabelException::for($category, $label);
         }
     }
 }

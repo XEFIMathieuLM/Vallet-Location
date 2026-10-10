@@ -32,7 +32,7 @@ class ReportDamage
         }
 
         if (! $this->viewCompleteness->for($reservation)->isCompleteFor(InspectionStep::Return)) {
-            throw DamageNotReportableException::returnPhotosIncomplete();
+            throw DamageNotReportableException::returnPhotosIncomplete($reservation);
         }
 
         $view = ReservationView::query()->whereBelongsTo($reservation)->findOrFail($reservationViewId);

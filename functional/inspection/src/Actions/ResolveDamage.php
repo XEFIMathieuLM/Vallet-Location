@@ -24,7 +24,7 @@ class ResolveDamage
             $lockedDamage = Damage::query()->whereKey($damage->id)->lockForUpdate()->firstOrFail();
 
             if ($lockedDamage->isResolved()) {
-                throw DamageAlreadyResolvedException::make();
+                throw DamageAlreadyResolvedException::for($lockedDamage);
             }
 
             $lockedDamage->update(['resolved_by' => $resolver->id, 'resolved_at' => CarbonImmutable::now()]);

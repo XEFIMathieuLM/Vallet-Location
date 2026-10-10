@@ -16,7 +16,7 @@ class AddCategoryView
 
         return DB::transaction(function () use ($category, $label): CategoryView {
             $views = $this->editableCategoryViews->for($category);
-            $this->editableCategoryViews->ensureLabelIsFree($views, $label);
+            $this->editableCategoryViews->ensureLabelIsFree($category, $views, $label);
 
             return CategoryView::query()->create([
                 'machine_category_id' => $category->id,

@@ -26,7 +26,7 @@ class OpenPhotoSession
     public function handle(Reservation $reservation, InspectionStep $step, User $author): string
     {
         if (! $step->isOpenFor($reservation)) {
-            throw StepNotOpenException::for($step);
+            throw StepNotOpenException::for($reservation, $step);
         }
 
         $this->freezeReservationViews->handle($reservation);

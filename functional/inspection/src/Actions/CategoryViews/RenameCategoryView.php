@@ -16,7 +16,7 @@ class RenameCategoryView
         DB::transaction(function () use ($category, $position, $label): void {
             $views = $this->editableCategoryViews->for($category);
             $renamedView = $views->firstOrFail('position', $position);
-            $this->editableCategoryViews->ensureLabelIsFree($views, $label, $renamedView->id);
+            $this->editableCategoryViews->ensureLabelIsFree($category, $views, $label, $renamedView->id);
 
             $renamedView->update(['label' => $label]);
         });

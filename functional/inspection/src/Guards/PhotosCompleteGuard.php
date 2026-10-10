@@ -33,7 +33,7 @@ class PhotosCompleteGuard implements ReservationTransitionGuard
         $missingViews = $this->missingViews->for($reservation, $step);
 
         if ($missingViews->isNotEmpty()) {
-            throw MissingPhotosException::for($missingViews);
+            throw MissingPhotosException::for($reservation, $step, $missingViews);
         }
     }
 }

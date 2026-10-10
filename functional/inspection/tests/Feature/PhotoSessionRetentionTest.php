@@ -71,13 +71,15 @@ class PhotoSessionRetentionTest extends TestCase
         $this->assertContains($photo->id, (new Photo)->prunable()->pluck('id')->all());
     }
 
-    public function test_the_nightly_prune_covers_photos_and_sessions(): void
+    public function test_the_application_wide_prune_covers_photos_and_sessions(): void
     {
+        $this->assertContains(Photo::class, config()->array('prunable.models'));
+        $this->assertContains(PhotoSession::class, config()->array('prunable.models'));
+
         $pruneCommand = collect(app(Schedule::class)->events())
             ->map(fn (ScheduledEvent $event): string => (string) $event->command)
-            ->first(fn (string $command): bool => str_contains($command, 'model:prune'));
+            ->sole(fn (string $command): bool => str_contains($command, 'model:prune'));
 
-        $this->assertNotNull($pruneCommand);
         $this->assertStringContainsString("--model='".Photo::class."'", $pruneCommand);
         $this->assertStringContainsString("--model='".PhotoSession::class."'", $pruneCommand);
     }

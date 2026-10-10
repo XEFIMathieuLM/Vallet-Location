@@ -10,6 +10,7 @@ use Functional\Booking\Enums\ReturnCondition;
 use Functional\Booking\Models\Reservation;
 use Functional\Fleet\Models\Machine;
 use Functional\Fleet\Models\MachineCategory;
+use Functional\Fleet\Tests\Concerns\AssertsRefusals;
 use Functional\Inspection\Actions\CategoryViews\AddCategoryView;
 use Functional\Inspection\Actions\CategoryViews\RemoveCategoryView;
 use Functional\Inspection\Enums\InspectionStep;
@@ -20,7 +21,7 @@ use Tests\TestCase;
 
 class FrozenViewsTest extends TestCase
 {
-    use BuildsPhotoSessions, RefreshDatabase;
+    use AssertsRefusals, BuildsPhotoSessions, RefreshDatabase;
 
     public function test_the_return_requires_the_views_photographed_at_departure_not_the_new_category_list(): void
     {
@@ -38,10 +39,10 @@ class FrozenViewsTest extends TestCase
         app(RemoveCategoryView::class)->handle($category, 1);
 
         $this->openSession($reservation, InspectionStep::Return);
-        $this->assertThrows(
-            fn () => app(ReturnReservation::class)->handle($reservation, ReturnCondition::GoodState),
+        $this->assertRefused(
             MissingPhotosException::class,
             'Photos manquantes : Avant, Arrière, Gauche, Droite, Compteur d\'heures',
+            fn () => app(ReturnReservation::class)->handle($reservation, ReturnCondition::GoodState),
         );
 
         $this->photographEveryView($reservation, InspectionStep::Return);

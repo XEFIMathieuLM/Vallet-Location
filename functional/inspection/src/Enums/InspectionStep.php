@@ -4,9 +4,11 @@ namespace Functional\Inspection\Enums;
 
 use Carbon\CarbonImmutable;
 use Functional\Booking\Enums\ReservationStatus;
+use Functional\Booking\Enums\ReservationTransition;
 use Functional\Booking\Models\Reservation;
+use Functional\Fleet\Contracts\HasLabel;
 
-enum InspectionStep: string
+enum InspectionStep: string implements HasLabel
 {
     case Departure = 'departure';
     case Return = 'return';
@@ -14,6 +16,14 @@ enum InspectionStep: string
     public function label(): string
     {
         return __("inspection::photos.step.{$this->value}");
+    }
+
+    public function transition(): ReservationTransition
+    {
+        return match ($this) {
+            self::Departure => ReservationTransition::Departure,
+            self::Return => ReservationTransition::Return,
+        };
     }
 
     public function isOpenFor(Reservation $reservation): bool

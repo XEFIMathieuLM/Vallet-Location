@@ -256,8 +256,8 @@ description: "Task list for the full visual redesign (feature 010)"
 
 ### Tests for User Story 5
 
-- [ ] T045 [P] [US5] Écrire `functional/booking/tests/Unit/PlanningCellKindTest.php` (échoue d'abord) : `cssClasses()` de chaque cas égal au tableau de data-model.md ; aucun ne contient `accent`, `yellow` ni `blue`.
-- [ ] T046 [P] [US5] Écrire `tests/Feature/Design/PrimaryActionPerScreenTest.php`, avec un salarié qui a toutes les permissions et les factories des layers. `assertAtMostOnePrimaryAction` sur le HTML de :
+- [X] T045 [P] [US5] Écrire `functional/booking/tests/Unit/PlanningCellKindTest.php` (échoue d'abord) : `cssClasses()` de chaque cas égal au tableau de data-model.md ; aucun ne contient `accent`, `yellow` ni `blue`.
+- [X] T046 [P] [US5] Écrire `tests/Feature/Design/PrimaryActionPerScreenTest.php`, avec un salarié qui a toutes les permissions et les factories des layers. `assertAtMostOnePrimaryAction` sur le HTML de :
   - `availability.index` (avec résultats), `reservations.index`, `reservations.create`, `reservations.show` (confirmée avec caution à encaisser et bon de commande manquant) ;
   - `planning.index`, `inspection.damages`, `billing.transmissions`, `billing.exports` ;
   - `deposit.pending.index`, `deposit.rates.index`, `sales.index`, `sales.create`, `sales.show` (avec deux offres) ;
@@ -268,13 +268,13 @@ description: "Task list for the full visual redesign (feature 010)"
 
 ### Implementation for User Story 5
 
-- [ ] T047 [US5] Modifier `functional/booking/src/Planning/PlanningCellKind.php` (`cssClasses()` selon data-model.md). T045 passe.
-- [ ] T048 [US5] Refaire `functional/booking/resources/views/livewire/planning.blade.php` :
+- [X] T047 [US5] Modifier `functional/booking/src/Planning/PlanningCellKind.php` (`cssClasses()` selon data-model.md). T045 passe.
+- [X] T048 [US5] Refaire `functional/booking/resources/views/livewire/planning.blade.php` :
   - légende en cases carrées à lettre ;
   - tableau à bord haut 2 px noir et filets `zinc-100`, colonne de référence collante `bg-white dark:bg-black` ;
   - cases à angle droit ;
   - la grille défile dans sa zone (`overflow-x-auto` sur un conteneur `max-w-full min-w-0`), la page ne défile plus à 375 px (542 px aujourd'hui).
-- [ ] T049 [P] [US5] Booking :
+- [X] T049 [P] [US5] Booking :
   - `availability-search.blade.php` : pictogramme dans la colonne référence ; une action par ligne → `filled` ;
   - `reservation-list.blade.php` ;
   - `create-reservation-form.blade.php` : récapitulatif avec pictogramme ;
@@ -283,18 +283,18 @@ description: "Task list for the full visual redesign (feature 010)"
   - remplacer les `text-zinc-500 dark:text-zinc-400` des `dt` par `.eyebrow`.
 
   Tous dans `functional/booking/resources/views/`.
-- [ ] T050 [P] [US5] Inspection (`functional/inspection/resources/views/`) : `photos-panel`, `comparison`, `damages-list`, `partials/damage-actions` (« Marquer résolu » → `filled`), `category-views/index` et `edit`, `layouts/phone` (en-tête noir avec logotype inversé, boutons de 48 px), `phone-capture`, `phone/expired` ; photos à angle droit, légendes en surtitre.
-- [ ] T051 [P] [US5] Billing (`functional/billing/resources/views/`) : `transmissions`, `exports` (déclencheur jaune, confirmation dans la modale), `statement`, `reservation-billing-section`, `damage-billing-actions` (boutons hors modale → `filled`), `billing-alert`, `partials/transmission-status` et `transmission-reason`.
-- [ ] T052 [P] [US5] Deposit (`functional/deposit/resources/views/`) : `pending-deposits-list`, `deposit-rates-index`, `deposit-rate-form`, `reservation-deposit-section`, `section/*` (déclencheurs hors modale → `filled`, confirmations de modale jaunes), `partials/*`.
-- [ ] T053 [P] [US5] Sales (`functional/sales/resources/views/`) : `sale-list`, `list-machine-form`, `sale-detail` (un seul jaune hors modale : « Remettre au client »), `sale-offers` (« Accepter » par offre → `filled`), `machine-sale-history`, `partials/listing-fields`.
-- [ ] T054 [P] [US5] Certification (`functional/certification/resources/views/`) : `vgp-machines`, `machine-vgp-reports`, `certificates-to-handle`, `reservation-certificate-section`, `hand-delivery-button` (hors modale → `filled`), `resend-certificate-button`, `customer-email-form`, `certification-alert`.
-- [ ] T055 [P] [US5] Accounts et portail salariés :
+- [X] T050 [P] [US5] Inspection (`functional/inspection/resources/views/`) : `photos-panel`, `comparison`, `damages-list`, `partials/damage-actions` (« Marquer résolu » → `filled`), `category-views/index` et `edit`, `layouts/phone` (en-tête noir avec logotype inversé, boutons de 48 px), `phone-capture`, `phone/expired` ; photos à angle droit, légendes en surtitre.
+- [X] T051 [P] [US5] Billing (`functional/billing/resources/views/`) : `transmissions`, `exports` (déclencheur jaune, confirmation dans la modale), `statement`, `reservation-billing-section`, `damage-billing-actions` (boutons hors modale → `filled`), `billing-alert`, `partials/transmission-status` et `transmission-reason`.
+- [X] T052 [P] [US5] Deposit (`functional/deposit/resources/views/`) : `pending-deposits-list`, `deposit-rates-index`, `deposit-rate-form`, `reservation-deposit-section`, `section/*` (déclencheurs hors modale → `filled`, confirmations de modale jaunes), `partials/*`.
+- [X] T053 [P] [US5] Sales (`functional/sales/resources/views/`) : `sale-list`, `list-machine-form`, `sale-detail` (un seul jaune hors modale : « Remettre au client »), `sale-offers` (« Accepter » par offre → `filled`), `machine-sale-history`, `partials/listing-fields`.
+- [X] T054 [P] [US5] Certification (`functional/certification/resources/views/`) : `vgp-machines`, `machine-vgp-reports`, `certificates-to-handle`, `reservation-certificate-section`, `hand-delivery-button` (hors modale → `filled`), `resend-certificate-button`, `customer-email-form`, `certification-alert`.
+- [X] T055 [P] [US5] Accounts et portail salariés :
   - `functional/accounts/resources/views/livewire/` : `key-accounts`, `missing-purchase-orders`, `purchase-order-section` ;
   - `functional/portal/resources/views/livewire/staff/` : `online-requests` (« Confirmer » par ligne → `filled`), `confirm-request-modal`, `refuse-request-modal`, `indicative-prices`, `pending-requests-badge` (pastille jaune à texte noir), `reservation-origin-section`.
-- [ ] T056 [P] [US5] Fleet (`functional/fleet/resources/views/`) : `machine-index` (pictogramme par ligne, « Nouvelle machine » en jaune), `machine-form`, `import-fleet-form`, `partials/machine-badges`.
-- [ ] T057 [P] [US5] App : `resources/views/livewire/users/user-index.blade.php` ; `resources/views/pages/settings/layout.blade.php` (sous-navigation en pastilles) ; `profile.blade.php`, `security.blade.php` (un jaune hors modale), `appearance.blade.php`, `delete-user-form.blade.php` ; `resources/views/components/loading-hint.blade.php`, `auth-session-status.blade.php` ; le callout hors ligne de `layouts/app.blade.php`.
-- [ ] T058 [US5] Rechercher les couleurs codées en dur restantes dans `functional/*/resources/views` et `resources/views` (`grep -rn "bg-\(red\|green\|blue\|amber\|yellow\)-\|text-\(red\|green\)-\|rounded-\(lg\|xl\|md\)\|shadow"`). Les remplacer par les jetons, ou les justifier dans le message de commit. T046 passe.
-- [ ] T059 [US5] Captures 03 à 15 en 1440 et 375 px, plus planning et détail de réservation en sombre ; aucun `OVERFLOW`. `composer ci:check` code 0, puis commit « Refonte graphique : écrans métier ».
+- [X] T056 [P] [US5] Fleet (`functional/fleet/resources/views/`) : `machine-index` (pictogramme par ligne, « Nouvelle machine » en jaune), `machine-form`, `import-fleet-form`, `partials/machine-badges`.
+- [X] T057 [P] [US5] App : `resources/views/livewire/users/user-index.blade.php` ; `resources/views/pages/settings/layout.blade.php` (sous-navigation en pastilles) ; `profile.blade.php`, `security.blade.php` (un jaune hors modale), `appearance.blade.php`, `delete-user-form.blade.php` ; `resources/views/components/loading-hint.blade.php`, `auth-session-status.blade.php` ; le callout hors ligne de `layouts/app.blade.php`.
+- [X] T058 [US5] Rechercher les couleurs codées en dur restantes dans `functional/*/resources/views` et `resources/views` (`grep -rn "bg-\(red\|green\|blue\|amber\|yellow\)-\|text-\(red\|green\)-\|rounded-\(lg\|xl\|md\)\|shadow"`). Les remplacer par les jetons, ou les justifier dans le message de commit. T046 passe.
+- [X] T059 [US5] Captures 03 à 15 en 1440 et 375 px, plus planning et détail de réservation en sombre ; aucun `OVERFLOW`. `composer ci:check` code 0, puis commit « Refonte graphique : écrans métier ».
 
 **Checkpoint** : tous les écrans salariés sont conformes.
 

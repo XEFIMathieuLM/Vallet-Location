@@ -1,16 +1,21 @@
-<div class="flex items-start max-md:flex-col">
-    <div class="me-10 w-full pb-4 md:w-[220px]">
-        <flux:navlist aria-label="{{ __('Settings') }}">
-            <flux:navlist.item :href="route('profile.edit')" wire:navigate>{{ __('Profile') }}</flux:navlist.item>
-            <flux:navlist.item :href="route('security.edit')" wire:navigate>{{ __('Security') }}</flux:navlist.item>
-            <flux:navlist.item :href="route('appearance.edit')" wire:navigate>{{ __('Appearance') }}</flux:navlist.item>
-        </flux:navlist>
-    </div>
+<div class="flex flex-col gap-8">
+    <nav aria-label="{{ __('Settings') }}" class="flex flex-wrap gap-2">
+        @foreach (['profile.edit' => __('Profile'), 'security.edit' => __('Security'), 'appearance.edit' => __('Appearance')] as $routeName => $label)
+            <a
+                href="{{ route($routeName) }}"
+                wire:navigate
+                @if (request()->routeIs($routeName)) aria-current="page" @endif
+                @class([
+                    'flex h-11 items-center rounded-full border px-4 text-sm font-semibold sm:h-9',
+                    'border-zinc-950 bg-zinc-950 text-white dark:border-white dark:bg-white dark:text-black' => request()->routeIs($routeName),
+                    'border-zinc-950 hover:bg-zinc-50 dark:border-white dark:hover:bg-zinc-900' => ! request()->routeIs($routeName),
+                ])
+            >{{ $label }}</a>
+        @endforeach
+    </nav>
 
-    <flux:separator class="md:hidden" />
-
-    <div class="flex-1 self-stretch max-md:pt-6">
-        <flux:heading>{{ $heading ?? '' }}</flux:heading>
+    <div class="flex flex-col gap-2 border-t-2 border-zinc-950 pt-6 dark:border-white">
+        <x-section-heading :title="$heading ?? ''" />
         <flux:subheading>{{ $subheading ?? '' }}</flux:subheading>
 
         <div class="mt-5 w-full max-w-lg">

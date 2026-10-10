@@ -72,7 +72,7 @@
     <template x-if="supported && !showForm">
         <div>
             <flux:button
-                variant="primary"
+                variant="filled"
                 icon="plus"
                 x-on:click="showForm = true"
             >
@@ -82,7 +82,7 @@
     </template>
 
     <template x-if="supported && showForm">
-        <div class="space-y-4 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/50 p-4">
+        <div class="space-y-4 rounded-none border border-zinc-200 dark:border-white/16 bg-zinc-50 dark:bg-zinc-900/50 p-4">
             <flux:input
                 label="{{ __('Passkey name') }}"
                 x-model="name"
@@ -97,7 +97,7 @@
 
             <div class="flex gap-2">
                 <flux:button
-                    variant="primary"
+                    variant="filled"
                     x-on:click="register()"
                     x-bind:disabled="loading || !name.trim()"
                 >

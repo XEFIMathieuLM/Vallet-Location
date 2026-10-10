@@ -98,10 +98,10 @@ $classes = Flux::classes()
             : Flux::applyInset($inset, top: '-mt-1', right: ($iconTrailing && $iconTrailing !== '' ? '-me-1' : '-me-2'), bottom: '-mb-1', left: ($iconLeading && $iconLeading !== '' ? '-ms-1' : '-ms-2')),
     } : '')
     ->add(match ($variant) {
-        'primary' => 'bg-(--color-accent) hover:bg-(--color-accent-pressed) active:bg-(--color-accent-pressed) text-(--color-accent-foreground)',
-        'filled' => 'bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200',
+        'primary' => 'bg-(--color-accent) hover:bg-(--color-accent-pressed) active:bg-(--color-accent-pressed) text-(--color-accent-foreground) disabled:bg-zinc-200 disabled:text-zinc-500 disabled:opacity-100',
+        'filled' => 'bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200 disabled:bg-zinc-200 disabled:text-zinc-500 disabled:opacity-100',
         'outline' => 'bg-white text-black border border-black hover:bg-zinc-50 dark:bg-black dark:text-white dark:border-white dark:hover:bg-zinc-900',
-        'danger' => 'bg-red-600 text-white hover:bg-red-700',
+        'danger' => 'bg-red-600 text-white hover:bg-red-700 disabled:bg-zinc-200 disabled:text-zinc-500 disabled:opacity-100',
         'ghost' => 'bg-transparent text-black hover:underline underline-offset-4 dark:text-white',
         'subtle' => 'bg-transparent text-zinc-500 hover:text-black dark:text-zinc-300 dark:hover:text-white',
     })

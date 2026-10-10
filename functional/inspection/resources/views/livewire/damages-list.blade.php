@@ -13,7 +13,7 @@
 
     @forelse ($reservationsDamages as $damages)
         @php($reservation = $damages->first()->reservation)
-        <div wire:key="reinvoice-{{ $reservation->id }}" class="flex flex-col gap-4 rounded-xl border border-zinc-200 p-4 dark:border-zinc-700">
+        <div wire:key="reinvoice-{{ $reservation->id }}" class="flex flex-col gap-4 rounded-none border border-zinc-200 p-4 dark:border-white/16">
             <div class="flex flex-wrap items-start justify-between gap-2">
                 <div class="flex flex-col gap-2">
                     <x-section-heading :title="$reservation->machine->reference.' – '.$reservation->customer->name" />
@@ -24,7 +24,7 @@
                 </flux:button>
             </div>
             @foreach ($damages as $damage)
-                <div wire:key="reinvoice-damage-{{ $damage->id }}" class="flex flex-wrap items-center justify-between gap-2 border-t border-zinc-200 pt-4 dark:border-zinc-700">
+                <div wire:key="reinvoice-damage-{{ $damage->id }}" class="flex flex-wrap items-center justify-between gap-2 border-t border-zinc-200 pt-4 dark:border-white/16">
                     <div class="flex flex-col gap-2">
                         <flux:text variant="strong">{{ $damage->view->label }} : {{ $damage->comment }}</flux:text>
                         <flux:text size="sm">{{ __('inspection::damages.reported', ['author' => $damage->reporter->name, 'date' => $damage->reported_at->format('d/m/Y H:i')]) }}</flux:text>

@@ -25,7 +25,7 @@
                         <flux:table.cell><flux:badge size="sm" :color="$offer->status->color()">{{ $offer->status->label() }}</flux:badge></flux:table.cell>
                         <flux:table.cell align="end">
                             @if ($offer->status === \Functional\Sales\Enums\OfferStatus::Pending && $sale->state()->acceptsOffers())
-                                <flux:button size="xs" variant="primary" wire:click="confirmAcceptance({{ $offer->id }})">{{ __('sales::sales.offers.accept') }}</flux:button>
+                                <flux:button size="xs" variant="filled" wire:click="confirmAcceptance({{ $offer->id }})">{{ __('sales::sales.offers.accept') }}</flux:button>
                                 <flux:button size="xs" wire:click="reject({{ $offer->id }})">{{ __('sales::sales.offers.reject') }}</flux:button>
                                 <flux:button size="xs" variant="ghost" wire:click="withdraw({{ $offer->id }})">{{ __('sales::sales.offers.withdraw') }}</flux:button>
                             @endif
@@ -37,7 +37,7 @@
     @endif
 
     @if ($sale->state()->acceptsOffers())
-        <form wire:submit="record" class="flex flex-col gap-4 rounded-lg border border-zinc-200 p-4 dark:border-zinc-700">
+        <form wire:submit="record" class="flex flex-col gap-4 rounded-none border border-zinc-200 p-4 dark:border-white/16">
             <flux:heading>{{ __('sales::sales.offers.new') }}</flux:heading>
             <flux:switch wire:model.live="isNewCustomer" :label="__('sales::sales.offers.new_customer')" />
             @if ($isNewCustomer)

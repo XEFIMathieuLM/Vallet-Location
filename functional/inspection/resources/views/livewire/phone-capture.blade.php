@@ -15,7 +15,7 @@
 
     <ul class="flex flex-col gap-4">
         @foreach ($views as $view)
-            <li wire:key="view-{{ $view->id }}" class="flex flex-col gap-4 rounded-lg border border-zinc-200 p-4 dark:border-zinc-700">
+            <li wire:key="view-{{ $view->id }}" class="flex flex-col gap-4 rounded-none border border-zinc-200 p-4 dark:border-white/16">
                 <div class="flex items-center justify-between gap-2">
                     <x-section-heading :title="$view->label" />
                     @if ($view->photos->isEmpty())

@@ -1,4 +1,4 @@
-<div class="flex max-w-4xl flex-col gap-6">
+<div class="flex max-w-5xl flex-col gap-8">
     <x-page-heading :title="__('booking::reservations.detail.title', ['reference' => $reservation->machine->reference])">
         <x-slot:actions>
             @include('booking::partials.reservation-status', ['reservation' => $reservation])
@@ -18,8 +18,8 @@
         <flux:callout variant="danger" icon="x-circle" :heading="$message" />
     @enderror
 
-    <flux:card>
-        <dl class="grid gap-x-6 gap-y-4 sm:grid-cols-2">
+    <div>
+        <dl class="grid border-t-2 border-zinc-950 sm:grid-cols-2 lg:grid-cols-4 dark:border-white">
             @foreach ([
                 'machine' => "{$reservation->machine->reference} · {$reservation->machine->category->name}",
                 'home_agency' => $reservation->machine->agency->name,
@@ -30,13 +30,13 @@
                 'departed_at' => $reservation->departed_at?->format('d/m/Y H:i') ?? '—',
                 'returned_at' => $reservation->returned_at?->format('d/m/Y H:i') ?? '—',
             ] as $field => $fieldValue)
-                <div>
-                    <dt class="text-sm text-zinc-500 dark:text-zinc-400">{{ __("booking::reservations.fields.{$field}") }}</dt>
-                    <dd>{{ $fieldValue }}</dd>
+                <div class="flex flex-col gap-1 border-b border-zinc-100 py-4 sm:pe-6 dark:border-white/16">
+                    <dt class="eyebrow text-zinc-500 dark:text-white/72">{{ __("booking::reservations.fields.{$field}") }}</dt>
+                    <dd class="font-semibold">{{ $fieldValue }}</dd>
                 </div>
             @endforeach
         </dl>
-    </flux:card>
+    </div>
 
     <div class="flex flex-wrap gap-2">
         @if ($isConfirmed)
@@ -73,7 +73,9 @@
         @endif
     </div>
 
-    @foreach ($sections as $section)
-        <livewire:dynamic-component :component="$section" :reservation="$reservation" :key="'section-'.$section" />
-    @endforeach
+    <div class="flex flex-col gap-10" data-reservation-sections>
+        @foreach ($sections as $section)
+            <livewire:dynamic-component :component="$section" :reservation="$reservation" :key="'section-'.$section" />
+        @endforeach
+    </div>
 </div>

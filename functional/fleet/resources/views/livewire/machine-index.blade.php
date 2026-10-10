@@ -60,6 +60,7 @@
                 <flux:table.row wire:key="machine-{{ $machine->id }}">
                     <flux:table.cell variant="strong">
                         <div class="flex flex-wrap items-center gap-2">
+                            <x-fleet::pictogram :category="$machine->category->name" class="h-6 w-9 shrink-0" />
                             {{ $machine->reference }}
                             @include('fleet::partials.machine-badges', ['badges' => $machineBadges[$machine->id] ?? []])
                         </div>

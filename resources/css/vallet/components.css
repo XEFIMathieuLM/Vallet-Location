@@ -183,3 +183,23 @@ body {
     background-color: #ffffff;
     color: #000000;
 }
+
+[data-flux-main] {
+    min-width: 0;
+}
+
+[data-reservation-sections] > section:has(> *),
+[data-reservation-sections] > div > :is(section, [data-flux-card]) {
+    border-width: 2px 0 0;
+    border-style: solid;
+    border-color: var(--color-zinc-950);
+    border-radius: 0;
+    padding: 1.5rem 0 0;
+    background-color: transparent;
+    box-shadow: none;
+}
+
+.dark [data-reservation-sections] > section:has(> *),
+.dark [data-reservation-sections] > div > :is(section, [data-flux-card]) {
+    border-color: #ffffff;
+}

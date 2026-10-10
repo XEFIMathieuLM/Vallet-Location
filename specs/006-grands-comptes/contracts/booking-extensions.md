@@ -71,17 +71,17 @@ interface CustomerChangeGuard
     /**
      * @throws RefusalException
      */
-    public function beforeTypeChange(Customer $customer, ?CustomerType $newType): void;
+    public function beforeTypeChange(Customer $customer, CustomerType $newType): void;
 }
 ```
 
-- Registre `CustomerChangeGuards`, livré par la 004 et appelé par la méthode de qualification du type de `Functional\Booking\Actions\UpdateCustomer`, dans sa transaction et après verrouillage du client.
+- Registre `Functional\Booking\Extensions\CustomerChangeGuards` (`register(class-string<CustomerChangeGuard>)`, `all()`), livré par la 004 et appelé par `Functional\Booking\Actions\UpdateCustomer::qualify(Customer, CustomerType, Authenticatable&AgencyMember): Customer`, dans sa transaction et après verrouillage du client.
 - `accounts` enregistre `KeyAccountTypeGuard` : refuse (`KeyAccountMustStayProfessionalException`) tout nouveau type autre que professionnel pour un client grand compte (FR-003).
-- Noms définitifs de l'enum de type et de la méthode repris de la 004 au rebase.
+- Noms définitifs : contrat client de la 004 (`specs/004-caution-particuliers/contracts/customer-contract.md`).
 
 ## Événement `CustomerChanged` (convention de la coordination)
 
-`Functional\Booking\Events\CustomerChanged` (`ShouldDispatchAfterCommit`), introduit avec `UpdateCustomer`. `DesignateKeyAccount` et `RevokeKeyAccount` l'émettent après commit ; elles n'écrivent pas `customers` et ne passent donc pas par `UpdateCustomer` (research G2).
+`Functional\Booking\Events\CustomerChanged(Customer $customer, list<string> $changedAttributes)` (`ShouldDispatchAfterCommit`), introduit avec `UpdateCustomer`. `DesignateKeyAccount` et `RevokeKeyAccount` l'émettent après commit avec `changedAttributes: ['key_account']` ; elles n'écrivent pas `customers` et ne passent donc pas par `UpdateCustomer` (research G2).
 
 - `CustomerChanged` signifie « quelque chose a changé pour ce client », pas « la ligne `customers` a été écrite » : il peut être émis sans aucune écriture de `customers` (désignation ou retrait d'un grand compte).
 - Tout écouteur de `CustomerChanged` (dont celui de la 005 sur l'e-mail) DOIT vérifier lui-même ce qui a changé avant d'agir, et ne rien faire si le champ qui l'intéresse est inchangé.

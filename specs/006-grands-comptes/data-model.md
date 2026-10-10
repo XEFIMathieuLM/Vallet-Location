@@ -18,9 +18,9 @@ Un client professionnel désigné grand compte (FR-001, FR-002).
 - le client est de type professionnel (type de la 004), sinon `KeyAccountRefusedException::notProfessional` ;
 - un `CustomerBillingAccount` (003) existe pour ce client avec un `external_ref` non vide, sinon `KeyAccountRefusedException::missingBillingRef` ;
 - le client n'est pas déjà grand compte, sinon `KeyAccountRefusedException::alreadyDesignated` (l'index unique reste la garantie) ;
-- émet `CustomerChanged` après commit.
+- émet `CustomerChanged($customer, ['key_account'])` après commit.
 
-**Retrait** (`RevokeKeyAccount`) : suppression de la ligne, `CustomerChanged` après commit ; les numéros de bon de commande déjà saisis restent sur les réservations et sont transmis (edge case de la spec).
+**Retrait** (`RevokeKeyAccount`) : suppression de la ligne, `CustomerChanged($customer, ['key_account'])` après commit ; les numéros de bon de commande déjà saisis restent sur les réservations et sont transmis (edge case de la spec).
 
 **Invariant gardé par `KeyAccountTypeGuard`** (G6) : tant que la ligne existe, le type du client ne peut pas devenir autre chose que professionnel.
 

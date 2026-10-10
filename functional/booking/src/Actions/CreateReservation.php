@@ -98,6 +98,7 @@ final class CreateReservation
             'name' => $customer->name,
             'phone' => $customer->phone,
             'email' => $customer->email,
+            'type' => $customer->type,
         ]);
     }
 

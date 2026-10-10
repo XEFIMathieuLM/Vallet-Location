@@ -2,6 +2,7 @@
 
 namespace Functional\Booking\Database\Factories;
 
+use Functional\Booking\Enums\CustomerType;
 use Functional\Booking\Models\Customer;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -18,6 +19,7 @@ class CustomerFactory extends Factory
             'name' => faker()->company(),
             'phone' => faker()->customerPhoneNumber(),
             'email' => null,
+            'type' => CustomerType::Professional,
         ];
     }
 
@@ -27,5 +29,20 @@ class CustomerFactory extends Factory
             'phone' => null,
             'email' => faker()->email(),
         ]);
+    }
+
+    public function individual(): static
+    {
+        return $this->state(fn (): array => ['type' => CustomerType::Individual]);
+    }
+
+    public function professional(): static
+    {
+        return $this->state(fn (): array => ['type' => CustomerType::Professional]);
+    }
+
+    public function untyped(): static
+    {
+        return $this->state(fn (): array => ['type' => null]);
     }
 }

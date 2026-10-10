@@ -67,7 +67,7 @@ class SaleOffers extends Component
 
         $recordOffer->handle($this->agencyMember(), $this->sale(), $this->selectedBuyer(), Money::fromInput($this->amount), CarbonImmutable::parse($this->offeredOn));
 
-        $this->reset('amount', 'customerId', 'customerSearch', 'isNewCustomer', 'newCustomerName', 'newCustomerPhone', 'newCustomerEmail');
+        $this->reset('amount', 'customerId', 'customerSearch', 'isNewCustomer', 'newCustomerName', 'newCustomerPhone', 'newCustomerEmail', 'newCustomerType');
         $this->done('sales::sales.offers.recorded');
     }
 

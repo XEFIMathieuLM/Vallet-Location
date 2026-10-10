@@ -12,6 +12,7 @@
         "php": "^8.5",
         "functional/billing": "*",
         "functional/booking": "*",
+        "functional/deposit": "*",
         "functional/fleet": "*",
         "functional/inspection": "*",
         "functional/sales": "*",
@@ -57,6 +58,7 @@
             "Functional\\Fleet\\Tests\\": "functional/fleet/tests/",
             "Functional\\Billing\\Tests\\": "functional/billing/tests/",
             "Functional\\Booking\\Tests\\": "functional/booking/tests/",
+            "Functional\\Deposit\\Tests\\": "functional/deposit/tests/",
             "Functional\\Inspection\\Tests\\": "functional/inspection/tests/",
             "Functional\\Sales\\Tests\\": "functional/sales/tests/"
         }

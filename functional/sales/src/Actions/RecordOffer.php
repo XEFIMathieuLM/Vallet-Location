@@ -63,6 +63,6 @@ final class RecordOffer
             return $buyer;
         }
 
-        return Customer::query()->create(['name' => $buyer->name, 'phone' => $buyer->phone, 'email' => $buyer->email]);
+        return Customer::query()->create(['name' => $buyer->name, 'phone' => $buyer->phone, 'email' => $buyer->email, 'type' => $buyer->type]);
     }
 }

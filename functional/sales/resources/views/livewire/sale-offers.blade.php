@@ -46,6 +46,11 @@
                     <flux:input wire:model="newCustomerPhone" :label="__('sales::sales.offers.customer_phone')" />
                     <flux:input type="email" wire:model="newCustomerEmail" :label="__('sales::sales.offers.customer_email')" />
                 </div>
+                <flux:radio.group wire:model="newCustomerType" :label="__('booking::customers.fields.type_label')" variant="segmented">
+                    @foreach (\Functional\Booking\Enums\CustomerType::cases() as $customerType)
+                        <flux:radio :value="$customerType->value" :label="$customerType->label()" />
+                    @endforeach
+                </flux:radio.group>
             @else
                 <div class="grid gap-4 md:grid-cols-2">
                     <flux:input wire:model.live.debounce.300ms="customerSearch" icon="magnifying-glass" :label="__('sales::sales.offers.customer_search')" />

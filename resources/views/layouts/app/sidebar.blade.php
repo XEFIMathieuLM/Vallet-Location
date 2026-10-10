@@ -55,6 +55,20 @@
                     </flux:sidebar.group>
                 @endcan
 
+                @canany([\Functional\Deposit\Access\DepositPermission::ManageDeposits->value, \Functional\Deposit\Access\DepositPermission::ManageDepositRates->value])
+                    <flux:sidebar.group :heading="__('deposit::navigation.heading')" class="grid">
+                        @can(\Functional\Deposit\Access\DepositPermission::ManageDeposits->value)
+                            <flux:sidebar.item icon="banknotes" :href="route('deposit.pending.index')" :current="request()->routeIs('deposit.pending.*')" wire:navigate>
+                                {{ __('deposit::navigation.pending') }}
+                            </flux:sidebar.item>
+                        @endcan
+                        @can(\Functional\Deposit\Access\DepositPermission::ManageDepositRates->value)
+                            <flux:sidebar.item icon="adjustments-horizontal" :href="route('deposit.rates.index')" :current="request()->routeIs('deposit.rates.*')" wire:navigate>
+                                {{ __('deposit::navigation.rates') }}
+                            </flux:sidebar.item>
+                        @endcan
+                    </flux:sidebar.group>
+                @endcanany
                 @can(\Functional\Sales\Access\SalesPermission::Manage->value)
                     <flux:sidebar.group :heading="__('sales::sales.navigation.heading')" class="grid">
                         <flux:sidebar.item icon="banknotes" :href="route('sales.index')" :current="request()->routeIs('sales.*')" wire:navigate>

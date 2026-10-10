@@ -3,8 +3,10 @@
 namespace Functional\Sales\Livewire\Concerns;
 
 use Functional\Booking\Data\NewCustomer;
+use Functional\Booking\Enums\CustomerType;
 use Functional\Booking\Models\Customer;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Validation\Rule;
 use Livewire\Attributes\Computed;
 
 trait ChoosesBuyer
@@ -21,6 +23,8 @@ trait ChoosesBuyer
 
     public string $newCustomerEmail = '';
 
+    public string $newCustomerType = '';
+
     /**
      * @return Collection<int, Customer>
      */
@@ -35,7 +39,7 @@ trait ChoosesBuyer
     }
 
     /**
-     * @return array<string, list<string>>
+     * @return array<string, list<mixed>>
      */
     protected function buyerRules(): array
     {
@@ -47,6 +51,7 @@ trait ChoosesBuyer
             'newCustomerName' => ['required', 'string', 'max:255'],
             'newCustomerPhone' => ['nullable', 'required_without:newCustomerEmail', 'string', 'max:50'],
             'newCustomerEmail' => ['nullable', 'required_without:newCustomerPhone', 'email', 'max:255'],
+            'newCustomerType' => ['required', Rule::enum(CustomerType::class)],
         ];
     }
 
@@ -60,6 +65,7 @@ trait ChoosesBuyer
             'newCustomerName' => __('sales::sales.offers.customer_name'),
             'newCustomerPhone' => __('sales::sales.offers.customer_phone'),
             'newCustomerEmail' => __('sales::sales.offers.customer_email'),
+            'newCustomerType' => __('booking::customers.fields.type'),
         ];
     }
 
@@ -73,6 +79,7 @@ trait ChoosesBuyer
             name: $this->newCustomerName,
             phone: $this->newCustomerPhone !== '' ? $this->newCustomerPhone : null,
             email: $this->newCustomerEmail !== '' ? $this->newCustomerEmail : null,
+            type: CustomerType::from($this->newCustomerType),
         );
     }
 }

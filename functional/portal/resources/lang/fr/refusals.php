@@ -9,4 +9,5 @@ return [
     'already_attached' => 'Ce compte client est déjà rattaché à une fiche : le rattachement est définitif.',
     'reason_required' => 'Indiquez le motif du refus.',
     'reason_too_long' => 'Le motif est limité à :max caractères.',
+    'invalid_price' => 'Le prix doit être un montant en euros strictement positif, au centime près (par exemple 95 ou 95,50).',
 ];

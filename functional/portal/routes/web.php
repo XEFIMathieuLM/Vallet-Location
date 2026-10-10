@@ -13,6 +13,7 @@ use Functional\Portal\Livewire\Customer\AccountSettings;
 use Functional\Portal\Livewire\Customer\MyRequests;
 use Functional\Portal\Livewire\Customer\MyReservations;
 use Functional\Portal\Livewire\Customer\Search;
+use Functional\Portal\Livewire\Staff\IndicativePrices;
 use Functional\Portal\Livewire\Staff\OnlineRequests;
 use Illuminate\Support\Facades\Route;
 
@@ -44,4 +45,5 @@ Route::prefix('espace-client')->name('portal.')->group(function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::livewire('demandes-en-ligne', OnlineRequests::class)->middleware('can:'.PortalPermission::HandleRequests->value)->name('portal.staff.requests');
+    Route::livewire('prix-indicatifs', IndicativePrices::class)->middleware('can:'.PortalPermission::ManagePrices->value)->name('portal.staff.prices');
 });

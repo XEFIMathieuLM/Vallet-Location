@@ -113,6 +113,11 @@
                                 </div>
                             </flux:sidebar.item>
                         @endcan
+                        @can(\Functional\Portal\Access\PortalPermission::ManagePrices->value)
+                            <flux:sidebar.item icon="currency-euro" :href="route('portal.staff.prices')" :current="request()->routeIs('portal.staff.prices')" wire:navigate>
+                                {{ __('portal::navigation.staff.prices') }}
+                            </flux:sidebar.item>
+                        @endcan
                     </flux:sidebar.group>
                 @endcanany
 

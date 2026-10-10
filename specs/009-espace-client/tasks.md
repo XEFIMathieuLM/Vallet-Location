@@ -390,20 +390,20 @@ description: "Task list for the customer portal and online booking requests feat
 
 ### Tests d'abord
 
-- [ ] T069 [P] [US6] `functional/portal/tests/Feature/IndicativePricesTest.php` :
+- [X] T069 [P] [US6] `functional/portal/tests/Feature/IndicativePricesTest.php` :
   - scénario 1 : saisie de `95` puis `95,50`, ligne avec auteur et agence, historique avec l'ancien et le nouveau montant ;
   - scénario 4 : `0`, `-5` et `abc` refusés ;
   - scénario 5 : retrait, puis « prix sur demande » côté client ;
   - scénario 7 : une demande envoyée à 95 € garde 95 € après un passage à 110 € ;
   - accès refusé sans `portal.manage-prices`.
-- [ ] T070 [P] [US6] `tests/Feature/Portal/IndicativePriceIsolationTest.php`, au niveau de l'application :
+- [X] T070 [P] [US6] `tests/Feature/Portal/IndicativePriceIsolationTest.php`, au niveau de l'application :
   - scénario 6 : un client dont la fiche est grand compte voit le même prix indicatif ;
   - scénario 8 et FR-033 : la période transmise d'une réservation issue d'une demande (faux logiciel de facturation de la 003) ne contient aucun prix indicatif.
 
 ### Implémentation
 
-- [ ] T071 [US6] `functional/portal/src/Actions/SetIndicativePrice.php` et `RemoveIndicativePrice.php` (montant en euros vers des centimes entiers, strictement positif, sinon `InvalidIndicativePriceException` ; historique), et l'exception dans `functional/portal/src/Exceptions/`.
-- [ ] T072 [US6] Écran et navigation :
+- [X] T071 [US6] `functional/portal/src/Actions/SetIndicativePrice.php` et `RemoveIndicativePrice.php` (montant en euros vers des centimes entiers, strictement positif, sinon `InvalidIndicativePriceException` ; historique), et l'exception dans `functional/portal/src/Exceptions/`.
+- [X] T072 [US6] Écran et navigation :
   - `functional/portal/src/Livewire/Staff/IndicativePrices.php` et sa vue (validation `^\d+([.,]\d{1,2})?$`) ;
   - route `GET /prix-indicatifs` (`portal.staff.prices`, `can:portal.manage-prices`) ;
   - entrée « Prix indicatifs » dans le groupe « Espace client » de `resources/views/layouts/app/sidebar.blade.php` ;

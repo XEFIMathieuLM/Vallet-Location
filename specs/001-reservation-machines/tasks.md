@@ -252,7 +252,7 @@ description: "Task list for feature 001-reservation-machines"
 
 ### Factories et tests (MOYENNE)
 
-- [ ] T095 [no-fakerphp, custom-faker-extensions, faker-extensions] Retirer `fakerphp/faker` de `composer.json` ; `database/factories/UserFactory.php` utilise `faker()` ; extension faker du layer fleet (`functional/fleet/src/Faker/FleetFakerExtension.php`, enregistrée via `extra.faker`) pour les noms d'agence, de catégorie et les références machine ; `xefi/faker-php-locales-fr-fr` en dev et `faker_locale` `fr_FR` dans `config/app.php` et `.env.example`
+- [X] T095 [no-fakerphp, custom-faker-extensions, faker-extensions] Retirer `fakerphp/faker` de `composer.json` ; `database/factories/UserFactory.php` utilise `faker()` ; extension faker du layer fleet (`functional/fleet/src/Faker/FleetFakerExtension.php`, enregistrée via `extra.faker`) pour les noms d'agence, de catégorie et les références machine, et du layer booking (`functional/booking/src/Faker/BookingFakerExtension.php`, téléphone client : celui du paquet fr-FR produit des numéros de longueur variable) ; providers déclarés dans le `composer.json` de chaque layer (`extra.faker.providers`) puis `composer update functional/<layer>` ; `xefi/faker-php-locales-fr-fr` en dev et `faker_locale` `fr_FR` dans `config/app.php` et `.env.example`
 - [ ] T096 [automated-tests] `functional/fleet/tests/Unit/MachineStateTest.php`, `functional/booking/tests/Unit/ReservationStateTest.php` étendent `PHPUnit\Framework\TestCase` ; `functional/fleet/tests/Unit/MachineVgpComplianceTest.php` devient un vrai test Unit ou passe en Feature
 
 ### Transactions, traçabilité, socle (MOYENNE)

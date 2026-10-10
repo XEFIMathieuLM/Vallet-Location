@@ -15,7 +15,7 @@ class AgencyFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => 'Agence '.faker()->lastName().' '.strtoupper(substr(faker()->ulid(), -4)),
+            'name' => faker()->unique()->agencyName(),
             'address' => null,
         ];
     }

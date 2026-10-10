@@ -3,6 +3,10 @@
 namespace Xefi\Faker\Container;
 
 /**
+ * @method string customerPhoneNumber()
+ * @method string agencyName()
+ * @method string machineCategoryName()
+ * @method string machineReference()
  * @method array wordsAsArray(int $words = 3)
  * @method string words(int $words = 3)
  * @method array sentencesAsArray(int $sentences = 3)
@@ -90,5 +94,17 @@ namespace Xefi\Faker\Container;
  * @method string geoLocation()
  * @method float latitude()
  * @method float longitude()
+ * @method string region()
+ * @method array department()
+ * @method string city()
+ * @method string postcode()
+ * @method string houseNumber()
+ * @method string streetName()
+ * @method string streetAddress()
+ * @method string fullAddress()
+ * @method string siren()
+ * @method string siret()
+ * @method string company()
+ * @method string nir(?string $gender = null, bool $formatted = false)
  */
 class Container {}

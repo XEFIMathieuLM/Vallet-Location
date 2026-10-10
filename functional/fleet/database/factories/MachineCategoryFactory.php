@@ -15,7 +15,7 @@ class MachineCategoryFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => 'Catégorie '.strtoupper(substr(faker()->ulid(), -6)),
+            'name' => faker()->unique()->machineCategoryName(),
             'is_vgp_required' => false,
         ];
     }

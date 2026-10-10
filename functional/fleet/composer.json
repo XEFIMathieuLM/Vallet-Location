@@ -20,6 +20,11 @@
             "providers": [
                 "Functional\\Fleet\\Providers\\FleetServiceProvider"
             ]
+        },
+        "faker": {
+            "providers": [
+                "Functional\\Fleet\\Faker\\FleetFakerServiceProvider"
+            ]
         }
     }
 }

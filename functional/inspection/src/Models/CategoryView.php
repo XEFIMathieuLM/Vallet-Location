@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Lomkit\Access\Controls\HasControl;
 
 /**
  * @property int $id
@@ -22,7 +23,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class CategoryView extends Model
 {
     /** @use HasFactory<CategoryViewFactory> */
-    use HasFactory;
+    use HasControl, HasFactory;
 
     /**
      * @return BelongsTo<MachineCategory, $this>

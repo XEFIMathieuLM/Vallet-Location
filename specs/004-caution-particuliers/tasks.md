@@ -184,8 +184,8 @@ Celles de la 001 s'appliquent sans changement (CLAUDE.md, constitution 1.0.1) : 
 
 **Independent Test**: Encaisser, annuler : « à restituer » ; restitution sans confirmation de dégât.
 
-- [ ] T057 [P] [US4] Test `functional/deposit/tests/Feature/CancelledReservationDepositTest.php` : scénario 1 (annulation acceptée, caution `to_refund`, `awaiting_since` posé) ; scénario 2 (sans caution : rien à restituer, situation `NotTracked`) ; restitution sans confirmation acceptée pour une réservation annulée ; encaissement refusé sur une réservation annulée
-- [ ] T058 [US4] Vérifier que `SyncDepositOnReservationChanged` traite `cancelled` et que `RefundDeposit` n'exige pas la confirmation pour une réservation annulée ; ajuster T050/T053 si T057 échoue (depends on T057, T051, T053)
+- [X] T057 [P] [US4] Test `functional/deposit/tests/Feature/CancelledReservationDepositTest.php` : scénario 1 (annulation acceptée, caution `to_refund`, `awaiting_since` posé) ; scénario 2 (sans caution : rien à restituer, situation `NotTracked`) ; restitution sans confirmation acceptée pour une réservation annulée ; encaissement refusé sur une réservation annulée
+- [X] T058 [US4] Vérifier que `SyncDepositOnReservationChanged` traite `cancelled` et que `RefundDeposit` n'exige pas la confirmation pour une réservation annulée ; ajuster T050/T053 si T057 échoue (depends on T057, T051, T053)
 
 ---
 

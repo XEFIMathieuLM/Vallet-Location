@@ -4,6 +4,9 @@ includes:
     - vendor/xefi/phpstan-xefi-rules/extension.neon
 
 parameters:
+    scanFiles:
+        - faker_mixin.php
+
     paths:
         - app/
         - bootstrap/app.php
@@ -18,3 +21,11 @@ parameters:
         - functional/booking/routes/
 
     level: 7
+
+    ignoreErrors:
+        -
+            identifier: trait.unused
+            path: app/Concerns/ProfileValidationRules.php
+        -
+            identifier: xefi.maxLinePerMethod
+            path: database/migrations/*_create_permission_tables.php

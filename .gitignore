@@ -33,4 +33,3 @@ yarn-error.log
 /opencode.json
 /opencode.jsonc
 .claude/settings.local.json
-/faker_mixin.php

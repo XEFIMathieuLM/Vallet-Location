@@ -4,6 +4,7 @@ namespace Functional\Booking\Access\Controls;
 
 use Functional\Booking\Models\Reservation;
 use Functional\Fleet\Access\Perimeters\GlobalPerimeter;
+use Illuminate\Contracts\Auth\Access\Authorizable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Lomkit\Access\Controls\Control;
@@ -19,7 +20,7 @@ class ReservationControl extends Control
     {
         return [
             GlobalPerimeter::new()
-                ->allowed(fn (Model $user, string $method): bool => $user->can('reservations.manage'))
+                ->allowed(fn (Model $user, string $method): bool => $user instanceof Authorizable && $user->can('reservations.manage'))
                 ->should(fn (Model $user, Model $reservation): bool => true)
                 ->query(fn (Builder $query, Model $user): Builder => $query),
         ];

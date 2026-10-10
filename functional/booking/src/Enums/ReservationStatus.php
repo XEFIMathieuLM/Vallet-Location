@@ -2,7 +2,9 @@
 
 namespace Functional\Booking\Enums;
 
-enum ReservationStatus: string
+use Functional\Fleet\Contracts\HasLabel;
+
+enum ReservationStatus: string implements HasLabel
 {
     case Confirmed = 'confirmed';
     case InProgress = 'in_progress';

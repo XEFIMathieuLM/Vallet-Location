@@ -88,18 +88,14 @@ return [
     ],
 
     'transitions' => [
-        'depart' => 'Enregistrer la sortie',
+        'departure' => 'Enregistrer la sortie',
         'return' => 'Enregistrer le retour',
-        'cancel' => 'Annuler la réservation',
+        'cancellation' => 'Annuler la réservation',
     ],
 
     'return_conditions' => [
         'good_state' => 'En état',
         'workshop' => 'À l\'atelier',
-    ],
-
-    'late_returns' => [
-        'flagged' => '{0} Aucune machine en retard.|{1} :count machine en retard vérifiée.|[2,*] :count machines en retard vérifiées.',
     ],
 
     'refusals' => [

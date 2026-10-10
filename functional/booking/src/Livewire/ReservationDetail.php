@@ -6,6 +6,7 @@ use Functional\Booking\Actions\CancelReservation;
 use Functional\Booking\Actions\DepartReservation;
 use Functional\Booking\Actions\ReturnReservation;
 use Functional\Booking\Enums\ReservationStatus;
+use Functional\Booking\Enums\ReservationTransition;
 use Functional\Booking\Enums\ReturnCondition;
 use Functional\Booking\Extensions\ReservationDetailSections;
 use Functional\Booking\Models\Reservation;
@@ -17,10 +18,6 @@ use Livewire\Component;
 class ReservationDetail extends Component
 {
     use DisplaysRefusals;
-
-    public const DEPARTURE_STEP = 'departure';
-
-    public const RETURN_STEP = 'return';
 
     public Reservation $reservation;
 
@@ -52,16 +49,20 @@ class ReservationDetail extends Component
     #[On('reservation-transition-readiness')]
     public function updateTransitionReadiness(string $step, bool $is_ready): void
     {
-        $this->readinessBySteps[$step] = $is_ready;
+        $transition = ReservationTransition::tryFrom($step);
+
+        if ($transition !== null) {
+            $this->readinessBySteps[$transition->value] = $is_ready;
+        }
     }
 
-    public function isReadyFor(string $step): bool
+    public function isReadyFor(ReservationTransition $transition): bool
     {
         if (app(ReservationDetailSections::class)->isEmpty()) {
             return true;
         }
 
-        return $this->readinessBySteps[$step] ?? false;
+        return $this->readinessBySteps[$transition->value] ?? false;
     }
 
     public function render(): View

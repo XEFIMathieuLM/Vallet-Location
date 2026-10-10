@@ -11,7 +11,7 @@ final class ChangeUserActivation
     public function deactivate(User $user, User $author): User
     {
         if ($user->is($author)) {
-            throw new SelfDeactivationException(__('users.refusals.self_deactivation'));
+            throw SelfDeactivationException::for($author);
         }
 
         $user->update(['deactivated_at' => Carbon::now()]);

@@ -41,18 +41,18 @@
 
     <div class="flex flex-wrap gap-2">
         @if ($isConfirmed)
-            <flux:button variant="primary" wire:click="depart" :disabled="! $this->isReadyFor(\Functional\Booking\Livewire\ReservationDetail::DEPARTURE_STEP)">
-                {{ __('booking::reservations.transitions.depart') }}
+            <flux:button variant="primary" wire:click="depart" :disabled="! $this->isReadyFor(\Functional\Booking\Enums\ReservationTransition::Departure)">
+                {{ __('booking::reservations.transitions.departure') }}
             </flux:button>
             <flux:button variant="danger" wire:click="cancel" wire:confirm="{{ __('booking::reservations.detail.cancel_confirmation') }}">
-                {{ __('booking::reservations.transitions.cancel') }}
+                {{ __('booking::reservations.transitions.cancellation') }}
             </flux:button>
         @endif
 
         @if ($isInProgress)
             @foreach ($returnConditions as $returnCondition)
                 <flux:button :variant="$loop->first ? 'primary' : 'filled'" wire:click="returnMachine('{{ $returnCondition->value }}')"
-                    :disabled="! $this->isReadyFor(\Functional\Booking\Livewire\ReservationDetail::RETURN_STEP)">
+                    :disabled="! $this->isReadyFor(\Functional\Booking\Enums\ReservationTransition::Return)">
                     {{ __('booking::reservations.detail.return_as', ['condition' => $returnCondition->label()]) }}
                 </flux:button>
             @endforeach

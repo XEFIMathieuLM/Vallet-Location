@@ -248,7 +248,7 @@ description: "Task list for feature 001-reservation-machines"
 
 ### Exceptions et langue du code (MOYENNE)
 
-- [ ] T094 [no-generic-exceptions, code-in-english, no-hardcoded-user-text] Les exceptions de refus portent un message développeur en anglais ; le texte affiché (clé de traduction + paramètres) est exposé par `RefusalException::userMessage()` et rendu par `DisplaysRefusals` ; `app/Exceptions/SelfDeactivationException.php` a une fabrique nommée ; la sortie console de `functional/booking/src/Console/FlagLateReturns.php` passe par les traductions de la console en anglais
+- [X] T094 [no-generic-exceptions, code-in-english, no-hardcoded-user-text] Les exceptions de refus portent un message développeur en anglais ; le texte affiché (clé de traduction + paramètres) est exposé par `RefusalException::userMessage()` et rendu par `DisplaysRefusals` ; `app/Exceptions/SelfDeactivationException.php` a une fabrique nommée ; la sortie console de `functional/booking/src/Console/FlagLateReturns.php` passe par les traductions de la console en anglais
 
 ### Factories et tests (MOYENNE)
 
@@ -272,7 +272,7 @@ description: "Task list for feature 001-reservation-machines"
 
 ### Contrat des points d'extension (priorité : demandé par la 002)
 
-- [ ] T106 [osdd, enums-with-behavior] Enum `functional/booking/src/Enums/ReservationTransition.php` (`Departure`, `Return`) dans le contrat du point d'extension : `ReservationDetail` remplace `DEPARTURE_STEP` / `RETURN_STEP` par cet enum et l'événement `reservation-transition-readiness` porte sa valeur ; les layers supérieurs (inspection) s'y rattachent au lieu de recopier des chaînes ; research R12 mis à jour
+- [X] T106 [osdd, enums-with-behavior] Enum `functional/booking/src/Enums/ReservationTransition.php` (`Departure`, `Return`, `Cancellation` pour les refus de transition) dans le contrat du point d'extension : `ReservationDetail` remplace `DEPARTURE_STEP` / `RETURN_STEP` par cet enum et l'événement `reservation-transition-readiness` porte sa valeur ; les layers supérieurs (inspection) s'y rattachent au lieu de recopier des chaînes ; research R12 mis à jour
 
 **Checkpoint**: `speckit-analyze` sans problème CRITIQUE, HAUT ou MOYEN ; Pint, PHPStan (cache vidé) et toute la suite verts ; CI de la PR #1 verte.
 ---

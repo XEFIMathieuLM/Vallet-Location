@@ -8,8 +8,11 @@ final class MachineRetirementRefusedException extends RefusalException
 {
     public static function becauseOfActiveReservations(Machine $machine, int $activeReservationCount): self
     {
-        return new self(trans_choice('fleet::machines.refusals.retirement_with_reservations', $activeReservationCount, [
-            'reference' => $machine->reference,
-        ]));
+        return new self(
+            "Machine {$machine->reference} cannot be retired: {$activeReservationCount} active reservation(s).",
+            'fleet::machines.refusals.retirement_with_reservations',
+            ['reference' => $machine->reference],
+            $activeReservationCount,
+        );
     }
 }

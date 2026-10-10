@@ -6,6 +6,7 @@ use App\Models\User;
 use Carbon\CarbonImmutable;
 use Database\Seeders\PermissionSeeder;
 use Functional\Booking\Enums\ReservationStatus;
+use Functional\Booking\Enums\ReservationTransition;
 use Functional\Booking\Extensions\ReservationDetailSections;
 use Functional\Booking\Extensions\ReservationTransitionGuards;
 use Functional\Booking\Livewire\ReservationDetail;
@@ -84,7 +85,7 @@ class ReservationDetailActionsTest extends TestCase
     {
         $reservation = $this->reservation(ReservationStatus::Confirmed, MachineStatus::Available, '2026-11-10');
 
-        $this->assertTrue($this->detail($reservation)->instance()->isReadyFor(ReservationDetail::DEPARTURE_STEP));
+        $this->assertTrue($this->detail($reservation)->instance()->isReadyFor(ReservationTransition::Departure));
     }
 
     public function test_a_registered_section_is_rendered_and_holds_the_buttons_until_it_is_ready(): void
@@ -94,11 +95,11 @@ class ReservationDetailActionsTest extends TestCase
         $reservation = $this->reservation(ReservationStatus::Confirmed, MachineStatus::Available, '2026-11-10');
 
         $detail = $this->detail($reservation)->assertSee('Section de test');
-        $this->assertFalse($detail->instance()->isReadyFor(ReservationDetail::DEPARTURE_STEP));
+        $this->assertFalse($detail->instance()->isReadyFor(ReservationTransition::Departure));
 
-        $detail->dispatch('reservation-transition-readiness', step: ReservationDetail::DEPARTURE_STEP, is_ready: true);
-        $this->assertTrue($detail->instance()->isReadyFor(ReservationDetail::DEPARTURE_STEP));
-        $this->assertFalse($detail->instance()->isReadyFor(ReservationDetail::RETURN_STEP));
+        $detail->dispatch('reservation-transition-readiness', step: ReservationTransition::Departure->value, is_ready: true);
+        $this->assertTrue($detail->instance()->isReadyFor(ReservationTransition::Departure));
+        $this->assertFalse($detail->instance()->isReadyFor(ReservationTransition::Return));
     }
 
     private function detail(Reservation $reservation): Testable

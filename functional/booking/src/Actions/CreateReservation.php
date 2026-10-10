@@ -40,11 +40,11 @@ final class CreateReservation
     private function ensureDatesAreConsistent(CarbonImmutable $startDate, CarbonImmutable $endDate): void
     {
         if ($startDate->startOfDay()->lt(CarbonImmutable::today())) {
-            throw InvalidReservationDatesException::startInThePast();
+            throw InvalidReservationDatesException::startInThePast($startDate);
         }
 
         if ($endDate->lt($startDate)) {
-            throw InvalidReservationDatesException::endBeforeStart();
+            throw InvalidReservationDatesException::endBeforeStart($startDate, $endDate);
         }
     }
 

@@ -3,6 +3,7 @@
 namespace Functional\Fleet\Providers;
 
 use Functional\Fleet\Access\Controls\MachineControl;
+use Functional\Fleet\Extensions\MachineBadges;
 use Functional\Fleet\Extensions\MachineRetirementGuards;
 use Lomkit\Access\Access;
 use Xefi\LaravelOSDD\LayerServiceProvider;
@@ -12,6 +13,7 @@ class FleetServiceProvider extends LayerServiceProvider
     public function register(): void
     {
         $this->app->singleton(MachineRetirementGuards::class);
+        $this->app->singleton(MachineBadges::class);
     }
 
     public function boot(): void

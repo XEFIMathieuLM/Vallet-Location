@@ -7,10 +7,12 @@ use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Livewire\AvailabilitySearch;
 use Functional\Booking\Models\Reservation;
 use Functional\Booking\Queries\AvailableMachinesQuery;
+use Functional\Fleet\Extensions\MachineBadges;
 use Functional\Fleet\Models\Agency;
 use Functional\Fleet\Models\Machine;
 use Functional\Fleet\Models\MachineCategory;
 use Functional\Fleet\Tests\Concerns\CreatesUsers;
+use Functional\Fleet\Tests\Doubles\StubMachineBadgeProvider;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -92,6 +94,21 @@ class AvailabilitySearchTest extends TestCase
             ->assertSee('NAC-0042')
             ->set('endDate', '2026-11-10')
             ->assertDontSee('NAC-0042');
+    }
+
+    public function test_the_screen_shows_the_registered_machine_badges_and_listens_to_their_events(): void
+    {
+        $this->seedPermissions();
+        app(MachineBadges::class)->register(StubMachineBadgeProvider::class);
+        Machine::factory()->create(['reference' => 'NAC-0042']);
+
+        Livewire::actingAs($this->employee())
+            ->test(AvailabilitySearch::class)
+            ->set('startDate', '2026-11-10')
+            ->set('endDate', '2026-11-14')
+            ->assertSee('Badge de test')
+            ->dispatch(StubMachineBadgeProvider::LISTENER)
+            ->assertOk();
     }
 
     public function test_the_screen_is_refused_without_the_reservation_permission(): void

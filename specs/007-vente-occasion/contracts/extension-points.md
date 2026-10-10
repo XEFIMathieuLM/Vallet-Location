@@ -86,7 +86,7 @@ interface MachineBadgeProvider
 ```
 
 ```php
-namespace Functional\Fleet\ValueObjects;
+namespace Functional\Fleet\Data;
 
 final readonly class MachineBadge
 {

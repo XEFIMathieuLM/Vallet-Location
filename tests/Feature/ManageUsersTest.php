@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Livewire\Users\UserIndex;
 use App\Models\User;
-use Database\Seeders\PermissionSeeder;
 use Functional\Fleet\Models\Agency;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -22,7 +21,7 @@ class ManageUsersTest extends TestCase
     {
         parent::setUp();
 
-        $this->seed(PermissionSeeder::class);
+        $this->seedPermissions();
         $this->manager = User::factory()->employee()->create();
     }
 

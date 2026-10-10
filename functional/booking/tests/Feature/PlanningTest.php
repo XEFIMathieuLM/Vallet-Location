@@ -3,7 +3,6 @@
 namespace Functional\Booking\Tests\Feature;
 
 use Carbon\CarbonImmutable;
-use Database\Seeders\PermissionSeeder;
 use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Livewire\Planning;
 use Functional\Booking\Models\Reservation;
@@ -77,7 +76,7 @@ class PlanningTest extends TestCase
 
     public function test_the_planning_screen_renders_the_period(): void
     {
-        $this->seed(PermissionSeeder::class);
+        $this->seedPermissions();
         $machine = Machine::factory()->create(['reference' => 'NAC-0042']);
         $this->reservation($machine, '2026-11-11', '2026-11-12', ReservationStatus::InProgress);
 

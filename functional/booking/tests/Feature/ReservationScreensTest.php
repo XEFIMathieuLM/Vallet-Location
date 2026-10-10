@@ -3,7 +3,6 @@
 namespace Functional\Booking\Tests\Feature;
 
 use Carbon\CarbonImmutable;
-use Database\Seeders\PermissionSeeder;
 use Functional\Booking\Enums\ConflictReason;
 use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Livewire\ReservationList;
@@ -23,7 +22,7 @@ class ReservationScreensTest extends TestCase
     {
         parent::setUp();
 
-        $this->seed(PermissionSeeder::class);
+        $this->seedPermissions();
         $this->travelTo(CarbonImmutable::parse('2026-11-10 09:00'));
     }
 

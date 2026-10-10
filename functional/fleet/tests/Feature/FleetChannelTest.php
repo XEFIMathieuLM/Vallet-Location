@@ -2,7 +2,6 @@
 
 namespace Functional\Fleet\Tests\Feature;
 
-use Database\Seeders\PermissionSeeder;
 use Functional\Fleet\Access\FleetPermission;
 use Functional\Fleet\Tests\Concerns\CreatesUsers;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -19,7 +18,7 @@ class FleetChannelTest extends TestCase
     {
         parent::setUp();
 
-        $this->seed(PermissionSeeder::class);
+        $this->seedPermissions();
         config([
             'broadcasting.default' => 'pusher',
             'broadcasting.connections.pusher.key' => 'test-key',

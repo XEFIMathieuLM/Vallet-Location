@@ -2,7 +2,6 @@
 
 namespace Functional\Fleet\Tests\Feature;
 
-use Database\Seeders\PermissionSeeder;
 use Functional\Fleet\Actions\ImportFleet;
 use Functional\Fleet\Data\FleetImportReport;
 use Functional\Fleet\Events\FleetImported;
@@ -81,7 +80,7 @@ class ImportFleetTest extends TestCase
 
     public function test_the_import_screen_shows_the_report(): void
     {
-        $this->seed(PermissionSeeder::class);
+        $this->seedPermissions();
         $file = UploadedFile::fake()->createWithContent('parc.csv', (string) file_get_contents(self::FIXTURE));
 
         Livewire::actingAs($this->employee())

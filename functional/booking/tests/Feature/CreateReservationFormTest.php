@@ -3,7 +3,6 @@
 namespace Functional\Booking\Tests\Feature;
 
 use Carbon\CarbonImmutable;
-use Database\Seeders\PermissionSeeder;
 use Functional\Booking\Livewire\CreateReservationForm;
 use Functional\Booking\Models\Customer;
 use Functional\Booking\Models\Reservation;
@@ -25,7 +24,7 @@ class CreateReservationFormTest extends TestCase
     {
         parent::setUp();
 
-        $this->seed(PermissionSeeder::class);
+        $this->seedPermissions();
         $this->travelTo(CarbonImmutable::parse('2026-11-01'));
         $this->machine = Machine::factory()->create();
     }

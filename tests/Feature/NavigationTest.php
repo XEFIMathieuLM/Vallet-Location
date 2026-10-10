@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use Database\Seeders\PermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -13,7 +12,7 @@ class NavigationTest extends TestCase
 
     public function test_an_employee_sees_the_booking_screens_in_the_navigation(): void
     {
-        $this->seed(PermissionSeeder::class);
+        $this->seedPermissions();
 
         $this->actingAs(User::factory()->employee()->create())
             ->get(route('dashboard'))

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Database\Factories\UserFactory;
+use Functional\Fleet\Contracts\AgencyMember;
 use Functional\Fleet\Models\Agency;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -36,7 +37,7 @@ use Spatie\Permission\Traits\HasRoles;
  */
 #[Fillable(['name', 'email', 'password', 'agency_id', 'deactivated_at'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
-class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
+class User extends Authenticatable implements AgencyMember, MustVerifyEmail, PasskeyUser
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, HasRoles, Notifiable, PasskeyAuthenticatable, TwoFactorAuthenticatable;
@@ -61,6 +62,11 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
     public function agency(): BelongsTo
     {
         return $this->belongsTo(Agency::class);
+    }
+
+    public function agencyId(): int
+    {
+        return $this->agency_id;
     }
 
     public function isDeactivated(): bool

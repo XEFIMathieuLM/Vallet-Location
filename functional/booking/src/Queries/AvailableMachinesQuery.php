@@ -3,49 +3,30 @@
 namespace Functional\Booking\Queries;
 
 use Carbon\CarbonImmutable;
-use Functional\Booking\Enums\ReservationStatus;
 use Functional\Fleet\Enums\MachineStatus;
+use Functional\Fleet\Models\Agency;
 use Functional\Fleet\Models\Machine;
+use Functional\Fleet\Models\MachineCategory;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Query\Builder;
 
 final class AvailableMachinesQuery
 {
+    public function __construct(private readonly OuterMachineReservations $outerMachineReservations) {}
+
     /**
      * @return Collection<int, Machine>
      */
-    public function get(CarbonImmutable $startDate, CarbonImmutable $endDate, ?int $categoryId = null, ?int $agencyId = null): Collection
+    public function get(CarbonImmutable $startDate, CarbonImmutable $endDate, ?MachineCategory $category = null, ?Agency $agency = null): Collection
     {
         return Machine::query()
             ->with(['category', 'agency'])
-            ->when($categoryId !== null, fn ($query) => $query->where('machine_category_id', $categoryId))
-            ->when($agencyId !== null, fn ($query) => $query->where('agency_id', $agencyId))
+            ->when($category, fn ($query, MachineCategory $category) => $query->whereBelongsTo($category, 'category'))
+            ->when($agency, fn ($query, Agency $agency) => $query->whereBelongsTo($agency))
             ->whereIn('status', [MachineStatus::Available, MachineStatus::RentedOut])
             ->where(fn ($vgp) => $vgp->where('is_subject_to_vgp', false)->orWhereDate('vgp_due_date', '>=', $endDate))
-            ->whereNotExists(fn (Builder $reservations) => $this->overlappingReservations($reservations, $startDate, $endDate))
-            ->whereNotExists(fn (Builder $reservations) => $this->overdueRentals($reservations))
+            ->whereNotExists($this->outerMachineReservations->overlapping($startDate, $endDate))
+            ->whereNotExists($this->outerMachineReservations->overdue())
             ->orderBy('reference')
             ->get();
-    }
-
-    private function overlappingReservations(Builder $reservations, CarbonImmutable $startDate, CarbonImmutable $endDate): Builder
-    {
-        return $reservations
-            ->selectRaw('1')
-            ->from('reservations')
-            ->whereColumn('reservations.machine_id', 'machines.id')
-            ->where('reservations.status', '<>', ReservationStatus::Cancelled->value)
-            ->whereDate('reservations.start_date', '<=', $endDate)
-            ->whereDate('reservations.end_date', '>=', $startDate);
-    }
-
-    private function overdueRentals(Builder $reservations): Builder
-    {
-        return $reservations
-            ->selectRaw('1')
-            ->from('reservations')
-            ->whereColumn('reservations.machine_id', 'machines.id')
-            ->where('reservations.status', ReservationStatus::InProgress->value)
-            ->whereDate('reservations.end_date', '<', CarbonImmutable::today());
     }
 }

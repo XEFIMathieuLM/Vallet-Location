@@ -8,7 +8,6 @@ use Functional\Booking\Events\ReservationChanged;
 use Functional\Booking\Extensions\ReservationTransitionGuards;
 use Functional\Booking\Models\Reservation;
 use Functional\Fleet\Actions\ChangeMachineStatus;
-use Functional\Fleet\Models\Machine;
 use Illuminate\Support\Facades\DB;
 
 final class ReturnReservation
@@ -28,7 +27,7 @@ final class ReturnReservation
                 $transitionGuard->beforeReturn($lockedReservation);
             }
 
-            $machine = Machine::query()->lockForUpdate()->findOrFail($lockedReservation->machine_id);
+            $machine = $lockedReservation->machine()->lockForUpdate()->firstOrFail();
             $returnDate = CarbonImmutable::today();
 
             $lockedReservation->update([

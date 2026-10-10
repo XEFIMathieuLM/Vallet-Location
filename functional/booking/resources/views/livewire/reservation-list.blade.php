@@ -21,10 +21,17 @@
         <flux:checkbox wire:model.live="isInConflict" :label="__('booking::reservations.list.in_conflict_only')" />
     </div>
 
+    <x-loading-hint />
+
     @if ($this->reservations->isEmpty())
-        <flux:text>{{ __('booking::reservations.list.empty') }}</flux:text>
+        <x-empty-state :heading="__('booking::reservations.list.empty')" :description="__('booking::reservations.list.empty_help')">
+            <x-slot:actions>
+                <flux:button size="sm" wire:click="clearFilters">{{ __('screens.clear_filters') }}</flux:button>
+                <flux:button size="sm" variant="ghost" wire:navigate :href="route('availability.index')">{{ __('booking::reservations.navigation.availability') }}</flux:button>
+            </x-slot:actions>
+        </x-empty-state>
     @else
-        <flux:table :paginate="$this->reservations">
+        <flux:table :paginate="$this->reservations" wire:loading.class="opacity-50">
             <flux:table.columns>
                 <flux:table.column>{{ __('booking::reservations.fields.reference') }}</flux:table.column>
                 <flux:table.column>{{ __('booking::reservations.fields.customer') }}</flux:table.column>
@@ -44,7 +51,7 @@
                             @include('booking::partials.reservation-status', ['reservation' => $reservation])
                         </flux:table.cell>
                         <flux:table.cell align="end">
-                            <flux:button size="sm" variant="ghost" wire:navigate :href="route('reservations.show', $reservation)">
+                            <flux:button size="xs" variant="ghost" wire:navigate :href="route('reservations.show', $reservation)">
                                 {{ __('booking::reservations.list.open') }}
                             </flux:button>
                         </flux:table.cell>

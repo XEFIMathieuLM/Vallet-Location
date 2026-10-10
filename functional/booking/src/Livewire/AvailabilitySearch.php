@@ -39,6 +39,17 @@ class AvailabilitySearch extends Component
         $this->endDate = $this->endDate !== '' ? $this->endDate : $this->startDate;
     }
 
+    public function showNextWeek(): void
+    {
+        $this->startDate = CarbonImmutable::parse($this->startDate)->addWeek()->toDateString();
+        $this->endDate = CarbonImmutable::parse($this->endDate)->addWeek()->toDateString();
+    }
+
+    public function clearFilters(): void
+    {
+        $this->reset('categoryId', 'agencyId');
+    }
+
     #[Computed]
     public function hasValidPeriod(): bool
     {
@@ -61,8 +72,8 @@ class AvailabilitySearch extends Component
         return app(AvailableMachinesQuery::class)->get(
             CarbonImmutable::parse($this->startDate),
             CarbonImmutable::parse($this->endDate),
-            $this->categoryId,
-            $this->agencyId,
+            MachineCategory::query()->find($this->categoryId),
+            Agency::query()->find($this->agencyId),
         );
     }
 

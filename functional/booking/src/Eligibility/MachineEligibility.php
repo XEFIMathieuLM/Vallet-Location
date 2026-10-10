@@ -28,7 +28,7 @@ final class MachineEligibility
     public function isOverdue(Machine $machine): bool
     {
         return Reservation::query()
-            ->where('machine_id', $machine->id)
+            ->whereBelongsTo($machine)
             ->where('status', ReservationStatus::InProgress)
             ->whereDate('end_date', '<', CarbonImmutable::today())
             ->exists();

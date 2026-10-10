@@ -2,7 +2,6 @@
 
 namespace Functional\Booking\Tests\Feature;
 
-use App\Models\User;
 use Carbon\CarbonImmutable;
 use Database\Seeders\PermissionSeeder;
 use Functional\Booking\Enums\ReservationStatus;
@@ -14,13 +13,14 @@ use Functional\Fleet\Enums\MachineStatus;
 use Functional\Fleet\Models\Agency;
 use Functional\Fleet\Models\Machine;
 use Functional\Fleet\Models\MachineCategory;
+use Functional\Fleet\Tests\Concerns\CreatesUsers;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
 
 class PlanningTest extends TestCase
 {
-    use RefreshDatabase;
+    use CreatesUsers, RefreshDatabase;
 
     protected function setUp(): void
     {
@@ -69,7 +69,7 @@ class PlanningTest extends TestCase
         Machine::factory()->for($category, 'category')->create();
         Machine::factory()->for($category, 'category')->for($agency)->withStatus(MachineStatus::Retired)->create();
 
-        $rows = $this->grid('2026-11-10', '2026-11-14', $category->id, $agency->id)->rows;
+        $rows = $this->grid('2026-11-10', '2026-11-14', $category, $agency)->rows;
 
         $this->assertCount(1, $rows);
         $this->assertTrue($matchingMachine->is($rows[0]->machine));
@@ -81,19 +81,19 @@ class PlanningTest extends TestCase
         $machine = Machine::factory()->create(['reference' => 'NAC-0042']);
         $this->reservation($machine, '2026-11-11', '2026-11-12', ReservationStatus::InProgress);
 
-        Livewire::actingAs(User::factory()->employee()->create())
+        Livewire::actingAs($this->employee())
             ->withQueryParams(['du' => '2026-11-10', 'au' => '2026-11-16'])
             ->test(Planning::class)
             ->assertSee('NAC-0042')
             ->assertSee('16/11');
 
-        $this->actingAs(User::factory()->employee()->create())->get(route('planning.index'))->assertOk();
+        $this->actingAs($this->employee())->get(route('planning.index'))->assertOk();
     }
 
-    private function grid(string $startDate, string $endDate, ?int $categoryId = null, ?int $agencyId = null): PlanningGrid
+    private function grid(string $startDate, string $endDate, ?MachineCategory $category = null, ?Agency $agency = null): PlanningGrid
     {
         return PlanningGrid::build(
-            PlanningGrid::machinesQuery($categoryId, $agencyId)->get(),
+            PlanningGrid::machinesQuery($category, $agency)->get(),
             CarbonImmutable::parse($startDate),
             CarbonImmutable::parse($endDate),
         );

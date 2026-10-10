@@ -1,8 +1,8 @@
 <div class="flex flex-col gap-6">
     <x-page-heading :title="__('fleet::machines.index.title')">
         <x-slot:actions>
-            <flux:button icon="arrow-up-tray" wire:navigate :href="route('machines.import')">{{ __('fleet::machines.import.title') }}</flux:button>
-            <flux:button variant="primary" icon="plus" wire:navigate :href="route('machines.create')">{{ __('fleet::machines.index.create') }}</flux:button>
+            <flux:button size="sm" icon="arrow-up-tray" wire:navigate :href="route('machines.import')">{{ __('fleet::machines.import.title') }}</flux:button>
+            <flux:button size="sm" variant="primary" icon="plus" wire:navigate :href="route('machines.create')">{{ __('fleet::machines.index.create') }}</flux:button>
         </x-slot:actions>
     </x-page-heading>
 
@@ -36,7 +36,17 @@
         </flux:select>
     </div>
 
-    <flux:table :paginate="$this->machines">
+    <x-loading-hint />
+
+    @if ($this->machines->isEmpty())
+        <x-empty-state :heading="__('fleet::machines.index.empty')" :description="__('fleet::machines.index.empty_help')">
+            <x-slot:actions>
+                <flux:button size="sm" wire:click="clearFilters">{{ __('screens.clear_filters') }}</flux:button>
+                <flux:button size="sm" variant="ghost" icon="arrow-up-tray" wire:navigate :href="route('machines.import')">{{ __('fleet::machines.import.title') }}</flux:button>
+            </x-slot:actions>
+        </x-empty-state>
+    @else
+    <flux:table :paginate="$this->machines" wire:loading.class="opacity-50">
         <flux:table.columns>
             <flux:table.column>{{ __('fleet::machines.fields.reference') }}</flux:table.column>
             <flux:table.column>{{ __('fleet::machines.fields.category') }}</flux:table.column>
@@ -61,12 +71,12 @@
                     </flux:table.cell>
                     <flux:table.cell align="end">
                         <flux:dropdown position="bottom" align="end">
-                            <flux:button size="sm" variant="ghost" icon="ellipsis-horizontal" :aria-label="__('fleet::machines.index.actions')" />
+                            <flux:button size="xs" variant="ghost" icon="ellipsis-horizontal" :aria-label="__('fleet::machines.index.actions_for', ['reference' => $machine->reference])" />
                             <flux:menu>
                                 <flux:menu.item icon="pencil-square" wire:navigate :href="route('machines.edit', $machine)">{{ __('fleet::machines.index.edit') }}</flux:menu.item>
                                 @foreach (\Functional\Fleet\Enums\MachineTransition::manualFrom($machine->status) as $transition)
                                     @if ($transition === \Functional\Fleet\Enums\MachineTransition::Retire)
-                                        <flux:menu.item variant="danger" wire:click="applyTransition({{ $machine->id }}, '{{ $transition->value }}')" wire:confirm="{{ __('fleet::machines.index.retire_confirmation') }}">
+                                        <flux:menu.item variant="danger" wire:click="confirmRetirement({{ $machine->id }})">
                                             {{ $transition->label() }}
                                         </flux:menu.item>
                                     @else
@@ -82,4 +92,20 @@
             @endforeach
         </flux:table.rows>
     </flux:table>
+    @endif
+
+    <flux:modal name="retire-machine" class="max-w-md">
+        <div class="flex flex-col gap-6">
+            <div class="flex flex-col gap-2">
+                <x-section-heading :title="__('fleet::machines.index.retire_heading')" />
+                <flux:text>{{ __('fleet::machines.index.retire_confirmation', ['reference' => $this->machineToRetire?->reference]) }}</flux:text>
+            </div>
+            <div class="flex justify-end gap-2">
+                <flux:modal.close>
+                    <flux:button variant="ghost">{{ __('fleet::machines.index.keep_machine') }}</flux:button>
+                </flux:modal.close>
+                <flux:button variant="danger" wire:click="retire">{{ __('fleet::machines.index.confirm_retirement') }}</flux:button>
+            </div>
+        </div>
+    </flux:modal>
 </div>

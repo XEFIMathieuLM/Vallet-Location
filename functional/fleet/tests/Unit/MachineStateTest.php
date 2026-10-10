@@ -7,7 +7,7 @@ use Functional\Fleet\Enums\MachineTransition;
 use Functional\Fleet\Exceptions\IllegalMachineTransitionException;
 use Functional\Fleet\States\MachineStateFactory;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Tests\TestCase;
+use PHPUnit\Framework\TestCase;
 
 class MachineStateTest extends TestCase
 {

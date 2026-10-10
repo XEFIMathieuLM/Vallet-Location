@@ -5,16 +5,19 @@ namespace App\Livewire\Users;
 use App\Actions\Users\ChangeUserActivation;
 use App\Actions\Users\CreateEmployee;
 use App\Models\User;
+use Flux\Flux;
 use Functional\Fleet\Livewire\Concerns\DisplaysRefusals;
 use Functional\Fleet\Models\Agency;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 /**
  * @property-read Collection<int, User> $users
+ * @property-read User|null $userToDeactivate
  */
 class UserIndex extends Component
 {
@@ -25,6 +28,9 @@ class UserIndex extends Component
     public string $email = '';
 
     public ?int $agencyId = null;
+
+    #[Locked]
+    public ?int $userToDeactivateId = null;
 
     /**
      * @return Collection<int, User>
@@ -56,9 +62,25 @@ class UserIndex extends Component
         session()->flash('user-saved', __('users.created', ['name' => $employee->name]));
     }
 
+    #[Computed]
+    public function userToDeactivate(): ?User
+    {
+        return $this->userToDeactivateId === null ? null : User::query()->find($this->userToDeactivateId);
+    }
+
     public function changeAgency(int $userId, int $agencyId): void
     {
-        User::query()->findOrFail($userId)->update(['agency_id' => Agency::query()->findOrFail($agencyId)->id]);
+        $user = User::query()->findOrFail($userId);
+        $agency = Agency::query()->findOrFail($agencyId);
+
+        $user->agency()->associate($agency)->save();
+        Flux::toast(text: __('users.agency_changed', ['name' => $user->name, 'agency' => $agency->name]), variant: 'success');
+    }
+
+    public function confirmDeactivation(int $userId): void
+    {
+        $this->userToDeactivateId = $userId;
+        Flux::modal('deactivate-user')->show();
     }
 
     public function deactivate(int $userId, ChangeUserActivation $changeUserActivation): void
@@ -66,12 +88,18 @@ class UserIndex extends Component
         /** @var User $author */
         $author = Auth::user();
 
-        $changeUserActivation->deactivate(User::query()->findOrFail($userId), $author);
+        $user = $changeUserActivation->deactivate(User::query()->findOrFail($userId), $author);
+
+        Flux::modal('deactivate-user')->close();
+        $this->userToDeactivateId = null;
+        Flux::toast(text: __('users.deactivated_toast', ['name' => $user->name]), variant: 'success');
     }
 
     public function reactivate(int $userId, ChangeUserActivation $changeUserActivation): void
     {
-        $changeUserActivation->reactivate(User::query()->findOrFail($userId));
+        $user = $changeUserActivation->reactivate(User::query()->findOrFail($userId));
+
+        Flux::toast(text: __('users.reactivated_toast', ['name' => $user->name]), variant: 'success');
     }
 
     public function render(): View

@@ -21,7 +21,14 @@ return [
         'actions' => 'Actions',
         'edit' => 'Modifier',
         'vgp_missing' => 'Non renseignée',
-        'retire_confirmation' => 'Retirer définitivement cette machine du parc ?',
+        'actions_for' => 'Actions pour :reference',
+        'empty' => 'Aucune machine à afficher.',
+        'empty_help' => 'Aucune machine ne correspond aux filtres. Retirez des filtres, ou importez le parc s\'il est encore vide.',
+        'status_changed' => 'Machine :reference : statut « :status » enregistré.',
+        'retire_heading' => 'Retirer la machine du parc ?',
+        'retire_confirmation' => 'La machine :reference ne pourra plus être réservée ni changer de statut. Cette action est définitive.',
+        'keep_machine' => 'Garder la machine',
+        'confirm_retirement' => 'Retirer du parc',
     ],
 
     'form' => [
@@ -53,7 +60,7 @@ return [
     ],
 
     'refusals' => [
-        'duplicate_reference' => 'La référence :reference existe déjà dans le parc.',
+        'duplicate_reference' => 'La référence :reference existe déjà dans le parc. Saisissez une autre référence, ou modifiez la machine existante depuis le parc.',
         'retirement_with_reservations' => '{1} Retrait de :reference impossible : la machine a une réservation confirmée ou en cours.|[2,*] Retrait de :reference impossible : la machine a :count réservations confirmées ou en cours.',
         'illegal_transition' => 'Action « :transition » impossible : la machine est « :status ».',
     ],

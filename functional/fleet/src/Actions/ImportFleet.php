@@ -9,7 +9,6 @@ use Functional\Fleet\Events\FleetImported;
 use Functional\Fleet\Import\FleetImportLineParser;
 use Functional\Fleet\Models\Machine;
 use Functional\Fleet\Uniqueness\MachineReferences;
-use Illuminate\Support\Facades\DB;
 use Spatie\SimpleExcel\SimpleExcelReader;
 
 final class ImportFleet
@@ -57,13 +56,13 @@ final class ImportFleet
 
     private function createMachine(MachineAttributes $attributes): void
     {
-        DB::transaction(fn () => Machine::query()->create([
+        Machine::query()->create([
             'reference' => $attributes->reference,
             'machine_category_id' => $attributes->categoryId,
             'agency_id' => $attributes->agencyId,
             'status' => MachineStatus::Available,
             'is_subject_to_vgp' => $attributes->isSubjectToVgp,
             'vgp_due_date' => $attributes->vgpDueDate,
-        ]));
+        ]);
     }
 }

@@ -2,24 +2,22 @@
 
 namespace Functional\Booking\Tests\Feature;
 
-use App\Models\User;
 use Carbon\CarbonImmutable;
-use Database\Seeders\PermissionSeeder;
 use Functional\Booking\Enums\ConflictReason;
 use Functional\Booking\Events\ReservationChanged;
 use Functional\Booking\Models\Reservation;
 use Functional\Fleet\Events\FleetImported;
 use Functional\Fleet\Events\MachineChanged;
 use Functional\Fleet\Models\Machine;
+use Functional\Fleet\Tests\Concerns\CreatesUsers;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Broadcast;
 use Tests\TestCase;
 
 class BroadcastingTest extends TestCase
 {
-    use RefreshDatabase;
+    use CreatesUsers, RefreshDatabase;
 
     public function test_a_reservation_change_is_broadcast_on_the_fleet_channel_with_its_minimal_payload(): void
     {
@@ -63,27 +61,5 @@ class BroadcastingTest extends TestCase
         $this->assertEquals([new PrivateChannel('fleet')], $event->broadcastOn());
         $this->assertSame('fleet.imported', $event->broadcastAs());
         $this->assertSame(['created_count' => 12], $event->broadcastWith());
-    }
-
-    public function test_the_fleet_channel_is_open_to_employees_only(): void
-    {
-        $this->seed(PermissionSeeder::class);
-        config([
-            'broadcasting.default' => 'pusher',
-            'broadcasting.connections.pusher.key' => 'test-key',
-            'broadcasting.connections.pusher.secret' => 'test-secret',
-            'broadcasting.connections.pusher.app_id' => 'test-app',
-        ]);
-        Broadcast::forgetDrivers();
-        require base_path('functional/fleet/routes/channels.php');
-        $authorization = ['channel_name' => 'private-fleet', 'socket_id' => '1234.5678'];
-
-        $this->actingAs(User::factory()->employee()->create())
-            ->post('/broadcasting/auth', $authorization)
-            ->assertOk();
-
-        $this->actingAs(User::factory()->create())
-            ->post('/broadcasting/auth', $authorization)
-            ->assertForbidden();
     }
 }

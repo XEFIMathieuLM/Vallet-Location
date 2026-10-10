@@ -2,7 +2,6 @@
 
 namespace Functional\Booking\Tests\Feature;
 
-use App\Models\User;
 use Carbon\CarbonImmutable;
 use Database\Seeders\PermissionSeeder;
 use Functional\Booking\Actions\CancelReservation;
@@ -20,12 +19,13 @@ use Functional\Booking\Tests\Concerns\WithoutTransitionExtensions;
 use Functional\Fleet\Enums\MachineStatus;
 use Functional\Fleet\Models\Machine;
 use Functional\Fleet\Tests\Concerns\AssertsRefusals;
+use Functional\Fleet\Tests\Concerns\CreatesUsers;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class ReservationLifecycleTest extends TestCase
 {
-    use AssertsRefusals, RefreshDatabase, WithoutTransitionExtensions;
+    use AssertsRefusals, CreatesUsers, RefreshDatabase, WithoutTransitionExtensions;
 
     private Machine $machine;
 
@@ -152,7 +152,7 @@ class ReservationLifecycleTest extends TestCase
     private function reservation(string $startDate, string $endDate): Reservation
     {
         return app(CreateReservation::class)->handle(
-            User::factory()->employee()->create(),
+            $this->employee(),
             $this->machine->fresh() ?? $this->machine,
             Customer::factory()->create(),
             CarbonImmutable::parse($startDate),

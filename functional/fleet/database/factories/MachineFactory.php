@@ -40,4 +40,24 @@ class MachineFactory extends Factory
             'vgp_due_date' => $dueDate,
         ]);
     }
+
+    public function vgpValid(): static
+    {
+        return $this->subjectToVgpUntil(CarbonImmutable::instance(faker()->dateTimeImmutable('+2 months', '+18 months'))->startOfDay());
+    }
+
+    public function vgpExpiringSoon(): static
+    {
+        return $this->subjectToVgpUntil(CarbonImmutable::today()->addDays(faker()->number(1, 4)));
+    }
+
+    public function vgpExpired(): static
+    {
+        return $this->subjectToVgpUntil(CarbonImmutable::instance(faker()->dateTimeImmutable('-6 months', '-1 day'))->startOfDay());
+    }
+
+    public function vgpMissing(): static
+    {
+        return $this->subjectToVgpUntil(null);
+    }
 }

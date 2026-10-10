@@ -10,6 +10,16 @@ return [
 
     'planning' => [
         'title' => 'Planning',
+        'empty' => 'Aucune machine à afficher.',
+        'empty_help' => 'Aucune machine du parc ne correspond aux filtres de catégorie et d\'agence.',
+        'cell_label' => ':date : :state',
+        'short_labels' => [
+            'free' => '',
+            'reserved' => 'R',
+            'workshop' => 'A',
+            'out_of_order' => 'P',
+            'vgp_invalid' => 'V',
+        ],
         'cells' => [
             'free' => 'Libre',
             'reserved' => 'Réservée',
@@ -44,13 +54,20 @@ return [
         'all_statuses' => 'Tous les statuts',
         'in_conflict_only' => 'En conflit uniquement',
         'empty' => 'Aucune réservation ne correspond aux filtres.',
+        'empty_help' => 'Retirez des filtres pour voir plus de réservations, ou créez-en une depuis les disponibilités.',
         'open' => 'Ouvrir',
     ],
 
     'detail' => [
         'title' => 'Réservation :reference',
         'in_conflict' => 'Réservation en conflit : :reason. Relogez le client ou annulez la réservation.',
-        'cancel_confirmation' => 'Annuler cette réservation et libérer ses dates ?',
+        'cancel_heading' => 'Annuler la réservation ?',
+        'cancel_confirmation' => 'La réservation de :reference du :start au :end sera annulée et ses dates libérées pour d\'autres réservations. Cette action est définitive.',
+        'keep_reservation' => 'Garder la réservation',
+        'confirm_cancellation' => 'Annuler la réservation',
+        'departed' => 'Sortie enregistrée : la machine est maintenant sortie.',
+        'returned' => 'Retour enregistré (:condition) : la réservation est clôturée.',
+        'cancelled' => 'Réservation annulée : ses dates sont libérées.',
         'return_as' => 'Retour : :condition',
     ],
 
@@ -60,6 +77,8 @@ return [
         'all_agencies' => 'Toutes les agences',
         'invalid_period' => 'Période incohérente : la date de fin doit être postérieure ou égale à la date de début.',
         'no_machine' => 'Aucune machine disponible sur cette période.',
+        'no_machine_help' => 'Toutes les machines correspondantes sont réservées, indisponibles ou sans VGP valide jusqu\'à la fin de la période. Essayez d\'autres dates ou élargissez les filtres.',
+        'next_week' => 'Chercher la semaine suivante',
         'reserve' => 'Réserver',
     ],
 

@@ -1,0 +1,135 @@
+<?php
+
+return [
+    'navigation' => [
+        'heading' => 'Réservations',
+        'availability' => 'Disponibilités',
+        'reservations' => 'Réservations',
+        'planning' => 'Planning',
+    ],
+
+    'planning' => [
+        'title' => 'Planning',
+        'empty' => 'Aucune machine à afficher.',
+        'empty_help' => 'Aucune machine du parc ne correspond aux filtres de catégorie et d\'agence.',
+        'cell_label' => ':date : :state',
+        'short_labels' => [
+            'free' => '',
+            'reserved' => 'R',
+            'workshop' => 'A',
+            'out_of_order' => 'P',
+            'vgp_invalid' => 'V',
+        ],
+        'cells' => [
+            'free' => 'Libre',
+            'reserved' => 'Réservée',
+            'workshop' => 'Atelier',
+            'out_of_order' => 'En panne',
+            'vgp_invalid' => 'VGP non valide',
+        ],
+    ],
+
+    'fields' => [
+        'reference' => 'Référence',
+        'category' => 'Catégorie',
+        'home_agency' => 'Agence de rattachement',
+        'start_date' => 'Du',
+        'end_date' => 'Au',
+        'customer' => 'Client',
+        'customer_name' => 'Nom du client',
+        'customer_phone' => 'Téléphone',
+        'customer_email' => 'E-mail',
+        'status' => 'Statut',
+        'agency' => 'Agence',
+        'period' => 'Période',
+        'machine' => 'Machine',
+        'planned_end_date' => 'Fin prévue initialement',
+        'created_by' => 'Créée par',
+        'departed_at' => 'Sortie le',
+        'returned_at' => 'Rentrée le',
+    ],
+
+    'list' => [
+        'title' => 'Réservations',
+        'all_statuses' => 'Tous les statuts',
+        'in_conflict_only' => 'En conflit uniquement',
+        'empty' => 'Aucune réservation ne correspond aux filtres.',
+        'empty_help' => 'Retirez des filtres pour voir plus de réservations, ou créez-en une depuis les disponibilités.',
+        'open' => 'Ouvrir',
+    ],
+
+    'detail' => [
+        'title' => 'Réservation :reference',
+        'in_conflict' => 'Réservation en conflit : :reason. Relogez le client ou annulez la réservation.',
+        'cancel_heading' => 'Annuler la réservation ?',
+        'cancel_confirmation' => 'La réservation de :reference du :start au :end sera annulée et ses dates libérées pour d\'autres réservations. Cette action est définitive.',
+        'keep_reservation' => 'Garder la réservation',
+        'confirm_cancellation' => 'Annuler la réservation',
+        'departed' => 'Sortie enregistrée : la machine est maintenant sortie.',
+        'returned' => 'Retour enregistré (:condition) : la réservation est clôturée.',
+        'cancelled' => 'Réservation annulée : ses dates sont libérées.',
+        'return_as' => 'Retour : :condition',
+    ],
+
+    'availability' => [
+        'title' => 'Disponibilités',
+        'all_categories' => 'Toutes les catégories',
+        'all_agencies' => 'Toutes les agences',
+        'invalid_period' => 'Période incohérente : la date de fin doit être postérieure ou égale à la date de début.',
+        'no_machine' => 'Aucune machine disponible sur cette période.',
+        'no_machine_help' => 'Toutes les machines correspondantes sont réservées, indisponibles ou sans VGP valide jusqu\'à la fin de la période. Essayez d\'autres dates ou élargissez les filtres.',
+        'next_week' => 'Chercher la semaine suivante',
+        'reserve' => 'Réserver',
+    ],
+
+    'form' => [
+        'title' => 'Nouvelle réservation',
+        'new_customer' => 'Nouveau client',
+        'customer_search' => 'Rechercher un client',
+        'choose_customer' => 'Choisir un client',
+        'contact_required' => 'Au moins un moyen de contact (téléphone ou e-mail) est requis.',
+        'confirm' => 'Confirmer la réservation',
+        'back' => 'Retour aux disponibilités',
+        'created' => 'Réservation de :reference enregistrée du :start au :end.',
+    ],
+
+    'status' => [
+        'confirmed' => 'Confirmée',
+        'in_progress' => 'En cours',
+        'closed' => 'Clôturée',
+        'cancelled' => 'Annulée',
+    ],
+
+    'conflicts' => [
+        'machine_unavailable' => 'Machine indisponible',
+        'vgp_expired' => 'VGP non valide sur la période',
+        'machine_not_returned' => 'Machine pas encore rentrée',
+    ],
+
+    'transitions' => [
+        'departure' => 'Enregistrer la sortie',
+        'return' => 'Enregistrer le retour',
+        'cancellation' => 'Annuler la réservation',
+    ],
+
+    'return_conditions' => [
+        'good_state' => 'En état',
+        'workshop' => 'À l\'atelier',
+    ],
+
+    'refusals' => [
+        'illegal_transition' => 'Action « :transition » impossible : la réservation est « :status ».',
+        'departure_before_start' => 'Sortie impossible avant la date de début de la réservation (:date).',
+        'departure_machine_status' => 'Sortie impossible : la machine est « :status ».',
+        'departure_vgp_missing' => 'Sortie impossible : la VGP de la machine n\'est pas renseignée.',
+        'departure_vgp_expires' => 'Sortie impossible : la VGP de la machine expire le :date, avant la fin de la réservation.',
+        'overlap' => 'Machine déjà réservée du :start au :end par l\'agence :agency.',
+        'concurrent_overlap' => 'Machine réservée sur ces dates par une autre agence à l\'instant. Relancez la recherche de disponibilité.',
+        'start_in_the_past' => 'La date de début ne peut pas être dans le passé.',
+        'end_before_start' => 'La date de fin doit être postérieure ou égale à la date de début.',
+        'machine_status' => 'Machine non réservable : elle est « :status ».',
+        'vgp_missing' => 'Machine non réservable : sa VGP n\'est pas renseignée.',
+        'vgp_expires' => 'Machine non réservable : sa VGP expire le :date, avant la fin de la période.',
+        'machine_not_returned' => 'Machine non réservable : elle n\'est pas encore rentrée de sa location précédente.',
+    ],
+];

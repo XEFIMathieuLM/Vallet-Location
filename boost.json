@@ -1,0 +1,20 @@
+{
+    "cloud": true,
+    "guidelines": true,
+    "packages": [
+        "xefi/laravel-osdd",
+        "lomkit/laravel-access-control"
+    ],
+    "skills": [
+        "infer-conventions",
+        "deploying-to-cloud",
+        "fortify-development",
+        "laravel-best-practices",
+        "testing-best-practices",
+        "fluxui-development",
+        "livewire-development",
+        "tailwindcss-development",
+        "laravel-access-control",
+        "laravel-osdd"
+    ]
+}

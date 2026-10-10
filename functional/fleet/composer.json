@@ -1,0 +1,37 @@
+{
+    "name": "functional/fleet",
+    "description": "",
+    "type": "layer",
+    "version": "1.0.0",
+    "require": {
+        "laravel/framework": "^13.17",
+        "livewire/flux": "^2.13.1",
+        "livewire/livewire": "^4.1",
+        "lomkit/laravel-access-control": "^0.6.0",
+        "spatie/laravel-activitylog": "^5.1",
+        "spatie/laravel-permission": "^8.3",
+        "spatie/simple-excel": "^3.10",
+        "xefi/laravel-osdd": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Functional\\Fleet\\": "src/",
+            "Functional\\Fleet\\Database\\Seeders\\": "database/seeders/",
+            "Functional\\Fleet\\Database\\Factories\\": "database/factories/"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Functional\\Fleet\\Providers\\FleetServiceProvider"
+            ]
+        },
+        "faker": {
+            "providers": [
+                "Functional\\Fleet\\Faker\\FleetFakerServiceProvider"
+            ]
+        }
+    }
+}

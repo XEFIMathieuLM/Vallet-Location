@@ -13,9 +13,6 @@
             <directory>tests/Feature</directory>
             <directory>functional/*/tests/Feature</directory>
         </testsuite>
-        <testsuite name="Inspection">
-            <directory>functional/inspection/tests</directory>
-        </testsuite>
     </testsuites>
     <source>
         <include>

@@ -44,6 +44,7 @@ class SaleFactory extends Factory
         return $this->listed()->afterCreating(function (Sale $sale) use ($plannedHandoverDate, $finalPrice): void {
             $acceptedOffer = SaleOffer::factory()->accepted()->create([
                 'sale_id' => $sale->id,
+                'recorded_by' => $sale->listed_by,
                 'amount' => $finalPrice ?? $sale->asking_price,
             ]);
 

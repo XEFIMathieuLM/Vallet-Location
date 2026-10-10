@@ -234,10 +234,10 @@ description: "Task list for the used machine sales feature"
 
 ## Phase 9: Polish & Cross-Cutting Concerns
 
-- [ ] T074 [P] `functional/sales/database/seeders/SalesDemoSeeder.php` (quelques ventes à différents états pour la démo), appelé depuis `DatabaseSeeder` en environnement local uniquement
-- [ ] T075 [P] Vérifier qu'aucun fichier de `functional/sales` ne dépasse 200 lignes, sans commentaire de code ni nom générique ; tous les textes affichés passent par `sales::`
-- [ ] T076 Lancer la suite complète, `vendor/bin/phpstan analyse` (zéro erreur) et `vendor/bin/pint --dirty --format agent`
-- [ ] T077 Dérouler `specs/007-vente-occasion/quickstart.md` (validation manuelle avec le faux logiciel) et consigner les écarts
+- [X] T074 [P] `functional/sales/database/seeders/SalesDemoSeeder.php` (quelques ventes à différents états pour la démo), appelé depuis `DatabaseSeeder` en environnement local uniquement
+- [X] T075 [P] Vérifier qu'aucun fichier de `functional/sales` ne dépasse 200 lignes, sans commentaire de code ni nom générique ; tous les textes affichés passent par `sales::`
+- [X] T076 Lancer la suite complète, `vendor/bin/phpstan analyse` (zéro erreur) et `vendor/bin/pint --dirty --format agent`
+- [X] T077 Dérouler `specs/007-vente-occasion/quickstart.md` (validation manuelle avec le faux logiciel) et consigner les écarts
 
 ---
 

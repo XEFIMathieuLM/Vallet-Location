@@ -2,6 +2,14 @@
 
 namespace Functional\Billing\Providers;
 
+use Functional\Billing\Access\Controls\BillingExportControl;
+use Functional\Billing\Access\Controls\DamageSettlementControl;
+use Functional\Billing\Access\Controls\TransmissionControl;
+use Functional\Billing\Console\FakeGatewayCommand;
+use Functional\Billing\Contracts\BillingGateway;
+use Functional\Billing\Exceptions\UnknownBillingGatewayException;
+use Functional\Billing\Gateways\FakeBillingGateway;
+use Lomkit\Access\Access;
 use Xefi\LaravelOSDD\LayerServiceProvider;
 
 class BillingServiceProvider extends LayerServiceProvider
@@ -9,6 +17,13 @@ class BillingServiceProvider extends LayerServiceProvider
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../../config/billing.php', 'billing');
+        $this->app->singleton(FakeBillingGateway::class);
+        $this->app->bind(BillingGateway::class, function (): BillingGateway {
+            $gatewayName = config()->string('billing.gateway');
+            $gatewayClass = config()->array('billing.gateways')[$gatewayName] ?? throw UnknownBillingGatewayException::named($gatewayName);
+
+            return $this->app->make($gatewayClass);
+        });
     }
 
     public function boot(): void
@@ -16,6 +31,12 @@ class BillingServiceProvider extends LayerServiceProvider
         $this->loadMigrationsFrom(__DIR__.'/../../database/migrations');
         $this->loadTranslationsFrom(__DIR__.'/../../resources/lang', 'billing');
         $this->loadViewsFrom(__DIR__.'/../../resources/views', 'billing');
+
+        (new Access)->addControls([new TransmissionControl, new DamageSettlementControl, new BillingExportControl]);
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([FakeGatewayCommand::class]);
+        }
 
         $this->withRouting(
             web: __DIR__.'/../../routes/web.php',

@@ -28,6 +28,10 @@ parameters:
         - functional/billing/routes/
         - functional/billing/config/
 
+    configDirectories:
+        - config
+        - functional/billing/config
+
     level: 7
 
     ignoreErrors:

@@ -1,0 +1,27 @@
+{
+    "name": "functional/inspection",
+    "description": "",
+    "type": "layer",
+    "version": "1.0.0",
+    "require": {
+        "xefi/laravel-osdd": "*",
+        "functional/booking": "*",
+        "functional/fleet": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Functional\\Inspection\\": "src/",
+            "Functional\\Inspection\\Database\\Seeders\\": "database/seeders/",
+            "Functional\\Inspection\\Database\\Factories\\": "database/factories/"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Functional\\Inspection\\Providers\\InspectionServiceProvider"
+            ]
+        }
+    }
+}

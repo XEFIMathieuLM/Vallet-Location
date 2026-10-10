@@ -19,6 +19,10 @@ parameters:
         - functional/booking/src/
         - functional/booking/database/
         - functional/booking/routes/
+        - functional/inspection/src/
+        - functional/inspection/database/
+        - functional/inspection/routes/
+        - functional/inspection/config/
 
     level: 7
 

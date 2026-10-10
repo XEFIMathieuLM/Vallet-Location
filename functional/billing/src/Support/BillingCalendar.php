@@ -17,15 +17,20 @@ final class BillingCalendar
         return $this->dateOf(CarbonImmutable::now());
     }
 
-    public function goLiveDate(): CarbonImmutable
+    public function hasGoLiveDate(): bool
     {
         $configuredDate = config('billing.go_live_date');
 
-        if (! is_string($configuredDate) || ! CarbonImmutable::canBeCreatedFromFormat($configuredDate, 'Y-m-d')) {
+        return is_string($configuredDate) && CarbonImmutable::canBeCreatedFromFormat($configuredDate, 'Y-m-d');
+    }
+
+    public function goLiveDate(): CarbonImmutable
+    {
+        if (! $this->hasGoLiveDate()) {
             throw MissingGoLiveDateException::make();
         }
 
-        return CarbonImmutable::createFromFormat('!Y-m-d', $configuredDate, $this->timezone()) ?: throw MissingGoLiveDateException::make();
+        return CarbonImmutable::createFromFormat('!Y-m-d', config()->string('billing.go_live_date'), $this->timezone()) ?: throw MissingGoLiveDateException::make();
     }
 
     public function isLive(): bool

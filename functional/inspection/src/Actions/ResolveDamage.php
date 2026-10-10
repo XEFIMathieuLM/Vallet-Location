@@ -6,8 +6,9 @@ use App\Models\User;
 use Carbon\CarbonImmutable;
 use Functional\Inspection\Events\DamageChanged;
 use Functional\Inspection\Exceptions\DamageAlreadyResolvedException;
+use Functional\Inspection\History\InspectionHistory;
+use Functional\Inspection\History\InspectionHistoryEvent;
 use Functional\Inspection\Models\Damage;
-use Functional\Inspection\Support\InspectionHistory;
 use Illuminate\Support\Facades\DB;
 
 class ResolveDamage
@@ -28,10 +29,10 @@ class ResolveDamage
 
             $lockedDamage->update(['resolved_by' => $resolver->id, 'resolved_at' => CarbonImmutable::now()]);
 
-            $this->inspectionHistory->record($lockedDamage->reservation, 'damage.resolved', $resolver, ['damage_id' => $lockedDamage->id]);
+            $this->inspectionHistory->record($lockedDamage->reservation, InspectionHistoryEvent::DamageResolved, $resolver, ['damage_id' => $lockedDamage->id]);
         });
 
-        DamageChanged::dispatch($damage->reservation_id, $this->countUnresolvedDamages->for($damage->reservation_id));
+        DamageChanged::dispatch($damage->reservation_id, $this->countUnresolvedDamages->for($damage->reservation));
 
         return $damage->refresh();
     }

@@ -59,11 +59,9 @@ class PhotoSession extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function isActive(): bool
+    public function isRevokedOrExpired(): bool
     {
-        return $this->revoked_at === null
-            && $this->expires_at->isFuture()
-            && $this->step->isOpenFor($this->reservation);
+        return $this->revoked_at !== null || ! $this->expires_at->isFuture();
     }
 
     public static function hashToken(string $token): string

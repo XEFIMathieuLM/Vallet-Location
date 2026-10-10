@@ -1,18 +1,18 @@
 <?php
 
-namespace Functional\Inspection\Actions;
+namespace Functional\Inspection\Completeness;
 
 use Functional\Booking\Models\Reservation;
 use Functional\Inspection\Enums\InspectionStep;
-use Functional\Inspection\Support\StepCompleteness;
-use Illuminate\Support\Facades\DB;
+use Functional\Inspection\Models\ReservationView;
 
 class ViewCompleteness
 {
     public function for(Reservation $reservation): StepCompleteness
     {
-        $countsQuery = DB::table('reservation_views')
-            ->where('reservation_id', $reservation->id)
+        $countsQuery = ReservationView::query()
+            ->whereBelongsTo($reservation)
+            ->toBase()
             ->selectRaw('count(*) as views_count');
 
         foreach (InspectionStep::cases() as $step) {

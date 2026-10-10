@@ -5,6 +5,7 @@ namespace Functional\Inspection\Tests\Feature;
 use Carbon\CarbonImmutable;
 use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Models\Reservation;
+use Functional\Inspection\Actions\FindActivePhotoSession;
 use Functional\Inspection\Actions\MissingViews;
 use Functional\Inspection\Enums\InspectionStep;
 use Functional\Inspection\Enums\RevocationReason;
@@ -51,7 +52,7 @@ class OpenPhotoSessionTest extends TestCase
 
         $firstSession = PhotoSession::query()->where('token_hash', PhotoSession::hashToken($firstToken))->firstOrFail();
         $this->assertSame(RevocationReason::Replaced, $firstSession->revoked_reason);
-        $this->assertFalse($firstSession->isActive());
+        $this->assertFalse(app(FindActivePhotoSession::class)->isActive($firstSession));
     }
 
     public function test_the_departure_session_cannot_be_opened_before_the_start_date(): void

@@ -10,6 +10,7 @@ use Functional\Inspection\Actions\CategoryViews\RemoveCategoryView;
 use Functional\Inspection\Actions\RevokePhotoSessions;
 use Functional\Inspection\Enums\InspectionStep;
 use Functional\Inspection\Enums\RevocationReason;
+use Functional\Inspection\History\InspectionHistoryEvent;
 use Functional\Inspection\Models\CategoryView;
 use Functional\Inspection\Models\PhotoSession;
 use Illuminate\Database\Events\QueryExecuted;
@@ -54,7 +55,7 @@ class DatabaseAggregatesTest extends TestCase
         $sql = $this->sqlOf(fn () => app(RevokePhotoSessions::class)->handle($reservation, InspectionStep::cases(), RevocationReason::ReservationCancelled));
 
         $this->assertStringContainsString('select distinct "step" from "photo_sessions"', $sql);
-        $properties = Activity::query()->where('event', 'photo_session.revoked')->sole()->properties;
+        $properties = Activity::query()->where('event', InspectionHistoryEvent::PhotoSessionRevoked->value)->sole()->properties;
         $this->assertSame(3, $properties['sessions_count']);
         $this->assertSame('departure,return', $properties['steps']);
     }

@@ -10,7 +10,7 @@ use Functional\Inspection\Actions\CategoryViews\AddCategoryView;
 use Functional\Inspection\Actions\CategoryViews\RemoveCategoryView;
 use Functional\Inspection\Actions\FreezeReservationViews;
 use Functional\Inspection\Actions\RevokePhotoSessions;
-use Functional\Inspection\Actions\ViewCompleteness;
+use Functional\Inspection\Completeness\ViewCompleteness;
 use Functional\Inspection\Enums\InspectionStep;
 use Functional\Inspection\Enums\RevocationReason;
 use Functional\Inspection\Models\CategoryView;

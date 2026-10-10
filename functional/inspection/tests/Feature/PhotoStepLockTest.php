@@ -45,7 +45,7 @@ class PhotoStepLockTest extends TestCase
         $reservation = $this->reservationStartingToday();
         $token = $this->openSession($reservation);
         $checkedSession = PhotoSession::query()->with(['reservation', 'author'])->where('token_hash', PhotoSession::hashToken($token))->firstOrFail();
-        $this->mock(FindActivePhotoSession::class, fn (MockInterface $mock) => $mock->shouldReceive('handle')->andReturn($checkedSession));
+        $this->partialMock(FindActivePhotoSession::class, fn (MockInterface $mock) => $mock->shouldReceive('handle')->andReturn($checkedSession));
 
         $this->recordDepartureBehindTheScenes($reservation);
 

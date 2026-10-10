@@ -11,6 +11,7 @@ use Functional\Inspection\Actions\ReportDamage;
 use Functional\Inspection\Actions\ResolveDamage;
 use Functional\Inspection\Actions\StorePhoto;
 use Functional\Inspection\Enums\InspectionStep;
+use Functional\Inspection\History\InspectionHistoryEvent;
 use Functional\Inspection\Tests\Concerns\BuildsPhotoSessions;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -40,10 +41,10 @@ class InspectionHistoryTest extends TestCase
         app(OpenPhotoSession::class)->handle($reservation, InspectionStep::Departure, $this->employee);
 
         $this->assertSame(
-            ['photo_session.opened', 'photo_session.revoked', 'photo_session.opened'],
+            [InspectionHistoryEvent::PhotoSessionOpened->value, InspectionHistoryEvent::PhotoSessionRevoked->value, InspectionHistoryEvent::PhotoSessionOpened->value],
             $this->historyOf($reservation)->pluck('event')->all(),
         );
-        $revocation = $this->historyOf($reservation)->firstWhere('event', 'photo_session.revoked');
+        $revocation = $this->historyOf($reservation)->firstWhere('event', InspectionHistoryEvent::PhotoSessionRevoked->value);
         $this->assertSame('replaced', $revocation?->properties['reason']);
         $this->assertSame($this->employee->id, $this->historyOf($reservation)->first()?->causer_id);
     }
@@ -57,8 +58,8 @@ class InspectionHistoryTest extends TestCase
         $photo = app(StorePhoto::class)->handle($token, $view->id, $this->jpeg());
         app(DeletePhoto::class)->fromSession(app(FindActivePhotoSession::class)->handle($token), $photo->id);
 
-        $received = $this->historyOf($reservation)->firstWhere('event', 'photo.received');
-        $deleted = $this->historyOf($reservation)->firstWhere('event', 'photo.deleted');
+        $received = $this->historyOf($reservation)->firstWhere('event', InspectionHistoryEvent::PhotoReceived->value);
+        $deleted = $this->historyOf($reservation)->firstWhere('event', InspectionHistoryEvent::PhotoDeleted->value);
         $this->assertSame(['view' => 'Avant', 'step' => 'departure'], $received?->properties->only(['view', 'step'])->all());
         $this->assertSame($this->employee->id, $received?->causer_id);
         $this->assertNotNull($deleted);
@@ -73,10 +74,10 @@ class InspectionHistoryTest extends TestCase
         app(ResolveDamage::class)->handle($damage, $this->employee);
 
         $this->assertSame(
-            ['damage.reported', 'damage.resolved'],
-            $this->historyOf($reservation)->whereIn('event', ['damage.reported', 'damage.resolved'])->pluck('event')->values()->all(),
+            [InspectionHistoryEvent::DamageReported->value, InspectionHistoryEvent::DamageResolved->value],
+            $this->historyOf($reservation)->whereIn('event', [InspectionHistoryEvent::DamageReported->value, InspectionHistoryEvent::DamageResolved->value])->pluck('event')->values()->all(),
         );
-        $this->assertSame([$this->employee->id, $this->employee->id], $this->historyOf($reservation)->whereIn('event', ['damage.reported', 'damage.resolved'])->pluck('causer_id')->values()->all());
+        $this->assertSame([$this->employee->id, $this->employee->id], $this->historyOf($reservation)->whereIn('event', [InspectionHistoryEvent::DamageReported->value, InspectionHistoryEvent::DamageResolved->value])->pluck('causer_id')->values()->all());
     }
 
     public function test_the_history_never_contains_the_token(): void

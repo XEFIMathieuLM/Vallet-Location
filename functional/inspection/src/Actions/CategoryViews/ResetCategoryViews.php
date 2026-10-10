@@ -9,6 +9,6 @@ class ResetCategoryViews
 {
     public function handle(MachineCategory $category): void
     {
-        CategoryView::query()->where('machine_category_id', $category->id)->delete();
+        CategoryView::query()->whereBelongsTo($category, 'category')->delete();
     }
 }

@@ -2,8 +2,8 @@
 
 namespace Functional\Inspection\Tests\Unit;
 
+use Functional\Inspection\Completeness\StepCompleteness;
 use Functional\Inspection\Enums\InspectionStep;
-use Functional\Inspection\Support\StepCompleteness;
 use PHPUnit\Framework\TestCase;
 
 class StepCompletenessTest extends TestCase

@@ -1,6 +1,6 @@
 <?php
 
-namespace Functional\Inspection\Tests\Unit;
+namespace Functional\Inspection\Tests\Feature;
 
 use Functional\Booking\Models\Reservation;
 use Functional\Fleet\Models\Machine;

@@ -51,12 +51,12 @@ class Comparison extends Component
 
         return view('inspection::livewire.comparison', [
             'views' => ReservationView::query()
-                ->where('reservation_id', $this->reservation->id)
+                ->whereBelongsTo($this->reservation)
                 ->with(['photos' => fn (HasMany $photos): HasMany => $photos->with(['media', 'session.author'])->oldest('id')])
                 ->orderBy('position')
                 ->get(),
             'damages' => Damage::query()
-                ->where('reservation_id', $this->reservation->id)
+                ->whereBelongsTo($this->reservation)
                 ->with(['view', 'reporter', 'resolver'])
                 ->latest('reported_at')
                 ->get(),

@@ -20,7 +20,7 @@ class EditableCategoryViews
     {
         MachineCategory::query()->whereKey($category->id)->lockForUpdate()->firstOrFail();
 
-        if (! CategoryView::query()->where('machine_category_id', $category->id)->exists()) {
+        if (! CategoryView::query()->whereBelongsTo($category, 'category')->exists()) {
             $now = CarbonImmutable::now();
             $defaultLabels = $this->resolveRequiredViews->defaultLabels();
 
@@ -38,7 +38,7 @@ class EditableCategoryViews
         }
 
         return CategoryView::query()
-            ->where('machine_category_id', $category->id)
+            ->whereBelongsTo($category, 'category')
             ->orderBy('position')
             ->get();
     }

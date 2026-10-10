@@ -74,10 +74,10 @@ class CategoryViews extends Component
 
     public function render(): View
     {
-        $isCustomized = CategoryView::query()->where('machine_category_id', $this->category->id)->exists();
+        $isCustomized = CategoryView::query()->whereBelongsTo($this->category, 'category')->exists();
 
         return view('inspection::livewire.category-views.edit', [
-            'labels' => app(ResolveRequiredViews::class)->forCategory($this->category->id),
+            'labels' => app(ResolveRequiredViews::class)->forCategory($this->category),
             'isCustomized' => $isCustomized,
         ])->title(__('inspection::views.edit.title', ['category' => $this->category->name]));
     }

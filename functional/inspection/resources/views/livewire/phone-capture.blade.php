@@ -25,7 +25,7 @@
                     <div class="flex flex-wrap gap-2">
                         @foreach ($view->photos as $photo)
                             <div wire:key="photo-{{ $photo->id }}" class="relative">
-                                <img src="{{ $photo->temporaryUrl('thumb') }}" alt="{{ $view->label }}" class="size-24 rounded object-cover" />
+                                <img src="{{ $thumbnailUrls[$photo->id] }}" alt="{{ $view->label }}" class="size-24 rounded object-cover" />
                                 <div class="absolute top-1 right-1">
                                     <flux:button
                                         size="xs"

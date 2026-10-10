@@ -1,9 +1,9 @@
 <?php
 
-namespace Functional\Inspection\Tests\Unit;
+namespace Functional\Inspection\Tests\Feature;
 
 use Functional\Booking\Models\Reservation;
-use Functional\Inspection\Actions\ViewCompleteness;
+use Functional\Inspection\Completeness\ViewCompleteness;
 use Functional\Inspection\Enums\InspectionStep;
 use Functional\Inspection\Models\Photo;
 use Functional\Inspection\Models\ReservationView;

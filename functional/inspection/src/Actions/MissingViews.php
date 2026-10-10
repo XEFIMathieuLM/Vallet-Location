@@ -16,7 +16,7 @@ class MissingViews
     public function for(Reservation $reservation, InspectionStep $step): Collection
     {
         return ReservationView::query()
-            ->where('reservation_id', $reservation->id)
+            ->whereBelongsTo($reservation)
             ->whereDoesntHave('photos', fn (Builder $photos): Builder => $photos->where('step', $step))
             ->orderBy('position')
             ->get();

@@ -4,11 +4,13 @@ namespace Functional\Inspection\Actions;
 
 use App\Models\User;
 use Functional\Booking\Models\Reservation;
+use Functional\Inspection\Completeness\ViewCompleteness;
 use Functional\Inspection\Events\PhotoChanged;
 use Functional\Inspection\Exceptions\StepAlreadyValidatedException;
+use Functional\Inspection\History\InspectionHistory;
+use Functional\Inspection\History\InspectionHistoryEvent;
 use Functional\Inspection\Models\Photo;
 use Functional\Inspection\Models\PhotoSession;
-use Functional\Inspection\Support\InspectionHistory;
 use Illuminate\Support\Facades\DB;
 
 class DeletePhoto
@@ -21,7 +23,7 @@ class DeletePhoto
     public function fromSession(PhotoSession $session, int $photoId): void
     {
         $photo = Photo::query()
-            ->where('reservation_id', $session->reservation_id)
+            ->whereBelongsTo($session->reservation)
             ->where('step', $session->step)
             ->findOrFail($photoId);
 
@@ -39,7 +41,7 @@ class DeletePhoto
 
             $photo->delete();
 
-            $this->inspectionHistory->record($lockedReservation, 'photo.deleted', $author, [
+            $this->inspectionHistory->record($lockedReservation, InspectionHistoryEvent::PhotoDeleted, $author, [
                 'photo_id' => $photo->id,
                 'view' => $photo->view->label,
                 'step' => $photo->step->value,

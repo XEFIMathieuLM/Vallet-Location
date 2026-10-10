@@ -3,11 +3,13 @@
 namespace Functional\Inspection\Actions;
 
 use Functional\Booking\Models\Reservation;
+use Functional\Inspection\Completeness\ViewCompleteness;
 use Functional\Inspection\Events\PhotoChanged;
 use Functional\Inspection\Exceptions\PhotoSessionUnavailableException;
+use Functional\Inspection\History\InspectionHistory;
+use Functional\Inspection\History\InspectionHistoryEvent;
 use Functional\Inspection\Models\Photo;
 use Functional\Inspection\Models\ReservationView;
-use Functional\Inspection\Support\InspectionHistory;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 
@@ -24,13 +26,13 @@ class StorePhoto
         $session = $this->findActivePhotoSession->handle($token);
 
         $view = ReservationView::query()
-            ->where('reservation_id', $session->reservation_id)
+            ->whereBelongsTo($session->reservation)
             ->findOrFail($reservationViewId);
 
         $photo = DB::transaction(function () use ($session, $view, $file): Photo {
             $session->setRelation('reservation', Reservation::query()->lockForUpdate()->findOrFail($session->reservation_id));
 
-            if (! $session->isActive()) {
+            if (! $this->findActivePhotoSession->isActive($session)) {
                 throw PhotoSessionUnavailableException::make();
             }
 
@@ -43,7 +45,7 @@ class StorePhoto
 
             $photo->addMedia($file)->toMediaCollection(Photo::COLLECTION);
 
-            $this->inspectionHistory->record($session->reservation, 'photo.received', $session->author, [
+            $this->inspectionHistory->record($session->reservation, InspectionHistoryEvent::PhotoReceived, $session->author, [
                 'photo_id' => $photo->id,
                 'view' => $view->label,
                 'step' => $session->step->value,

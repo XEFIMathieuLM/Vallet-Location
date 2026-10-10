@@ -16,14 +16,14 @@ class RemoveCategoryView
         DB::transaction(function () use ($category, $position): void {
             $views = $this->editableCategoryViews->for($category);
 
-            if (CategoryView::query()->where('machine_category_id', $category->id)->count() === 1) {
+            if (CategoryView::query()->whereBelongsTo($category, 'category')->count() === 1) {
                 throw LastCategoryViewException::make();
             }
 
             $views->firstOrFail('position', $position)->delete();
 
             CategoryView::query()
-                ->where('machine_category_id', $category->id)
+                ->whereBelongsTo($category, 'category')
                 ->where('position', '>', $position)
                 ->decrement('position');
         });

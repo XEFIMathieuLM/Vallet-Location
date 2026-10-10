@@ -18,18 +18,27 @@ enum InspectionStep: string
 
     public function isOpenFor(Reservation $reservation): bool
     {
-        return match ($this) {
-            self::Departure => $reservation->status === ReservationStatus::Confirmed
-                && CarbonImmutable::today()->greaterThanOrEqualTo($reservation->start_date),
-            self::Return => $reservation->status === ReservationStatus::InProgress,
-        };
+        return $this->opensWhen($reservation->status, $reservation->start_date, CarbonImmutable::today());
     }
 
     public function isValidatedFor(Reservation $reservation): bool
     {
+        return $this->isValidatedOnceReservationIs($reservation->status);
+    }
+
+    public function opensWhen(ReservationStatus $status, CarbonImmutable $startDate, CarbonImmutable $today): bool
+    {
         return match ($this) {
-            self::Departure => $reservation->status !== ReservationStatus::Confirmed,
-            self::Return => $reservation->status === ReservationStatus::Closed,
+            self::Departure => $status === ReservationStatus::Confirmed && $today->greaterThanOrEqualTo($startDate),
+            self::Return => $status === ReservationStatus::InProgress,
+        };
+    }
+
+    public function isValidatedOnceReservationIs(ReservationStatus $status): bool
+    {
+        return match ($this) {
+            self::Departure => $status !== ReservationStatus::Confirmed,
+            self::Return => $status === ReservationStatus::Closed,
         };
     }
 }

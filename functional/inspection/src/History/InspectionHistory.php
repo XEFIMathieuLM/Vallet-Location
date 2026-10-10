@@ -1,6 +1,6 @@
 <?php
 
-namespace Functional\Inspection\Support;
+namespace Functional\Inspection\History;
 
 use App\Models\User;
 use Functional\Booking\Models\Reservation;
@@ -12,13 +12,13 @@ class InspectionHistory
     /**
      * @param  array<string, scalar|null>  $details
      */
-    public function record(Reservation $reservation, string $event, ?User $author, array $details = []): void
+    public function record(Reservation $reservation, InspectionHistoryEvent $event, ?User $author, array $details = []): void
     {
         activity(self::LOG_NAME)
             ->performedOn($reservation)
             ->causedBy($author)
-            ->event($event)
+            ->event($event->value)
             ->withProperties($details)
-            ->log($event);
+            ->log($event->value);
     }
 }

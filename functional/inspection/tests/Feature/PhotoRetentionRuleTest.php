@@ -1,6 +1,6 @@
 <?php
 
-namespace Functional\Inspection\Tests\Unit;
+namespace Functional\Inspection\Tests\Feature;
 
 use Carbon\CarbonImmutable;
 use Functional\Booking\Enums\ReservationStatus;

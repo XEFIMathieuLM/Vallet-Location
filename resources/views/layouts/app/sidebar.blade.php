@@ -55,6 +55,21 @@
                     </flux:sidebar.group>
                 @endcan
 
+                @canany([\Functional\Deposit\Access\DepositPermission::ManageDeposits->value, \Functional\Deposit\Access\DepositPermission::ManageDepositRates->value])
+                    <flux:sidebar.group :heading="__('deposit::navigation.heading')" class="grid">
+                        @can(\Functional\Deposit\Access\DepositPermission::ManageDeposits->value)
+                            <flux:sidebar.item icon="banknotes" :href="route('deposit.pending.index')" :current="request()->routeIs('deposit.pending.*')" wire:navigate>
+                                {{ __('deposit::navigation.pending') }}
+                            </flux:sidebar.item>
+                        @endcan
+                        @can(\Functional\Deposit\Access\DepositPermission::ManageDepositRates->value)
+                            <flux:sidebar.item icon="adjustments-horizontal" :href="route('deposit.rates.index')" :current="request()->routeIs('deposit.rates.*')" wire:navigate>
+                                {{ __('deposit::navigation.rates') }}
+                            </flux:sidebar.item>
+                        @endcan
+                    </flux:sidebar.group>
+                @endcanany
+
                 @can(\Functional\Fleet\Access\FleetPermission::ManageMachines->value)
                     <flux:sidebar.group :heading="__('fleet::machines.navigation.fleet')" class="grid">
                         <flux:sidebar.item icon="truck" :href="route('machines.index')" :current="request()->routeIs('machines.*')" wire:navigate>

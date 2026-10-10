@@ -2,12 +2,12 @@
 
 namespace Functional\Deposit\Providers;
 
-use Functional\Deposit\Access\Controls\DepositControl;
-use Functional\Deposit\Access\Controls\DepositRateControl;
 use Functional\Booking\Enums\ReservationTransition;
 use Functional\Booking\Events\ReservationChanged;
 use Functional\Booking\Extensions\ReservationDetailSections;
 use Functional\Booking\Extensions\ReservationTransitionGuards;
+use Functional\Deposit\Access\Controls\DepositControl;
+use Functional\Deposit\Access\Controls\DepositRateControl;
 use Functional\Deposit\Console\ReconcileDeposits;
 use Functional\Deposit\Guards\DepositCollectedGuard;
 use Functional\Deposit\Listeners\SyncDepositOnDamageChanged;

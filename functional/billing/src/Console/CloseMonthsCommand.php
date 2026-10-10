@@ -3,7 +3,7 @@
 namespace Functional\Billing\Console;
 
 use Functional\Billing\Actions\RecordMonthEndPeriods;
-use Functional\Billing\Support\BillingCalendar;
+use Functional\Billing\Calendar\BillingCalendar;
 use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Models\Reservation;
 use Illuminate\Console\Command;

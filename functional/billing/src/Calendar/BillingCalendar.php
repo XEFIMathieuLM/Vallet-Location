@@ -1,6 +1,6 @@
 <?php
 
-namespace Functional\Billing\Support;
+namespace Functional\Billing\Calendar;
 
 use Carbon\CarbonImmutable;
 use Functional\Billing\Exceptions\MissingGoLiveDateException;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Functional\Billing\Support;
+namespace Functional\Billing\Periods;
 
 use Carbon\CarbonImmutable;
 

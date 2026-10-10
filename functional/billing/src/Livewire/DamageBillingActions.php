@@ -4,7 +4,7 @@ namespace Functional\Billing\Livewire;
 
 use Functional\Billing\Actions\BillDamage;
 use Functional\Billing\Actions\WaiveDamage;
-use Functional\Billing\Support\EuroAmount;
+use Functional\Billing\Money\EuroAmount;
 use Functional\Fleet\Livewire\Concerns\DisplaysRefusals;
 use Functional\Inspection\Models\Damage;
 use Illuminate\Contracts\View\View;

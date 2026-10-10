@@ -1,9 +1,10 @@
 <?php
 
-namespace Functional\Billing\Support;
+namespace Functional\Billing\Transmissions;
 
 use Carbon\CarbonImmutable;
 use Functional\Billing\Enums\TransmissionFailureReason;
+use Functional\Billing\History\BillingHistory;
 use Functional\Billing\Models\BillingExport;
 use Functional\Billing\Models\Transmission;
 

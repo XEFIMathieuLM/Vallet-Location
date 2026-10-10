@@ -5,11 +5,11 @@ namespace Functional\Billing\Actions;
 use App\Models\User;
 use Functional\Billing\Enums\DamageOutcome;
 use Functional\Billing\Exceptions\InvalidDamageSettlementException;
+use Functional\Billing\History\BillingHistory;
 use Functional\Billing\Jobs\SendTransmissionJob;
 use Functional\Billing\Models\DamageSettlement;
 use Functional\Billing\Models\Transmission;
-use Functional\Billing\Support\BillingHistory;
-use Functional\Billing\Support\EuroAmount;
+use Functional\Billing\Money\EuroAmount;
 use Functional\Inspection\Models\Damage;
 use Illuminate\Support\Facades\DB;
 

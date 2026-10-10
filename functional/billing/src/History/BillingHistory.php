@@ -1,6 +1,6 @@
 <?php
 
-namespace Functional\Billing\Support;
+namespace Functional\Billing\History;
 
 use Functional\Booking\Models\Reservation;
 

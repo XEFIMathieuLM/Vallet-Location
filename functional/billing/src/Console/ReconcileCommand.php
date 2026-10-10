@@ -4,11 +4,11 @@ namespace Functional\Billing\Console;
 
 use Carbon\CarbonImmutable;
 use Functional\Billing\Actions\RecordFinalPeriod;
+use Functional\Billing\Calendar\BillingCalendar;
 use Functional\Billing\Enums\BillablePeriodKind;
 use Functional\Billing\Enums\TransmissionStatus;
 use Functional\Billing\Jobs\SendTransmissionJob;
 use Functional\Billing\Models\Transmission;
-use Functional\Billing\Support\BillingCalendar;
 use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Models\Reservation;
 use Illuminate\Console\Command;

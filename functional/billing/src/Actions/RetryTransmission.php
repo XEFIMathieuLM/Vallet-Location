@@ -4,7 +4,7 @@ namespace Functional\Billing\Actions;
 
 use Functional\Billing\Jobs\SendTransmissionJob;
 use Functional\Billing\Models\Transmission;
-use Functional\Billing\Support\TransmissionLifecycle;
+use Functional\Billing\Transmissions\TransmissionLifecycle;
 use Illuminate\Support\Facades\DB;
 
 final class RetryTransmission

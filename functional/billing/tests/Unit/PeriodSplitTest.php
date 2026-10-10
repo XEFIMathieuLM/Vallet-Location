@@ -3,7 +3,7 @@
 namespace Functional\Billing\Tests\Unit;
 
 use Carbon\CarbonImmutable;
-use Functional\Billing\Support\PeriodSplitter;
+use Functional\Billing\Periods\PeriodSplitter;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 

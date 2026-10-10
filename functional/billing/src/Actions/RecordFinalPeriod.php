@@ -2,10 +2,10 @@
 
 namespace Functional\Billing\Actions;
 
+use Functional\Billing\Calendar\BillingCalendar;
 use Functional\Billing\Enums\BillablePeriodKind;
 use Functional\Billing\Jobs\SendTransmissionJob;
 use Functional\Billing\Models\BillablePeriod;
-use Functional\Billing\Support\BillingCalendar;
 use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Models\Reservation;
 use Illuminate\Support\Facades\DB;

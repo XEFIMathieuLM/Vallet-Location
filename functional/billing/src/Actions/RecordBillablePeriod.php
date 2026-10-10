@@ -3,11 +3,11 @@
 namespace Functional\Billing\Actions;
 
 use Carbon\CarbonImmutable;
+use Functional\Billing\Calendar\BillingCalendar;
 use Functional\Billing\Enums\BillablePeriodKind;
+use Functional\Billing\History\BillingHistory;
 use Functional\Billing\Models\BillablePeriod;
 use Functional\Billing\Models\Transmission;
-use Functional\Billing\Support\BillingCalendar;
-use Functional\Billing\Support\BillingHistory;
 use Functional\Booking\Models\Reservation;
 
 final class RecordBillablePeriod

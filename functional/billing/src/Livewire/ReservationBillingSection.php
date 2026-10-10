@@ -4,7 +4,7 @@ namespace Functional\Billing\Livewire;
 
 use Functional\Billing\Models\DamageSettlement;
 use Functional\Billing\Models\Transmission;
-use Functional\Billing\Support\EuroAmount;
+use Functional\Billing\Money\EuroAmount;
 use Functional\Booking\Models\Reservation;
 use Functional\Inspection\Models\Damage;
 use Illuminate\Contracts\View\View;

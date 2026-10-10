@@ -8,7 +8,7 @@ use Functional\Billing\Enums\TransmissionFailureReason;
 use Functional\Billing\Exceptions\BillingSoftwareRejectedException;
 use Functional\Billing\Exceptions\BillingSoftwareUnreachableException;
 use Functional\Billing\Models\Transmission;
-use Functional\Billing\Support\TransmissionLifecycle;
+use Functional\Billing\Transmissions\TransmissionLifecycle;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 

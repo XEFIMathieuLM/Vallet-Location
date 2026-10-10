@@ -3,9 +3,9 @@
 namespace Functional\Billing\Livewire;
 
 use Carbon\CarbonImmutable;
+use Functional\Billing\Calendar\BillingCalendar;
+use Functional\Billing\Money\EuroAmount;
 use Functional\Billing\Queries\BillingStatement;
-use Functional\Billing\Support\BillingCalendar;
-use Functional\Billing\Support\EuroAmount;
 use Functional\Fleet\Models\Agency;
 use Functional\Inspection\Models\Damage;
 use Illuminate\Contracts\View\View;

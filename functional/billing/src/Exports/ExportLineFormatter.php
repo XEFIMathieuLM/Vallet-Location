@@ -1,7 +1,8 @@
 <?php
 
-namespace Functional\Billing\Support;
+namespace Functional\Billing\Exports;
 
+use Functional\Billing\Money\EuroAmount;
 use Functional\Billing\ValueObjects\BillableLine;
 
 final class ExportLineFormatter

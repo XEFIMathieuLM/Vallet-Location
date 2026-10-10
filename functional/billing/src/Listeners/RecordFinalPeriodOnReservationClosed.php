@@ -3,7 +3,7 @@
 namespace Functional\Billing\Listeners;
 
 use Functional\Billing\Actions\RecordFinalPeriod;
-use Functional\Billing\Support\BillingCalendar;
+use Functional\Billing\Calendar\BillingCalendar;
 use Functional\Booking\Events\ReservationChanged;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Contracts\Queue\ShouldQueueAfterCommit;

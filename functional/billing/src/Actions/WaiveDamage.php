@@ -5,8 +5,8 @@ namespace Functional\Billing\Actions;
 use App\Models\User;
 use Functional\Billing\Enums\DamageOutcome;
 use Functional\Billing\Exceptions\InvalidDamageSettlementException;
+use Functional\Billing\History\BillingHistory;
 use Functional\Billing\Models\DamageSettlement;
-use Functional\Billing\Support\BillingHistory;
 use Functional\Inspection\Models\Damage;
 use Illuminate\Support\Facades\DB;
 

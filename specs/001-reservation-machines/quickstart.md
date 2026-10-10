@@ -2,7 +2,7 @@
 
 ## Prérequis
 
-- Docker Desktop démarré (WSL 2). PHP et Composer ne sont pas nécessaires sur le poste : tout passe par Laravel Sail.
+- Docker Desktop démarré (WSL 2 sous Windows). PHP et Composer ne sont pas nécessaires sur le poste : tout passe par Laravel Sail. Sur un poste qui a PHP en local (par exemple Herd sur Mac), `composer install` et PHPStan peuvent tourner hors du conteneur ; les tests et `artisan` restent dans Sail (PHP 8.5, PostgreSQL).
 - Le projet a été scaffoldé (tâches de setup de `tasks.md`).
 
 ## Démarrage

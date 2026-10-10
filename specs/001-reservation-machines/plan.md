@@ -48,7 +48,7 @@ Approche : une application **100 % Laravel** avec une interface Livewire, décou
 | Pas de cascade en base | ✅ data-model |
 | Temps réel Soketi, canal privé, payload explicite | ✅ R4, contrats |
 | Garanties portées par le code ou la base, pas seulement par la doc | ✅ R3 (contrainte d'exclusion) |
-| Fichiers de code < 200 lignes, code en anglais, textes traduits | à vérifier pendant l'implémentation |
+| Fichiers de code < 200 lignes, code en anglais, textes traduits | ✅ vérifié (T076) |
 
 **Résultat** : aucune violation. Recommandation : lancer `/speckit-constitution` avant la 2e feature pour inscrire ces principes dans le projet.
 

@@ -19,6 +19,17 @@ class ReservationRequestControl extends Control
      */
     protected string $model = ReservationRequest::class;
 
+    /**
+     * @return Builder<ReservationRequest>
+     */
+    public static function ownedBy(CustomerAccount $account): Builder
+    {
+        /** @var Builder<ReservationRequest> $ownRequests */
+        $ownRequests = (new self)->queried(ReservationRequest::query(), $account);
+
+        return $ownRequests;
+    }
+
     protected function perimeters(): array
     {
         return [

@@ -5,6 +5,7 @@ namespace Functional\Portal\Providers;
 use Functional\Booking\Extensions\ReservationDetailSections;
 use Functional\Portal\Access\Controls\IndicativePriceControl;
 use Functional\Portal\Access\Controls\ReservationRequestControl;
+use Functional\Portal\Console\ReconcileCommand;
 use Functional\Portal\Livewire\Customer\SendRequestForm;
 use Functional\Portal\Livewire\Staff\ConfirmRequestModal;
 use Functional\Portal\Livewire\Staff\PendingRequestsBadge;
@@ -35,6 +36,10 @@ class PortalServiceProvider extends LayerServiceProvider
         Livewire::component(PendingRequestsBadge::NAME, PendingRequestsBadge::class);
         Livewire::component(ReservationOriginSection::NAME, ReservationOriginSection::class);
         $this->app->make(ReservationDetailSections::class)->register(ReservationOriginSection::NAME, 5);
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([ReconcileCommand::class]);
+        }
 
         $this->withRouting(
             web: __DIR__.'/../../routes/web.php',

@@ -321,37 +321,37 @@ description: "Task list for the customer portal and online booking requests feat
 
 ### Tests d'abord
 
-- [ ] T058 [P] [US4] `functional/portal/tests/Feature/MyRequestsTest.php` :
+- [X] T058 [P] [US4] `functional/portal/tests/Feature/MyRequestsTest.php` :
   - scénario 1 : chaque état avec son badge, le motif d'un refus, la machine réservée d'une demande confirmée ;
   - scénario 4 : annulation, `cancelled`, historique, événement, plus dans `PendingRequests`, aucun e-mail ;
   - scénario 5 : annuler une demande confirmée, refusée ou expirée est refusé.
-- [ ] T059 [P] [US4] `functional/portal/tests/Feature/MyReservationsTest.php` :
+- [X] T059 [P] [US4] `functional/portal/tests/Feature/MyReservationsTest.php` :
   - scénario 2 : les réservations de la fiche, y compris celles saisies par un salarié, avec l'état client, sans aucune information interne (conflit, caution, bon de commande, dégâts, transmissions) ;
   - scénario 3 : compte non rattaché, état vide ;
   - scénario 6 : aucune annulation proposée, mention « contactez l'agence » ;
   - plusieurs comptes rattachés à la même fiche voient les mêmes réservations ;
   - cas limite : une réservation issue d'une demande, annulée ensuite par un salarié, apparaît « annulée » côté client, et la demande reste « confirmée » avec son lien.
-- [ ] T060 [P] [US4] `functional/portal/tests/Feature/ExpireReservationRequestsTest.php` :
+- [X] T060 [P] [US4] `functional/portal/tests/Feature/ExpireReservationRequestsTest.php` :
   - scénario 7 : avec `travelTo()`, une demande `pending` dont la date de début est hier passe `expired` par `portal:reconcile`, avec l'historique « automatique » et `ReservationRequestDecided` (expiration) ;
   - une demande dont la date de début est aujourd'hui reste `pending` ;
   - la commande est rejouable sans double expiration ni double e-mail ;
   - rattrapage : une demande décidée depuis plus de 10 minutes sans `customer_notified_at` est renvoyée en file ;
   - la planification `portal:reconcile` toutes les 5 minutes est enregistrée.
-- [ ] T061 [P] [US4] `functional/portal/tests/Feature/CustomerIsolationTest.php` :
+- [X] T061 [P] [US4] `functional/portal/tests/Feature/CustomerIsolationTest.php` :
   - scénario 8 : un compte A ne voit ni les demandes ni les réservations du compte B ;
   - le compte A ne peut pas annuler une demande de B (refus d'accès par `OwnAccountPerimeter`) ;
   - scénario 9 : annulation puis confirmation de la même demande, ou l'inverse, une seule transition et l'autre refusée.
 
 ### Implémentation
 
-- [ ] T062 [P] [US4] `functional/portal/src/Queries/AccountRequests.php` (demandes du compte, chargements anticipés, pagination par 20) et `AccountReservations.php` (réservations de `account.customer_id`, à venir puis passées, chargements anticipés `machine.category`, `machine.agency`, pagination par 20 ; vide si le compte n'est pas rattaché).
-- [ ] T063 [US4] `functional/portal/src/Actions/CancelReservationRequest.php` : contrôle d'accès, verrou, transition, historique, événement.
-- [ ] T064 [US4] Expiration et rattrapage :
+- [X] T062 [P] [US4] `functional/portal/src/Queries/AccountRequests.php` (demandes du compte, chargements anticipés, pagination par 20) et `AccountReservations.php` (réservations de `account.customer_id`, à venir puis passées, chargements anticipés `machine.category`, `machine.agency`, pagination par 20 ; vide si le compte n'est pas rattaché).
+- [X] T063 [US4] `functional/portal/src/Actions/CancelReservationRequest.php` : contrôle d'accès, verrou, transition, historique, événement.
+- [X] T064 [US4] Expiration et rattrapage :
   - `functional/portal/src/Actions/ExpireReservationRequest.php` : verrou, transition `expire`, historique automatique, événement, job ;
   - `Mail/ReservationRequestExpiredMail.php` ;
   - `Console/ReconcileCommand.php` (`portal:reconcile`) : expirations une par une, chacune dans sa transaction, puis remise en file des e-mails non partis ;
   - `functional/portal/routes/console.php` : `Schedule::command('portal:reconcile')->everyFiveMinutes()->withoutOverlapping()`.
-- [ ] T065 [US4] Composants `functional/portal/src/Livewire/Customer/MyRequests.php` et `MyReservations.php`, avec leurs vues, conformes à [contracts/screens.md](contracts/screens.md). T058 à T061 doivent passer.
+- [X] T065 [US4] Composants `functional/portal/src/Livewire/Customer/MyRequests.php` et `MyReservations.php`, avec leurs vues, conformes à [contracts/screens.md](contracts/screens.md). T058 à T061 doivent passer.
 
 **Checkpoint**: T058 à T061 verts ; `composer ci:check` vert ; commit « Espace client : suivi, annulation et expiration ».
 

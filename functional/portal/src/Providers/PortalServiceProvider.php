@@ -4,6 +4,8 @@ namespace Functional\Portal\Providers;
 
 use Functional\Portal\Access\Controls\IndicativePriceControl;
 use Functional\Portal\Access\Controls\ReservationRequestControl;
+use Functional\Portal\Livewire\Customer\SendRequestForm;
+use Livewire\Livewire;
 use Lomkit\Access\Access;
 use Xefi\LaravelOSDD\LayerServiceProvider;
 
@@ -21,6 +23,8 @@ class PortalServiceProvider extends LayerServiceProvider
         $this->loadViewsFrom(__DIR__.'/../../resources/views', 'portal');
 
         (new Access)->addControls([new ReservationRequestControl, new IndicativePriceControl]);
+
+        Livewire::component(SendRequestForm::NAME, SendRequestForm::class);
 
         $this->withRouting(
             web: __DIR__.'/../../routes/web.php',

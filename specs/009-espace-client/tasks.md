@@ -204,15 +204,15 @@ description: "Task list for the customer portal and online booking requests feat
 
 ### Tests d'abord
 
-- [ ] T032 [P] [US2] `functional/portal/tests/Unit/IndicativePriceFormatterTest.php` (Unit) : `9500` donne « à partir de 95,00 € HT / jour », `null` donne « prix sur demande », et les centimes sont respectés (`9999`).
-- [ ] T033 [P] [US2] `functional/portal/tests/Feature/PortalSearchTest.php` :
+- [X] T032 [P] [US2] `functional/portal/tests/Unit/IndicativePriceFormatterTest.php` (Unit) : `9500` donne « à partir de 95,00 € HT / jour », `null` donne « prix sur demande », et les centimes sont respectés (`9999`).
+- [X] T033 [P] [US2] `functional/portal/tests/Feature/PortalSearchTest.php` :
   - scénario 1 : seules les machines disponibles de la catégorie et de l'agence, avec référence, catégorie, agence et prix indicatif ;
   - scénario 2 : exclusion d'une machine en panne, à l'atelier, retirée, réservée en partie, ou dont la VGP expire avant la fin ;
   - scénario 9 : aucun nom de client ni aucune réservation dans le rendu ;
   - SC-008 : pour 3 jeux de critères, les identifiants affichés sont égaux à `AvailableMachinesQuery::get()` avec les mêmes critères ;
   - catégorie sans prix : « prix sur demande » ;
   - filtres obligatoires.
-- [ ] T034 [P] [US2] `functional/portal/tests/Feature/SendReservationRequestTest.php` :
+- [X] T034 [P] [US2] `functional/portal/tests/Feature/SendReservationRequestTest.php` :
   - scénario 3 : demande `pending` avec commentaire, prix copié (FR-014), historique `request_sent`, `ReservationRequestChanged` diffusé ;
   - scénario 4 : un salarié réserve ensuite la même machine aux mêmes dates par `CreateReservation`, accepté ;
   - FR-013 : avec une demande en attente sur une machine, `AvailableMachinesQuery` et la recherche client présentent toujours cette machine ;
@@ -225,17 +225,17 @@ description: "Task list for the customer portal and online booking requests feat
 
 ### Implémentation
 
-- [ ] T035 [P] [US2] `functional/portal/src/Pricing/IndicativePriceFormatter.php` (`Number::currency($cents / 100, 'EUR', 'fr')`, textes traduits). T032 doit passer.
-- [ ] T036 [P] [US2] Refus typés dans `functional/portal/src/Exceptions/` (sous-classes de `RefusalException`, textes dans `portal::refusals`) : `RequestedMachineUnavailableException`, `DuplicatePendingRequestException`, `PendingRequestLimitReachedException`.
-- [ ] T037 [US2] `functional/portal/src/Data/PortalMachineOffer.php` (référence, catégorie, agence, `?int $dailyPriceCents`) et `functional/portal/src/Queries/PortalMachineSearch.php`. La requête appelle `AvailableMachinesQuery::get($start, $end, $category, $agency)`, puis charge les prix des catégories en une seule requête (`whereIn`), sans boucle de requêtes.
-- [ ] T038 [US2] `functional/portal/src/Actions/SendReservationRequest.php`, dans une transaction :
+- [X] T035 [P] [US2] `functional/portal/src/Pricing/IndicativePriceFormatter.php` (`Number::currency($cents / 100, 'EUR', 'fr')`, textes traduits). T032 doit passer.
+- [X] T036 [P] [US2] Refus typés dans `functional/portal/src/Exceptions/` (sous-classes de `RefusalException`, textes dans `portal::refusals`) : `RequestedMachineUnavailableException`, `DuplicatePendingRequestException`, `PendingRequestLimitReachedException`.
+- [X] T037 [US2] `functional/portal/src/Data/PortalMachineOffer.php` (référence, catégorie, agence, `?int $dailyPriceCents`) et `functional/portal/src/Queries/PortalMachineSearch.php`. La requête appelle `AvailableMachinesQuery::get($start, $end, $category, $agency)`, puis charge les prix des catégories en une seule requête (`whereIn`), sans boucle de requêtes.
+- [X] T038 [US2] `functional/portal/src/Actions/SendReservationRequest.php`, dans une transaction :
   - dates cohérentes (même règle que la 001, heure de Paris) ;
   - verrou du compte, puis décompte des demandes `pending` par rapport à `max_pending_requests` ;
   - machine présente dans `PortalMachineSearch` pour ses dates ;
   - création avec le prix copié ;
   - erreur `23P01` traduite en `DuplicatePendingRequestException` par `rescue()` ;
   - historique, puis `ReservationRequestChanged`.
-- [ ] T039 [US2] Composants `functional/portal/src/Livewire/Customer/Search.php` et `SendRequestForm.php` (modal, `DisplaysRefusals`) et leurs vues : filtres obligatoires, cartes, mention « Prix indicatif ; le prix facturé est établi par votre agence. », état vide. Ils remplacent l'écran provisoire de T031. T033 et T034 doivent passer.
+- [X] T039 [US2] Composants `functional/portal/src/Livewire/Customer/Search.php` et `SendRequestForm.php` (modal, `DisplaysRefusals`) et leurs vues : filtres obligatoires, cartes, mention « Prix indicatif ; le prix facturé est établi par votre agence. », état vide. Ils remplacent l'écran provisoire de T031. T033 et T034 doivent passer.
 
 **Checkpoint**: T032 à T034 verts ; `composer ci:check` vert ; commit « Espace client : recherche et demandes ».
 

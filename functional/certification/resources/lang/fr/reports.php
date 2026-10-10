@@ -1,0 +1,35 @@
+<?php
+
+return [
+    'screens' => [
+        'machines_title' => 'Rapports VGP',
+        'machine_title' => 'VGP de la machine :reference',
+        'back' => 'Retour aux rapports VGP',
+        'agency' => 'Agence',
+        'all_agencies' => 'Toutes les agences',
+        'without_report_only' => 'Seulement les machines sans rapport',
+        'machines_empty_heading' => 'Aucune machine à afficher',
+        'machines_empty' => 'Aucune machine soumise à VGP ne correspond à ces filtres.',
+        'reference' => 'Référence',
+        'category' => 'Catégorie',
+        'verified_on' => 'Date de vérification',
+        'due_on' => 'Date d\'échéance',
+        'no_report' => 'Aucun rapport',
+        'no_report_description' => 'Déposez le rapport remis par l\'organisme de contrôle pour que l\'attestation puisse partir aux clients.',
+        'deposit_heading' => 'Déposer un rapport',
+        'file' => 'Rapport de VGP',
+        'file_help' => 'Formats acceptés : :formats, :megabytes Mo au plus.',
+        'deposit' => 'Déposer le rapport',
+        'deposited' => 'Rapport déposé.',
+        'reports_heading' => 'Rapports déposés',
+        'in_force' => 'En vigueur',
+        'deposit_column' => 'Dépôt',
+        'deposited_by' => 'Déposé le :date par :author',
+    ],
+    'refusals' => [
+        'not_subject_to_vgp' => 'La machine :reference n\'est pas soumise à VGP : aucun rapport à déposer.',
+        'unaccepted_format' => 'Ce format de fichier n\'est pas accepté. Formats acceptés : :formats.',
+        'too_large' => 'Le rapport dépasse la taille maximale de :megabytes Mo.',
+        'due_not_after_verification' => 'La date d\'échéance doit être postérieure à la date de vérification.',
+    ],
+];

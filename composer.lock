@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5145cbdc2203b552c5b278cfb6a50187",
+    "content-hash": "f2dbcac01586b0b8ce0e82d6392e7aa4",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -1046,6 +1046,43 @@
                     "Functional\\Booking\\": "src/",
                     "Functional\\Booking\\Database\\Seeders\\": "database/seeders/",
                     "Functional\\Booking\\Database\\Factories\\": "database/factories/"
+                }
+            },
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "functional/certification",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "./functional/certification",
+                "reference": "b1430ea8dd86be925719cd7115be18516308f5d8"
+            },
+            "require": {
+                "functional/booking": "*",
+                "functional/fleet": "*",
+                "xefi/laravel-osdd": "*"
+            },
+            "type": "layer",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Functional\\Certification\\Providers\\CertificationServiceProvider"
+                    ]
+                },
+                "faker": {
+                    "providers": [
+                        "Functional\\Certification\\Faker\\CertificationFakerServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Functional\\Certification\\": "src/",
+                    "Functional\\Certification\\Database\\Seeders\\": "database/seeders/",
+                    "Functional\\Certification\\Database\\Factories\\": "database/factories/"
                 }
             },
             "transport-options": {

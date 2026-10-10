@@ -7,6 +7,7 @@ namespace Xefi\Faker\Container;
  * @method string billingSoftwareRef()
  * @method string billingExportFileName()
  * @method string customerPhoneNumber()
+ * @method string vgpReportFileName()
  * @method string agencyName()
  * @method string machineCategoryName()
  * @method string machineReference()

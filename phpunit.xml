@@ -21,6 +21,7 @@
             <directory>functional/booking/src</directory>
             <directory>functional/inspection/src</directory>
             <directory>functional/billing/src</directory>
+            <directory>functional/certification/src</directory>
             <directory>functional/deposit/src</directory>
             <directory>functional/sales/src</directory>
         </include>
@@ -31,6 +32,7 @@
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="BILLING_GO_LIVE_DATE" value=""/>
         <env name="BROADCAST_CONNECTION" value="null"/>
+        <env name="CERTIFICATION_GO_LIVE_DATE" value=""/>
         <env name="CACHE_STORE" value="array"/>
         <env name="DB_DATABASE" value="testing"/>
         <env name="DB_URL" value=""/>

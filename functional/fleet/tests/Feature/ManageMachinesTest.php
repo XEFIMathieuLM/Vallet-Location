@@ -3,7 +3,6 @@
 namespace Functional\Fleet\Tests\Feature;
 
 use Carbon\CarbonImmutable;
-use Database\Seeders\PermissionSeeder;
 use Functional\Fleet\Actions\CreateMachine;
 use Functional\Fleet\Actions\RetireMachine;
 use Functional\Fleet\Actions\UpdateMachine;
@@ -95,7 +94,7 @@ class ManageMachinesTest extends TestCase
 
     public function test_a_status_change_from_the_fleet_screen_is_visible_to_every_agency(): void
     {
-        $this->seed(PermissionSeeder::class);
+        $this->seedPermissions();
         $machine = Machine::factory()->create(['reference' => 'NAC-0042']);
 
         Livewire::actingAs($this->employee())
@@ -112,7 +111,7 @@ class ManageMachinesTest extends TestCase
 
     public function test_a_machine_is_retired_from_the_fleet_screen_after_confirmation(): void
     {
-        $this->seed(PermissionSeeder::class);
+        $this->seedPermissions();
         $machine = Machine::factory()->withStatus(MachineStatus::OutOfOrder)->create();
 
         Livewire::actingAs($this->employee())
@@ -127,7 +126,7 @@ class ManageMachinesTest extends TestCase
 
     public function test_a_refused_retirement_is_displayed_on_the_fleet_screen(): void
     {
-        $this->seed(PermissionSeeder::class);
+        $this->seedPermissions();
         $this->app->instance(MachineRetirementGuard::class, new RefusingRetirementGuard);
         $machine = Machine::factory()->create();
 

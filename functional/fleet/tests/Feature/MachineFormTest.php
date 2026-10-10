@@ -2,7 +2,6 @@
 
 namespace Functional\Fleet\Tests\Feature;
 
-use Database\Seeders\PermissionSeeder;
 use Functional\Fleet\Livewire\MachineForm;
 use Functional\Fleet\Models\Agency;
 use Functional\Fleet\Models\Machine;
@@ -21,7 +20,7 @@ class MachineFormTest extends TestCase
     {
         parent::setUp();
 
-        $this->seed(PermissionSeeder::class);
+        $this->seedPermissions();
     }
 
     public function test_a_machine_is_created_from_the_form(): void

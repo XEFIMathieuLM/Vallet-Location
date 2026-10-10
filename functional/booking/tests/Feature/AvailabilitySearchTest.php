@@ -3,7 +3,6 @@
 namespace Functional\Booking\Tests\Feature;
 
 use Carbon\CarbonImmutable;
-use Database\Seeders\PermissionSeeder;
 use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Livewire\AvailabilitySearch;
 use Functional\Booking\Models\Reservation;
@@ -70,7 +69,7 @@ class AvailabilitySearchTest extends TestCase
 
     public function test_the_screen_lists_available_machines_with_a_link_to_reserve(): void
     {
-        $this->seed(PermissionSeeder::class);
+        $this->seedPermissions();
         $machine = Machine::factory()->create(['reference' => 'NAC-0042']);
 
         $this->actingAs($this->employee())
@@ -82,7 +81,7 @@ class AvailabilitySearchTest extends TestCase
 
     public function test_the_screen_hides_a_machine_reserved_on_the_filtered_period(): void
     {
-        $this->seed(PermissionSeeder::class);
+        $this->seedPermissions();
         $machine = Machine::factory()->create(['reference' => 'NAC-0042']);
         $this->reserveBetween($machine, '2026-11-10', '2026-11-14', ReservationStatus::Confirmed);
 

@@ -3,7 +3,6 @@
 namespace Functional\Booking\Tests\Feature;
 
 use Carbon\CarbonImmutable;
-use Database\Seeders\PermissionSeeder;
 use Functional\Booking\Actions\CancelReservation;
 use Functional\Booking\Actions\CreateReservation;
 use Functional\Booking\Actions\DepartReservation;
@@ -34,7 +33,7 @@ class ActivityLogTest extends TestCase
     {
         parent::setUp();
 
-        $this->seed(PermissionSeeder::class);
+        $this->seedPermissions();
         $this->travelTo(CarbonImmutable::parse('2026-11-10 09:00'));
         $this->author = $this->employee();
         $this->actingAs($this->author);

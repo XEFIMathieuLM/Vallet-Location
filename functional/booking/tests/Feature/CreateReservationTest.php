@@ -3,7 +3,6 @@
 namespace Functional\Booking\Tests\Feature;
 
 use Carbon\CarbonImmutable;
-use Database\Seeders\PermissionSeeder;
 use Functional\Booking\Actions\CreateReservation;
 use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Events\ReservationChanged;
@@ -32,7 +31,7 @@ class CreateReservationTest extends TestCase
     {
         parent::setUp();
 
-        $this->seed(PermissionSeeder::class);
+        $this->seedPermissions();
         $this->travelTo(CarbonImmutable::parse('2026-11-01'));
         $this->machine = Machine::factory()->create();
     }

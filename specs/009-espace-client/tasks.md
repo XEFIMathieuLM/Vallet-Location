@@ -47,20 +47,20 @@ description: "Task list for the customer portal and online booking requests feat
 
 **Purpose**: créer le layer et l'outillage partagé.
 
-- [ ] T001 Générer le layer avec `php artisan osdd:layer functional/portal --generators=service-provider,routes`. Puis :
+- [X] T001 Générer le layer avec `php artisan osdd:layer functional/portal --generators=service-provider,routes`. Puis :
   - dans `functional/portal/composer.json`, requérir `functional/booking`, `functional/fleet`, `functional/certification` et déclarer le provider de faker sur le modèle de `functional/certification/composer.json` ;
   - dans le `composer.json` racine, ajouter `functional/portal` à `require` et `Functional\\Portal\\Tests\\` à `autoload-dev` ;
   - lancer `php artisan osdd:phpunit` ;
   - dans `phpstan.neon`, ajouter `functional/portal/{src,database,routes,config}` ;
   - lancer `composer update functional/portal`.
-- [ ] T002 [P] Créer `functional/portal/config/portal.php` (`'max_pending_requests' => 10`, `'notification_retry_after_minutes' => 10`, `'comment_max_length' => 500`, `'refusal_reason_max_length' => 500`), le fusionner dans `PortalServiceProvider::register()`.
-- [ ] T003 [P] Créer les fichiers de traduction `functional/portal/resources/lang/fr/{auth,search,requests,reservations,prices,mail,refusals,navigation}.php`. Ils sont complétés au fil des phases avec les textes de [contracts/screens.md](contracts/screens.md) et [contracts/emails.md](contracts/emails.md).
-- [ ] T004 [P] Créer `functional/portal/tests/Concerns/BuildsPortalFixtures.php`. Ce trait utilise `CreatesUsers` et expose, toutes par factories :
+- [X] T002 [P] Créer `functional/portal/config/portal.php` (`'max_pending_requests' => 10`, `'notification_retry_after_minutes' => 10`, `'comment_max_length' => 500`, `'refusal_reason_max_length' => 500`), le fusionner dans `PortalServiceProvider::register()`.
+- [X] T003 [P] Créer les fichiers de traduction `functional/portal/resources/lang/fr/{auth,search,requests,reservations,prices,mail,refusals,navigation}.php`. Ils sont complétés au fil des phases avec les textes de [contracts/screens.md](contracts/screens.md) et [contracts/emails.md](contracts/emails.md).
+- [X] T004 [P] Créer `functional/portal/tests/Concerns/BuildsPortalFixtures.php`. Ce trait utilise `CreatesUsers` et expose, toutes par factories :
   - `customerAccount(array $attributes = [])` (adresse confirmée) et `unverifiedCustomerAccount()` ;
   - `attachedCustomerAccount(?Customer $customer = null)` ;
   - `reservableMachine(?MachineCategory, ?Agency, array $attributes = [])` (disponible, VGP valide) ;
   - `pendingRequest(CustomerAccount, Machine, string $start, string $end, array $attributes = [])`.
-- [ ] T005 [P] Écrire `functional/portal/tests/Feature/LayerBoundaryTest.php`, sur le modèle de `functional/certification/tests/Feature/LayerBoundaryTest.php`. Il vérifie deux choses :
+- [X] T005 [P] Écrire `functional/portal/tests/Feature/LayerBoundaryTest.php`, sur le modèle de `functional/certification/tests/Feature/LayerBoundaryTest.php`. Il vérifie deux choses :
   - aucun fichier de `functional/*/src` hors de `portal` ne référence `Functional\Portal` ;
   - `portal` ne référence ni `Functional\Billing`, ni `Functional\Deposit`, ni `Functional\Accounts`, ni `Functional\Sales`, ni `Functional\Inspection`, ni `App\`.
 

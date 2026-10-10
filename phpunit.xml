@@ -25,6 +25,7 @@
             <directory>functional/deposit/src</directory>
             <directory>functional/sales/src</directory>
             <directory>functional/accounts/src</directory>
+            <directory>functional/portal/src</directory>
         </include>
     </source>
     <php>

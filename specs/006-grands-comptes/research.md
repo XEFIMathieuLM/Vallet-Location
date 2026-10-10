@@ -26,8 +26,8 @@ Décisions de conception G1 à G10. Les décisions métier (lieu des tarifs, mom
 
 ## G4. Section « Bon de commande » et readiness par section (001)
 
-- **Decision** : composant Livewire `accounts.purchase-order-section` enregistré dans `ReservationDetailSections` (position 15, entre les photos et la facturation). La section se prononce pour l'étape `ReservationTransition::Departure` selon le contrat de readiness par section livré par la 001 : prête si le numéro est saisi ou s'il n'est pas exigé. Pour un client particulier ou de type à renseigner, la section n'affiche rien mais se déclare prête.
-- **Rationale** : FR-008 ; décision utilisateur relayée par la coordination (readiness par section). Le nom exact de l'API de readiness est repris de la 001 au rebase ; sur la base actuelle, c'est l'événement Livewire `reservation-transition-readiness` (`step`, `is_ready`).
+- **Decision** : composant Livewire `accounts.purchase-order-section` enregistré par `app(ReservationDetailSections::class)->register('accounts.purchase-order-section', 15, ReservationTransition::Departure)` (position 15, entre les photos et la facturation ; il garde l'étape départ). La section émet `dispatch('reservation-transition-readiness', step: ReservationTransition::Departure->value, section: 'accounts.purchase-order-section', is_ready: $isReady)` au montage et après chaque saisie : prête si le numéro est saisi ou s'il n'est pas exigé. Contrat de la 001 (7423fc9) : une section gardienne muette bloque l'étape ; la section émet donc toujours sa readiness, y compris quand elle n'affiche rien (client particulier ou de type à renseigner, readiness prête).
+- **Rationale** : FR-008 ; contrat de readiness par section de la 001 (7423fc9). Le refus serveur de G3 reste la seule garantie.
 
 ## G5. Badge grand compte : nouveau registre `CustomerBadges` dans `booking`
 
@@ -69,8 +69,10 @@ Décisions de conception G1 à G10. Les décisions métier (lieu des tarifs, mom
 - **Decision** :
   - Écran `/grands-comptes` (`accounts.key-accounts`) : liste des grands comptes ; recherche de clients professionnels avec leur identifiant de facturation ; désigner ou retirer. Écran propre au layer, pour ne dépendre d'aucune fiche client de la 004.
   - Écran `/bons-de-commande` (`accounts.missing-purchase-orders`) : réservations `confirmed` de grands comptes sans numéro, triées par date de début, filtre par agence de rattachement de la machine, mise en évidence à `accounts.highlight_days_before_departure` (3) jours ou moins, saisie en ligne.
-  - Permissions `key_accounts.manage` et `purchase_orders.manage` (`AccountsPermissionSeeder`), attribuées au rôle salarié ; contrôles `lomkit` `KeyAccountControl` et `PurchaseOrderControl`.
-  - Historique par `spatie/laravel-activitylog` (log `accounts`) : sur la réservation pour le bon de commande, sur le client pour la désignation ; auteur et agence de l'auteur.
+  - Permissions en enum de layer (convention de la 001) : `Functional\Accounts\Access\AccountsPermission` (`ManageKeyAccounts = 'key_accounts.manage'`, `ManagePurchaseOrders = 'purchase_orders.manage'`). `AccountsPermissionSeeder` crée seulement les permissions ; l'attribution au rôle salarié se fait dans `database/seeders/PermissionSeeder.php` (`app/`), comme pour `FleetPermission` et `BookingPermission`. Contrôles `lomkit` `KeyAccountControl` et `PurchaseOrderControl`.
+  - Aucun `App\Models\User` dans le layer : les actions reçoivent l'auteur en `Authenticatable&AgencyMember` (`Functional\Fleet\Contracts\AgencyMember`, comme `CreateReservation`) ; les clés étrangères pointent la table `users` par son nom ; les tests créent les salariés avec le trait `Functional\Fleet\Tests\Concerns\CreatesUsers`.
+  - Historique par `spatie/laravel-activitylog` (log `accounts`) : sur la réservation pour le bon de commande, sur le client pour la désignation ; l'agence de l'auteur est enregistrée sous la propriété `author_agency_id`, comme le fait le trait `RecordsAuthorAgency` de la 001 pour les journaux automatiques (les entrées d'`accounts` sont écrites à la main sur un sujet d'un autre layer, d'où la propriété posée par `AccountsHistory`).
+  - Interface : composants partagés de la 001 (`x-empty-state`, `x-loading-hint`, `flux:modal`, `Flux::toast`).
   - Entrée « Grands comptes » et « Bons de commande » dans la barre latérale (`app/`, colle).
 - **Rationale** : FR-014 à FR-017 ; principe V.
 

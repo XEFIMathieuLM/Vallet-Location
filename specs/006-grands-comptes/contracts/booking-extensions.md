@@ -5,8 +5,9 @@
 | Point d'extension | Usage par `accounts` |
 |-------------------|----------------------|
 | `ReservationTransitionGuards` + `ReservationTransitionGuard` | `PurchaseOrderDepartureGuard::beforeDeparture` lève `MissingPurchaseOrderException` (G3) ; `beforeReturn` sans effet |
-| `ReservationDetailSections` | composant `accounts.purchase-order-section`, position 15 (G4) |
-| readiness par section (contrat de la 001) | la section se prononce pour `ReservationTransition::Departure` (G4) |
+| `ReservationDetailSections` | `register('accounts.purchase-order-section', 15, ReservationTransition::Departure)` (G4) |
+| readiness par section (001, 7423fc9) | `dispatch('reservation-transition-readiness', step: 'departure', section: 'accounts.purchase-order-section', is_ready: …)` au montage et après chaque saisie, y compris quand la section n'affiche rien : une gardienne muette bloque (G4) |
+| `Functional\Fleet\Contracts\AgencyMember` | type de l'auteur dans `DesignateKeyAccount`, `RevokeKeyAccount`, `SetPurchaseOrder` (`Authenticatable&AgencyMember`) |
 | `RefusalException` (fleet) | toutes les exceptions de refus de `accounts` en héritent : message technique anglais, clé de traduction `accounts::refusals.*`, factories nommées ; testées avec `AssertsRefusals` |
 
 ## Nouveau : `CustomerBadges` (G5)

@@ -10,7 +10,7 @@ Un client professionnel désigné grand compte (FR-001, FR-002).
 |-------|------|--------|
 | id | identifiant | |
 | customer_id | référence → Customer | obligatoire, **unique** |
-| designated_by | référence → User | obligatoire |
+| designated_by | référence → table `users` | obligatoire ; auteur reçu en `Authenticatable&AgencyMember` |
 | designated_at | date-heure | obligatoire |
 | created_at, updated_at | date-heure | |
 
@@ -33,8 +33,8 @@ Le numéro de bon de commande d'une réservation (FR-005, FR-006, FR-009).
 | id | identifiant | |
 | reservation_id | référence → Reservation | obligatoire, **unique** |
 | number | texte (50) | obligatoire ; CHECK `length(btrim(number)) between 1 and 50` |
-| entered_by | référence → User | auteur de la dernière saisie |
-| agency_id | référence → Agency | agence de l'auteur de la dernière saisie |
+| entered_by | référence → table `users` | auteur de la dernière saisie |
+| agency_id | référence → Agency | agence de l'auteur de la dernière saisie (`AgencyMember::agencyId()`) |
 | entered_at | date-heure | date de la dernière saisie |
 | created_at, updated_at | date-heure | |
 

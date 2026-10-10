@@ -18,6 +18,7 @@ use Functional\Certification\Listeners\ResolveCertificatesOnReportDeposited;
 use Functional\Certification\Livewire\CertificationAlert;
 use Functional\Certification\Livewire\CustomerEmailForm;
 use Functional\Certification\Livewire\HandDeliveryButton;
+use Functional\Certification\Livewire\ResendCertificateButton;
 use Functional\Certification\Livewire\ReservationCertificateSection;
 use Illuminate\Support\Facades\Event;
 use Livewire\Livewire;
@@ -44,6 +45,7 @@ class CertificationServiceProvider extends LayerServiceProvider
         Livewire::component(CertificationAlert::NAME, CertificationAlert::class);
         Livewire::component(CustomerEmailForm::NAME, CustomerEmailForm::class);
         Livewire::component(HandDeliveryButton::NAME, HandDeliveryButton::class);
+        Livewire::component(ResendCertificateButton::NAME, ResendCertificateButton::class);
         $this->app->make(ReservationTransitionGuards::class)->register(CertificateDeliveredGuard::class);
         $this->app->make(ReservationDetailSections::class)->register(ReservationCertificateSection::NAME, 30, ReservationTransition::Departure);
         Event::listen(ReservationChanged::class, OpenCertificateOnReservationChanged::class);

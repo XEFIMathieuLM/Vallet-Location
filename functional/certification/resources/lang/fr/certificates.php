@@ -18,6 +18,8 @@ return [
         'confirm_hand_delivery' => 'Confirmer la remise',
         'cancel' => 'Annuler',
         'hand_delivered' => 'Remise en main propre enregistrée.',
+        'resend' => 'Renvoyer l\'attestation',
+        'resent' => 'Attestation VGP renvoyée.',
     ],
     'transitions' => [
         'await_email' => 'mettre en attente d\'e-mail',
@@ -54,6 +56,13 @@ return [
             'not_confirmed' => 'Remise impossible : la réservation n\'est pas confirmée.',
             'already_delivered' => 'L\'attestation VGP a déjà été envoyée ou remise.',
             'no_certificate' => 'Remise impossible : aucune attestation n\'est ouverte pour cette réservation.',
+        ],
+        'resend' => [
+            'not_active' => 'Renvoi impossible : la réservation n\'est ni confirmée ni en cours.',
+            'no_certificate' => 'Renvoi impossible : aucune attestation n\'est ouverte pour cette réservation.',
+            'no_report' => 'Renvoi impossible : aucun rapport de VGP n\'est déposé pour cette machine.',
+            'no_email' => 'Renvoi impossible : le client n\'a pas d\'adresse e-mail.',
+            'sending_failed' => 'Le renvoi a échoué : :reason.',
         ],
         'illegal_transition' => 'Impossible de :transition l\'attestation VGP : elle est à l\'état « :status ».',
     ],

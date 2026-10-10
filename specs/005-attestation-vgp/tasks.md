@@ -211,12 +211,12 @@ Celles de la 001 s'appliquent ([tasks.md de la 001](../001-reservation-machines/
 
 ### Tests for User Story 5 ⚠️
 
-- [ ] T055 [P] [US5] Écrire `functional/certification/tests/Feature/ResendCertificateTest.php` : sc. 1 (renvoi sur réservation confirmée puis en cours : notification, trace manuelle avec auteur, historique), sc. 2 (attestation `failed` + e-mail corrigé → envoi et sortie de la liste — via T044), sc. 3 (réservation annulée ou clôturée : bouton absent et `assertRefused` `CertificateNotResendableException`), sc. 4 (nouveau rapport déposé : le renvoi joint le nouveau), renvoi sans rapport ou sans e-mail refusé, renvoi en échec immédiat : motif affiché, état d'une attestation livrée inchangé, attestation non livrée passée `sent` en cas de succès
+- [X] T055 [P] [US5] Écrire `functional/certification/tests/Feature/ResendCertificateTest.php` : sc. 1 (renvoi sur réservation confirmée puis en cours : notification, trace manuelle avec auteur, historique), sc. 2 (attestation `failed` + e-mail corrigé → envoi et sortie de la liste — via T044), sc. 3 (réservation annulée ou clôturée : bouton absent et `assertRefused` `CertificateNotResendableException`), sc. 4 (nouveau rapport déposé : le renvoi joint le nouveau), renvoi sans rapport ou sans e-mail refusé, renvoi en échec immédiat : motif affiché, état d'une attestation livrée inchangé, attestation non livrée passée `sent` en cas de succès
 
 ### Implementation for User Story 5
 
-- [ ] T056 [US5] Créer `functional/certification/src/Exceptions/CertificateNotResendableException.php` (`final`, `RefusalException`, `reservationNotActive()`, `noReport()`, `noEmail()`, `sendingFailed(DispatchFailureReason)`) et `functional/certification/src/Actions/ResendCertificate.php` (synchrone, verrou, `notifyNow`, trace `is_automatic = false` avec auteur, `markSent()` si l'attestation n'était pas livrée, historique ; échec classé par `DispatchFailureClassifier` puis refus `sendingFailed`)
-- [ ] T057 [US5] Ajouter « Renvoyer l'attestation » dans un composant d'action séparé `functional/certification/src/Livewire/ResendCertificateButton.php`, rendu par `ReservationCertificateSection` (réservation confirmée ou en cours, rapport et e-mail présents) ; T055 passe
+- [X] T056 [US5] Créer `functional/certification/src/Exceptions/CertificateNotResendableException.php` (`final`, `RefusalException`, `reservationNotActive()`, `noReport()`, `noEmail()`, `sendingFailed(DispatchFailureReason)`) et `functional/certification/src/Actions/ResendCertificate.php` (synchrone, verrou, `notifyNow`, trace `is_automatic = false` avec auteur, `markSent()` si l'attestation n'était pas livrée, historique ; échec classé par `DispatchFailureClassifier` puis refus `sendingFailed`)
+- [X] T057 [US5] Ajouter « Renvoyer l'attestation » dans un composant d'action séparé `functional/certification/src/Livewire/ResendCertificateButton.php`, rendu par `ReservationCertificateSection` (réservation confirmée ou en cours, rapport et e-mail présents) ; T055 passe
 
 **Checkpoint**: toutes les stories fonctionnent ; suite verte ; commit de phase.
 

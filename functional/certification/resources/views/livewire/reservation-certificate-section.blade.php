@@ -37,6 +37,7 @@
             @if ($isActive)
                 <div class="flex flex-wrap items-end gap-4">
                     <livewire:certification.customer-email-form :reservation="$reservation" :key="'customer-email-'.$reservation->id" />
+                    <livewire:certification.resend-certificate-button :reservation="$reservation" :key="'resend-'.$reservation->id" />
                     @if (! $certificate->status->isDelivered() && $reservation->status === \Functional\Booking\Enums\ReservationStatus::Confirmed)
                         <livewire:certification.hand-delivery-button :reservation="$reservation" :key="'hand-delivery-'.$reservation->id" />
                     @endif

@@ -1,7 +1,7 @@
 <section class="flex max-w-2xl flex-col gap-6">
     <div class="flex flex-col gap-2">
         <flux:link :href="route('inspection.category-views.index')" wire:navigate>{{ __('inspection::views.edit.back') }}</flux:link>
-        <flux:heading level="1" size="xl">{{ __('inspection::views.edit.title', ['category' => $category->name]) }}</flux:heading>
+        <x-page-heading :title="__('inspection::views.edit.title', ['category' => $category->name])" />
         @if ($isCustomized)
             <flux:badge color="blue" size="sm" class="self-start">{{ __('inspection::views.index.custom') }}</flux:badge>
         @else

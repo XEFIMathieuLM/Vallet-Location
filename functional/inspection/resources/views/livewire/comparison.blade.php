@@ -1,6 +1,6 @@
 <section class="flex flex-col gap-6">
     <div class="flex flex-col gap-2">
-        <flux:heading level="1" size="xl">{{ __('inspection::damages.comparison.title', ['reference' => $reservation->machine->reference]) }}</flux:heading>
+        <x-page-heading :title="__('inspection::damages.comparison.title', ['reference' => $reservation->machine->reference])" />
         <flux:text>{{ $reservation->customer->name }}</flux:text>
     </div>
 
@@ -11,7 +11,7 @@
     <div class="flex flex-col gap-4">
         @foreach ($views as $view)
             <div wire:key="comparison-view-{{ $view->id }}" class="flex flex-col gap-2 rounded-xl border border-zinc-200 p-4 dark:border-zinc-700">
-                <flux:heading level="2">{{ $view->label }}</flux:heading>
+                <x-section-heading :title="$view->label" />
                 <div class="grid gap-4 md:grid-cols-2">
                     @foreach (\Functional\Inspection\Enums\InspectionStep::cases() as $step)
                         <div class="flex flex-col gap-2">
@@ -39,7 +39,7 @@
 
     @can('damages.manage')
         <form wire:submit="report" class="flex flex-col gap-4 rounded-xl border border-zinc-200 p-4 dark:border-zinc-700">
-            <flux:heading level="2">{{ __('inspection::damages.report.title') }}</flux:heading>
+            <x-section-heading :title="__('inspection::damages.report.title')" />
             <flux:select wire:model="reservationViewId" :label="__('inspection::damages.report.view')" :placeholder="__('inspection::damages.report.choose_view')">
                 @foreach ($views as $view)
                     <flux:select.option :value="$view->id">{{ $view->label }}</flux:select.option>
@@ -54,7 +54,7 @@
 
     @if ($damages->isNotEmpty())
         <div class="flex flex-col gap-4">
-            <flux:heading level="2">{{ __('inspection::damages.comparison.damages') }}</flux:heading>
+            <x-section-heading :title="__('inspection::damages.comparison.damages')" />
             @foreach ($damages as $damage)
                 <div wire:key="damage-{{ $damage->id }}" class="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-zinc-200 p-4 dark:border-zinc-700">
                     <div class="flex flex-col gap-2">

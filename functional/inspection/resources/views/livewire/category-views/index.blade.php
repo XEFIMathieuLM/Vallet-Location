@@ -1,6 +1,6 @@
 <section class="flex flex-col gap-6">
     <div class="flex flex-col gap-2">
-        <flux:heading level="1" size="xl">{{ __('inspection::views.index.title') }}</flux:heading>
+        <x-page-heading :title="__('inspection::views.index.title')" />
         <flux:text>{{ __('inspection::views.index.subtitle') }}</flux:text>
     </div>
 

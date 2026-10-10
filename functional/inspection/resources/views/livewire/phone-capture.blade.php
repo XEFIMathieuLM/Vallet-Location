@@ -1,6 +1,6 @@
 <div class="flex flex-col gap-6">
     <header class="flex flex-col gap-2">
-        <flux:heading level="1" size="xl">{{ $reservation->machine->reference }}</flux:heading>
+        <x-page-heading :title="$reservation->machine->reference" />
         <flux:text>{{ $reservation->customer->name }}</flux:text>
         <flux:badge color="blue" size="sm" class="self-start">{{ __('inspection::phone.step', ['step' => $step->label()]) }}</flux:badge>
     </header>
@@ -17,7 +17,7 @@
         @foreach ($views as $view)
             <li wire:key="view-{{ $view->id }}" class="flex flex-col gap-4 rounded-lg border border-zinc-200 p-4 dark:border-zinc-700">
                 <div class="flex items-center justify-between gap-2">
-                    <flux:heading level="2">{{ $view->label }}</flux:heading>
+                    <x-section-heading :title="$view->label" />
                     @if ($view->photos->isEmpty())
                         <flux:badge color="red" size="sm">{{ __('inspection::phone.view.missing') }}</flux:badge>
                     @else

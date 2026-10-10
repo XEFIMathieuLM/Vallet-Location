@@ -102,7 +102,8 @@ functional/
     │   ├── Extensions/               # DamageActions (point d'extension pour la 003)
     │   ├── History/                  # InspectionHistory (journal), InspectionHistoryEvent
     │   ├── QrCodes/                  # QrCodeSvg
-    │   ├── Exceptions/               # refus typés (sous-classes de RefusalException)
+    │   ├── Exceptions/               # refus typés (sous-classes de RefusalException : message technique en anglais, message affiché traduit)
+    │   ├── Faker/                    # extension faker du layer (libellés de vues, empreinte de jeton)
     │   ├── Events/                   # PhotoChanged, PhotoSessionChanged, DamageChanged
     │   ├── Listeners/                # révocation des sessions sur ReservationChanged
     │   ├── Access/Controls/          # DamageControl, CategoryViewControl (les photos sont protégées par la permission des routes)
@@ -113,9 +114,9 @@ functional/
     ├── resources/{views,js,lang/fr}/ # js : réduction des photos (Alpine)
     ├── routes/web.php                # /photos/{token} (public), écrans poste
     ├── routes/channels.php           # canal privé reservation.{id}
-    ├── routes/console.php            # purge nocturne des photos et des sessions (model:prune --model)
     └── tests/{Feature,Unit,Concerns,Fixtures}/
 database/seeders/DatabaseSeeder.php   # + InspectionSeeder
+config/prunable.php                   # (001) Photo et PhotoSession ajoutés depuis le provider du layer
 phpstan.neon                          # + configDirectories (dossiers config des layers)
 compose.yaml                    # + S3 local (SeaweedFS, profil s3), facultatif
 ```

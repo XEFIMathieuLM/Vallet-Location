@@ -1,6 +1,6 @@
 <section class="flex flex-col gap-4 rounded-xl border border-zinc-200 p-4 dark:border-zinc-700">
     <div class="flex flex-wrap items-center justify-between gap-2">
-        <flux:heading level="2" size="lg">{{ __('inspection::panel.title') }}</flux:heading>
+        <x-section-heading :title="__('inspection::panel.title')" />
 
         @if ($openStep !== null)
             <flux:button size="sm" icon="qr-code" wire:click="generate">

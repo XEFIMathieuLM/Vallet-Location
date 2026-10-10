@@ -77,12 +77,12 @@ Au retour de la machine, la caution n'est pas rendue automatiquement : l'outil i
 
 1. **Given** une réservation clôturée sans dégât à traiter et une caution encaissée, **When** le salarié consulte la réservation, **Then** la caution est « à restituer ».
 2. **Given** une caution « à restituer » d'une réservation clôturée, **When** le salarié enregistre sa restitution en confirmant « comparaison départ / retour faite, aucun dégât constaté », **Then** la caution passe « restituée » avec l'auteur, l'agence et la date, et la confirmation est inscrite dans l'historique.
-8. **Given** une caution « à restituer » d'une réservation clôturée, **When** le salarié tente d'enregistrer la restitution sans cocher la confirmation, **Then** l'outil refuse.
 3. **Given** une réservation clôturée portant au moins un dégât à traiter, **When** le salarié tente de restituer la caution, **Then** l'outil refuse et liste les dégâts à régler d'abord.
 4. **Given** une caution de 1 500 € et un dégât refacturé 450 € (feature 003), **When** tous les dégâts de la réservation sont réglés, **Then** la caution passe « à solder » avec une retenue proposée de 450 € et une restitution de 1 050 €.
 5. **Given** une caution « à solder », **When** le salarié valide le solde, **Then** la caution passe « soldée » avec le montant retenu et le montant restitué calculés par l'outil, l'auteur et la date ; le salarié ne peut pas modifier ces montants.
 6. **Given** une caution de 1 500 € et des dégâts refacturés pour 2 000 €, **When** les dégâts sont réglés, **Then** la retenue proposée est de 1 500 € et la restitution de 0 € ; les 500 € restants et la TVA sont réclamés au client par la facture du dégât émise par le logiciel de facturation (feature 003).
 7. **Given** une caution dont le seul dégât est classé « non refacturé », **When** le dégât est réglé, **Then** la caution passe « à restituer » en entier.
+8. **Given** une caution « à restituer » d'une réservation clôturée, **When** le salarié tente d'enregistrer la restitution sans cocher la confirmation, **Then** l'outil refuse.
 
 ---
 

@@ -134,7 +134,7 @@ functional/
 | Livreur du garde de changement de type (G6) | registre `CustomerChangeGuards` livré par la 004 dans `UpdateCustomer` ; la 006 y enregistre sa garde | coordination |
 | Emplacement des règles de grand compte (G1) | nouveau layer `functional/accounts` ; `billing` expose `PurchaseOrderNumbers` sans connaître `accounts` | coordination |
 | Badges client | registre `CustomerBadges` générique, appel groupé, aligné sur `MachineBadges` (007) | coordination |
-| Écriture du client | `UpdateCustomer` + `CustomerChanged` ; la désignation n'écrit pas `customers` et émet seulement `CustomerChanged` (research G2) | coordination (à confirmer pour la désignation) |
+| Écriture du client | `UpdateCustomer` + `CustomerChanged` ; la désignation n'écrit pas `customers` et émet seulement `CustomerChanged` (research G2) | coordination (confirmé : désignation dans `accounts`, `CustomerChanged` émis sans écriture de `customers`) |
 
 ## Complexity Tracking
 

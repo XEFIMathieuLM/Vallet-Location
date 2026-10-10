@@ -81,3 +81,7 @@ interface CustomerChangeGuard
 ## Événement `CustomerChanged` (convention de la coordination)
 
 `Functional\Booking\Events\CustomerChanged` (`ShouldDispatchAfterCommit`), introduit avec `UpdateCustomer`. `DesignateKeyAccount` et `RevokeKeyAccount` l'émettent après commit ; elles n'écrivent pas `customers` et ne passent donc pas par `UpdateCustomer` (research G2).
+
+- `CustomerChanged` signifie « quelque chose a changé pour ce client », pas « la ligne `customers` a été écrite » : il peut être émis sans aucune écriture de `customers` (désignation ou retrait d'un grand compte).
+- Tout écouteur de `CustomerChanged` (dont celui de la 005 sur l'e-mail) DOIT vérifier lui-même ce qui a changé avant d'agir, et ne rien faire si le champ qui l'intéresse est inchangé.
+- `UpdateCustomer` reste la seule écriture de la table `customers` ; `booking` n'a ni colonne ni garde de désignation (décision de la coordination, 2026-10-10).

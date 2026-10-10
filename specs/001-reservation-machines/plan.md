@@ -38,7 +38,7 @@ Ajout de la phase 9 : `xefi/faker-php-locales-fr-fr` (dev) fournit des données 
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Vérifié contre la constitution du projet (`.specify/memory/constitution.md`, v1.0.0, ratifiée le 2026-10-10), après la livraison :
+Vérifié contre la constitution du projet (`.specify/memory/constitution.md`, v1.0.1, ratifiée le 2026-10-10), après la livraison :
 
 | Principe | Statut |
 |----------|--------|

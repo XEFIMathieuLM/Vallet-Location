@@ -7,10 +7,11 @@
     @enderror
 
     @if ($transmissions->isEmpty())
-        <div class="space-y-2">
-            <flux:text>{{ __('billing::transmissions.screen.empty') }}</flux:text>
-            <flux:link :href="route('billing.statement')" wire:navigate>{{ __('billing::transmissions.screen.open_statement') }}</flux:link>
-        </div>
+        <x-empty-state :heading="__('billing::transmissions.screen.empty_heading')" :description="__('billing::transmissions.screen.empty')">
+            <x-slot:actions>
+                <flux:button size="sm" :href="route('billing.statement')" wire:navigate>{{ __('billing::transmissions.screen.open_statement') }}</flux:button>
+            </x-slot:actions>
+        </x-empty-state>
     @else
         <flux:table>
             <flux:table.columns>

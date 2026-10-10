@@ -2,9 +2,7 @@
 
 namespace Functional\Fleet\Tests\Feature;
 
-use App\Models\User;
 use Carbon\CarbonImmutable;
-use Database\Seeders\PermissionSeeder;
 use Functional\Fleet\Actions\CreateMachine;
 use Functional\Fleet\Actions\RetireMachine;
 use Functional\Fleet\Actions\UpdateMachine;
@@ -18,6 +16,7 @@ use Functional\Fleet\Models\Agency;
 use Functional\Fleet\Models\Machine;
 use Functional\Fleet\Models\MachineCategory;
 use Functional\Fleet\Tests\Concerns\AssertsRefusals;
+use Functional\Fleet\Tests\Concerns\CreatesUsers;
 use Functional\Fleet\Tests\Doubles\RefusingRetirementGuard;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -25,7 +24,7 @@ use Tests\TestCase;
 
 class ManageMachinesTest extends TestCase
 {
-    use AssertsRefusals, RefreshDatabase;
+    use AssertsRefusals, CreatesUsers, RefreshDatabase;
 
     public function test_a_machine_is_created_with_a_normalized_reference(): void
     {
@@ -95,19 +94,49 @@ class ManageMachinesTest extends TestCase
 
     public function test_a_status_change_from_the_fleet_screen_is_visible_to_every_agency(): void
     {
-        $this->seed(PermissionSeeder::class);
+        $this->seedPermissions();
         $machine = Machine::factory()->create(['reference' => 'NAC-0042']);
 
-        Livewire::actingAs(User::factory()->employee()->create())
+        Livewire::actingAs($this->employee())
             ->test(MachineIndex::class)
             ->call('applyTransition', $machine->id, MachineTransition::MarkOutOfOrder->value)
             ->assertHasNoErrors();
 
-        $this->actingAs(User::factory()->employee()->create())
+        $this->actingAs($this->employee())
             ->get(route('machines.index'))
             ->assertOk()
             ->assertSee('NAC-0042')
             ->assertSee(MachineStatus::OutOfOrder->label());
+    }
+
+    public function test_a_machine_is_retired_from_the_fleet_screen_after_confirmation(): void
+    {
+        $this->seedPermissions();
+        $machine = Machine::factory()->withStatus(MachineStatus::OutOfOrder)->create();
+
+        Livewire::actingAs($this->employee())
+            ->test(MachineIndex::class)
+            ->call('confirmRetirement', $machine->id)
+            ->assertSet('machineToRetireId', $machine->id)
+            ->call('retire')
+            ->assertHasNoErrors();
+
+        $this->assertSame(MachineStatus::Retired, $machine->fresh()?->status);
+    }
+
+    public function test_a_refused_retirement_is_displayed_on_the_fleet_screen(): void
+    {
+        $this->seedPermissions();
+        $this->app->instance(MachineRetirementGuard::class, new RefusingRetirementGuard);
+        $machine = Machine::factory()->create();
+
+        Livewire::actingAs($this->employee())
+            ->test(MachineIndex::class)
+            ->call('confirmRetirement', $machine->id)
+            ->call('retire')
+            ->assertHasErrors('refusal');
+
+        $this->assertSame(MachineStatus::Available, $machine->fresh()?->status);
     }
 
     public function test_the_fleet_screen_only_offers_manual_legal_transitions(): void
@@ -122,7 +151,7 @@ class ManageMachinesTest extends TestCase
 
     public function test_the_fleet_screen_requires_the_machine_permission(): void
     {
-        $this->actingAs(User::factory()->create())
+        $this->actingAs($this->userWithoutPermission())
             ->get(route('machines.index'))
             ->assertForbidden();
     }

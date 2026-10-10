@@ -8,16 +8,16 @@ use Functional\Billing\Actions\WaiveDamage;
 use Functional\Billing\Enums\BillingPermission;
 use Functional\Billing\Money\Money;
 use Functional\Fleet\Livewire\Concerns\DisplaysRefusals;
+use Functional\Inspection\Livewire\Concerns\ActsAsAgencyMember;
 use Functional\Inspection\Models\Damage;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class DamageBillingActions extends Component
 {
-    use DisplaysRefusals;
+    use ActsAsAgencyMember, DisplaysRefusals;
 
     #[Locked]
     public Damage $damage;
@@ -40,7 +40,7 @@ class DamageBillingActions extends Component
             'label' => __('billing::damages.label'),
         ]);
 
-        $billDamage->handle($this->damage, Money::fromInput($this->amount), $this->label, Auth::user() ?? abort(401));
+        $billDamage->handle($this->damage, Money::fromInput($this->amount), $this->label, $this->agencyMember());
         $this->settled(__('billing::damages.billed_toast'));
     }
 
@@ -50,7 +50,7 @@ class DamageBillingActions extends Component
 
         $this->validate(['waiverReason' => ['required', 'string', 'max:2000']], attributes: ['waiverReason' => __('billing::damages.waiver_reason')]);
 
-        $waiveDamage->handle($this->damage, $this->waiverReason, Auth::user() ?? abort(401));
+        $waiveDamage->handle($this->damage, $this->waiverReason, $this->agencyMember());
         $this->settled(__('billing::damages.waived_toast'));
     }
 

@@ -18,7 +18,7 @@ M. Vallet dirige une PME de location de machines de travaux : 85 salariés, 7 ag
 
 - Q: Quand une machine louée n'est pas rentrée à sa date de fin, quelles réservations à venir sont signalées « en conflit » ? → A: Seulement la prochaine réservation confirmée de cette machine ; les suivantes ne sont pas signalées.
 - Q: Une réservation en conflit que l'on annule garde-t-elle son motif de conflit ? → A: Non, l'annulation efface le motif ; une réservation annulée n'est jamais « en conflit ».
-- Q: Quand le détail d'une réservation affiche des sections ajoutées par d'autres fonctionnalités (ex. photos), que faut-il pour activer « Enregistrer la sortie » ou « Enregistrer le retour » ? → A: Le bouton d'une étape s'active dès qu'une section a signalé que cette étape est prête ; sans section ajoutée, les boutons sont actifs. Le refus côté serveur reste la seule garantie.
+- Q: Quand le détail d'une réservation affiche des sections ajoutées par d'autres fonctionnalités (ex. photos, caution, attestation), que faut-il pour activer « Enregistrer la sortie » ou « Enregistrer le retour » ? → A: (révisé le 2026-10-10, décision utilisateur) Chaque section déclare les étapes qu'elle garde ; le bouton d'une étape ne s'active que lorsque toutes les sections qui la gardent ont signalé qu'elle est prête, une section qui ne garde pas une étape ne la bloque pas, et une section qui ne s'est pas encore prononcée bloque l'étape qu'elle garde. Sans section, les boutons sont actifs. Le refus côté serveur reste la seule garantie.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -198,7 +198,7 @@ Ces éléments de la fiche font l'objet de specs séparées :
 - La règle VGP s'applique à toute machine marquée « soumise à VGP » ; les nacelles le sont toujours, les autres catégories selon le paramétrage.
 - Une réservation est retirée et rendue à l'agence de rattachement de la machine ; une réservation peut être créée depuis n'importe quelle agence.
 - « Promettre » une machine équivaut à la réserver : il n'existe pas de pré-réservation ou d'option distincte dans cette version.
-- Des fonctionnalités ultérieures peuvent ajouter des sections au détail d'une réservation et bloquer la sortie ou le retour ; le bouton d'une étape s'active dès qu'une section signale cette étape prête, et le blocage réel reste vérifié côté serveur.
+- Des fonctionnalités ultérieures peuvent ajouter des sections au détail d'une réservation et bloquer la sortie ou le retour ; chaque section déclare les étapes qu'elle garde, et le bouton d'une étape ne s'active que lorsque toutes ces sections l'ont signalée prête ; le blocage réel reste vérifié côté serveur.
 - Les 85 salariés ont les mêmes droits (choix du client pour cette version).
 - Le parc initial est fourni par le client sous forme de fichier tableur.
 - Les salariés disposent d'un poste connecté à internet dans chaque agence.

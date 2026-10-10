@@ -5,30 +5,31 @@ namespace Database\Seeders;
 use App\Models\User;
 use Functional\Billing\Database\Seeders\BillingPermissionSeeder;
 use Functional\Billing\Database\Seeders\BillingSeeder;
+use Functional\Booking\Database\Seeders\BookingPermissionSeeder;
+use Functional\Booking\Database\Seeders\CustomerSeeder;
+use Functional\Booking\Database\Seeders\ReservationSeeder;
+use Functional\Fleet\Database\Seeders\FleetPermissionSeeder;
 use Functional\Fleet\Database\Seeders\FleetSeeder;
 use Functional\Fleet\Models\Agency;
 use Functional\Inspection\Database\Seeders\InspectionPermissionSeeder;
 use Functional\Inspection\Database\Seeders\InspectionSeeder;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        $this->call([FleetSeeder::class, PermissionSeeder::class, InspectionPermissionSeeder::class, BillingPermissionSeeder::class]);
+        $this->call([FleetPermissionSeeder::class, BookingPermissionSeeder::class, InspectionPermissionSeeder::class, BillingPermissionSeeder::class, PermissionSeeder::class, FleetSeeder::class]);
 
-        Agency::query()->orderBy('name')->each(function (Agency $agency): void {
-            User::factory()
-                ->create([
-                    'name' => "Salarié {$agency->name}",
-                    'email' => Str::slug($agency->name).'@vallet-location.test',
-                    'agency_id' => $agency->id,
-                ])
-                ->assignRole(PermissionSeeder::EMPLOYEE_ROLE);
-        });
+        $employees = Agency::query()->orderBy('name')->get()
+            ->map(fn (Agency $agency): User => User::factory()->employee()->for($agency)->create());
 
-        $this->call(InspectionSeeder::class);
-        $this->call(BillingSeeder::class);
+        $this->call([CustomerSeeder::class, ReservationSeeder::class, InspectionSeeder::class, BillingSeeder::class]);
+
+        $this->command->table(
+            ['Agency', 'Employee e-mail'],
+            $employees->map(fn (User $employee): array => [$employee->agency->name, $employee->email])->all(),
+        );
+        $this->command->info('Password of every seeded employee: the UserFactory default.');
     }
 }

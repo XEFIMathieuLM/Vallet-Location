@@ -2,7 +2,6 @@
 
 namespace Functional\Billing\Tests\Feature;
 
-use App\Models\User;
 use Carbon\CarbonImmutable;
 use Functional\Billing\Enums\BillablePeriodKind;
 use Functional\Billing\Livewire\Statement;
@@ -14,9 +13,12 @@ use Functional\Billing\Queries\BillingStatement;
 use Functional\Billing\Tests\Concerns\BuildsBillingFixtures;
 use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Models\Reservation;
+use Functional\Fleet\Contracts\AgencyMember;
 use Functional\Fleet\Models\Agency;
 use Functional\Fleet\Models\Machine;
 use Functional\Inspection\Models\Damage;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Livewire\Livewire;
@@ -28,7 +30,7 @@ class BillingStatementTest extends TestCase
 
     private Agency $rouen;
 
-    private User $employee;
+    private Model&Authenticatable&AgencyMember $employee;
 
     protected function setUp(): void
     {

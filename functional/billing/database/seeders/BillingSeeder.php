@@ -2,7 +2,6 @@
 
 namespace Functional\Billing\Database\Seeders;
 
-use App\Models\User;
 use Carbon\CarbonImmutable;
 use Functional\Billing\Enums\BillablePeriodKind;
 use Functional\Billing\Enums\TransmissionFailureReason;
@@ -16,10 +15,13 @@ use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Models\Customer;
 use Functional\Booking\Models\Reservation;
 use Functional\Fleet\Enums\MachineStatus;
+use Functional\Fleet\Models\Agency;
 use Functional\Fleet\Models\Machine;
+use Functional\Fleet\Models\MachineCategory;
 use Functional\Inspection\Models\Damage;
 use Functional\Inspection\Models\ReservationView;
 use Illuminate\Database\Eloquent\Factories\Sequence;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
 
@@ -27,10 +29,13 @@ class BillingSeeder extends Seeder
 {
     private const SENT_RENTALS_RETURNED_DAYS_AGO = [1, 2, 3, 11, 4, 5];
 
+    private Model $employee;
+
     public function run(): void
     {
-        $employee = User::query()->orderBy('id')->firstOrFail();
-        $machines = Machine::query()->where('status', MachineStatus::Available)->orderBy('id')->limit(12)->get();
+        $this->employee = $this->userModel()::query()->orderBy('id')->firstOrFail();
+        $employee = $this->employee;
+        $machines = Machine::factory()->count(12)->recycle(Agency::all())->recycle(MachineCategory::all())->create();
         $customersWithAccount = Customer::factory()->count(6)->create();
         $customersWithAccount->each(fn (Customer $customer) => CustomerBillingAccount::factory()->for($customer)->create());
         $customersWithoutAccount = Customer::factory()->count(2)->create();
@@ -50,7 +55,7 @@ class BillingSeeder extends Seeder
      * @param  Collection<int, Customer>  $customersWithAccount
      * @param  Collection<int, Customer>  $customersWithoutAccount
      */
-    private function transmissionsToHandle(Collection $machines, Collection $customersWithAccount, Collection $customersWithoutAccount, User $employee): void
+    private function transmissionsToHandle(Collection $machines, Collection $customersWithAccount, Collection $customersWithoutAccount, Model $employee): void
     {
         $recentPending = $this->closedRental($machines[0], $customersWithAccount[1], 1);
         Transmission::factory()->create(['billable_period_id' => $this->finalPeriod($recentPending)->id, 'reservation_id' => $recentPending->id]);
@@ -67,15 +72,18 @@ class BillingSeeder extends Seeder
             ->create(['billable_period_id' => $this->finalPeriod($rejected)->id, 'reservation_id' => $rejected->id]);
 
         $exported = $this->closedRental($machines[4], $customersWithoutAccount[1], 12);
-        Transmission::factory()->exported()
-            ->for(BillingExport::factory()->for($employee, 'creator')->state(['line_count' => 1]), 'export')
-            ->create(['billable_period_id' => $this->finalPeriod($exported)->id, 'reservation_id' => $exported->id]);
+        $billingExport = BillingExport::factory()->for($employee, 'creator')->create(['line_count' => 1]);
+        Transmission::factory()->exported()->create([
+            'billable_period_id' => $this->finalPeriod($exported)->id,
+            'reservation_id' => $exported->id,
+            'billing_export_id' => $billingExport->id,
+        ]);
     }
 
     /**
      * @param  Collection<int, Reservation>  $rentals
      */
-    private function damages(Collection $rentals, User $employee): void
+    private function damages(Collection $rentals, Model $employee): void
     {
         $billedDamage = $this->damage($rentals[0], resolvedBy: $employee);
         $billedSettlement = DamageSettlement::factory()->billed(Money::fromStored(faker()->number(5000, 120000)), faker()->sentences(1))->for($billedDamage)->for($employee, 'settler')->create();
@@ -88,13 +96,14 @@ class BillingSeeder extends Seeder
         $this->damage($rentals[3], reportedDaysAgo: 10);
     }
 
-    private function damage(Reservation $reservation, int $reportedDaysAgo = 1, ?User $resolvedBy = null): Damage
+    private function damage(Reservation $reservation, int $reportedDaysAgo = 1, ?Model $resolvedBy = null): Damage
     {
         $views = ReservationView::factory()->count(3)->for($reservation)->state(new Sequence(['position' => 1], ['position' => 2], ['position' => 3]))->create();
 
         return Damage::factory()->for($reservation)->for($views->first(), 'view')->create([
+            'reported_by' => $this->employee->getKey(),
             'reported_at' => CarbonImmutable::now()->subDays($reportedDaysAgo),
-            'resolved_by' => $resolvedBy?->id,
+            'resolved_by' => $resolvedBy?->getKey(),
             'resolved_at' => $resolvedBy === null ? null : CarbonImmutable::now(),
         ]);
     }
@@ -107,7 +116,7 @@ class BillingSeeder extends Seeder
         return Reservation::factory()->for($machine)->for($customer)
             ->between($departedAt->startOfDay(), $returnedAt->startOfDay())
             ->withStatus(ReservationStatus::Closed)
-            ->create(['agency_id' => $machine->agency_id, 'departed_at' => $departedAt, 'returned_at' => $returnedAt]);
+            ->create(['agency_id' => $machine->agency_id, 'created_by' => $this->employee->getKey(), 'departed_at' => $departedAt, 'returned_at' => $returnedAt]);
     }
 
     private function runningRental(Machine $machine, Customer $customer): Reservation
@@ -118,7 +127,7 @@ class BillingSeeder extends Seeder
         return Reservation::factory()->for($machine)->for($customer)
             ->between($departedAt->startOfDay(), CarbonImmutable::today()->addDays(10))
             ->withStatus(ReservationStatus::InProgress)
-            ->create(['agency_id' => $machine->agency_id, 'departed_at' => $departedAt]);
+            ->create(['agency_id' => $machine->agency_id, 'created_by' => $this->employee->getKey(), 'departed_at' => $departedAt]);
     }
 
     private function finalPeriod(Reservation $reservation): BillablePeriod
@@ -133,5 +142,13 @@ class BillingSeeder extends Seeder
         return BillablePeriod::factory()->for($reservation)
             ->between($reservation->start_date, $reservation->start_date->endOfMonth()->startOfDay(), BillablePeriodKind::Intermediate)
             ->create();
+    }
+
+    /**
+     * @return class-string<Model>
+     */
+    private function userModel(): string
+    {
+        return config('auth.providers.users.model');
     }
 }

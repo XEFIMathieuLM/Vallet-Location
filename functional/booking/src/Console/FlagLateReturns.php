@@ -2,12 +2,10 @@
 
 namespace Functional\Booking\Console;
 
-use Carbon\CarbonImmutable;
 use Functional\Booking\Actions\RefreshReservationConflicts;
-use Functional\Booking\Enums\ReservationStatus;
+use Functional\Booking\Queries\OuterMachineReservations;
 use Functional\Fleet\Models\Machine;
 use Illuminate\Console\Command;
-use Illuminate\Database\Query\Builder;
 
 final class FlagLateReturns extends Command
 {
@@ -15,15 +13,10 @@ final class FlagLateReturns extends Command
 
     protected $description = 'Flag the reservations waiting for a machine that has not been returned on time';
 
-    public function handle(RefreshReservationConflicts $refreshReservationConflicts): int
+    public function handle(RefreshReservationConflicts $refreshReservationConflicts, OuterMachineReservations $outerMachineReservations): int
     {
         $overdueMachines = Machine::query()
-            ->whereExists(fn (Builder $reservations) => $reservations
-                ->selectRaw('1')
-                ->from('reservations')
-                ->whereColumn('reservations.machine_id', 'machines.id')
-                ->where('reservations.status', ReservationStatus::InProgress->value)
-                ->whereDate('reservations.end_date', '<', CarbonImmutable::today()))
+            ->whereExists($outerMachineReservations->overdue())
             ->get();
 
         $refreshReservationConflicts->handleMachines($overdueMachines);

@@ -2,22 +2,25 @@
 
 namespace Functional\Inspection\Tests\Concerns;
 
-use App\Models\User;
 use Carbon\CarbonImmutable;
-use Database\Seeders\PermissionSeeder;
 use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Models\Reservation;
+use Functional\Fleet\Contracts\AgencyMember;
+use Functional\Fleet\Tests\Concerns\CreatesUsers;
 use Functional\Inspection\Actions\FreezeReservationViews;
 use Functional\Inspection\Actions\OpenPhotoSession;
-use Functional\Inspection\Database\Seeders\InspectionPermissionSeeder;
 use Functional\Inspection\Enums\InspectionStep;
 use Functional\Inspection\Models\Photo;
 use Functional\Inspection\Models\ReservationView;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
 trait BuildsPhotoSessions
 {
+    use CreatesUsers;
+
     protected function setUpPhotoStorage(): void
     {
         Storage::fake('photos');
@@ -33,7 +36,7 @@ trait BuildsPhotoSessions
 
     protected function openSession(Reservation $reservation, InspectionStep $step = InspectionStep::Departure): string
     {
-        return app(OpenPhotoSession::class)->handle($reservation, $step, User::factory()->create());
+        return app(OpenPhotoSession::class)->handle($reservation, $step, $this->userWithoutPermission());
     }
 
     protected function firstView(Reservation $reservation): ReservationView
@@ -49,11 +52,11 @@ trait BuildsPhotoSessions
             ->each(fn (ReservationView $view) => Photo::factory()->forView($view, $step)->create());
     }
 
-    protected function employee(): User
+    protected function seededEmployee(): Model&Authenticatable&AgencyMember
     {
-        $this->seed([PermissionSeeder::class, InspectionPermissionSeeder::class]);
+        $this->seedPermissions();
 
-        return User::factory()->create()->assignRole(PermissionSeeder::EMPLOYEE_ROLE);
+        return $this->employee();
     }
 
     protected function jpeg(): UploadedFile

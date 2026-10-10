@@ -3,10 +3,12 @@
 namespace Functional\Fleet\Models;
 
 use Carbon\CarbonImmutable;
+use Functional\Fleet\Activity\RecordsAuthorAgency;
 use Functional\Fleet\Database\Factories\MachineFactory;
 use Functional\Fleet\Enums\MachineStatus;
 use Functional\Fleet\States\MachineState;
 use Functional\Fleet\States\MachineStateFactory;
+use Functional\Fleet\Vgp\VgpCompliance;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -34,7 +36,7 @@ use Spatie\Activitylog\Support\LogOptions;
 class Machine extends Model
 {
     /** @use HasFactory<MachineFactory> */
-    use HasControl, HasFactory, LogsActivity;
+    use HasControl, HasFactory, LogsActivity, RecordsAuthorAgency;
 
     protected function casts(): array
     {
@@ -68,11 +70,7 @@ class Machine extends Model
 
     public function isVgpCompliantUntil(CarbonImmutable $endDate): bool
     {
-        if (! $this->is_subject_to_vgp) {
-            return true;
-        }
-
-        return $this->vgp_due_date !== null && $this->vgp_due_date->gte($endDate->startOfDay());
+        return (new VgpCompliance($this->is_subject_to_vgp, $this->vgp_due_date))->coversUntil($endDate);
     }
 
     public function getActivitylogOptions(): LogOptions

@@ -75,6 +75,7 @@ class CategoryViews extends Component
     public function resetToDefault(): void
     {
         app(ResetCategoryViews::class)->handle($this->category);
+        Flux::modal('reset-views')->close();
         $this->confirmSaved();
     }
 

@@ -35,8 +35,7 @@
                                         size="xs"
                                         variant="danger"
                                         icon="trash"
-                                        wire:click="deletePhoto({{ $photo->id }})"
-                                        wire:confirm="{{ __('inspection::phone.delete_confirm') }}"
+                                        wire:click="confirmPhotoDeletion({{ $photo->id }})"
                                         :aria-label="__('inspection::phone.delete')"
                                     />
                                 </div>
@@ -62,4 +61,19 @@
             </li>
         @endforeach
     </ul>
+
+    <flux:modal name="delete-photo" class="max-w-md">
+        <div class="flex flex-col gap-6">
+            <div class="flex flex-col gap-2">
+                <x-section-heading :title="__('inspection::phone.delete_heading')" />
+                <flux:text>{{ __('inspection::phone.delete_confirm') }}</flux:text>
+            </div>
+            <div class="flex justify-end gap-2">
+                <flux:modal.close>
+                    <flux:button variant="ghost">{{ __('screens.cancel') }}</flux:button>
+                </flux:modal.close>
+                <flux:button variant="danger" wire:click="deletePhoto({{ (int) $photoIdToDelete }})">{{ __('inspection::phone.delete') }}</flux:button>
+            </div>
+        </div>
+    </flux:modal>
 </div>

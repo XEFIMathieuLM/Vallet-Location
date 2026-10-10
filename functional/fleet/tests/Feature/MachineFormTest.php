@@ -2,12 +2,11 @@
 
 namespace Functional\Fleet\Tests\Feature;
 
-use App\Models\User;
-use Database\Seeders\PermissionSeeder;
 use Functional\Fleet\Livewire\MachineForm;
 use Functional\Fleet\Models\Agency;
 use Functional\Fleet\Models\Machine;
 use Functional\Fleet\Models\MachineCategory;
+use Functional\Fleet\Tests\Concerns\CreatesUsers;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
@@ -15,13 +14,13 @@ use Tests\TestCase;
 
 class MachineFormTest extends TestCase
 {
-    use RefreshDatabase;
+    use CreatesUsers, RefreshDatabase;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->seed(PermissionSeeder::class);
+        $this->seedPermissions();
     }
 
     public function test_a_machine_is_created_from_the_form(): void
@@ -50,7 +49,7 @@ class MachineFormTest extends TestCase
     {
         $machine = Machine::factory()->create(['reference' => 'NAC-0042']);
 
-        $this->actingAs(User::factory()->employee()->create())
+        $this->actingAs($this->employee())
             ->get(route('machines.edit', $machine))
             ->assertOk()
             ->assertSee('NAC-0042');
@@ -58,7 +57,7 @@ class MachineFormTest extends TestCase
 
     private function fillForm(string $reference): Testable
     {
-        return Livewire::actingAs(User::factory()->employee()->create())
+        return Livewire::actingAs($this->employee())
             ->test(MachineForm::class)
             ->set('reference', $reference)
             ->set('categoryId', MachineCategory::factory()->create()->id)

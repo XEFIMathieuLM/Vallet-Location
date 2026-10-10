@@ -15,19 +15,19 @@
                     <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
                         {{ __('Dashboard') }}
                     </flux:sidebar.item>
-                    @can('damages.manage')
+                    @can(\Functional\Inspection\Access\InspectionPermission::ManageDamages->value)
                         <flux:sidebar.item icon="exclamation-triangle" :href="route('inspection.damages')" :current="request()->routeIs('inspection.damages')" wire:navigate>
                             {{ __('inspection::damages.navigation') }}
                         </flux:sidebar.item>
                     @endcan
-                    @can('inspection_views.manage')
+                    @can(\Functional\Inspection\Access\InspectionPermission::ManageInspectionViews->value)
                         <flux:sidebar.item icon="camera" :href="route('inspection.category-views.index')" :current="request()->routeIs('inspection.category-views.*')" wire:navigate>
                             {{ __('inspection::views.navigation') }}
                         </flux:sidebar.item>
                     @endcan
                 </flux:sidebar.group>
 
-                @can('reservations.manage')
+                @can(\Functional\Booking\Access\BookingPermission::ManageReservations->value)
                     <flux:sidebar.group :heading="__('booking::reservations.navigation.heading')" class="grid">
                         <flux:sidebar.item icon="magnifying-glass" :href="route('availability.index')" :current="request()->routeIs('availability.*')" wire:navigate>
                             {{ __('booking::reservations.navigation.availability') }}
@@ -55,7 +55,7 @@
                     </flux:sidebar.group>
                 @endcan
 
-                @can('machines.manage')
+                @can(\Functional\Fleet\Access\FleetPermission::ManageMachines->value)
                     <flux:sidebar.group :heading="__('fleet::machines.navigation.fleet')" class="grid">
                         <flux:sidebar.item icon="truck" :href="route('machines.index')" :current="request()->routeIs('machines.*')" wire:navigate>
                             {{ __('fleet::machines.index.title') }}
@@ -63,7 +63,7 @@
                     </flux:sidebar.group>
                 @endcan
 
-                @can('users.manage')
+                @can(\App\Access\AppPermission::ManageUsers->value)
                     <flux:sidebar.group :heading="__('users.title')" class="grid">
                         <flux:sidebar.item icon="users" :href="route('users.index')" :current="request()->routeIs('users.*')" wire:navigate>
                             {{ __('users.title') }}

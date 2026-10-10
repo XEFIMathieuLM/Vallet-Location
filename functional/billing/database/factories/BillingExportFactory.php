@@ -2,9 +2,9 @@
 
 namespace Functional\Billing\Database\Factories;
 
-use App\Models\User;
 use Functional\Billing\Models\BillingExport;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * @extends Factory<BillingExport>
@@ -16,9 +16,17 @@ class BillingExportFactory extends Factory
     public function definition(): array
     {
         return [
-            'created_by' => User::factory(),
+            'created_by' => fn () => Factory::factoryForModel($this->userModel()),
             'line_count' => faker()->number(1, 20),
             'file_path' => faker()->billingExportFileName(),
         ];
+    }
+
+    /**
+     * @return class-string<Model>
+     */
+    private function userModel(): string
+    {
+        return config('auth.providers.users.model');
     }
 }

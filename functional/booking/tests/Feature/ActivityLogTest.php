@@ -2,9 +2,7 @@
 
 namespace Functional\Booking\Tests\Feature;
 
-use App\Models\User;
 use Carbon\CarbonImmutable;
-use Database\Seeders\PermissionSeeder;
 use Functional\Booking\Actions\CancelReservation;
 use Functional\Booking\Actions\CreateReservation;
 use Functional\Booking\Actions\DepartReservation;
@@ -14,8 +12,11 @@ use Functional\Booking\Models\Customer;
 use Functional\Booking\Models\Reservation;
 use Functional\Booking\Tests\Concerns\WithoutTransitionExtensions;
 use Functional\Fleet\Actions\ChangeMachineStatus;
+use Functional\Fleet\Contracts\AgencyMember;
 use Functional\Fleet\Enums\MachineTransition;
 use Functional\Fleet\Models\Machine;
+use Functional\Fleet\Tests\Concerns\CreatesUsers;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
@@ -24,17 +25,17 @@ use Tests\TestCase;
 
 class ActivityLogTest extends TestCase
 {
-    use RefreshDatabase, WithoutTransitionExtensions;
+    use CreatesUsers, RefreshDatabase, WithoutTransitionExtensions;
 
-    private User $author;
+    private Model&Authenticatable&AgencyMember $author;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->seed(PermissionSeeder::class);
+        $this->seedPermissions();
         $this->travelTo(CarbonImmutable::parse('2026-11-10 09:00'));
-        $this->author = User::factory()->employee()->create();
+        $this->author = $this->employee();
         $this->actingAs($this->author);
     }
 
@@ -86,6 +87,7 @@ class ActivityLogTest extends TestCase
         foreach ($activities as $activity) {
             $this->assertTrue($this->author->is($activity->causer), 'every entry names its author');
             $this->assertNotNull($activity->created_at, 'every entry is dated');
+            $this->assertSame($this->author->agencyId(), $activity->getProperty('author_agency_id'), 'every entry names the author agency');
         }
 
         return $activities->toBase();

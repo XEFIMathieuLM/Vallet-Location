@@ -13,7 +13,7 @@
 ./vendor/bin/sail npm run dev
 ```
 
-Le seeder crée les 7 agences, les catégories (dont « Nacelle » soumise à VGP), un jeu de machines et un compte salarié par agence.
+Le seeder crée 7 agences, des catégories soumises ou non à la VGP, des machines dans chaque statut (dont VGP expirée, proche de l'échéance ou non renseignée), des clients, des réservations dans chaque statut et les trois motifs de conflit, et un compte salarié par agence. Il affiche à la fin la liste des comptes (agence, e-mail) ; le mot de passe est celui par défaut de `UserFactory`.
 
 ## Vérifications automatiques
 

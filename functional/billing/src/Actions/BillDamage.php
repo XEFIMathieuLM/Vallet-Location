@@ -2,7 +2,6 @@
 
 namespace Functional\Billing\Actions;
 
-use App\Models\User;
 use Functional\Billing\Enums\BillingHistoryEvent;
 use Functional\Billing\Enums\DamageOutcome;
 use Functional\Billing\Exceptions\InvalidDamageSettlementException;
@@ -11,7 +10,9 @@ use Functional\Billing\Jobs\SendTransmissionJob;
 use Functional\Billing\Models\DamageSettlement;
 use Functional\Billing\Models\Transmission;
 use Functional\Billing\Money\Money;
+use Functional\Fleet\Contracts\AgencyMember;
 use Functional\Inspection\Models\Damage;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 final class BillDamage
@@ -21,7 +22,7 @@ final class BillDamage
         private readonly BillingHistory $billingHistory,
     ) {}
 
-    public function handle(Damage $damage, Money $amount, string $label, User $settler): DamageSettlement
+    public function handle(Damage $damage, Money $amount, string $label, Model&AgencyMember $settler): DamageSettlement
     {
         if (! $amount->isPositive()) {
             throw InvalidDamageSettlementException::amountNotPositive();

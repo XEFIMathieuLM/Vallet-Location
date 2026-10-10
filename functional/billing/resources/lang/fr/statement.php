@@ -13,6 +13,8 @@ return [
     'unresolved_damages' => 'Dégâts encore à traiter',
     'age' => 'signalé il y a :days jour|signalé il y a :days jours',
     'overdue' => 'En retard',
-    'no_waived_damage' => 'Aucun dégât classé non refacturé pour cette agence et ce mois. Changez d’agence ou de mois pour élargir le relevé.',
-    'no_unresolved_damage' => 'Aucun dégât en attente : tous les dégâts signalés ont été refacturés ou classés non refacturés.',
+    'no_waived_damage_heading' => 'Aucun dégât classé non refacturé',
+    'no_waived_damage' => 'Rien pour cette agence et ce mois. Changez d’agence ou de mois pour élargir le relevé.',
+    'no_unresolved_damage_heading' => 'Aucun dégât en attente',
+    'no_unresolved_damage' => 'Tous les dégâts signalés ont été refacturés ou classés non refacturés.',
 ];

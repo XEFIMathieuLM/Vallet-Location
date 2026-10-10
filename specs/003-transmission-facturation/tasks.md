@@ -267,6 +267,17 @@ Lire `design-patterns:state` avant T016.
 
 ---
 
+## Phase 10: Fusion de la 002 finale (périmètre gelé)
+
+**Purpose**: fusionner `origin/002-photos-qr-code` (cc1401a, contient la 001 finale 0ccf727) et faire uniquement les adaptations nécessaires pour garder `composer ci:check` et `migrate:fresh --seed` au vert. Aucune amélioration au-delà.
+
+- [X] T090 [Fusion] Utilisateurs : plus de `App\Models\User` dans `billing` (`Model&AgencyMember`, modèle lu dans `auth.providers.users.model`, `Factory::factoryForModel`, `ActsAsAgencyMember` dans les composants) ; contrôles d'accès sur `Authorizable` ; tests avec `CreatesUsers` et `seedPermissions()`
+- [X] T091 [Fusion] Permissions et seeders : `BillingPermissionSeeder` crée seulement la permission, appelé dans `DatabaseSeeder` avant `PermissionSeeder` et ajouté à `seedPermissions()` de `tests/TestCase.php` ; `BillingSeeder` en dernier, sur ses propres machines rattachées aux agences et catégories existantes, et sans créer d'utilisateur
+- [X] T092 [Fusion] Historique : `author_agency_id` dans les entrées `billing` ; section « Facturation » enregistrée sans étape gardée (signature inchangée)
+- [X] T093 [Fusion] Écrans : confirmation de l'export par `flux:modal`, `x-empty-state` pour les états vides, `x-loading-hint` pendant l'export
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies

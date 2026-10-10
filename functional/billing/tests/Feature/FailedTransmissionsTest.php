@@ -2,7 +2,6 @@
 
 namespace Functional\Billing\Tests\Feature;
 
-use App\Models\User;
 use Functional\Billing\Enums\TransmissionStatus;
 use Functional\Billing\Livewire\ReservationBillingSection;
 use Functional\Billing\Livewire\Transmissions;
@@ -67,7 +66,8 @@ class FailedTransmissionsTest extends TestCase
 
     public function test_the_screen_requires_the_billing_permission(): void
     {
-        $this->actingAs(User::factory()->create());
+        $this->seedPermissions();
+        $this->actingAs($this->userWithoutPermission());
 
         $this->get(route('billing.transmissions'))->assertForbidden();
     }
@@ -98,7 +98,7 @@ class FailedTransmissionsTest extends TestCase
             ->call('retry', $otherTransmission->id)
             ->assertNotFound();
 
-        $this->actingAs(User::factory()->create());
+        $this->actingAs($this->userWithoutPermission());
         Livewire::test(ReservationBillingSection::class, ['reservation' => $reservation])
             ->call('retry', $otherTransmission->id)
             ->assertForbidden();

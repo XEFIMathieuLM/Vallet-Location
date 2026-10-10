@@ -2,17 +2,17 @@
 
 namespace Functional\Inspection\Tests\Feature;
 
-use App\Models\User;
-use Database\Seeders\PermissionSeeder;
 use Functional\Booking\Models\Reservation;
+use Functional\Fleet\Contracts\AgencyMember;
 use Functional\Fleet\Models\Machine;
 use Functional\Fleet\Models\MachineCategory;
 use Functional\Inspection\Actions\MissingViews;
-use Functional\Inspection\Database\Seeders\InspectionPermissionSeeder;
 use Functional\Inspection\Enums\InspectionStep;
 use Functional\Inspection\Livewire\CategoryViews;
 use Functional\Inspection\Models\CategoryView;
 use Functional\Inspection\Tests\Concerns\BuildsPhotoSessions;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -21,7 +21,7 @@ class CategoryViewsTest extends TestCase
 {
     use BuildsPhotoSessions, RefreshDatabase;
 
-    private User $employee;
+    private Model&Authenticatable&AgencyMember $employee;
 
     private MachineCategory $miniExcavator;
 
@@ -29,8 +29,7 @@ class CategoryViewsTest extends TestCase
     {
         parent::setUp();
 
-        $this->seed([PermissionSeeder::class, InspectionPermissionSeeder::class]);
-        $this->employee = User::factory()->create()->assignRole(PermissionSeeder::EMPLOYEE_ROLE);
+        $this->employee = $this->seededEmployee();
         $this->miniExcavator = MachineCategory::factory()->create(['name' => 'Mini-pelle']);
     }
 
@@ -126,7 +125,7 @@ class CategoryViewsTest extends TestCase
 
     public function test_the_screens_require_the_inspection_views_permission(): void
     {
-        $this->actingAs(User::factory()->create());
+        $this->actingAs($this->userWithoutPermission());
 
         $this->get(route('inspection.category-views.index'))->assertForbidden();
         $this->get(route('inspection.category-views.edit', $this->miniExcavator))->assertForbidden();

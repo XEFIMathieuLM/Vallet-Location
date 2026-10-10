@@ -2,7 +2,6 @@
 
 namespace Functional\Billing\Tests\Feature;
 
-use App\Models\User;
 use Functional\Billing\Actions\BillDamage;
 use Functional\Billing\Actions\WaiveDamage;
 use Functional\Billing\Enums\DamageOutcome;
@@ -15,10 +14,13 @@ use Functional\Billing\Models\Transmission;
 use Functional\Billing\Money\Money;
 use Functional\Billing\Tests\Concerns\BuildsBillingFixtures;
 use Functional\Billing\Tests\Concerns\RecordsReservationLifecycle;
+use Functional\Fleet\Contracts\AgencyMember;
 use Functional\Fleet\Tests\Concerns\AssertsRefusals;
 use Functional\Inspection\Actions\ResolveDamage;
 use Functional\Inspection\Models\Damage;
 use Functional\Inspection\Queries\ReservationsToReinvoice;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use RuntimeException;
@@ -29,7 +31,7 @@ class DamageBillingTest extends TestCase
 {
     use AssertsRefusals, BuildsBillingFixtures, RecordsReservationLifecycle, RefreshDatabase;
 
-    private User $employee;
+    private Model&Authenticatable&AgencyMember $employee;
 
     protected function setUp(): void
     {

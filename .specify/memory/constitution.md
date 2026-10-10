@@ -74,8 +74,11 @@ autorise.
 
 ### VI. Tests par scénario d'acceptation
 
-- Chaque scénario d'acceptation de la spec a un test Feature PHPUnit ; les transitions d'état
-  et les calculs ont des tests Unit. Pas de Pest.
+- Chaque scénario d'acceptation de la spec a un test Feature PHPUnit. Pas de Pest.
+- Les transitions d'état et les calculs exécutés en mémoire sont testés en Unit : la classe de
+  test étend `PHPUnit\Framework\TestCase`, sans démarrer le framework ni toucher la base.
+- Les calculs exécutés en base (requêtes, agrégats, contraintes) sont testés en Feature, sur
+  PostgreSQL.
 - Dans chaque user story, les tests sont écrits d'abord et échouent avant l'implémentation.
 - Les tests utilisent les factories (helper `faker()` de `xefi/faker-php-laravel`), l'horloge
   contrôlée (`travelTo()`) et les implémentations factices ; jamais d'appel réseau réel.
@@ -135,4 +138,4 @@ sans son auteur.
   ajouter un principe ou une section, CORRECTIVE pour une clarification.
 - `/speckit-analyze` traite toute violation de la constitution comme CRITIQUE.
 
-**Version**: 1.0.0 | **Ratified**: 2026-10-10 | **Last Amended**: 2026-10-10
+**Version**: 1.0.1 | **Ratified**: 2026-10-10 | **Last Amended**: 2026-10-10

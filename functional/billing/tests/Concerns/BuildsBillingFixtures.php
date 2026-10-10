@@ -2,21 +2,25 @@
 
 namespace Functional\Billing\Tests\Concerns;
 
-use App\Models\User;
 use Carbon\CarbonImmutable;
-use Database\Seeders\PermissionSeeder;
-use Functional\Billing\Database\Seeders\BillingPermissionSeeder;
 use Functional\Billing\Gateways\FakeBillingGateway;
 use Functional\Billing\Models\CustomerBillingAccount;
 use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Models\Reservation;
+use Functional\Fleet\Contracts\AgencyMember;
 use Functional\Fleet\Enums\MachineStatus;
-use Functional\Inspection\Database\Seeders\InspectionPermissionSeeder;
+use Functional\Fleet\Tests\Concerns\CreatesUsers;
 use Functional\Inspection\Models\Damage;
 use Functional\Inspection\Models\ReservationView;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 
 trait BuildsBillingFixtures
 {
+    use CreatesUsers {
+        employee as protected createEmployee;
+    }
+
     protected function setUpBuildsBillingFixtures(): void
     {
         config(['billing.go_live_date' => '2026-01-01', 'billing.gateway' => 'fake']);
@@ -28,11 +32,11 @@ trait BuildsBillingFixtures
         return app(FakeBillingGateway::class);
     }
 
-    protected function employee(): User
+    protected function employee(): Model&Authenticatable&AgencyMember
     {
-        $this->seed([PermissionSeeder::class, InspectionPermissionSeeder::class, BillingPermissionSeeder::class]);
+        $this->seedPermissions();
 
-        return User::factory()->create()->assignRole(PermissionSeeder::EMPLOYEE_ROLE);
+        return $this->createEmployee();
     }
 
     protected function inProgressReservation(string $departedAt, bool $hasBillingAccount = true): Reservation

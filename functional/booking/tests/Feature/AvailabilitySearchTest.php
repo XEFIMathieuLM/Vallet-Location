@@ -2,9 +2,7 @@
 
 namespace Functional\Booking\Tests\Feature;
 
-use App\Models\User;
 use Carbon\CarbonImmutable;
-use Database\Seeders\PermissionSeeder;
 use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Livewire\AvailabilitySearch;
 use Functional\Booking\Models\Reservation;
@@ -12,6 +10,7 @@ use Functional\Booking\Queries\AvailableMachinesQuery;
 use Functional\Fleet\Models\Agency;
 use Functional\Fleet\Models\Machine;
 use Functional\Fleet\Models\MachineCategory;
+use Functional\Fleet\Tests\Concerns\CreatesUsers;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -19,7 +18,7 @@ use Tests\TestCase;
 
 class AvailabilitySearchTest extends TestCase
 {
-    use RefreshDatabase;
+    use CreatesUsers, RefreshDatabase;
 
     protected function setUp(): void
     {
@@ -70,10 +69,10 @@ class AvailabilitySearchTest extends TestCase
 
     public function test_the_screen_lists_available_machines_with_a_link_to_reserve(): void
     {
-        $this->seed(PermissionSeeder::class);
+        $this->seedPermissions();
         $machine = Machine::factory()->create(['reference' => 'NAC-0042']);
 
-        $this->actingAs(User::factory()->employee()->create())
+        $this->actingAs($this->employee())
             ->get(route('availability.index', ['du' => '2026-11-10', 'au' => '2026-11-14']))
             ->assertOk()
             ->assertSee('NAC-0042')
@@ -82,11 +81,11 @@ class AvailabilitySearchTest extends TestCase
 
     public function test_the_screen_hides_a_machine_reserved_on_the_filtered_period(): void
     {
-        $this->seed(PermissionSeeder::class);
+        $this->seedPermissions();
         $machine = Machine::factory()->create(['reference' => 'NAC-0042']);
         $this->reserveBetween($machine, '2026-11-10', '2026-11-14', ReservationStatus::Confirmed);
 
-        Livewire::actingAs(User::factory()->employee()->create())
+        Livewire::actingAs($this->employee())
             ->test(AvailabilitySearch::class)
             ->set('startDate', '2026-11-01')
             ->set('endDate', '2026-11-05')
@@ -97,7 +96,7 @@ class AvailabilitySearchTest extends TestCase
 
     public function test_the_screen_is_refused_without_the_reservation_permission(): void
     {
-        $this->actingAs(User::factory()->create())
+        $this->actingAs($this->userWithoutPermission())
             ->get(route('availability.index'))
             ->assertForbidden();
     }
@@ -110,8 +109,8 @@ class AvailabilitySearchTest extends TestCase
         return app(AvailableMachinesQuery::class)->get(
             CarbonImmutable::parse($startDate),
             CarbonImmutable::parse($endDate),
-            $category?->id,
-            $agency?->id,
+            $category,
+            $agency,
         );
     }
 

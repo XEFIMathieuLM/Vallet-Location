@@ -2,8 +2,6 @@
 
 namespace Functional\Fleet\Tests\Feature;
 
-use App\Models\User;
-use Database\Seeders\PermissionSeeder;
 use Functional\Fleet\Actions\ImportFleet;
 use Functional\Fleet\Data\FleetImportReport;
 use Functional\Fleet\Events\FleetImported;
@@ -11,6 +9,7 @@ use Functional\Fleet\Livewire\ImportFleetForm;
 use Functional\Fleet\Models\Agency;
 use Functional\Fleet\Models\Machine;
 use Functional\Fleet\Models\MachineCategory;
+use Functional\Fleet\Tests\Concerns\CreatesUsers;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Event;
@@ -19,7 +18,7 @@ use Tests\TestCase;
 
 class ImportFleetTest extends TestCase
 {
-    use RefreshDatabase;
+    use CreatesUsers, RefreshDatabase;
 
     private const FIXTURE = __DIR__.'/../Fixtures/fleet-with-duplicates.csv';
 
@@ -81,10 +80,10 @@ class ImportFleetTest extends TestCase
 
     public function test_the_import_screen_shows_the_report(): void
     {
-        $this->seed(PermissionSeeder::class);
+        $this->seedPermissions();
         $file = UploadedFile::fake()->createWithContent('parc.csv', (string) file_get_contents(self::FIXTURE));
 
-        Livewire::actingAs(User::factory()->employee()->create())
+        Livewire::actingAs($this->employee())
             ->test(ImportFleetForm::class)
             ->set('fleetFile', $file)
             ->call('import')

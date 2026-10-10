@@ -2,7 +2,6 @@
 
 namespace Functional\Billing\Tests\Feature;
 
-use App\Models\User;
 use Carbon\CarbonImmutable;
 use Functional\Billing\Actions\CreateBillingExport;
 use Functional\Billing\Enums\TransmissionStatus;
@@ -14,7 +13,9 @@ use Functional\Billing\Models\DamageSettlement;
 use Functional\Billing\Models\Transmission;
 use Functional\Billing\Money\Money;
 use Functional\Billing\Tests\Concerns\BuildsBillingFixtures;
+use Functional\Fleet\Contracts\AgencyMember;
 use Functional\Fleet\Tests\Concerns\AssertsRefusals;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -144,7 +145,7 @@ class EmergencyExportTest extends TestCase
         }
     }
 
-    private function countExportQueries(User $employee): int
+    private function countExportQueries(Model&AgencyMember $employee): int
     {
         DB::flushQueryLog();
         DB::enableQueryLog();

@@ -2,13 +2,13 @@
 
 namespace Functional\Booking\Models;
 
-use App\Models\User;
 use Carbon\CarbonImmutable;
 use Functional\Booking\Database\Factories\ReservationFactory;
 use Functional\Booking\Enums\ConflictReason;
 use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\States\ReservationState;
 use Functional\Booking\States\ReservationStateFactory;
+use Functional\Fleet\Activity\RecordsAuthorAgency;
 use Functional\Fleet\Models\Agency;
 use Functional\Fleet\Models\Machine;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -36,7 +36,7 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property-read Machine $machine
  * @property-read Customer $customer
  * @property-read Agency $agency
- * @property-read User $author
+ * @property-read Model $author
  */
 #[Fillable([
     'machine_id', 'customer_id', 'agency_id', 'created_by', 'start_date', 'end_date',
@@ -46,7 +46,7 @@ use Spatie\Activitylog\Support\LogOptions;
 class Reservation extends Model
 {
     /** @use HasFactory<ReservationFactory> */
-    use HasControl, HasFactory, LogsActivity;
+    use HasControl, HasFactory, LogsActivity, RecordsAuthorAgency;
 
     protected function casts(): array
     {
@@ -86,11 +86,14 @@ class Reservation extends Model
     }
 
     /**
-     * @return BelongsTo<User, $this>
+     * @return BelongsTo<Model, $this>
      */
     public function author(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'created_by');
+        /** @var class-string<Model> $userModel */
+        $userModel = config('auth.providers.users.model');
+
+        return $this->belongsTo($userModel, 'created_by');
     }
 
     public function state(): ReservationState

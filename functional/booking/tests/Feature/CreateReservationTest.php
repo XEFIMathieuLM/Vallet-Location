@@ -2,9 +2,7 @@
 
 namespace Functional\Booking\Tests\Feature;
 
-use App\Models\User;
 use Carbon\CarbonImmutable;
-use Database\Seeders\PermissionSeeder;
 use Functional\Booking\Actions\CreateReservation;
 use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Events\ReservationChanged;
@@ -13,16 +11,19 @@ use Functional\Booking\Exceptions\ReservationOverlapException;
 use Functional\Booking\Models\Customer;
 use Functional\Booking\Models\Reservation;
 use Functional\Booking\Queries\AvailableMachinesQuery;
+use Functional\Fleet\Contracts\AgencyMember;
 use Functional\Fleet\Models\Agency;
 use Functional\Fleet\Models\Machine;
 use Functional\Fleet\Tests\Concerns\AssertsRefusals;
+use Functional\Fleet\Tests\Concerns\CreatesUsers;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 
 class CreateReservationTest extends TestCase
 {
-    use AssertsRefusals, RefreshDatabase;
+    use AssertsRefusals, CreatesUsers, RefreshDatabase;
 
     private Machine $machine;
 
@@ -30,7 +31,7 @@ class CreateReservationTest extends TestCase
     {
         parent::setUp();
 
-        $this->seed(PermissionSeeder::class);
+        $this->seedPermissions();
         $this->travelTo(CarbonImmutable::parse('2026-11-01'));
         $this->machine = Machine::factory()->create();
     }
@@ -38,7 +39,7 @@ class CreateReservationTest extends TestCase
     public function test_an_accepted_reservation_is_recorded_and_visible_to_every_agency(): void
     {
         Event::fake([ReservationChanged::class]);
-        $author = User::factory()->employee()->create();
+        $author = $this->employee();
 
         $reservation = $this->reserve($author, '2026-11-10', '2026-11-14');
 
@@ -58,25 +59,25 @@ class CreateReservationTest extends TestCase
     public function test_an_overlapping_reservation_is_refused_with_the_conflicting_dates_and_agency(): void
     {
         $firstAgency = Agency::factory()->create(['name' => 'Annecy']);
-        $this->reserve(User::factory()->employee()->for($firstAgency)->create(), '2026-11-10', '2026-11-14');
+        $this->reserve($this->employee(['agency_id' => $firstAgency->id]), '2026-11-10', '2026-11-14');
 
-        $this->assertRefused(ReservationOverlapException::class, 'du 10/11/2026 au 14/11/2026 par l\'agence Annecy', fn () => $this->reserve(User::factory()->employee()->create(), '2026-11-13', '2026-11-16'));
+        $this->assertRefused(ReservationOverlapException::class, 'du 10/11/2026 au 14/11/2026 par l\'agence Annecy', fn () => $this->reserve($this->employee(), '2026-11-13', '2026-11-16'));
     }
 
     public function test_a_reservation_sharing_a_single_day_overlaps(): void
     {
-        $this->reserve(User::factory()->employee()->create(), '2026-11-10', '2026-11-14');
+        $this->reserve($this->employee(), '2026-11-10', '2026-11-14');
 
         $this->expectException(ReservationOverlapException::class);
 
-        $this->reserve(User::factory()->employee()->create(), '2026-11-14', '2026-11-14');
+        $this->reserve($this->employee(), '2026-11-14', '2026-11-14');
     }
 
     public function test_an_adjacent_reservation_is_accepted(): void
     {
-        $this->reserve(User::factory()->employee()->create(), '2026-11-10', '2026-11-14');
+        $this->reserve($this->employee(), '2026-11-10', '2026-11-14');
 
-        $this->reserve(User::factory()->employee()->create(), '2026-11-15', '2026-11-18');
+        $this->reserve($this->employee(), '2026-11-15', '2026-11-18');
 
         $this->assertSame(2, Reservation::query()->count());
     }
@@ -89,29 +90,29 @@ class CreateReservationTest extends TestCase
             ->withStatus(ReservationStatus::Cancelled)
             ->create();
 
-        $this->reserve(User::factory()->employee()->create(), '2026-11-10', '2026-11-14');
+        $this->reserve($this->employee(), '2026-11-10', '2026-11-14');
 
         $this->assertSame(2, Reservation::query()->count());
     }
 
     public function test_a_reservation_ending_before_it_starts_is_refused(): void
     {
-        $this->assertRefused(InvalidReservationDatesException::class, __('booking::reservations.refusals.end_before_start'), fn () => $this->reserve(User::factory()->employee()->create(), '2026-11-14', '2026-11-10'));
+        $this->assertRefused(InvalidReservationDatesException::class, __('booking::reservations.refusals.end_before_start'), fn () => $this->reserve($this->employee(), '2026-11-14', '2026-11-10'));
     }
 
     public function test_a_reservation_starting_in_the_past_is_refused(): void
     {
-        $this->assertRefused(InvalidReservationDatesException::class, __('booking::reservations.refusals.start_in_the_past'), fn () => $this->reserve(User::factory()->employee()->create(), '2026-10-31', '2026-11-02'));
+        $this->assertRefused(InvalidReservationDatesException::class, __('booking::reservations.refusals.start_in_the_past'), fn () => $this->reserve($this->employee(), '2026-10-31', '2026-11-02'));
     }
 
     public function test_a_single_day_reservation_starting_today_is_accepted(): void
     {
-        $reservation = $this->reserve(User::factory()->employee()->create(), '2026-11-01', '2026-11-01');
+        $reservation = $this->reserve($this->employee(), '2026-11-01', '2026-11-01');
 
         $this->assertTrue($reservation->exists);
     }
 
-    private function reserve(User $author, string $startDate, string $endDate): Reservation
+    private function reserve(Authenticatable&AgencyMember $author, string $startDate, string $endDate): Reservation
     {
         return app(CreateReservation::class)->handle(
             $author,

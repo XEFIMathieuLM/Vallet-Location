@@ -2,7 +2,6 @@
 
 namespace Functional\Billing\Tests\Feature;
 
-use App\Models\User;
 use Functional\Billing\Actions\BillDamage;
 use Functional\Billing\Actions\CreateBillingExport;
 use Functional\Billing\Actions\RetryTransmission;
@@ -57,7 +56,7 @@ class BillingHistoryTest extends TestCase
         $this->artisan('billing:reconcile')->assertSuccessful();
 
         $this->assertSame([null, null], $this->billingHistoryOf($reservation)->pluck('causer_id')->all());
-        $this->assertNotInstanceOf(User::class, $this->billingHistoryOf($reservation)->first()?->causer);
+        $this->assertNull($this->billingHistoryOf($reservation)->first()?->causer);
     }
 
     /**

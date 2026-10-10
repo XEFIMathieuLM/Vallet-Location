@@ -2,8 +2,8 @@
 
 namespace Functional\Inspection\Tests\Feature;
 
-use App\Models\User;
 use Functional\Booking\Models\Reservation;
+use Functional\Fleet\Contracts\AgencyMember;
 use Functional\Inspection\Actions\DeletePhoto;
 use Functional\Inspection\Actions\FindActivePhotoSession;
 use Functional\Inspection\Actions\OpenPhotoSession;
@@ -13,7 +13,9 @@ use Functional\Inspection\Actions\StorePhoto;
 use Functional\Inspection\Enums\InspectionStep;
 use Functional\Inspection\History\InspectionHistoryEvent;
 use Functional\Inspection\Tests\Concerns\BuildsPhotoSessions;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Activitylog\Models\Activity;
 use Tests\TestCase;
@@ -22,14 +24,14 @@ class InspectionHistoryTest extends TestCase
 {
     use BuildsPhotoSessions, RefreshDatabase;
 
-    private User $employee;
+    private Model&Authenticatable&AgencyMember $employee;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->setUpPhotoStorage();
-        $this->employee = $this->employee();
+        $this->employee = $this->seededEmployee();
         $this->actingAs($this->employee);
     }
 
@@ -78,6 +80,15 @@ class InspectionHistoryTest extends TestCase
             $this->historyOf($reservation)->whereIn('event', [InspectionHistoryEvent::DamageReported->value, InspectionHistoryEvent::DamageResolved->value])->pluck('event')->values()->all(),
         );
         $this->assertSame([$this->employee->id, $this->employee->id], $this->historyOf($reservation)->whereIn('event', [InspectionHistoryEvent::DamageReported->value, InspectionHistoryEvent::DamageResolved->value])->pluck('causer_id')->values()->all());
+    }
+
+    public function test_every_entry_written_by_an_employee_records_the_author_agency(): void
+    {
+        $reservation = $this->reservationStartingToday();
+
+        app(OpenPhotoSession::class)->handle($reservation, InspectionStep::Departure, $this->employee);
+
+        $this->assertSame($this->employee->agencyId(), $this->historyOf($reservation)->sole()->properties['author_agency_id']);
     }
 
     public function test_the_history_never_contains_the_token(): void

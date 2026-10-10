@@ -37,6 +37,11 @@ class ReservationList extends Component
     #[Url(as: 'en-conflit')]
     public bool $isInConflict = false;
 
+    public function clearFilters(): void
+    {
+        $this->reset('status', 'agencyId', 'startDate', 'endDate', 'isInConflict');
+    }
+
     public function updated(): void
     {
         $this->resetPage();
@@ -51,7 +56,7 @@ class ReservationList extends Component
         return Reservation::query()
             ->with(['machine', 'customer', 'agency'])
             ->when(ReservationStatus::tryFrom($this->status), fn ($query, ReservationStatus $status) => $query->where('status', $status))
-            ->when($this->agencyId !== null, fn ($query) => $query->where('agency_id', $this->agencyId))
+            ->when(Agency::query()->find($this->agencyId), fn ($query, Agency $agency) => $query->whereBelongsTo($agency))
             ->when($this->startDate !== '', fn ($query) => $query->whereDate('end_date', '>=', $this->startDate))
             ->when($this->endDate !== '', fn ($query) => $query->whereDate('start_date', '<=', $this->endDate))
             ->when($this->isInConflict, fn ($query) => $query->whereNotNull('conflict_reason'))

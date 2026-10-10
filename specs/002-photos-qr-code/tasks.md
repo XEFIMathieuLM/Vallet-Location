@@ -256,6 +256,19 @@ Les tâches T007 à T012 ne sont pas réalisées dans cette branche : génériqu
 - [X] T095 [Couverture FR-012] Test vérifiant que le panneau se met à jour à la réception d'une photo (`PhotosPanel::getListeners` et rafraîchissement sur `photo.changed`)
 - [X] T096 Mettre à jour `plan.md` (arborescence, configuration du layer, Complexity Tracking), `data-model.md` et `quickstart.md` pour refléter la phase 11 (X6)
 
+## Phase 12: Intégration de la 001 finale (0ccf727)
+
+**Purpose**: Adapter `inspection` aux conventions livrées par la 001 terminée (fusionnée dans cette branche).
+
+- [X] T097 Fusion de `origin/001-reservation-machines` (0ccf727) : `DatabaseSeeder` de la 001 conservé, `InspectionPermissionSeeder` appelé **avant** `PermissionSeeder` (qui donne `Permission::all()` au rôle `salarie`) et `InspectionSeeder` en dernier ; `InspectionPermissionSeeder` ajouté à la liste de `seedPermissions()` dans `tests/TestCase.php` (fichiers racine partagés, signalés) ; le seeder du layer ne touche jamais au rôle
+- [X] T098 Disponibilité par section : enregistrer `inspection.photos-panel` comme gardienne de `ReservationTransition::Departure` et `Return` ; le panneau émet `reservation-transition-readiness` avec `section: 'inspection.photos-panel'` pour chaque étape ; test d'abord (bouton désactivé sans réponse, activé quand la section répond prête)
+- [X] T099 Enum `Functional\Inspection\Access\InspectionPermission` (`damages.manage`, `inspection_views.manage`) : le seeder du layer crée seulement ses permissions ; routes, contrôles d'accès et `Gate` passent par l'enum ; canal `reservation.{id}` typé `Authorizable` ; tests d'accès avec `userWithPermissions()` / `userWithoutPermission()`
+- [X] T100 Plus d'import de `App\Models\User` dans le layer : relations d'auteur via `auth.providers.users.model`, actions typées `Authenticatable&AgencyMember` (ou `Model`), factories via `Factory::factoryForModel`, tests via `Functional\Fleet\Tests\Concerns\CreatesUsers`
+- [X] T101 Historique : chaque entrée d'`InspectionHistory` porte `author_agency_id` (même propriété que `RecordsAuthorAgency` de la 001 ; `inspection` n'utilise pas `LogsActivity`, l'historique est écrit explicitement) ; test d'abord
+- [X] T102 Interface partagée : `<x-empty-state>` pour la liste des dégâts vide, `<x-loading-hint />` sur les écrans rafraîchis, confirmations par `<flux:modal>` au lieu de `wire:confirm` (suppression de photo sur le poste et le téléphone, retour aux vues par défaut, traitement d'un dégât), boutons de ligne `size="xs"`, message de connexion perdue de `lang/fr/screens.php`
+- [X] T103 `InspectionSeeder` complète les réservations du `ReservationSeeder` de la 001 (en cours, clôturées, annulées) au lieu de créer réservations, machines et agences ; `DatabaseSeederTest` et `InspectionSeederTest` verts
+- [X] T104 Mettre à jour `plan.md` et `quickstart.md` (permissions en enum, utilisateur via le contrat `AgencyMember`, disponibilité par section, seeder)
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies

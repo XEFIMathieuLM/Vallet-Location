@@ -2,6 +2,8 @@
 
 namespace Functional\Booking\Extensions;
 
+use Functional\Booking\Enums\ReservationTransition;
+
 final class ReservationDetailSections
 {
     /**
@@ -9,9 +11,15 @@ final class ReservationDetailSections
      */
     private array $positionsByComponent = [];
 
-    public function register(string $livewireComponent, int $position): void
+    /**
+     * @var array<string, list<ReservationTransition>>
+     */
+    private array $guardedTransitionsByComponent = [];
+
+    public function register(string $livewireComponent, int $position, ReservationTransition ...$guardedTransitions): void
     {
         $this->positionsByComponent[$livewireComponent] = $position;
+        $this->guardedTransitionsByComponent[$livewireComponent] = array_values($guardedTransitions);
     }
 
     /**
@@ -25,8 +33,19 @@ final class ReservationDetailSections
         return array_keys($positionsByComponent);
     }
 
-    public function isEmpty(): bool
+    /**
+     * @return list<string>
+     */
+    public function sectionsGuarding(ReservationTransition $transition): array
     {
-        return $this->positionsByComponent === [];
+        return array_keys(array_filter(
+            $this->guardedTransitionsByComponent,
+            fn (array $guardedTransitions): bool => in_array($transition, $guardedTransitions, true),
+        ));
+    }
+
+    public function isGuardedBy(string $livewireComponent, ReservationTransition $transition): bool
+    {
+        return in_array($transition, $this->guardedTransitionsByComponent[$livewireComponent] ?? [], true);
     }
 }

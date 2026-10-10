@@ -35,7 +35,7 @@
                 ]) }}
             </flux:text>
         @empty
-            <flux:text>{{ __('billing::statement.no_waived_damage') }}</flux:text>
+            <x-empty-state :heading="__('billing::statement.no_waived_damage_heading')" :description="__('billing::statement.no_waived_damage')" />
         @endforelse
     </section>
 
@@ -51,7 +51,7 @@
                 @endif
             </div>
         @empty
-            <flux:text>{{ __('billing::statement.no_unresolved_damage') }}</flux:text>
+            <x-empty-state :heading="__('billing::statement.no_unresolved_damage_heading')" :description="__('billing::statement.no_unresolved_damage')" />
         @endforelse
     </section>
 </div>

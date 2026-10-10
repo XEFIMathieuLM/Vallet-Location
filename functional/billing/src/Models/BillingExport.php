@@ -2,9 +2,9 @@
 
 namespace Functional\Billing\Models;
 
-use App\Models\User;
 use Carbon\CarbonImmutable;
 use Functional\Billing\Database\Factories\BillingExportFactory;
+use Functional\Fleet\Contracts\AgencyMember;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -19,7 +19,7 @@ use Lomkit\Access\Controls\HasControl;
  * @property int $line_count
  * @property string $file_path
  * @property CarbonImmutable $created_at
- * @property-read User $creator
+ * @property-read Model&AgencyMember $creator
  */
 #[Fillable(['created_by', 'line_count', 'file_path'])]
 #[UseFactory(BillingExportFactory::class)]
@@ -34,11 +34,11 @@ class BillingExport extends Model
     }
 
     /**
-     * @return BelongsTo<User, $this>
+     * @return BelongsTo<Model, $this>
      */
     public function creator(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo($this->userModel(), 'created_by');
     }
 
     /**
@@ -47,5 +47,13 @@ class BillingExport extends Model
     public function transmissions(): HasMany
     {
         return $this->hasMany(Transmission::class);
+    }
+
+    /**
+     * @return class-string<Model>
+     */
+    private function userModel(): string
+    {
+        return config('auth.providers.users.model');
     }
 }

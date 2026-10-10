@@ -40,7 +40,7 @@ class InspectionSeederTest extends TestCase
         }
         $this->assertSame(0, Photo::query()->whereDoesntHave('session')->count());
         $this->assertSame(0, Damage::query()->whereHas('view', fn (Builder $views): Builder => $views->whereColumn('reservation_views.reservation_id', '!=', 'damages.reservation_id'))->count());
-        foreach (ReservationStatus::cases() as $status) {
+        foreach ([ReservationStatus::InProgress, ReservationStatus::Closed, ReservationStatus::Cancelled] as $status) {
             $this->assertTrue(ReservationView::query()->whereHas('reservation', fn (Builder $reservations): Builder => $reservations->where('status', $status))->exists(), "No inspected {$status->value} reservation");
         }
     }

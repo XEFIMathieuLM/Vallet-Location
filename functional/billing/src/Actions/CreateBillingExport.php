@@ -2,7 +2,6 @@
 
 namespace Functional\Billing\Actions;
 
-use App\Models\User;
 use Carbon\CarbonImmutable;
 use Functional\Billing\Calendar\BillingCalendar;
 use Functional\Billing\Enums\TransmissionStatus;
@@ -11,8 +10,10 @@ use Functional\Billing\Exports\ExportLineFormatter;
 use Functional\Billing\Models\BillingExport;
 use Functional\Billing\Models\Transmission;
 use Functional\Billing\Transmissions\TransmissionLifecycle;
+use Functional\Fleet\Contracts\AgencyMember;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Spatie\SimpleExcel\SimpleExcelWriter;
@@ -26,7 +27,7 @@ final class CreateBillingExport
         private readonly TransmissionLifecycle $transmissionLifecycle,
     ) {}
 
-    public function handle(User $author): BillingExport
+    public function handle(Model&AgencyMember $author): BillingExport
     {
         return DB::transaction(function () use ($author): BillingExport {
             $exportableTransmissions = Transmission::query()
@@ -48,7 +49,7 @@ final class CreateBillingExport
             $this->writeFile($fileName, $exportableTransmissions);
 
             $billingExport = BillingExport::query()->create([
-                'created_by' => $author->id,
+                'created_by' => $author->getKey(),
                 'line_count' => $exportableTransmissions->count(),
                 'file_path' => $fileName,
             ]);

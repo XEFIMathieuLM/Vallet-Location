@@ -2,13 +2,14 @@
 
 namespace Functional\Inspection\Actions;
 
-use App\Models\User;
 use Carbon\CarbonImmutable;
+use Functional\Fleet\Contracts\AgencyMember;
 use Functional\Inspection\Events\DamageChanged;
 use Functional\Inspection\Exceptions\DamageAlreadyResolvedException;
 use Functional\Inspection\History\InspectionHistory;
 use Functional\Inspection\History\InspectionHistoryEvent;
 use Functional\Inspection\Models\Damage;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 class ResolveDamage
@@ -18,7 +19,7 @@ class ResolveDamage
         private readonly InspectionHistory $inspectionHistory,
     ) {}
 
-    public function handle(Damage $damage, User $resolver): Damage
+    public function handle(Damage $damage, Model&AgencyMember $resolver): Damage
     {
         DB::transaction(function () use ($damage, $resolver): void {
             $lockedDamage = Damage::query()->whereKey($damage->id)->lockForUpdate()->firstOrFail();
@@ -27,7 +28,7 @@ class ResolveDamage
                 throw DamageAlreadyResolvedException::for($lockedDamage);
             }
 
-            $lockedDamage->update(['resolved_by' => $resolver->id, 'resolved_at' => CarbonImmutable::now()]);
+            $lockedDamage->update(['resolved_by' => $resolver->getKey(), 'resolved_at' => CarbonImmutable::now()]);
 
             $this->inspectionHistory->record($lockedDamage->reservation, InspectionHistoryEvent::DamageResolved, $resolver, ['damage_id' => $lockedDamage->id]);
         });

@@ -2,12 +2,12 @@
 
 namespace Functional\Billing\Models;
 
-use App\Models\User;
 use Carbon\CarbonImmutable;
 use Functional\Billing\Database\Factories\DamageSettlementFactory;
 use Functional\Billing\Enums\DamageOutcome;
 use Functional\Billing\Money\Money;
 use Functional\Billing\Money\MoneyCast;
+use Functional\Fleet\Contracts\AgencyMember;
 use Functional\Inspection\Models\Damage;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
@@ -27,7 +27,7 @@ use Lomkit\Access\Controls\HasControl;
  * @property int $settled_by
  * @property CarbonImmutable $settled_at
  * @property-read Damage $damage
- * @property-read User $settler
+ * @property-read Model&AgencyMember $settler
  * @property-read Transmission|null $transmission
  */
 #[Fillable(['damage_id', 'outcome', 'amount', 'label', 'waiver_reason', 'settled_by', 'settled_at'])]
@@ -55,11 +55,11 @@ class DamageSettlement extends Model
     }
 
     /**
-     * @return BelongsTo<User, $this>
+     * @return BelongsTo<Model, $this>
      */
     public function settler(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'settled_by');
+        return $this->belongsTo($this->userModel(), 'settled_by');
     }
 
     /**
@@ -68,5 +68,13 @@ class DamageSettlement extends Model
     public function transmission(): HasOne
     {
         return $this->hasOne(Transmission::class);
+    }
+
+    /**
+     * @return class-string<Model>
+     */
+    private function userModel(): string
+    {
+        return config('auth.providers.users.model');
     }
 }

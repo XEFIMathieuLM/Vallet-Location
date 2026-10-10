@@ -15,14 +15,19 @@ enum PlanningCellKind: string
         return __("booking::reservations.planning.cells.{$this->value}");
     }
 
+    public function shortLabel(): string
+    {
+        return __("booking::reservations.planning.short_labels.{$this->value}");
+    }
+
     public function cssClasses(): string
     {
         return match ($this) {
             self::Free => 'bg-transparent',
-            self::Reserved => 'bg-blue-500/80',
-            self::Workshop => 'bg-amber-400/80',
-            self::OutOfOrder => 'bg-red-500/80',
-            self::VgpInvalid => 'bg-zinc-400/60 dark:bg-zinc-500/60',
+            self::Reserved => 'bg-blue-600 text-white',
+            self::Workshop => 'bg-amber-300 text-zinc-900',
+            self::OutOfOrder => 'bg-red-600 text-white',
+            self::VgpInvalid => 'bg-zinc-300 text-zinc-900 dark:bg-zinc-500 dark:text-white',
         };
     }
 }

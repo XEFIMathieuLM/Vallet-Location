@@ -10,7 +10,8 @@ return [
     'screen' => [
         'title' => 'Transmissions à traiter',
         'intro' => 'Transmissions en échec et transmissions en attente depuis plus de :hours heures.',
-        'empty' => 'Aucune transmission à traiter : tout ce qui a été produit est parti ou attend moins de 24 heures.',
+        'empty_heading' => 'Aucune transmission à traiter',
+        'empty' => 'Tout ce qui a été produit est parti ou attend moins de 24 heures.',
         'open_statement' => 'Voir le relevé de facturation',
         'customer_ref_saved' => 'Référence client enregistrée. Relancez la transmission pour l\'envoyer.',
         'retried' => 'Transmission relancée : elle part dans quelques instants.',

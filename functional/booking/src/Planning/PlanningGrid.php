@@ -7,8 +7,12 @@ use Carbon\CarbonPeriodImmutable;
 use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Models\Reservation;
 use Functional\Fleet\Enums\MachineStatus;
+use Functional\Fleet\Models\Agency;
 use Functional\Fleet\Models\Machine;
+use Functional\Fleet\Models\MachineCategory;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
 final readonly class PlanningGrid
@@ -25,13 +29,13 @@ final readonly class PlanningGrid
     /**
      * @return Builder<Machine>
      */
-    public static function machinesQuery(?int $categoryId, ?int $agencyId): Builder
+    public static function machinesQuery(?MachineCategory $category, ?Agency $agency): Builder
     {
         return Machine::query()
             ->with(['category', 'agency'])
             ->whereNot('status', MachineStatus::Retired)
-            ->when($categoryId !== null, fn ($query) => $query->where('machine_category_id', $categoryId))
-            ->when($agencyId !== null, fn ($query) => $query->where('agency_id', $agencyId))
+            ->when($category, fn ($query, MachineCategory $category) => $query->whereBelongsTo($category, 'category'))
+            ->when($agency, fn ($query, Agency $agency) => $query->whereBelongsTo($agency))
             ->orderBy('reference');
     }
 
@@ -40,11 +44,13 @@ final readonly class PlanningGrid
      */
     public static function build(iterable $machines, CarbonImmutable $startDate, CarbonImmutable $endDate): self
     {
-        $machines = collect($machines);
+        $machines = new EloquentCollection(array_values(iterator_to_array($machines)));
+        /** @var EloquentCollection<int, Model> $relatedMachines */
+        $relatedMachines = $machines;
         $days = array_values(iterator_to_array(CarbonPeriodImmutable::create($startDate->startOfDay(), $endDate->startOfDay())));
         $reservationsByMachine = Reservation::query()
             ->with('customer')
-            ->whereIn('machine_id', $machines->map(fn (Machine $machine): int => $machine->id)->all())
+            ->whereBelongsTo($relatedMachines)
             ->whereIn('status', [ReservationStatus::Confirmed, ReservationStatus::InProgress])
             ->whereDate('start_date', '<=', $endDate)
             ->whereDate('end_date', '>=', $startDate)

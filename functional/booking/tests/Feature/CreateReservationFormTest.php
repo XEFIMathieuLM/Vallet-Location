@@ -2,14 +2,13 @@
 
 namespace Functional\Booking\Tests\Feature;
 
-use App\Models\User;
 use Carbon\CarbonImmutable;
-use Database\Seeders\PermissionSeeder;
 use Functional\Booking\Livewire\CreateReservationForm;
 use Functional\Booking\Models\Customer;
 use Functional\Booking\Models\Reservation;
 use Functional\Fleet\Models\Agency;
 use Functional\Fleet\Models\Machine;
+use Functional\Fleet\Tests\Concerns\CreatesUsers;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
@@ -17,7 +16,7 @@ use Tests\TestCase;
 
 class CreateReservationFormTest extends TestCase
 {
-    use RefreshDatabase;
+    use CreatesUsers, RefreshDatabase;
 
     private Machine $machine;
 
@@ -25,14 +24,14 @@ class CreateReservationFormTest extends TestCase
     {
         parent::setUp();
 
-        $this->seed(PermissionSeeder::class);
+        $this->seedPermissions();
         $this->travelTo(CarbonImmutable::parse('2026-11-01'));
         $this->machine = Machine::factory()->create();
     }
 
     public function test_the_form_is_prefilled_from_the_availability_search(): void
     {
-        $this->actingAs(User::factory()->employee()->create())
+        $this->actingAs($this->employee())
             ->get(route('reservations.create', ['machine' => $this->machine->id, 'du' => '2026-11-10', 'au' => '2026-11-14']))
             ->assertOk()
             ->assertSee($this->machine->reference);
@@ -95,7 +94,7 @@ class CreateReservationFormTest extends TestCase
 
     private function openForm(string $startDate, string $endDate): Testable
     {
-        return Livewire::actingAs(User::factory()->employee()->create())
+        return Livewire::actingAs($this->employee())
             ->withQueryParams(['machine' => $this->machine->id, 'du' => $startDate, 'au' => $endDate])
             ->test(CreateReservationForm::class);
     }

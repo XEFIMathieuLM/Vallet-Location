@@ -2,6 +2,7 @@
 
 namespace Functional\Inspection\Livewire;
 
+use Flux\Flux;
 use Functional\Fleet\Livewire\Concerns\DisplaysRefusals;
 use Functional\Inspection\Actions\DeletePhoto;
 use Functional\Inspection\Actions\FindActivePhotoSession;
@@ -24,8 +25,12 @@ class PhoneCapture extends Component
 {
     use DisplaysRefusals, WithFileUploads;
 
+    private const DELETE_PHOTO_MODAL = 'delete-photo';
+
     #[Locked]
     public string $token = '';
+
+    public ?int $photoIdToDelete = null;
 
     /**
      * @var array<int, TemporaryUploadedFile|null>
@@ -51,11 +56,20 @@ class PhoneCapture extends Component
         unset($this->uploads[(int) $reservationViewId]);
     }
 
+    public function confirmPhotoDeletion(int $photoId): void
+    {
+        $this->photoIdToDelete = $photoId;
+
+        Flux::modal(self::DELETE_PHOTO_MODAL)->show();
+    }
+
     public function deletePhoto(int $photoId): void
     {
         $session = app(FindActivePhotoSession::class)->handle($this->token);
 
         app(DeletePhoto::class)->fromSession($session, $photoId);
+
+        Flux::modal(self::DELETE_PHOTO_MODAL)->close();
     }
 
     public function render(): View

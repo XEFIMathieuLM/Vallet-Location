@@ -2,6 +2,7 @@
 
 namespace Functional\Fleet\Access\Controls;
 
+use Functional\Fleet\Access\FleetPermission;
 use Functional\Fleet\Access\Perimeters\GlobalPerimeter;
 use Functional\Fleet\Models\Machine;
 use Illuminate\Contracts\Auth\Access\Authorizable;
@@ -20,7 +21,7 @@ class MachineControl extends Control
     {
         return [
             GlobalPerimeter::new()
-                ->allowed(fn (Model $user, string $method): bool => $user instanceof Authorizable && $user->can('machines.manage'))
+                ->allowed(fn (Model $user, string $method): bool => $user instanceof Authorizable && $user->can(FleetPermission::ManageMachines->value))
                 ->should(fn (Model $user, Model $machine): bool => true)
                 ->query(fn (Builder $query, Model $user): Builder => $query),
         ];

@@ -6,12 +6,30 @@
         <flux:callout variant="danger" icon="x-circle" :heading="$message" />
     @enderror
 
-    <flux:button variant="primary" icon="arrow-down-tray" wire:click="export" wire:confirm="{{ __('billing::exports.confirm') }}">
-        {{ __('billing::exports.create') }}
-    </flux:button>
+    <div class="flex flex-wrap items-center gap-4">
+        <flux:modal.trigger name="create-billing-export">
+            <flux:button variant="primary" icon="arrow-down-tray">{{ __('billing::exports.create') }}</flux:button>
+        </flux:modal.trigger>
+        <x-loading-hint wire:target="export" />
+    </div>
+
+    <flux:modal name="create-billing-export" class="max-w-md">
+        <div class="flex flex-col gap-6">
+            <div class="flex flex-col gap-2">
+                <x-section-heading :title="__('billing::exports.create')" />
+                <flux:text>{{ __('billing::exports.confirm') }}</flux:text>
+            </div>
+            <div class="flex justify-end gap-2">
+                <flux:modal.close>
+                    <flux:button variant="ghost">{{ __('billing::damages.cancel') }}</flux:button>
+                </flux:modal.close>
+                <flux:button variant="primary" wire:click="export" x-on:click="$flux.modal('create-billing-export').close()">{{ __('billing::exports.confirm_create') }}</flux:button>
+            </div>
+        </div>
+    </flux:modal>
 
     @if ($billingExports->isEmpty())
-        <flux:text>{{ __('billing::exports.empty') }}</flux:text>
+        <x-empty-state :heading="__('billing::exports.empty_heading')" :description="__('billing::exports.empty')" />
     @else
         <flux:table>
             <flux:table.columns>

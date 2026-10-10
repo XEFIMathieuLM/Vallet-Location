@@ -2,6 +2,7 @@
 
 namespace Functional\Inspection\Providers;
 
+use Functional\Booking\Enums\ReservationTransition;
 use Functional\Booking\Events\ReservationChanged;
 use Functional\Booking\Extensions\ReservationDetailSections;
 use Functional\Booking\Extensions\ReservationTransitionGuards;
@@ -40,8 +41,8 @@ class InspectionServiceProvider extends LayerServiceProvider
         $this->loadViewsFrom(__DIR__.'/../../resources/views', 'inspection');
 
         (new Access)->addControls([new CategoryViewControl, new DamageControl]);
-        Livewire::component('inspection.photos-panel', PhotosPanel::class);
-        $this->app->make(ReservationDetailSections::class)->register('inspection.photos-panel', 10);
+        Livewire::component(PhotosPanel::SECTION, PhotosPanel::class);
+        $this->app->make(ReservationDetailSections::class)->register(PhotosPanel::SECTION, 10, ReservationTransition::Departure, ReservationTransition::Return);
         $this->app->make(ReservationTransitionGuards::class)->register(PhotosCompleteGuard::class);
         Event::listen(ReservationChanged::class, RevokePhotoSessionsOnReservationChanged::class);
         config()->push('prunable.models', Photo::class);

@@ -2,13 +2,13 @@
 
 namespace Functional\Inspection\Database\Factories;
 
-use App\Models\User;
 use Carbon\CarbonImmutable;
 use Functional\Booking\Models\Reservation;
 use Functional\Inspection\Enums\InspectionStep;
 use Functional\Inspection\Enums\RevocationReason;
 use Functional\Inspection\Models\PhotoSession;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * @extends Factory<PhotoSession>
@@ -23,7 +23,7 @@ class PhotoSessionFactory extends Factory
             'reservation_id' => Reservation::factory(),
             'step' => InspectionStep::Departure,
             'token_hash' => faker()->inspectionTokenHash(),
-            'created_by' => User::factory(),
+            'created_by' => fn () => Factory::factoryForModel($this->userModel()),
             'expires_at' => CarbonImmutable::now()->addMinutes(30),
         ];
     }
@@ -49,5 +49,13 @@ class PhotoSessionFactory extends Factory
     public function withToken(string $token): static
     {
         return $this->state(fn (): array => ['token_hash' => PhotoSession::hashToken($token)]);
+    }
+
+    /**
+     * @return class-string<Model>
+     */
+    private function userModel(): string
+    {
+        return config('auth.providers.users.model');
     }
 }

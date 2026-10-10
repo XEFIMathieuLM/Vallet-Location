@@ -20,6 +20,8 @@
         <flux:input type="date" wire:model.live="endDate" :label="__('booking::reservations.fields.end_date')" />
     </div>
 
+    <x-loading-hint />
+
     @if (session('reservation-created'))
         <flux:callout variant="success" icon="check-circle" :heading="session('reservation-created')" />
     @endif
@@ -27,9 +29,16 @@
     @if (! $this->hasValidPeriod)
         <flux:callout variant="warning" icon="exclamation-triangle" :heading="__('booking::reservations.availability.invalid_period')" />
     @elseif ($this->machines->isEmpty())
-        <flux:text>{{ __('booking::reservations.availability.no_machine') }}</flux:text>
+        <x-empty-state :heading="__('booking::reservations.availability.no_machine')" :description="__('booking::reservations.availability.no_machine_help')">
+            <x-slot:actions>
+                <flux:button size="sm" icon="arrow-right" wire:click="showNextWeek">{{ __('booking::reservations.availability.next_week') }}</flux:button>
+                @if ($categoryId !== null || $agencyId !== null)
+                    <flux:button size="sm" variant="ghost" wire:click="clearFilters">{{ __('screens.clear_filters') }}</flux:button>
+                @endif
+            </x-slot:actions>
+        </x-empty-state>
     @else
-        <flux:table>
+        <flux:table wire:loading.class="opacity-50">
             <flux:table.columns>
                 <flux:table.column>{{ __('booking::reservations.fields.reference') }}</flux:table.column>
                 <flux:table.column>{{ __('booking::reservations.fields.category') }}</flux:table.column>
@@ -43,7 +52,7 @@
                         <flux:table.cell>{{ $machine->category->name }}</flux:table.cell>
                         <flux:table.cell>{{ $machine->agency->name }}</flux:table.cell>
                         <flux:table.cell align="end">
-                            <flux:button size="sm" variant="primary" wire:navigate
+                            <flux:button size="xs" wire:navigate
                                 :href="route('reservations.create', ['machine' => $machine->id, 'du' => $startDate, 'au' => $endDate])">
                                 {{ __('booking::reservations.availability.reserve') }}
                             </flux:button>

@@ -2,14 +2,13 @@
 
 namespace Functional\Billing\Tests\Feature;
 
-use App\Models\User;
-use Database\Seeders\PermissionSeeder;
 use Functional\Billing\Livewire\DamageBillingActions;
 use Functional\Billing\Models\DamageSettlement;
 use Functional\Billing\Models\Transmission;
 use Functional\Billing\Tests\Concerns\BuildsBillingFixtures;
+use Functional\Booking\Access\BookingPermission;
 use Functional\Booking\Models\Reservation;
-use Functional\Inspection\Database\Seeders\InspectionPermissionSeeder;
+use Functional\Inspection\Access\InspectionPermission;
 use Functional\Inspection\Livewire\Comparison;
 use Functional\Inspection\Livewire\DamagesList;
 use Functional\Inspection\Models\Damage;
@@ -79,8 +78,7 @@ class DamageBillingActionsScreensTest extends TestCase
 
     public function test_an_employee_without_billing_permission_can_neither_see_nor_use_the_actions(): void
     {
-        $this->seed([PermissionSeeder::class, InspectionPermissionSeeder::class]);
-        $this->actingAs(User::factory()->create()->givePermissionTo(['damages.manage', 'reservations.manage']));
+        $this->actingAs($this->userWithPermissions(InspectionPermission::ManageDamages, BookingPermission::ManageReservations));
 
         Livewire::test(DamageBillingActions::class, ['damage' => $this->damage])
             ->assertDontSee('Refacturer')

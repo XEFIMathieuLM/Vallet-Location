@@ -2,13 +2,14 @@
 
 namespace Functional\Billing\Actions;
 
-use App\Models\User;
 use Functional\Billing\Enums\BillingHistoryEvent;
 use Functional\Billing\Enums\DamageOutcome;
 use Functional\Billing\Exceptions\InvalidDamageSettlementException;
 use Functional\Billing\History\BillingHistory;
 use Functional\Billing\Models\DamageSettlement;
+use Functional\Fleet\Contracts\AgencyMember;
 use Functional\Inspection\Models\Damage;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 final class WaiveDamage
@@ -18,7 +19,7 @@ final class WaiveDamage
         private readonly BillingHistory $billingHistory,
     ) {}
 
-    public function handle(Damage $damage, string $waiverReason, User $settler): DamageSettlement
+    public function handle(Damage $damage, string $waiverReason, Model&AgencyMember $settler): DamageSettlement
     {
         if (trim($waiverReason) === '') {
             throw InvalidDamageSettlementException::waiverReasonMissing();

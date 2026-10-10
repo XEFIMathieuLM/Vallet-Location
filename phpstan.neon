@@ -23,6 +23,10 @@ parameters:
         - functional/inspection/database/
         - functional/inspection/routes/
         - functional/inspection/config/
+        - functional/billing/src/
+        - functional/billing/database/
+        - functional/billing/routes/
+        - functional/billing/config/
 
     level: 7
 

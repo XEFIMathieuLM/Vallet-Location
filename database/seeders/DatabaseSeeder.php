@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use Functional\Billing\Database\Seeders\BillingPermissionSeeder;
 use Functional\Fleet\Database\Seeders\FleetSeeder;
 use Functional\Fleet\Models\Agency;
 use Functional\Inspection\Database\Seeders\InspectionPermissionSeeder;
@@ -13,7 +14,7 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        $this->call([FleetSeeder::class, PermissionSeeder::class, InspectionPermissionSeeder::class]);
+        $this->call([FleetSeeder::class, PermissionSeeder::class, InspectionPermissionSeeder::class, BillingPermissionSeeder::class]);
 
         Agency::query()->orderBy('name')->each(function (Agency $agency): void {
             User::factory()

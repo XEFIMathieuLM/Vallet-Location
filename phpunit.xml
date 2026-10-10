@@ -22,6 +22,8 @@
             <directory>app</directory>
             <directory>functional/fleet/src</directory>
             <directory>functional/booking/src</directory>
+            <directory>functional/inspection/src</directory>
+            <directory>functional/billing/src</directory>
         </include>
     </source>
     <php>

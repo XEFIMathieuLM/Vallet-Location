@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0ce78672d521aa6f198f63eadc2b3191",
+    "content-hash": "247b1446872a44bfa74d1d406c9c0adf",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -962,6 +962,39 @@
                 }
             ],
             "time": "2025-12-03T09:33:47+00:00"
+        },
+        {
+            "name": "functional/billing",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "./functional/billing",
+                "reference": "b62806c40ee7ff162a4941091d4070a511d42347"
+            },
+            "require": {
+                "functional/booking": "*",
+                "functional/fleet": "*",
+                "functional/inspection": "*",
+                "xefi/laravel-osdd": "*"
+            },
+            "type": "layer",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Functional\\Billing\\Providers\\BillingServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Functional\\Billing\\": "src/",
+                    "Functional\\Billing\\Database\\Seeders\\": "database/seeders/",
+                    "Functional\\Billing\\Database\\Factories\\": "database/factories/"
+                }
+            },
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "functional/booking",

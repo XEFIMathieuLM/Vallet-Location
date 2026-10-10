@@ -17,7 +17,7 @@ class ReservationSeeder extends Seeder
 {
     private const CANCELLATION_EVERY = 3;
 
-    private bool $hasOverdueRental = false;
+    private bool $isOverdueRentalSeeded = false;
 
     public function run(RefreshReservationConflicts $refreshReservationConflicts): void
     {
@@ -59,14 +59,14 @@ class ReservationSeeder extends Seeder
      */
     private function seedCurrentRental(callable $reservation): void
     {
-        if ($this->hasOverdueRental) {
+        if ($this->isOverdueRentalSeeded) {
             $reservation()->ongoing()->create();
 
             return;
         }
 
         $reservation()->overdue()->create();
-        $this->hasOverdueRental = true;
+        $this->isOverdueRentalSeeded = true;
     }
 
     private function reservationOf(Machine $machine, Customer $customer, Model&AgencyMember $employee): ReservationFactory

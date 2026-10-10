@@ -38,7 +38,7 @@
                     <flux:table.cell variant="strong">{{ $user->name }}</flux:table.cell>
                     <flux:table.cell>{{ $user->email }}</flux:table.cell>
                     <flux:table.cell>
-                        <flux:select size="sm" wire:change="changeAgency({{ $user->id }}, $event.target.value)" :aria-label="__('users.fields.agency')">
+                        <flux:select size="sm" wire:change="changeAgency({{ $user->id }}, $event.target.value)" :aria-label="__('users.agency_of', ['name' => $user->name])">
                             @foreach ($agencies as $agency)
                                 <flux:select.option :value="$agency->id" :selected="$agency->id === $user->agency_id">{{ $agency->name }}</flux:select.option>
                             @endforeach
@@ -51,13 +51,28 @@
                     </flux:table.cell>
                     <flux:table.cell align="end">
                         @if ($user->isDeactivated())
-                            <flux:button size="sm" variant="ghost" wire:click="reactivate({{ $user->id }})">{{ __('users.reactivate') }}</flux:button>
+                            <flux:button size="xs" variant="ghost" wire:click="reactivate({{ $user->id }})">{{ __('users.reactivate') }}</flux:button>
                         @else
-                            <flux:button size="sm" variant="ghost" wire:click="deactivate({{ $user->id }})" wire:confirm="{{ __('users.deactivate_confirmation') }}">{{ __('users.deactivate') }}</flux:button>
+                            <flux:button size="xs" variant="ghost" wire:click="confirmDeactivation({{ $user->id }})">{{ __('users.deactivate') }}</flux:button>
                         @endif
                     </flux:table.cell>
                 </flux:table.row>
             @endforeach
         </flux:table.rows>
     </flux:table>
+
+    <flux:modal name="deactivate-user" class="max-w-md">
+        <div class="flex flex-col gap-6">
+            <div class="flex flex-col gap-2">
+                <x-section-heading :title="__('users.deactivate_heading')" />
+                <flux:text>{{ __('users.deactivate_confirmation', ['name' => $this->userToDeactivate?->name]) }}</flux:text>
+            </div>
+            <div class="flex justify-end gap-2">
+                <flux:modal.close>
+                    <flux:button variant="ghost">{{ __('users.keep_active') }}</flux:button>
+                </flux:modal.close>
+                <flux:button variant="danger" wire:click="deactivate({{ $userToDeactivateId ?? 0 }})">{{ __('users.confirm_deactivation') }}</flux:button>
+            </div>
+        </div>
+    </flux:modal>
 </div>

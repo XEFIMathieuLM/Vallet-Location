@@ -2,6 +2,7 @@
 
 namespace Functional\Booking\Livewire;
 
+use Flux\Flux;
 use Functional\Booking\Actions\CancelReservation;
 use Functional\Booking\Actions\DepartReservation;
 use Functional\Booking\Actions\ReturnReservation;
@@ -34,16 +35,21 @@ class ReservationDetail extends Component
     public function depart(DepartReservation $departReservation): void
     {
         $departReservation->handle($this->reservation);
+        Flux::toast(text: __('booking::reservations.detail.departed'), variant: 'success');
     }
 
     public function returnMachine(string $returnCondition, ReturnReservation $returnReservation): void
     {
-        $returnReservation->handle($this->reservation, ReturnCondition::from($returnCondition));
+        $condition = ReturnCondition::from($returnCondition);
+        $returnReservation->handle($this->reservation, $condition);
+        Flux::toast(text: __('booking::reservations.detail.returned', ['condition' => $condition->label()]), variant: 'success');
     }
 
     public function cancel(CancelReservation $cancelReservation): void
     {
         $cancelReservation->handle($this->reservation);
+        Flux::modal('cancel-reservation')->close();
+        Flux::toast(text: __('booking::reservations.detail.cancelled'), variant: 'success');
     }
 
     #[On('reservation-transition-readiness')]

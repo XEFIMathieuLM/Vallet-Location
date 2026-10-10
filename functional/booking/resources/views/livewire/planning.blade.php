@@ -21,16 +21,24 @@
     <div class="flex flex-wrap gap-4 text-sm">
         @foreach ($cellKinds as $cellKind)
             <span class="flex items-center gap-2">
-                <span class="inline-block size-3 rounded-sm border border-zinc-300 dark:border-zinc-600 {{ $cellKind->cssClasses() }}"></span>
+                <span class="flex size-4 items-center justify-center rounded-sm border border-zinc-300 text-[10px] font-semibold dark:border-zinc-600 {{ $cellKind->cssClasses() }}" aria-hidden="true">{{ $cellKind->shortLabel() }}</span>
                 {{ $cellKind->label() }}
             </span>
         @endforeach
     </div>
 
+    <x-loading-hint />
+
     @if ($grid === null)
         <flux:callout variant="warning" icon="exclamation-triangle" :heading="__('booking::reservations.availability.invalid_period')" />
+    @elseif ($grid->rows === [])
+        <x-empty-state :heading="__('booking::reservations.planning.empty')" :description="__('booking::reservations.planning.empty_help')">
+            <x-slot:actions>
+                <flux:button size="sm" wire:click="clearFilters">{{ __('screens.clear_filters') }}</flux:button>
+            </x-slot:actions>
+        </x-empty-state>
     @else
-        <div class="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700">
+        <div class="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700" wire:loading.class="opacity-50">
             <table class="min-w-full border-collapse text-sm">
                 <thead>
                     <tr>
@@ -48,11 +56,16 @@
                                 <span class="block text-xs font-normal text-zinc-600 dark:text-zinc-300">{{ $row->machine->category->name }} · {{ $row->machine->agency->name }}</span>
                             </th>
                             @foreach ($row->cells as $date => $cell)
-                                <td class="h-8 min-w-8 border-l border-zinc-100 p-0.5 dark:border-zinc-700" title="{{ $cell->label() }}">
+                                @php($cellLabel = __('booking::reservations.planning.cell_label', ['date' => \Carbon\CarbonImmutable::parse($date)->format('d/m/Y'), 'state' => $cell->label()]))
+                                <td class="h-10 min-w-10 border-l border-zinc-100 px-2 py-1 dark:border-zinc-700">
                                     @if ($cell->reservation !== null)
-                                        <a href="{{ route('reservations.show', $cell->reservation) }}" wire:navigate class="block size-full rounded-sm {{ $cell->kind->cssClasses() }}"></a>
+                                        <a href="{{ route('reservations.show', $cell->reservation) }}" wire:navigate title="{{ $cellLabel }}" aria-label="{{ $cellLabel }}"
+                                            class="flex size-full items-center justify-center rounded-sm text-xs font-semibold {{ $cell->kind->cssClasses() }}">{{ $cell->kind->shortLabel() }}</a>
                                     @else
-                                        <span class="block size-full rounded-sm {{ $cell->kind->cssClasses() }}"></span>
+                                        <span title="{{ $cellLabel }}" class="flex size-full items-center justify-center rounded-sm text-xs font-semibold {{ $cell->kind->cssClasses() }}">
+                                            <span aria-hidden="true">{{ $cell->kind->shortLabel() }}</span>
+                                            <span class="sr-only">{{ $cellLabel }}</span>
+                                        </span>
                                     @endif
                                 </td>
                             @endforeach

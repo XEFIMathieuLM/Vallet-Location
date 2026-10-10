@@ -110,6 +110,36 @@ class ManageMachinesTest extends TestCase
             ->assertSee(MachineStatus::OutOfOrder->label());
     }
 
+    public function test_a_machine_is_retired_from_the_fleet_screen_after_confirmation(): void
+    {
+        $this->seed(PermissionSeeder::class);
+        $machine = Machine::factory()->withStatus(MachineStatus::OutOfOrder)->create();
+
+        Livewire::actingAs($this->employee())
+            ->test(MachineIndex::class)
+            ->call('confirmRetirement', $machine->id)
+            ->assertSet('machineToRetireId', $machine->id)
+            ->call('retire')
+            ->assertHasNoErrors();
+
+        $this->assertSame(MachineStatus::Retired, $machine->fresh()?->status);
+    }
+
+    public function test_a_refused_retirement_is_displayed_on_the_fleet_screen(): void
+    {
+        $this->seed(PermissionSeeder::class);
+        $this->app->instance(MachineRetirementGuard::class, new RefusingRetirementGuard);
+        $machine = Machine::factory()->create();
+
+        Livewire::actingAs($this->employee())
+            ->test(MachineIndex::class)
+            ->call('confirmRetirement', $machine->id)
+            ->call('retire')
+            ->assertHasErrors('refusal');
+
+        $this->assertSame(MachineStatus::Available, $machine->fresh()?->status);
+    }
+
     public function test_the_fleet_screen_only_offers_manual_legal_transitions(): void
     {
         $this->assertSame(

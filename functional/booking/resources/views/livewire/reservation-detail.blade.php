@@ -43,9 +43,24 @@
             <flux:button variant="primary" wire:click="depart" :disabled="! $this->isReadyFor(\Functional\Booking\Enums\ReservationTransition::Departure)">
                 {{ __('booking::reservations.transitions.departure') }}
             </flux:button>
-            <flux:button variant="danger" wire:click="cancel" wire:confirm="{{ __('booking::reservations.detail.cancel_confirmation') }}">
-                {{ __('booking::reservations.transitions.cancellation') }}
-            </flux:button>
+            <flux:modal.trigger name="cancel-reservation">
+                <flux:button variant="danger">{{ __('booking::reservations.transitions.cancellation') }}</flux:button>
+            </flux:modal.trigger>
+
+            <flux:modal name="cancel-reservation" class="max-w-md">
+                <div class="flex flex-col gap-6">
+                    <div class="flex flex-col gap-2">
+                        <x-section-heading :title="__('booking::reservations.detail.cancel_heading')" />
+                        <flux:text>{{ __('booking::reservations.detail.cancel_confirmation', ['reference' => $reservation->machine->reference, 'start' => $reservation->start_date->format('d/m/Y'), 'end' => $reservation->end_date->format('d/m/Y')]) }}</flux:text>
+                    </div>
+                    <div class="flex justify-end gap-2">
+                        <flux:modal.close>
+                            <flux:button variant="ghost">{{ __('booking::reservations.detail.keep_reservation') }}</flux:button>
+                        </flux:modal.close>
+                        <flux:button variant="danger" wire:click="cancel">{{ __('booking::reservations.detail.confirm_cancellation') }}</flux:button>
+                    </div>
+                </div>
+            </flux:modal>
         @endif
 
         @if ($isInProgress)

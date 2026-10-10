@@ -37,6 +37,11 @@ class ReservationList extends Component
     #[Url(as: 'en-conflit')]
     public bool $isInConflict = false;
 
+    public function clearFilters(): void
+    {
+        $this->reset('status', 'agencyId', 'startDate', 'endDate', 'isInConflict');
+    }
+
     public function updated(): void
     {
         $this->resetPage();

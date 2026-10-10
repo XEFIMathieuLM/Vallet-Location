@@ -42,6 +42,11 @@ class Planning extends Component
         $this->endDate = $this->endDate !== '' ? $this->endDate : CarbonImmutable::parse($this->startDate)->addDays(self::DEFAULT_DAY_COUNT - 1)->toDateString();
     }
 
+    public function clearFilters(): void
+    {
+        $this->reset('categoryId', 'agencyId');
+    }
+
     public function updated(): void
     {
         $this->resetPage();

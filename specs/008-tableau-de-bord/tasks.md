@@ -203,7 +203,7 @@ Chaque phase se termine par `composer ci:check` en code 0 (après `vendor/bin/ph
 
 ### Tests (écrits d'abord, en échec)
 
-- [ ] T024 [US3] `tests/Feature/Dashboard/PendingWorkTest.php` : un test par scénario de la US3.
+- [X] T024 [US3] `tests/Feature/Dashboard/PendingWorkTest.php` : un test par scénario de la US3.
   1. Fixtures et nombres attendus :
      - une transmission en échec (`TransmissionFactory`) → 1 ;
      - deux attestations en attente d'e-mail (`ReservationCertificateFactory`, réservations confirmées) → 2 ;
@@ -223,14 +223,14 @@ Chaque phase se termine par `composer ci:check` en code 0 (après `vendor/bin/ph
 
 ### Implémentation
 
-- [ ] T025 [P] [US3] Créer `app/Dashboard/PendingWorkCounter.php` (`final readonly` : `key`, `count`, `url`) et `app/Dashboard/PendingWorkCounters.php`.
+- [X] T025 [P] [US3] Créer `app/Dashboard/PendingWorkCounter.php` (`final readonly` : `key`, `count`, `url`) et `app/Dashboard/PendingWorkCounters.php`.
   - `PendingWorkCounters` contient une table ordonnée de six définitions : permission, clé, route et paramètres, `Closure` de comptage.
   - Les comptages appellent `TransmissionsToHandle`, `CertificatesToHandle`, `PendingDeposits`, `MissingPurchaseOrders`, `DamagesToHandle` et `OverdueSales` (`CarbonImmutable::today()`).
   - `forUser(Authorizable $user): list<PendingWorkCounter>` ne calcule que les compteurs autorisés.
-- [ ] T026 [US3] Créer `app/Livewire/Dashboard/PendingWork.php` :
+- [X] T026 [US3] Créer `app/Livewire/Dashboard/PendingWork.php` :
   - `render()` avec `PendingWorkCounters::forUser(auth()->user())` ;
   - `getListeners()` : `.certificate.changed`, `.deposit.changed`, `.damage.changed` et `.reservation.changed` sur `echo-private:fleet`, plus `echo-private:sales,.sale.changed` si `sales.manage`, tous vers `$refresh`.
-- [ ] T027 [US3] Créer `resources/views/livewire/dashboard/pending-work.blade.php` :
+- [X] T027 [US3] Créer `resources/views/livewire/dashboard/pending-work.blade.php` :
   - `wire:poll.60s` ;
   - grille `flux:card`, avec l'intitulé `trans_choice('dashboard.pending.<key>', …)` et le nombre ;
   - `flux:badge color="amber"` si non nul, texte atténué si nul ;

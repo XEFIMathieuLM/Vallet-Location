@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5111572edffe7b63ab9712eb369cbf93",
+    "content-hash": "cfb810b17abd0847c5593c1388d13547",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -1046,6 +1046,38 @@
                     "Functional\\Booking\\": "src/",
                     "Functional\\Booking\\Database\\Seeders\\": "database/seeders/",
                     "Functional\\Booking\\Database\\Factories\\": "database/factories/"
+                }
+            },
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "functional/certification",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "./functional/certification",
+                "reference": "c042675b0500176f9f85d5a8ffca753d9417bbde"
+            },
+            "require": {
+                "functional/booking": "*",
+                "functional/fleet": "*",
+                "xefi/laravel-osdd": "*"
+            },
+            "type": "layer",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Functional\\Certification\\Providers\\CertificationServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Functional\\Certification\\": "src/",
+                    "Functional\\Certification\\Database\\Seeders\\": "database/seeders/",
+                    "Functional\\Certification\\Database\\Factories\\": "database/factories/"
                 }
             },
             "transport-options": {

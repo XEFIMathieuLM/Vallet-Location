@@ -31,6 +31,10 @@ parameters:
         - functional/billing/database/
         - functional/billing/routes/
         - functional/billing/config/
+        - functional/certification/src/
+        - functional/certification/database/
+        - functional/certification/routes/
+        - functional/certification/config/
 
     level: 7
 

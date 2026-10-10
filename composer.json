@@ -12,6 +12,7 @@
         "php": "^8.5",
         "functional/billing": "*",
         "functional/booking": "*",
+        "functional/certification": "*",
         "functional/fleet": "*",
         "functional/inspection": "*",
         "laravel/chisel": "^0.1.0",
@@ -56,6 +57,7 @@
             "Functional\\Fleet\\Tests\\": "functional/fleet/tests/",
             "Functional\\Billing\\Tests\\": "functional/billing/tests/",
             "Functional\\Booking\\Tests\\": "functional/booking/tests/",
+            "Functional\\Certification\\Tests\\": "functional/certification/tests/",
             "Functional\\Inspection\\Tests\\": "functional/inspection/tests/"
         }
     },

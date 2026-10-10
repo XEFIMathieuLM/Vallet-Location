@@ -1,0 +1,27 @@
+{
+    "name": "functional/certification",
+    "description": "",
+    "type": "layer",
+    "version": "1.0.0",
+    "require": {
+        "xefi/laravel-osdd": "*",
+        "functional/booking": "*",
+        "functional/fleet": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Functional\\Certification\\": "src/",
+            "Functional\\Certification\\Database\\Seeders\\": "database/seeders/",
+            "Functional\\Certification\\Database\\Factories\\": "database/factories/"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Functional\\Certification\\Providers\\CertificationServiceProvider"
+            ]
+        }
+    }
+}

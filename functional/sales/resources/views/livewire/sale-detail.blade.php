@@ -2,6 +2,10 @@
     <x-page-heading :title="__('sales::sales.detail.title', ['reference' => $sale->machine->reference])">
         <x-slot:actions>
             <flux:badge :color="$sale->status->color()">{{ $sale->status->label() }}</flux:badge>
+            <flux:button size="sm" variant="ghost" :href="route('sales.machine-history', $sale->machine)" wire:navigate>{{ __('sales::sales.machine_history.link') }}</flux:button>
+            @if ($sale->state()->isOpen())
+                <flux:modal.trigger name="cancel-sale"><flux:button size="sm" variant="ghost">{{ __('sales::sales.detail.cancel') }}</flux:button></flux:modal.trigger>
+            @endif
             @if ($sale->state()->acceptsDescriptionChange())
                 <flux:modal.trigger name="edit-listing">
                     <flux:button size="sm" icon="pencil-square">{{ __('sales::sales.detail.edit_listing') }}</flux:button>
@@ -93,6 +97,18 @@
             <div class="flex justify-end gap-2">
                 <flux:modal.close><flux:button variant="ghost">{{ __('sales::sales.form.back') }}</flux:button></flux:modal.close>
                 <flux:button type="submit" variant="primary">{{ __('sales::sales.detail.save_listing') }}</flux:button>
+            </div>
+        </form>
+    </flux:modal>
+
+    <flux:modal name="cancel-sale" class="md:w-lg">
+        <form wire:submit="cancelSale" class="flex flex-col gap-4">
+            <flux:heading size="lg">{{ __('sales::sales.detail.cancel') }}</flux:heading>
+            <flux:text>{{ __('sales::sales.detail.cancel_help') }}</flux:text>
+            <flux:input wire:model="cancellationReason" :label="__('sales::sales.detail.reason')" />
+            <div class="flex justify-end gap-2">
+                <flux:modal.close><flux:button variant="ghost">{{ __('sales::sales.form.back') }}</flux:button></flux:modal.close>
+                <flux:button type="submit" variant="danger">{{ __('sales::sales.detail.cancel') }}</flux:button>
             </div>
         </form>
     </flux:modal>

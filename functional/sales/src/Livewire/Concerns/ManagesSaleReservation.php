@@ -5,6 +5,7 @@ namespace Functional\Sales\Livewire\Concerns;
 use Carbon\CarbonImmutable;
 use Flux\Flux;
 use Functional\Sales\Access\SalesPermission;
+use Functional\Sales\Actions\CancelSale;
 use Functional\Sales\Actions\ChangePlannedHandoverDate;
 use Functional\Sales\Actions\HandOverSale;
 use Functional\Sales\Actions\ReleaseSaleReservation;
@@ -15,6 +16,8 @@ trait ManagesSaleReservation
     public string $newPlannedHandoverDate = '';
 
     public string $releaseReason = '';
+
+    public string $cancellationReason = '';
 
     public function changePlannedHandoverDate(ChangePlannedHandoverDate $changePlannedHandoverDate): void
     {
@@ -44,6 +47,17 @@ trait ManagesSaleReservation
         $this->sale = $handOverSale->handle($this->agencyMember(), $this->sale);
 
         $this->closeModalWithToast('hand-over', 'sales::sales.detail.handed_over');
+    }
+
+    public function cancelSale(CancelSale $cancelSale): void
+    {
+        Gate::authorize(SalesPermission::Manage->value);
+        $this->validate(['cancellationReason' => ['required', 'string', 'max:255']], attributes: ['cancellationReason' => __('sales::sales.detail.reason')]);
+
+        $this->sale = $cancelSale->handle($this->agencyMember(), $this->sale, $this->cancellationReason);
+
+        $this->reset('cancellationReason');
+        $this->closeModalWithToast('cancel-sale', 'sales::sales.detail.cancelled');
     }
 
     private function closeModalWithToast(string $modalName, string $messageKey): void

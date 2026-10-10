@@ -217,16 +217,16 @@ description: "Task list for the used machine sales feature"
 
 ### Tests for User Story 5
 
-- [ ] T067 [P] [US5] `functional/sales/tests/Feature/CancelSaleTest.php` : US5-1 (annulée, machine au parc, location 18–22/11 acceptée), US5-2 (motif obligatoire), US5-3 (vente vendue non annulable), US5-4 (remise en vente après annulation, ancienne vente conservée), offres pending → rejected et acceptée → withdrawn
-- [ ] T068 [P] [US5] `functional/sales/tests/Feature/SaleListStatementTest.php` : US5-5 (liste filtrée par agence et période avec machine, statut, prix, acheteur, état de transmission, total HT des ventes conclues calculé en base), FR-023 (vente réservée à date de remise dépassée mise en évidence, avec `travelTo()`)
-- [ ] T069 [P] [US5] `functional/sales/tests/Feature/SaleHistoryTest.php` : FR-024, chaque action (mise en vente, prix, offre, acceptation, refus, retrait, date de remise, levée, remise, annulation, transmission) avec auteur, agence et date ; page historique de la machine
-- [ ] T070 [P] [US5] `functional/sales/tests/Feature/SaleBroadcastingTest.php` : FR-025, `SaleChanged` diffusé après commit sur `private-sales` avec la charge utile explicite pour ouverture, réservation, conclusion, annulation
+- [X] T067 [P] [US5] `functional/sales/tests/Feature/CancelSaleTest.php` : US5-1 (annulée, machine au parc, location 18–22/11 acceptée), US5-2 (motif obligatoire), US5-3 (vente vendue non annulable), US5-4 (remise en vente après annulation, ancienne vente conservée), offres pending → rejected et acceptée → withdrawn
+- [X] T068 [P] [US5] `functional/sales/tests/Feature/SaleListStatementTest.php` : US5-5 (liste filtrée par agence et période avec machine, statut, prix, acheteur, état de transmission, total HT des ventes conclues calculé en base), FR-023 (vente réservée à date de remise dépassée mise en évidence, avec `travelTo()`)
+- [X] T069 [P] [US5] `functional/sales/tests/Feature/SaleHistoryTest.php` : FR-024, chaque action (mise en vente, prix, offre, acceptation, refus, retrait, date de remise, levée, remise, annulation, transmission) avec auteur, agence et date ; page historique de la machine
+- [X] T070 [P] [US5] `functional/sales/tests/Feature/SaleBroadcastingTest.php` : FR-025, `SaleChanged` diffusé après commit sur `private-sales` avec la charge utile explicite pour ouverture, réservation, conclusion, annulation
 
 ### Implementation for User Story 5
 
-- [ ] T071 [US5] `functional/sales/src/Actions/CancelSale.php` (motif obligatoire, `cancel()`, offres pending rejetées et acceptée retirée en requêtes groupées, historique, `SaleChanged`) ; bouton et modale dans `SaleDetail`
-- [ ] T072 [US5] Compléter `SaleListQuery` et `SaleList` : filtre de période (mise en vente ou remise), colonne état de transmission (chargée par lot depuis `transmissions` par `source_type`/`source_id`), total `SUM(final_price_cents)` en base restitué par `Money::fromStored()`, mise en évidence des ventes en retard
-- [ ] T073 [US5] `functional/sales/src/Livewire/MachineSaleHistory.php` + vue `machine-sale-history.blade.php` et route `sales.machine-history` : toutes les ventes de la machine avec offres et activités (chargement groupé)
+- [X] T071 [US5] `functional/sales/src/Actions/CancelSale.php` (motif obligatoire, `cancel()`, offres pending rejetées et acceptée retirée en requêtes groupées, historique, `SaleChanged`) ; bouton et modale dans `SaleDetail`
+- [X] T072 [US5] Compléter `SaleListQuery` et `SaleList` : filtre de période (mise en vente ou remise), colonne état de transmission (chargée par lot depuis `transmissions` par `source_type`/`source_id`), total `SUM(final_price_cents)` en base restitué par `Money::fromStored()`, mise en évidence des ventes en retard
+- [X] T073 [US5] `functional/sales/src/Livewire/MachineSaleHistory.php` + vue `machine-sale-history.blade.php` et route `sales.machine-history` : toutes les ventes de la machine avec offres et activités (chargement groupé)
 
 **Checkpoint**: toutes les user stories vertes et indépendantes.
 

@@ -9,7 +9,7 @@
         <flux:callout variant="success" icon="check-circle" :heading="session('sale-flash')" />
     @endif
 
-    <div class="grid gap-4 md:grid-cols-4">
+    <div class="grid gap-4 md:grid-cols-3 lg:grid-cols-6">
         <flux:select wire:model.live="status" :label="__('sales::sales.fields.status')">
             <flux:select.option value="">{{ __('sales::sales.list.all') }}</flux:select.option>
             @foreach ($statuses as $saleStatus)
@@ -28,12 +28,16 @@
                 <flux:select.option :value="$agency->id">{{ $agency->name }}</flux:select.option>
             @endforeach
         </flux:select>
+        <flux:input type="date" wire:model.live="periodStart" :label="__('sales::sales.list.period_start')" />
+        <flux:input type="date" wire:model.live="periodEnd" :label="__('sales::sales.list.period_end')" />
         <div class="flex items-end">
             <flux:button variant="ghost" wire:click="clearFilters">{{ __('sales::sales.list.clear_filters') }}</flux:button>
         </div>
     </div>
 
     <x-loading-hint />
+
+    <flux:text>{{ __('sales::sales.list.concluded_total', ['total' => $concludedTotal->format()]) }}</flux:text>
 
     @if ($this->sales->isEmpty())
         <x-empty-state :heading="__('sales::sales.list.empty_heading')" :description="__('sales::sales.list.empty')" />
@@ -48,6 +52,7 @@
                 <flux:table.column align="end">{{ __('sales::sales.fields.final_price') }}</flux:table.column>
                 <flux:table.column>{{ __('sales::sales.fields.buyer') }}</flux:table.column>
                 <flux:table.column>{{ __('sales::sales.fields.handover') }}</flux:table.column>
+                <flux:table.column>{{ __('sales::sales.fields.transmission') }}</flux:table.column>
             </flux:table.columns>
             <flux:table.rows>
                 @foreach ($this->sales as $sale)
@@ -62,7 +67,19 @@
                         <flux:table.cell align="end">{{ $sale->asking_price->format() }} €</flux:table.cell>
                         <flux:table.cell align="end">{{ $sale->final_price !== null ? $sale->final_price->format().' €' : '—' }}</flux:table.cell>
                         <flux:table.cell>{{ $sale->buyer?->name ?? '—' }}</flux:table.cell>
-                        <flux:table.cell>{{ ($sale->handed_over_on ?? $sale->planned_handover_date)?->format('d/m/Y') ?? '—' }}</flux:table.cell>
+                        <flux:table.cell>
+                            {{ ($sale->handed_over_on ?? $sale->planned_handover_date)?->format('d/m/Y') ?? '—' }}
+                            @if ($sale->status === \Functional\Sales\Enums\SaleStatus::Reserved && $sale->planned_handover_date?->lt($today))
+                                <flux:badge size="sm" color="red">{{ __('sales::sales.list.overdue') }}</flux:badge>
+                            @endif
+                        </flux:table.cell>
+                        <flux:table.cell>
+                            @if (isset($transmissions[$sale->id]))
+                                <flux:badge size="sm" :color="$transmissions[$sale->id]->status->color()">{{ $transmissions[$sale->id]->status->label() }}</flux:badge>
+                            @else
+                                —
+                            @endif
+                        </flux:table.cell>
                     </flux:table.row>
                 @endforeach
             </flux:table.rows>

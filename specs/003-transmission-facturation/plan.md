@@ -111,7 +111,7 @@ functional/
     │   ├── Listeners/             # période finale sur ReservationChanged
     │   ├── Console/               # billing:close-months, billing:reconcile, billing:fake-gateway (local et tests)
     │   ├── Exceptions/            # exceptions typées de billing
-    │   ├── Faker/                 # BillingExtension et son provider (générateurs des factories)
+    │   ├── Faker/                 # BillingFakerExtension et son provider (générateurs des factories)
     │   ├── Access/Controls/       # TransmissionControl, DamageSettlementControl, BillingExportControl
     │   ├── Providers/             # BillingServiceProvider (enregistrements dans les registres, liaison du gateway)
     │   └── Livewire/              # ReservationBillingSection, DamageBillingActions, Transmissions, Exports, Statement, BillingAlert

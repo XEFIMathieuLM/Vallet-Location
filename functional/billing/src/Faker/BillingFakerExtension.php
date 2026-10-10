@@ -4,7 +4,7 @@ namespace Functional\Billing\Faker;
 
 use Xefi\Faker\Extensions\Extension;
 
-class BillingExtension extends Extension
+class BillingFakerExtension extends Extension
 {
     public function billingCustomerRef(): string
     {

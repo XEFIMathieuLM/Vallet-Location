@@ -9,7 +9,7 @@ class BillingFakerServiceProvider extends Provider
     public function boot(): void
     {
         $this->extensions([
-            BillingExtension::class,
+            BillingFakerExtension::class,
         ]);
     }
 }

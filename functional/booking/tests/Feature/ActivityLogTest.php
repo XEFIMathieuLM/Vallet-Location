@@ -88,6 +88,7 @@ class ActivityLogTest extends TestCase
         foreach ($activities as $activity) {
             $this->assertTrue($this->author->is($activity->causer), 'every entry names its author');
             $this->assertNotNull($activity->created_at, 'every entry is dated');
+            $this->assertSame($this->author->agencyId(), $activity->getProperty('author_agency_id'), 'every entry names the author agency');
         }
 
         return $activities->toBase();

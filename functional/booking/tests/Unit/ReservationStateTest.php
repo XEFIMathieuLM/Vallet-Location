@@ -6,7 +6,7 @@ use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Exceptions\IllegalReservationTransitionException;
 use Functional\Booking\States\ReservationStateFactory;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Tests\TestCase;
+use PHPUnit\Framework\TestCase;
 
 class ReservationStateTest extends TestCase
 {

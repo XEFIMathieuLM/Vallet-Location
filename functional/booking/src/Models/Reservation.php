@@ -8,6 +8,7 @@ use Functional\Booking\Enums\ConflictReason;
 use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\States\ReservationState;
 use Functional\Booking\States\ReservationStateFactory;
+use Functional\Fleet\Activity\RecordsAuthorAgency;
 use Functional\Fleet\Models\Agency;
 use Functional\Fleet\Models\Machine;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -45,7 +46,7 @@ use Spatie\Activitylog\Support\LogOptions;
 class Reservation extends Model
 {
     /** @use HasFactory<ReservationFactory> */
-    use HasControl, HasFactory, LogsActivity;
+    use HasControl, HasFactory, LogsActivity, RecordsAuthorAgency;
 
     protected function casts(): array
     {

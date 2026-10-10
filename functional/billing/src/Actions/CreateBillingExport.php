@@ -3,6 +3,7 @@
 namespace Functional\Billing\Actions;
 
 use App\Models\User;
+use Carbon\CarbonImmutable;
 use Functional\Billing\Calendar\BillingCalendar;
 use Functional\Billing\Enums\TransmissionStatus;
 use Functional\Billing\Exceptions\NothingToExportException;
@@ -10,6 +11,7 @@ use Functional\Billing\Exports\ExportLineFormatter;
 use Functional\Billing\Models\BillingExport;
 use Functional\Billing\Models\Transmission;
 use Functional\Billing\Transmissions\TransmissionLifecycle;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -29,6 +31,9 @@ final class CreateBillingExport
         return DB::transaction(function () use ($author): BillingExport {
             $exportableTransmissions = Transmission::query()
                 ->whereIn('status', [TransmissionStatus::Pending, TransmissionStatus::Failed])
+                ->where(fn (Builder $unreservedTransmissions): Builder => $unreservedTransmissions
+                    ->whereNull('reserved_until')
+                    ->orWhere('reserved_until', '<=', CarbonImmutable::now()))
                 ->orderBy('created_at')
                 ->orderBy('id')
                 ->lockForUpdate()

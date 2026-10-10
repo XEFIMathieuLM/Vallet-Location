@@ -20,6 +20,7 @@ final class TransmissionLifecycle
             'sent_at' => CarbonImmutable::now(),
             'failure_reason' => null,
             'last_error' => null,
+            'reserved_until' => null,
         ]);
         $this->billingHistory->record($transmission->reservation, 'sent', ['uuid' => $transmission->uuid, 'external_ref' => $externalRef]);
     }
@@ -30,6 +31,7 @@ final class TransmissionLifecycle
             'status' => $transmission->state()->fail()->status(),
             'failure_reason' => $failureReason,
             'last_error' => $message,
+            'reserved_until' => null,
         ]);
         $this->billingHistory->record($transmission->reservation, 'failed', ['uuid' => $transmission->uuid, 'reason' => $message]);
     }
@@ -39,7 +41,7 @@ final class TransmissionLifecycle
         $retryDelays = config()->array('billing.retry_delays_minutes');
         $delayMinutes = $retryDelays[min($transmission->attempts, count($retryDelays)) - 1];
 
-        $transmission->update(['next_attempt_at' => CarbonImmutable::now()->addMinutes($delayMinutes), 'last_error' => $message]);
+        $transmission->update(['next_attempt_at' => CarbonImmutable::now()->addMinutes($delayMinutes), 'last_error' => $message, 'reserved_until' => null]);
         $this->billingHistory->record($transmission->reservation, 'unreachable', ['uuid' => $transmission->uuid, 'delay' => $delayMinutes]);
     }
 

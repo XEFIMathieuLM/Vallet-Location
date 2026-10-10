@@ -8,7 +8,10 @@ use Functional\Billing\Enums\TransmissionFailureReason;
 use Functional\Billing\Exceptions\BillingSoftwareRejectedException;
 use Functional\Billing\Exceptions\BillingSoftwareUnreachableException;
 use Functional\Billing\Models\Transmission;
+use Functional\Billing\Transmissions\GatewayOutcome;
 use Functional\Billing\Transmissions\TransmissionLifecycle;
+use Functional\Billing\Transmissions\TransmissionReservation;
+use Functional\Billing\ValueObjects\BillableLine;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -18,46 +21,71 @@ final class SendTransmission
         private readonly BillingGateway $billingGateway,
         private readonly MakeBillableLine $makeBillableLine,
         private readonly TransmissionLifecycle $transmissionLifecycle,
+        private readonly TransmissionReservation $transmissionReservation,
     ) {}
 
     public function handle(Transmission $transmission): void
     {
-        DB::transaction(function () use ($transmission): void {
-            $lockedTransmission = Transmission::query()->lockForUpdate()->findOrFail($transmission->id);
+        $billableLine = DB::transaction(fn (): ?BillableLine => $this->reserve($transmission));
 
-            if (! $lockedTransmission->state()->canBeSent()) {
-                return;
-            }
+        if ($billableLine === null) {
+            return;
+        }
 
-            $billableLine = $this->makeBillableLine->handle($lockedTransmission);
-            $lockedTransmission->update(['attempts' => $lockedTransmission->attempts + 1, 'last_attempt_at' => CarbonImmutable::now()]);
+        $gatewayOutcome = rescue(
+            fn (): GatewayOutcome => GatewayOutcome::accepted($this->billingGateway->send($billableLine)),
+            fn (Throwable $exception): GatewayOutcome => $this->classify($exception),
+            false,
+        );
 
-            if ($billableLine->customerRef === null) {
-                $this->transmissionLifecycle->markFailed($lockedTransmission, TransmissionFailureReason::CustomerUnknown, TransmissionFailureReason::CustomerUnknown->label());
-
-                return;
-            }
-
-            $externalRef = rescue(
-                fn (): string => $this->billingGateway->send($billableLine),
-                fn (Throwable $exception) => $this->recordFailure($lockedTransmission, $exception),
-                false,
-            );
-
-            if (is_string($externalRef)) {
-                $this->transmissionLifecycle->markSent($lockedTransmission, $externalRef);
-            }
-        });
+        DB::transaction(fn () => $this->settle($transmission, $gatewayOutcome));
     }
 
-    private function recordFailure(Transmission $transmission, Throwable $exception): null
+    private function reserve(Transmission $transmission): ?BillableLine
     {
-        match (true) {
-            $exception instanceof BillingSoftwareRejectedException => $this->transmissionLifecycle->markFailed($transmission, TransmissionFailureReason::Rejected, $exception->getMessage()),
-            $exception instanceof BillingSoftwareUnreachableException => $this->transmissionLifecycle->scheduleRetry($transmission, $exception->getMessage()),
+        $lockedTransmission = Transmission::query()->lockForUpdate()->findOrFail($transmission->id);
+
+        if (! $lockedTransmission->state()->canBeSent() || $lockedTransmission->isReserved()) {
+            return null;
+        }
+
+        $billableLine = $this->makeBillableLine->handle($lockedTransmission);
+        $lockedTransmission->update([
+            'attempts' => $lockedTransmission->attempts + 1,
+            'last_attempt_at' => CarbonImmutable::now(),
+            'reserved_until' => $this->transmissionReservation->expiresAt(),
+        ]);
+
+        if ($billableLine->customerRef === null) {
+            $this->transmissionLifecycle->markFailed($lockedTransmission, TransmissionFailureReason::CustomerUnknown, TransmissionFailureReason::CustomerUnknown->label());
+
+            return null;
+        }
+
+        return $billableLine;
+    }
+
+    private function classify(Throwable $exception): GatewayOutcome
+    {
+        return match (true) {
+            $exception instanceof BillingSoftwareRejectedException => GatewayOutcome::rejected($exception->getMessage()),
+            $exception instanceof BillingSoftwareUnreachableException => GatewayOutcome::unreachable($exception->getMessage()),
             default => throw $exception,
         };
+    }
 
-        return null;
+    private function settle(Transmission $transmission, GatewayOutcome $gatewayOutcome): void
+    {
+        $lockedTransmission = Transmission::query()->lockForUpdate()->findOrFail($transmission->id);
+
+        if (! $lockedTransmission->state()->canBeSent()) {
+            return;
+        }
+
+        match (true) {
+            $gatewayOutcome->externalRef !== null => $this->transmissionLifecycle->markSent($lockedTransmission, $gatewayOutcome->externalRef),
+            $gatewayOutcome->failureReason !== null => $this->transmissionLifecycle->markFailed($lockedTransmission, $gatewayOutcome->failureReason, (string) $gatewayOutcome->message),
+            default => $this->transmissionLifecycle->scheduleRetry($lockedTransmission, (string) $gatewayOutcome->message),
+        };
     }
 }

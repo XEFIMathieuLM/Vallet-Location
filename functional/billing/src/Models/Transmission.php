@@ -32,6 +32,7 @@ use Lomkit\Access\Controls\HasControl;
  * @property string|null $last_error
  * @property string|null $external_ref
  * @property int|null $billing_export_id
+ * @property CarbonImmutable|null $reserved_until
  * @property CarbonImmutable $created_at
  * @property-read BillablePeriod|null $billablePeriod
  * @property-read DamageSettlement|null $damageSettlement
@@ -40,7 +41,7 @@ use Lomkit\Access\Controls\HasControl;
  */
 #[Fillable([
     'billable_period_id', 'damage_settlement_id', 'reservation_id', 'status', 'attempts', 'next_attempt_at',
-    'last_attempt_at', 'sent_at', 'failure_reason', 'last_error', 'external_ref', 'billing_export_id',
+    'last_attempt_at', 'sent_at', 'failure_reason', 'last_error', 'external_ref', 'billing_export_id', 'reserved_until',
 ])]
 #[UseFactory(TransmissionFactory::class)]
 class Transmission extends Model
@@ -72,6 +73,7 @@ class Transmission extends Model
             'next_attempt_at' => 'immutable_datetime',
             'last_attempt_at' => 'immutable_datetime',
             'sent_at' => 'immutable_datetime',
+            'reserved_until' => 'immutable_datetime',
             'created_at' => 'immutable_datetime',
         ];
     }
@@ -106,6 +108,11 @@ class Transmission extends Model
     public function export(): BelongsTo
     {
         return $this->belongsTo(BillingExport::class, 'billing_export_id');
+    }
+
+    public function isReserved(): bool
+    {
+        return $this->reserved_until !== null && $this->reserved_until->isFuture();
     }
 
     public function state(): TransmissionState

@@ -40,6 +40,9 @@ final class ReconcileCommand extends Command
             ->where(fn (Builder $dueTransmissions): Builder => $dueTransmissions
                 ->whereNull('next_attempt_at')
                 ->orWhere('next_attempt_at', '<=', CarbonImmutable::now()))
+            ->where(fn (Builder $unreservedTransmissions): Builder => $unreservedTransmissions
+                ->whereNull('reserved_until')
+                ->orWhere('reserved_until', '<=', CarbonImmutable::now()))
             ->pluck('id')
             ->each(fn (int $transmissionId) => SendTransmissionJob::dispatch($transmissionId));
 

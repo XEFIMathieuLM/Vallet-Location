@@ -24,6 +24,7 @@ return new class extends Migration
             $table->text('last_error')->nullable();
             $table->string('external_ref')->nullable();
             $table->foreignId('billing_export_id')->nullable()->constrained();
+            $table->timestamp('reserved_until')->nullable();
             $table->timestamps();
 
             $table->index(['status', 'next_attempt_at']);

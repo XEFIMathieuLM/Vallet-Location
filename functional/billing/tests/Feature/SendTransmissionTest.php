@@ -3,18 +3,27 @@
 namespace Functional\Billing\Tests\Feature;
 
 use Carbon\CarbonImmutable;
+use Functional\Billing\Actions\CreateBillingExport;
 use Functional\Billing\Actions\SendTransmission;
+use Functional\Billing\Contracts\BillingGateway;
 use Functional\Billing\Enums\BillablePeriodKind;
 use Functional\Billing\Enums\FakeGatewayMode;
 use Functional\Billing\Enums\TransmissionFailureReason;
 use Functional\Billing\Enums\TransmissionStatus;
+use Functional\Billing\Exceptions\NothingToExportException;
+use Functional\Billing\Jobs\SendTransmissionJob;
 use Functional\Billing\Models\BillablePeriod;
 use Functional\Billing\Models\CustomerBillingAccount;
 use Functional\Billing\Models\DamageSettlement;
 use Functional\Billing\Models\Transmission;
 use Functional\Billing\Tests\Concerns\BuildsBillingFixtures;
+use Functional\Billing\Tests\Doubles\ObservingBillingGateway;
+use Functional\Billing\ValueObjects\BillableLine;
 use Functional\Booking\Models\Reservation;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use RuntimeException;
 use Tests\TestCase;
 
 class SendTransmissionTest extends TestCase
@@ -143,6 +152,78 @@ class SendTransmissionTest extends TestCase
 
         $this->assertCount(1, $this->fakeGateway()->received());
         $this->assertSame(1, $transmission->refresh()->attempts);
+    }
+
+    public function test_the_billing_software_is_called_outside_any_transaction_and_an_export_skips_the_reserved_transmission(): void
+    {
+        Storage::fake('billing-exports');
+        $employee = $this->employee();
+        $reservation = $this->closedReservation('2026-11-10 08:00:00', '2026-11-14 17:00:00');
+        $transmission = $this->periodTransmission($reservation, '2026-11-10', '2026-11-14', BillablePeriodKind::Final);
+        $baseTransactionLevel = DB::transactionLevel();
+        $observedTransactionLevel = null;
+        $this->app->instance(BillingGateway::class, new ObservingBillingGateway(function (BillableLine $line) use (&$observedTransactionLevel, $employee): string {
+            $observedTransactionLevel = DB::transactionLevel();
+            $this->assertThrows(fn () => app(CreateBillingExport::class)->handle($employee), NothingToExportException::class);
+
+            return 'EXT-1';
+        }));
+
+        app(SendTransmission::class)->handle($transmission);
+
+        $this->assertSame($baseTransactionLevel, $observedTransactionLevel);
+        $transmission->refresh();
+        $this->assertSame(TransmissionStatus::Sent, $transmission->status);
+        $this->assertNull($transmission->reserved_until);
+    }
+
+    public function test_a_transmission_reserved_by_another_send_is_skipped_until_its_reservation_expires(): void
+    {
+        CarbonImmutable::setTestNow('2026-11-14 18:00:00');
+        $reservation = $this->closedReservation('2026-11-10 08:00:00', '2026-11-14 17:00:00');
+        $transmission = $this->periodTransmission($reservation, '2026-11-10', '2026-11-14', BillablePeriodKind::Final);
+        $transmission->update(['reserved_until' => CarbonImmutable::now()->addSeconds(30)]);
+
+        app(SendTransmission::class)->handle($transmission);
+        $this->assertSame([], $this->fakeGateway()->received());
+
+        CarbonImmutable::setTestNow('2026-11-14 18:00:31');
+        app(SendTransmission::class)->handle($transmission);
+        $this->assertSame(TransmissionStatus::Sent, $transmission->refresh()->status);
+    }
+
+    public function test_an_unexpected_failure_of_the_call_records_no_outcome_and_keeps_the_reservation(): void
+    {
+        $reservation = $this->closedReservation('2026-11-10 08:00:00', '2026-11-14 17:00:00');
+        $transmission = $this->periodTransmission($reservation, '2026-11-10', '2026-11-14', BillablePeriodKind::Final);
+        $this->app->instance(BillingGateway::class, new ObservingBillingGateway(fn (): string => throw new RuntimeException('Adapter bug')));
+
+        $this->assertThrows(fn () => app(SendTransmission::class)->handle($transmission), RuntimeException::class);
+
+        $transmission->refresh();
+        $this->assertSame(TransmissionStatus::Pending, $transmission->status);
+        $this->assertNull($transmission->external_ref);
+        $this->assertNull($transmission->sent_at);
+        $this->assertNotNull($transmission->reserved_until);
+    }
+
+    public function test_the_send_job_and_the_reservation_are_bounded_by_the_gateway_timeout(): void
+    {
+        config(['billing.gateway_timeout_seconds' => 7, 'billing.reservation_margin_seconds' => 5]);
+        CarbonImmutable::setTestNow('2026-11-14 18:00:00');
+        $reservation = $this->closedReservation('2026-11-10 08:00:00', '2026-11-14 17:00:00');
+        $transmission = $this->periodTransmission($reservation, '2026-11-10', '2026-11-14', BillablePeriodKind::Final);
+        $reservedUntil = null;
+        $this->app->instance(BillingGateway::class, new ObservingBillingGateway(function () use ($transmission, &$reservedUntil): string {
+            $reservedUntil = $transmission->refresh()->reserved_until;
+
+            return 'EXT-1';
+        }));
+
+        app(SendTransmission::class)->handle($transmission);
+
+        $this->assertSame(12, (new SendTransmissionJob($transmission->id))->timeout);
+        $this->assertEquals(CarbonImmutable::parse('2026-11-14 18:00:12'), $reservedUntil);
     }
 
     private function periodTransmission(Reservation $reservation, string $startDate, string $endDate, BillablePeriodKind $kind): Transmission

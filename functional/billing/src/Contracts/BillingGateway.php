@@ -10,6 +10,7 @@ interface BillingGateway
 {
     /**
      * Sends the line once per idempotency key and returns the reference given by the billing software.
+     * The call is made outside any database transaction and must give up after `billing.gateway_timeout_seconds`.
      *
      * @throws BillingSoftwareRejectedException
      * @throws BillingSoftwareUnreachableException

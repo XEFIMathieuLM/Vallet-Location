@@ -2,10 +2,16 @@
 
 namespace Functional\Inspection\Providers;
 
+use Functional\Booking\Events\ReservationChanged;
+use Functional\Booking\Extensions\ReservationDetailSections;
+use Functional\Booking\Extensions\ReservationTransitionGuards;
 use Functional\Inspection\Access\Controls\CategoryViewControl;
 use Functional\Inspection\Access\Controls\DamageControl;
+use Functional\Inspection\Guards\PhotosCompleteGuard;
+use Functional\Inspection\Listeners\RevokePhotoSessionsOnReservationChanged;
 use Functional\Inspection\Livewire\PhotosPanel;
 use Functional\Inspection\Support\DamageActions;
+use Illuminate\Support\Facades\Event;
 use Livewire\Livewire;
 use Lomkit\Access\Access;
 use Xefi\LaravelOSDD\LayerServiceProvider;
@@ -26,6 +32,9 @@ class InspectionServiceProvider extends LayerServiceProvider
 
         (new Access)->addControls([new CategoryViewControl, new DamageControl]);
         Livewire::component('inspection.photos-panel', PhotosPanel::class);
+        $this->app->make(ReservationDetailSections::class)->register('inspection.photos-panel', 10);
+        $this->app->make(ReservationTransitionGuards::class)->register(PhotosCompleteGuard::class);
+        Event::listen(ReservationChanged::class, RevokePhotoSessionsOnReservationChanged::class);
 
         $this->withRouting(
             web: __DIR__.'/../../routes/web.php',

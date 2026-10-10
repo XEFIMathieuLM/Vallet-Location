@@ -3,7 +3,7 @@
 namespace Functional\Inspection\Livewire;
 
 use Functional\Booking\Models\Reservation;
-use Functional\Fleet\Exceptions\RefusalException;
+use Functional\Fleet\Livewire\Concerns\DisplaysRefusals;
 use Functional\Inspection\Actions\DeletePhoto;
 use Functional\Inspection\Actions\OpenPhotoSession;
 use Functional\Inspection\Enums\InspectionStep;
@@ -19,10 +19,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
-use Throwable;
 
 class PhotosPanel extends Component
 {
+    use DisplaysRefusals;
+
     public const READINESS_EVENT = 'reservation-transition-readiness';
 
     #[Locked]
@@ -79,14 +80,6 @@ class PhotosPanel extends Component
     {
         if ($this->token !== null && $this->activeSession()?->token_hash !== PhotoSession::hashToken($this->token)) {
             $this->token = null;
-        }
-    }
-
-    public function exception(Throwable $e, callable $stopPropagation): void
-    {
-        if ($e instanceof RefusalException) {
-            $this->addError('refusal', $e->getMessage());
-            $stopPropagation();
         }
     }
 

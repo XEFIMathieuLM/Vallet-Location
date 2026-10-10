@@ -2,13 +2,14 @@
 
 namespace Functional\Inspection\Guards;
 
+use Functional\Booking\Contracts\ReservationTransitionGuard;
 use Functional\Booking\Models\Reservation;
 use Functional\Inspection\Actions\FreezeReservationViews;
 use Functional\Inspection\Actions\MissingViews;
 use Functional\Inspection\Enums\InspectionStep;
 use Functional\Inspection\Exceptions\MissingPhotosException;
 
-class PhotosCompleteGuard
+class PhotosCompleteGuard implements ReservationTransitionGuard
 {
     public function __construct(
         private readonly FreezeReservationViews $freezeReservationViews,

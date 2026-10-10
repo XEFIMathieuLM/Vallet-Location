@@ -2,7 +2,7 @@
 
 namespace Functional\Inspection\Livewire;
 
-use Functional\Fleet\Exceptions\RefusalException;
+use Functional\Fleet\Livewire\Concerns\DisplaysRefusals;
 use Functional\Inspection\Actions\DeletePhoto;
 use Functional\Inspection\Actions\FindActivePhotoSession;
 use Functional\Inspection\Actions\StorePhoto;
@@ -16,12 +16,11 @@ use Livewire\Attributes\Locked;
 use Livewire\Component;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
-use Throwable;
 
 #[Layout('inspection::layouts.phone')]
 class PhoneCapture extends Component
 {
-    use WithFileUploads;
+    use DisplaysRefusals, WithFileUploads;
 
     #[Locked]
     public string $token = '';
@@ -55,14 +54,6 @@ class PhoneCapture extends Component
         $session = app(FindActivePhotoSession::class)->handle($this->token);
 
         app(DeletePhoto::class)->fromSession($session, $photoId);
-    }
-
-    public function exception(Throwable $e, callable $stopPropagation): void
-    {
-        if ($e instanceof RefusalException) {
-            $this->addError('refusal', $e->getMessage());
-            $stopPropagation();
-        }
     }
 
     public function render(): View

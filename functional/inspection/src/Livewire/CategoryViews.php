@@ -2,7 +2,7 @@
 
 namespace Functional\Inspection\Livewire;
 
-use Functional\Fleet\Exceptions\RefusalException;
+use Functional\Fleet\Livewire\Concerns\DisplaysRefusals;
 use Functional\Fleet\Models\MachineCategory;
 use Functional\Inspection\Actions\CategoryViews\AddCategoryView;
 use Functional\Inspection\Actions\CategoryViews\MoveCategoryView;
@@ -14,10 +14,11 @@ use Functional\Inspection\Models\CategoryView;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
-use Throwable;
 
 class CategoryViews extends Component
 {
+    use DisplaysRefusals;
+
     #[Locked]
     public MachineCategory $category;
 
@@ -69,14 +70,6 @@ class CategoryViews extends Component
     public function resetToDefault(): void
     {
         app(ResetCategoryViews::class)->handle($this->category);
-    }
-
-    public function exception(Throwable $e, callable $stopPropagation): void
-    {
-        if ($e instanceof RefusalException) {
-            $this->addError('refusal', $e->getMessage());
-            $stopPropagation();
-        }
     }
 
     public function render(): View

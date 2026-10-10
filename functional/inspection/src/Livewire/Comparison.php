@@ -3,6 +3,7 @@
 namespace Functional\Inspection\Livewire;
 
 use Functional\Booking\Models\Reservation;
+use Functional\Fleet\Livewire\Concerns\DisplaysRefusals;
 use Functional\Inspection\Actions\ReportDamage;
 use Functional\Inspection\Livewire\Concerns\ResolvesDamages;
 use Functional\Inspection\Models\Damage;
@@ -16,7 +17,7 @@ use Livewire\Component;
 
 class Comparison extends Component
 {
-    use ResolvesDamages;
+    use DisplaysRefusals, ResolvesDamages;
 
     #[Locked]
     public Reservation $reservation;

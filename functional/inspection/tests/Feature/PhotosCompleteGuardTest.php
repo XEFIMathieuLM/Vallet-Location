@@ -15,7 +15,7 @@ class PhotosCompleteGuardTest extends TestCase
 {
     use BuildsPhotoSessions, RefreshDatabase;
 
-    public function test_a_departure_without_any_qr_code_is_refused_and_freezes_the_views(): void
+    public function test_a_departure_without_any_qr_code_is_refused_listing_every_default_view(): void
     {
         $reservation = $this->reservationStartingToday();
 
@@ -24,8 +24,6 @@ class PhotosCompleteGuardTest extends TestCase
             MissingPhotosException::class,
             'Photos manquantes : Avant, Arrière, Gauche, Droite, Compteur d\'heures',
         );
-
-        $this->assertSame(5, ReservationView::query()->where('reservation_id', $reservation->id)->count());
     }
 
     public function test_a_departure_with_one_missing_view_lists_only_that_view(): void

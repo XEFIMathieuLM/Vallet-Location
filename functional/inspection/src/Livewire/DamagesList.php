@@ -2,6 +2,7 @@
 
 namespace Functional\Inspection\Livewire;
 
+use Functional\Fleet\Livewire\Concerns\DisplaysRefusals;
 use Functional\Inspection\Livewire\Concerns\ResolvesDamages;
 use Functional\Inspection\Queries\ReservationsToReinvoice;
 use Illuminate\Contracts\View\View;
@@ -10,7 +11,7 @@ use Livewire\Component;
 
 class DamagesList extends Component
 {
-    use ResolvesDamages;
+    use DisplaysRefusals, ResolvesDamages;
 
     #[On('echo-private:fleet,.damage.changed')]
     public function refreshDamages(): void {}

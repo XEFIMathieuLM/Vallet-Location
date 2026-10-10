@@ -60,7 +60,8 @@ Un salarié enregistre chaque offre reçue : l'acheteur (un client existant ou u
 5. **Given** une vente réservée avec une remise prévue au 20 novembre, **When** un salarié tente de réserver la machine en location du 18 au 22 novembre, **Then** l'outil refuse et indique la vente réservée et sa date de remise.
 6. **Given** une vente réservée avec une remise prévue au 20 novembre, **When** un salarié réserve la machine en location du 10 au 14 novembre, **Then** la réservation est acceptée.
 7. **Given** une vente réservée, **When** un salarié tente d'enregistrer ou d'accepter une nouvelle offre, **Then** l'outil refuse tant que la réservation de la vente n'est pas levée.
-8. **Given** une offre de 12 000 € sur une machine affichée à 18 000 €, **When** un salarié l'accepte, **Then** l'acceptation est enregistrée comme pour toute autre offre, avec son auteur dans l'historique de la vente ; tous les salariés ont les mêmes droits.
+8. **Given** une vente réservée dont l'acheteur se désiste, **When** un salarié lève la réservation avec le motif « financement refusé », **Then** la vente repasse « en vente » au prix demandé, l'offre acceptée passe « retirée », la restriction de location est levée, et de nouvelles offres peuvent être enregistrées.
+9. **Given** une offre de 12 000 € sur une machine affichée à 18 000 €, **When** un salarié l'accepte, **Then** l'acceptation est enregistrée comme pour toute autre offre, avec son auteur dans l'historique de la vente ; tous les salariés ont les mêmes droits.
 
 ---
 
@@ -152,21 +153,23 @@ Une vente peut être annulée tant qu'elle n'est pas conclue (acheteur qui se d�
 - **FR-008**: Les salariés DOIVENT pouvoir accepter une offre en indiquant une date de remise prévue (aujourd'hui ou plus tard) ; la vente passe « réservée » pour cet acheteur au montant de l'offre, et les autres offres en cours passent « refusées ».
 - **FR-009**: Le système DOIT refuser l'acceptation d'une offre, ou le report de la date de remise, si une location confirmée ou en cours de la machine se termine après la date de remise prévue, en indiquant la location en conflit.
 - **FR-010**: Tant qu'une vente est réservée, le système DOIT refuser toute réservation de location de la machine dont la date de fin est postérieure ou égale à la date de remise prévue, en indiquant la vente réservée et sa date de remise.
+- **FR-008a**: Les salariés DOIVENT pouvoir modifier la date de remise prévue d'une vente réservée (aujourd'hui ou plus tard), sous la condition de FR-009 ; le prix et l'acheteur d'une vente réservée ne sont pas modifiables : une renégociation passe par la levée de la réservation (FR-018a) et une nouvelle offre.
 - **FR-011**: Le système DOIT garantir qu'une seule offre peut être acceptée sur une vente, y compris en cas de validations simultanées.
 - **FR-012**: Les salariés DOIVENT pouvoir classer une offre non acceptée « retirée » ou « refusée ».
 - **FR-012a**: Tous les salariés DOIVENT avoir les mêmes droits sur les ventes (mise en vente, offres, acceptation, remise, annulation) ; aucune action de vente n'est réservée à un rôle dans cette version.
 
 **Conclusion de la vente**
 
-- **FR-013**: Les salariés DOIVENT pouvoir enregistrer la remise d'une vente réservée ; la vente passe « vendue » avec la date de remise réelle (aujourd'hui), le prix final (montant de l'offre acceptée) et l'auteur.
+- **FR-013**: Les salariés DOIVENT pouvoir enregistrer la remise d'une vente réservée à tout moment, avant, à ou après la date de remise prévue ; la vente passe « vendue » avec la date de remise réelle (aujourd'hui), le prix final (montant de l'offre acceptée) et l'auteur.
 - **FR-014**: Le système DOIT refuser la remise si la machine est sortie en location ou a des réservations de location confirmées non annulées.
 - **FR-015**: À la remise, le système DOIT retirer la machine du parc (statut « retirée du parc ») dans la même opération ; si la machine était déjà retirée, son statut est inchangé.
 - **FR-016**: Le système DOIT refuser le retrait manuel du parc d'une machine ayant une vente ouverte.
 - **FR-017**: Le prix, l'acheteur et la date d'une vente conclue NE DOIVENT plus être modifiables dans l'outil ; une vente conclue NE DOIT pas pouvoir être annulée.
 
-**Annulation**
+**Annulation et levée de la réservation**
 
 - **FR-018**: Les salariés DOIVENT pouvoir annuler une vente « en vente » ou « réservée » avec un motif obligatoire ; ses offres en cours passent « refusées » et toute restriction de location liée à la vente est levée.
+- **FR-018a**: Les salariés DOIVENT pouvoir lever la réservation d'une vente réservée avec un motif obligatoire : la vente repasse « en vente », l'offre acceptée passe « retirée », l'acheteur, le prix final et la date de remise prévue sont effacés de la vente (et conservés dans l'historique), et la restriction de location est levée.
 
 **Transmission au logiciel de facturation**
 
@@ -178,12 +181,12 @@ Une vente peut être annulée tant qu'elle n'est pas conclue (acheteur qui se d�
 
 - **FR-022**: Le système DOIT fournir une liste des ventes filtrable par statut, agence et période, avec pour chacune la machine, le prix demandé, le prix final, l'acheteur, la date de remise prévue ou réelle et l'état de transmission, ainsi que le total hors taxes des ventes conclues sur le filtre.
 - **FR-023**: Le système DOIT mettre en évidence les ventes réservées dont la date de remise prévue est dépassée.
-- **FR-024**: Le système DOIT enregistrer dans l'historique de la vente chaque mise en vente, changement de prix, offre, acceptation, refus, retrait d'offre, remise, annulation et tentative de transmission, avec l'auteur, l'agence et la date ; l'historique de la machine DOIT donner accès à toutes ses ventes, y compris annulées.
+- **FR-024**: Le système DOIT enregistrer dans l'historique de la vente chaque mise en vente, changement de prix, offre, acceptation, refus, retrait d'offre, changement de date de remise prévue, levée de réservation, remise, annulation et tentative de transmission, avec l'auteur, l'agence et la date ; l'historique de la machine DOIT donner accès à toutes ses ventes, y compris annulées.
 - **FR-025**: Toute ouverture, réservation, conclusion ou annulation de vente DOIT être visible par toutes les agences sans action manuelle de rafraîchissement.
 
 ### Key Entities
 
-- **Vente** : la mise en vente d'une machine ; machine, prix demandé hors taxes, descriptif, statut (en vente, réservée, vendue, annulée), acheteur et prix final une fois réservée, date de remise prévue, date de remise réelle, motif d'annulation, agence et auteur de la mise en vente.
+- **Vente** : la mise en vente d'une machine ; machine, prix demandé hors taxes, descriptif, statut (en vente, réservée, vendue, annulée ; une vente réservée peut repasser en vente par la levée de sa réservation), acheteur et prix final une fois réservée, date de remise prévue, date de remise réelle, motif d'annulation, agence et auteur de la mise en vente.
 - **Offre** : une proposition d'achat sur une vente ; acheteur, montant hors taxes, date, statut (en cours, acceptée, refusée, retirée), auteur.
 - **Acheteur** : un client du fichier client (feature 001), avec son identifiant dans le logiciel de facturation (feature 003).
 - **Machine** (feature 001) : associée à ses ventes ; sort du parc par la conclusion d'une vente.

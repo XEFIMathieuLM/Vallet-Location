@@ -3,11 +3,23 @@
 namespace Functional\Booking\Providers;
 
 use Functional\Booking\Access\Controls\ReservationControl;
+use Functional\Booking\Console\FlagLateReturns;
+use Functional\Booking\Extensions\ReservationDetailSections;
+use Functional\Booking\Extensions\ReservationTransitionGuards;
+use Functional\Booking\Listeners\RefreshConflictsOnMachineChanged;
+use Functional\Fleet\Events\MachineChanged;
+use Illuminate\Support\Facades\Event;
 use Lomkit\Access\Access;
 use Xefi\LaravelOSDD\LayerServiceProvider;
 
 class BookingServiceProvider extends LayerServiceProvider
 {
+    public function register(): void
+    {
+        $this->app->singleton(ReservationTransitionGuards::class);
+        $this->app->singleton(ReservationDetailSections::class);
+    }
+
     public function boot(): void
     {
         $this->loadMigrationsFrom(__DIR__.'/../../database/migrations');
@@ -15,6 +27,12 @@ class BookingServiceProvider extends LayerServiceProvider
         $this->loadViewsFrom(__DIR__.'/../../resources/views', 'booking');
 
         (new Access)->addControls([new ReservationControl]);
+
+        Event::listen(MachineChanged::class, RefreshConflictsOnMachineChanged::class);
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([FlagLateReturns::class]);
+        }
 
         $this->withRouting(
             web: __DIR__.'/../../routes/web.php',

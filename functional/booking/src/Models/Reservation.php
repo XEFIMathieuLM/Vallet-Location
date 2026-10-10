@@ -7,6 +7,8 @@ use Carbon\CarbonImmutable;
 use Functional\Booking\Database\Factories\ReservationFactory;
 use Functional\Booking\Enums\ConflictReason;
 use Functional\Booking\Enums\ReservationStatus;
+use Functional\Booking\States\ReservationState;
+use Functional\Booking\States\ReservationStateFactory;
 use Functional\Fleet\Models\Agency;
 use Functional\Fleet\Models\Machine;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -89,6 +91,11 @@ class Reservation extends Model
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function state(): ReservationState
+    {
+        return ReservationStateFactory::fromStatus($this->status);
     }
 
     public function getActivitylogOptions(): LogOptions

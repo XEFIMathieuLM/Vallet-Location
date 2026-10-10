@@ -13,4 +13,14 @@ enum ReservationStatus: string
     {
         return __("booking::reservations.status.{$this->value}");
     }
+
+    public function color(): string
+    {
+        return match ($this) {
+            self::Confirmed => 'blue',
+            self::InProgress => 'amber',
+            self::Closed => 'zinc',
+            self::Cancelled => 'zinc',
+        };
+    }
 }

@@ -90,7 +90,7 @@ class CreateReservationForm extends Component
             'end' => $reservation->end_date->format('d/m/Y'),
         ]));
 
-        $this->redirectRoute('availability.index', navigate: true);
+        $this->redirectRoute('reservations.show', $reservation, navigate: true);
     }
 
     /**

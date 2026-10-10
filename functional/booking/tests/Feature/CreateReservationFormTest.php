@@ -46,9 +46,7 @@ class CreateReservationFormTest extends TestCase
             ->set('customerId', $customer->id)
             ->call('save')
             ->assertHasNoErrors()
-            ->assertRedirect(route('availability.index'));
-
-        $this->assertTrue(Reservation::query()->where('customer_id', $customer->id)->exists());
+            ->assertRedirect(route('reservations.show', Reservation::query()->where('customer_id', $customer->id)->firstOrFail()));
     }
 
     public function test_a_new_customer_is_created_with_the_reservation(): void

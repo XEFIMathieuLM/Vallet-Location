@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
 
-// Define artisan commands here, e.g.:
-// Artisan::command('layer:hello', fn() => info('Hello from this layer.'));
+Schedule::command('booking:flag-late-returns')->dailyAt('00:05');

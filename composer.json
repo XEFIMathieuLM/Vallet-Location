@@ -49,7 +49,9 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/"
+            "Tests\\": "tests/",
+            "Functional\\Fleet\\Tests\\": "functional/fleet/tests/",
+            "Functional\\Booking\\Tests\\": "functional/booking/tests/"
         }
     },
     "scripts": {

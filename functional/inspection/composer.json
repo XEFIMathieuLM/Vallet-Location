@@ -32,6 +32,11 @@
             "providers": [
                 "Functional\\Inspection\\Providers\\InspectionServiceProvider"
             ]
+        },
+        "faker": {
+            "providers": [
+                "Functional\\Inspection\\Faker\\InspectionFakerServiceProvider"
+            ]
         }
     }
 }

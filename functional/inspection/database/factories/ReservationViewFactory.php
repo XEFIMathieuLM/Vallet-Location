@@ -17,7 +17,7 @@ class ReservationViewFactory extends Factory
     {
         return [
             'reservation_id' => Reservation::factory(),
-            'label' => ucfirst(faker()->words(1)),
+            'label' => faker()->inspectionViewName(),
             'position' => fn (array $attributes): int => (int) ReservationView::query()->where('reservation_id', $attributes['reservation_id'])->max('position') + 1,
         ];
     }

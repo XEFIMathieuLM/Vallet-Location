@@ -9,7 +9,6 @@ use Functional\Inspection\Enums\InspectionStep;
 use Functional\Inspection\Enums\RevocationReason;
 use Functional\Inspection\Models\PhotoSession;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 /**
  * @extends Factory<PhotoSession>
@@ -23,7 +22,7 @@ class PhotoSessionFactory extends Factory
         return [
             'reservation_id' => Reservation::factory(),
             'step' => InspectionStep::Departure,
-            'token_hash' => PhotoSession::hashToken(Str::random(40)),
+            'token_hash' => faker()->inspectionTokenHash(),
             'created_by' => User::factory(),
             'expires_at' => CarbonImmutable::now()->addMinutes(30),
         ];

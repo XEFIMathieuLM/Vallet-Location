@@ -1039,7 +1039,7 @@
             "dist": {
                 "type": "path",
                 "url": "./functional/inspection",
-                "reference": "e5e19011c7bab20037e02851be92e8b279e207f2"
+                "reference": "b9e071f48ac2380a15fb95921d4df454fb12ee31"
             },
             "require": {
                 "bacon/bacon-qr-code": "^3.0",
@@ -1061,6 +1061,11 @@
                 "laravel": {
                     "providers": [
                         "Functional\\Inspection\\Providers\\InspectionServiceProvider"
+                    ]
+                },
+                "faker": {
+                    "providers": [
+                        "Functional\\Inspection\\Faker\\InspectionFakerServiceProvider"
                     ]
                 }
             },

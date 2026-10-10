@@ -4,7 +4,7 @@ namespace Functional\Billing\Contracts;
 
 use Functional\Billing\Exceptions\BillingSoftwareRejectedException;
 use Functional\Billing\Exceptions\BillingSoftwareUnreachableException;
-use Functional\Billing\ValueObjects\BillableLine;
+use Functional\Billing\Lines\BillableLine;
 
 interface BillingGateway
 {

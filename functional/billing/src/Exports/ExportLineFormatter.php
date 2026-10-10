@@ -2,7 +2,8 @@
 
 namespace Functional\Billing\Exports;
 
-use Functional\Billing\ValueObjects\BillableLine;
+use Functional\Billing\Lines\BillableLine;
+use Functional\Billing\Lines\DamageLine;
 
 final class ExportLineFormatter
 {
@@ -13,7 +14,7 @@ final class ExportLineFormatter
     {
         $line = $billableLine->toArray();
         unset($line['amount_excl_tax_cents']);
-        $line['amount_excl_tax'] = $billableLine->amountExclTax?->format();
+        $line['amount_excl_tax'] = $billableLine instanceof DamageLine ? $billableLine->amountExclTax->format() : null;
 
         return $line;
     }

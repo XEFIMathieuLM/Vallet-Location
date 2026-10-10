@@ -6,7 +6,7 @@ use Functional\Billing\Contracts\BillingGateway;
 use Functional\Billing\Enums\FakeGatewayMode;
 use Functional\Billing\Exceptions\BillingSoftwareRejectedException;
 use Functional\Billing\Exceptions\BillingSoftwareUnreachableException;
-use Functional\Billing\ValueObjects\BillableLine;
+use Functional\Billing\Lines\BillableLine;
 use Illuminate\Support\Facades\Cache;
 
 final class FakeBillingGateway implements BillingGateway
@@ -25,18 +25,18 @@ final class FakeBillingGateway implements BillingGateway
             throw BillingSoftwareUnreachableException::make();
         }
 
-        $rejectionReason = $this->rejections()[$line->idempotencyKey] ?? null;
+        $rejectionReason = $this->rejections()[$line->idempotencyKey()] ?? null;
 
         if ($rejectionReason !== null) {
             throw BillingSoftwareRejectedException::because($rejectionReason);
         }
 
         $references = $this->references();
-        $references[$line->idempotencyKey] ??= 'FAKE-'.(count($references) + 1);
+        $references[$line->idempotencyKey()] ??= 'FAKE-'.(count($references) + 1);
         Cache::forever(self::REFERENCES_KEY, $references);
-        Cache::forever(self::RECEIVED_KEY, array_replace($this->received(), [$line->idempotencyKey => $line->toArray()]));
+        Cache::forever(self::RECEIVED_KEY, array_replace($this->received(), [$line->idempotencyKey() => $line->toArray()]));
 
-        return $references[$line->idempotencyKey];
+        return $references[$line->idempotencyKey()];
     }
 
     public function switchTo(FakeGatewayMode $mode): void

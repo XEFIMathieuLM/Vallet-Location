@@ -15,4 +15,9 @@ final class InvalidMoneyException extends DomainException
     {
         return new self("Attribute '{$attribute}' only stores a Money value.");
     }
+
+    public static function missingForSettlement(int $damageSettlementId): self
+    {
+        return new self("Billed damage settlement #{$damageSettlementId} has no amount.");
+    }
 }

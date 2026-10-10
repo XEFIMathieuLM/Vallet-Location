@@ -7,11 +7,11 @@ use Functional\Billing\Contracts\BillingGateway;
 use Functional\Billing\Enums\TransmissionFailureReason;
 use Functional\Billing\Exceptions\BillingSoftwareRejectedException;
 use Functional\Billing\Exceptions\BillingSoftwareUnreachableException;
+use Functional\Billing\Lines\BillableLine;
 use Functional\Billing\Models\Transmission;
 use Functional\Billing\Transmissions\GatewayOutcome;
 use Functional\Billing\Transmissions\TransmissionLifecycle;
 use Functional\Billing\Transmissions\TransmissionReservation;
-use Functional\Billing\ValueObjects\BillableLine;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -56,7 +56,7 @@ final class SendTransmission
             'reserved_until' => $this->transmissionReservation->expiresAt(),
         ]);
 
-        if ($billableLine->customerRef === null) {
+        if ($billableLine->customerRef() === null) {
             $this->transmissionLifecycle->markFailed($lockedTransmission, TransmissionFailureReason::CustomerUnknown, TransmissionFailureReason::CustomerUnknown->label());
 
             return null;

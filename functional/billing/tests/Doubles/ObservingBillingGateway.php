@@ -4,7 +4,7 @@ namespace Functional\Billing\Tests\Doubles;
 
 use Closure;
 use Functional\Billing\Contracts\BillingGateway;
-use Functional\Billing\ValueObjects\BillableLine;
+use Functional\Billing\Lines\BillableLine;
 
 final class ObservingBillingGateway implements BillingGateway
 {

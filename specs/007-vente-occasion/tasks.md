@@ -45,13 +45,13 @@ description: "Task list for the used machine sales feature"
 
 **Purpose**: créer le layer et le brancher dans l'application.
 
-- [ ] T001 Générer le layer avec `docker compose exec -u sail laravel.test php artisan osdd:layer functional/sales --no-interaction` (vérifier la commande exacte via `php artisan list osdd`) et compléter `functional/sales/composer.json` : `require` `functional/billing`, `functional/booking`, `functional/fleet`, `xefi/laravel-osdd` ; `functional/inspection` (trait `ActsAsAgencyMember`) ; autoload `Functional\\Sales\\` (src, seeders, factories, et `Functional\\Sales\\Tests\\` en autoload-dev racine comme les autres layers) ; provider `Functional\\Sales\\Providers\\SalesServiceProvider`
-- [ ] T002 Ajouter `functional/sales` au `composer.json` racine (path repository + `require`), puis `composer update functional/sales` dans le conteneur
-- [ ] T003 [P] Ajouter `functional/sales/src` à `<source>` de `phpunit.xml` et `functional/sales/src/`, `database/`, `routes/` aux `paths` de `phpstan.neon`
-- [ ] T004 Créer `functional/sales/src/Providers/SalesServiceProvider.php` (extends `LayerServiceProvider`) : migrations, traductions `sales`, vues `sales`, routes `web` et `channels` ; enregistrements des points d'extension laissés vides jusqu'aux phases suivantes
-- [ ] T005 [P] Créer l'enum `functional/sales/src/Access/SalesPermission.php` (`Manage = 'sales.manage'`) et `functional/sales/database/seeders/SalesPermissionSeeder.php` (crée seulement, modèle `BillingPermissionSeeder`) ; l'appeler dans `database/seeders/DatabaseSeeder.php` avant `PermissionSeeder` et l'ajouter à `seedPermissions()` de `tests/TestCase.php`
-- [ ] T006 [P] Créer `functional/sales/routes/channels.php` : canal privé `sales` autorisé par `$user->can(SalesPermission::Manage->value)`
-- [ ] T007 [P] Créer `functional/sales/tests/Feature/LayerBoundariesTest.php` : aucun fichier de `functional/{billing,inspection,booking,fleet}` ne contient `Functional\Sales` (modèle : `functional/billing/tests/Feature/LayerBoundariesTest.php`)
+- [X] T001 Générer le layer avec `docker compose exec -u sail laravel.test php artisan osdd:layer functional/sales --no-interaction` (vérifier la commande exacte via `php artisan list osdd`) et compléter `functional/sales/composer.json` : `require` `functional/billing`, `functional/booking`, `functional/fleet`, `xefi/laravel-osdd` ; `functional/inspection` (trait `ActsAsAgencyMember`) ; autoload `Functional\\Sales\\` (src, seeders, factories, et `Functional\\Sales\\Tests\\` en autoload-dev racine comme les autres layers) ; provider `Functional\\Sales\\Providers\\SalesServiceProvider`
+- [X] T002 Ajouter `functional/sales` au `composer.json` racine (path repository + `require`), puis `composer update functional/sales` dans le conteneur
+- [X] T003 [P] Ajouter `functional/sales/src` à `<source>` de `phpunit.xml` et `functional/sales/src/`, `database/`, `routes/` aux `paths` de `phpstan.neon`
+- [X] T004 Créer `functional/sales/src/Providers/SalesServiceProvider.php` (extends `LayerServiceProvider`) : migrations, traductions `sales`, vues `sales`, routes `web` et `channels` ; enregistrements des points d'extension laissés vides jusqu'aux phases suivantes
+- [X] T005 [P] Créer l'enum `functional/sales/src/Access/SalesPermission.php` (`Manage = 'sales.manage'`) et `functional/sales/database/seeders/SalesPermissionSeeder.php` (crée seulement, modèle `BillingPermissionSeeder`) ; l'appeler dans `database/seeders/DatabaseSeeder.php` avant `PermissionSeeder` et l'ajouter à `seedPermissions()` de `tests/TestCase.php`
+- [X] T006 [P] Créer `functional/sales/routes/channels.php` : canal privé `sales` autorisé par `$user->can(SalesPermission::Manage->value)`
+- [X] T007 [P] Créer `functional/sales/tests/Feature/LayerBoundariesTest.php` : aucun fichier de `functional/{billing,inspection,booking,fleet}` ne contient `Functional\Sales` (modèle : `functional/billing/tests/Feature/LayerBoundariesTest.php`)
 
 **Checkpoint**: `php artisan about` liste le provider ; `LayerBoundariesTest` vert ; PHPStan vert.
 

@@ -13,6 +13,11 @@ final class RetiredMachineState implements MachineState
         return MachineStatus::Retired;
     }
 
+    public function allowedTransitions(): array
+    {
+        return [];
+    }
+
     public function acceptsReservations(): bool
     {
         return false;

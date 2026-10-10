@@ -27,6 +27,14 @@
                         </flux:sidebar.item>
                     </flux:sidebar.group>
                 @endcan
+
+                @can('machines.manage')
+                    <flux:sidebar.group :heading="__('fleet::machines.navigation.fleet')" class="grid">
+                        <flux:sidebar.item icon="truck" :href="route('machines.index')" :current="request()->routeIs('machines.*')" wire:navigate>
+                            {{ __('fleet::machines.index.title') }}
+                        </flux:sidebar.item>
+                    </flux:sidebar.group>
+                @endcan
             </flux:sidebar.nav>
 
             <flux:spacer />

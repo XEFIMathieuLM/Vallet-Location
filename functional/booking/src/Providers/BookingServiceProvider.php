@@ -6,7 +6,9 @@ use Functional\Booking\Access\Controls\ReservationControl;
 use Functional\Booking\Console\FlagLateReturns;
 use Functional\Booking\Extensions\ReservationDetailSections;
 use Functional\Booking\Extensions\ReservationTransitionGuards;
+use Functional\Booking\Guards\ActiveReservationsRetirementGuard;
 use Functional\Booking\Listeners\RefreshConflictsOnMachineChanged;
+use Functional\Fleet\Contracts\MachineRetirementGuard;
 use Functional\Fleet\Events\MachineChanged;
 use Illuminate\Support\Facades\Event;
 use Lomkit\Access\Access;
@@ -18,6 +20,7 @@ class BookingServiceProvider extends LayerServiceProvider
     {
         $this->app->singleton(ReservationTransitionGuards::class);
         $this->app->singleton(ReservationDetailSections::class);
+        $this->app->bind(MachineRetirementGuard::class, ActiveReservationsRetirementGuard::class);
     }
 
     public function boot(): void

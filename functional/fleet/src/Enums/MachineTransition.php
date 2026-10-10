@@ -3,6 +3,7 @@
 namespace Functional\Fleet\Enums;
 
 use Functional\Fleet\States\MachineState;
+use Functional\Fleet\States\MachineStateFactory;
 
 enum MachineTransition: string
 {
@@ -25,6 +26,22 @@ enum MachineTransition: string
             self::MakeAvailable => $state->makeAvailable(),
             self::Retire => $state->retire(),
         };
+    }
+
+    public function isManual(): bool
+    {
+        return in_array($this, [self::SendToWorkshop, self::MarkOutOfOrder, self::MakeAvailable, self::Retire], true);
+    }
+
+    /**
+     * @return list<self>
+     */
+    public static function manualFrom(MachineStatus $status): array
+    {
+        return array_values(array_filter(
+            MachineStateFactory::fromStatus($status)->allowedTransitions(),
+            fn (self $transition): bool => $transition->isManual(),
+        ));
     }
 
     public function label(): string

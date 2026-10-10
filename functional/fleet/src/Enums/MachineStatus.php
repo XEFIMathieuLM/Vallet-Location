@@ -14,4 +14,15 @@ enum MachineStatus: string
     {
         return __("fleet::machines.status.{$this->value}");
     }
+
+    public function color(): string
+    {
+        return match ($this) {
+            self::Available => 'green',
+            self::RentedOut => 'blue',
+            self::Workshop => 'amber',
+            self::OutOfOrder => 'red',
+            self::Retired => 'zinc',
+        };
+    }
 }

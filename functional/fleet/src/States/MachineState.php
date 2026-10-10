@@ -3,10 +3,16 @@
 namespace Functional\Fleet\States;
 
 use Functional\Fleet\Enums\MachineStatus;
+use Functional\Fleet\Enums\MachineTransition;
 
 interface MachineState
 {
     public function status(): MachineStatus;
+
+    /**
+     * @return list<MachineTransition>
+     */
+    public function allowedTransitions(): array;
 
     public function acceptsReservations(): bool;
 

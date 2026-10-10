@@ -1,0 +1,11 @@
+reference;categorie;agence;soumise_vgp;echeance_vgp
+NAC-0101;Nacelle;Annecy;;30/11/2027
+MPE-0101;Mini-pelle;Lyon;non;
+NAC-0101;Nacelle;Lyon;;30/11/2027
+;Nacelle;Lyon;;
+nac-0001;Nacelle;Annecy;;30/11/2027
+CMP-0101;Bulldozer;Annecy;;
+CMP-0102;Mini-pelle;Paris;;
+CMP-0103;Mini-pelle;annecy;;31/02/2027
+
+mpe-0102 ;mini-pelle; Annecy ;oui;15/01/2028

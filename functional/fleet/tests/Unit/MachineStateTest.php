@@ -3,6 +3,7 @@
 namespace Functional\Fleet\Tests\Unit;
 
 use Functional\Fleet\Enums\MachineStatus;
+use Functional\Fleet\Enums\MachineTransition;
 use Functional\Fleet\Exceptions\IllegalMachineTransitionException;
 use Functional\Fleet\States\MachineStateFactory;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -53,6 +54,18 @@ class MachineStateTest extends TestCase
         $nextState = $state->{$transition}();
 
         $this->assertSame($expectedStatus, $nextState->status()->value);
+    }
+
+    public function test_each_state_lists_exactly_its_legal_transitions(): void
+    {
+        foreach (self::LEGAL_TRANSITIONS as $status => $legalTransitions) {
+            $allowedTransitions = array_map(
+                fn (MachineTransition $transition): string => lcfirst(str_replace('_', '', ucwords($transition->value, '_'))),
+                MachineStateFactory::fromStatus(MachineStatus::from($status))->allowedTransitions(),
+            );
+
+            $this->assertEqualsCanonicalizing(array_keys($legalTransitions), $allowedTransitions, $status);
+        }
     }
 
     public function test_only_available_and_rented_out_machines_accept_reservations(): void

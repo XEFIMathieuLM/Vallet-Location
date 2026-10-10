@@ -3,6 +3,7 @@
 namespace Functional\Fleet\States;
 
 use Functional\Fleet\Enums\MachineStatus;
+use Functional\Fleet\Enums\MachineTransition;
 
 final class WorkshopMachineState implements MachineState
 {
@@ -13,6 +14,11 @@ final class WorkshopMachineState implements MachineState
         return MachineStatus::Workshop;
     }
 
+    public function allowedTransitions(): array
+    {
+        return [MachineTransition::MakeAvailable, MachineTransition::MarkOutOfOrder, MachineTransition::Retire];
+    }
+
     public function acceptsReservations(): bool
     {
         return false;
@@ -20,16 +26,16 @@ final class WorkshopMachineState implements MachineState
 
     public function makeAvailable(): MachineState
     {
-        return new AvailableMachineState();
+        return new AvailableMachineState;
     }
 
     public function markOutOfOrder(): MachineState
     {
-        return new OutOfOrderMachineState();
+        return new OutOfOrderMachineState;
     }
 
     public function retire(): MachineState
     {
-        return new RetiredMachineState();
+        return new RetiredMachineState;
     }
 }

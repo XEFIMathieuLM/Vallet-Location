@@ -34,7 +34,7 @@ Approche : un nouveau layer OSDD **`inspection`** au-dessus de `booking` et `fle
 
 Dépôt unique : l'application Laravel à la racine du dépôt (pas de `repos.yml`, comme pour la 001). Aucun autre dépôt touché.
 
-**Dépendance** : cette feature modifie le layer `booking` de la 001 (point d'extension, voir P2 et P3 de [research.md](research.md)). Son implémentation démarre **après** que le code de la 001 est commité et que cette branche est mise à jour par-dessus.
+**Dépendance** : cette feature s'appuie sur deux points d'extension du layer `booking` (voir P2 et P3 de [research.md](research.md)). Génériques, ils sont réalisés **dans la 001**, avec les actions de sortie et de retour et l'écran de détail ; cette branche ne modifie aucun fichier de `booking`. Les parties d'`inspection` qui n'en dépendent pas démarrent dès la phase 2 de la 001 ; le blocage de la sortie et du retour attend sa phase 5 (voir [tasks.md](tasks.md#️-prérequis--feature-001)).
 
 ## Constitution Check
 
@@ -83,8 +83,8 @@ specs/002-photos-qr-code/
 ### Source Code (repository root)
 
 ```text
-layers/
-├── booking/                          # 001, modifié
+functional/
+├── booking/                          # 001 (points d'extension réalisés dans la 001)
 │   └── src/
 │       ├── Contracts/                # ReservationTransitionGuard (nouveau)
 │       ├── Support/                  # registres : guards, sections du détail (nouveau)
@@ -111,7 +111,7 @@ layers/
     └── tests/{Feature,Unit}/
 routes/channels.php                   # + canal privé reservation.{id}
 config/filesystems.php                # + disque photos
-docker-compose.yml                    # + MinIO (S3 local), facultatif
+compose.yaml                    # + MinIO (S3 local), facultatif
 ```
 
 **Structure Decision**: un layer `inspection` dans le même dépôt que la 001. `inspection` expose à son tour le registre `DamageActions` (P13), que la feature 003 remplira pour remplacer « Marquer traité ». Le layer `fleet` n'est pas modifié : l'écran des vues par catégorie appartient à `inspection` et a sa propre entrée de menu. `booking` gagne deux points d'extension génériques (guards de transition, sections du détail) qu'`inspection` remplit depuis son service provider. Ces points d'extension resserviront à la caution (guard de départ) sans nouvelle modification de `booking`.

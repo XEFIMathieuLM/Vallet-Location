@@ -10,21 +10,21 @@ Guide de vérification de bout en bout. Les règles sont dans [spec.md](spec.md)
 - Un chronomètre pour mesurer SC-003 et SC-004.
 
 ```bash
-./vendor/bin/sail artisan migrate --seed
+docker compose exec -u sail laravel.test php artisan migrate --seed
 ```
 
 ```bash
-./vendor/bin/sail artisan queue:work
+docker compose exec -u sail laravel.test php artisan queue:work
 ```
 
 ## Tests automatisés
 
 ```bash
-./vendor/bin/sail artisan test layers/inspection
+docker compose exec -u sail laravel.test php artisan test functional/inspection
 ```
 
 ```bash
-./vendor/bin/sail php vendor/bin/phpstan analyse
+docker compose exec -u sail laravel.test vendor/bin/phpstan analyse
 ```
 
 Attendu : tous verts. Chaque scénario d'acceptation de la spec a son test Feature.
@@ -43,7 +43,7 @@ Attendu : tous verts. Chaque scénario d'acceptation de la spec a son test Featu
 ## Rétention
 
 ```bash
-./vendor/bin/sail artisan model:prune --pretend
+docker compose exec -u sail laravel.test php artisan model:prune --pretend
 ```
 
 Attendu : seules les photos de réservations clôturées depuis plus d'un an sans dégât en cours sont listées.

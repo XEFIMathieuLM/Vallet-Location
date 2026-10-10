@@ -104,7 +104,7 @@ functional/sales/                                  # nouveau layer
 │   ├── Providers/SalesServiceProvider.php
 │   ├── Queries/SaleListQuery.php, HandoverConflicts.php
 │   ├── States/Sale…State (4), Offer…State (4), fabriques, traits Refuses…Transitions
-│   └── Support/SaleHistory.php
+│   └── History/SaleHistory.php, Enums/SaleHistoryEvent.php
 └── tests/
     ├── Concerns/BuildsSalesFixtures.php
     ├── Feature/ (un fichier par user story + concurrence, extension points, layer boundaries, écrans)
@@ -117,9 +117,9 @@ functional/fleet/     (E2, E3)  Extensions/MachineRetirementGuards.php, Extensio
                       Contracts/MachineBadgeProvider.php, ValueObjects/MachineBadge.php, Actions/RetireMachine.php,
                       Providers/FleetServiceProvider.php, Guards/UnrestrictedRetirement.php (supprimé), view machine-index
 functional/billing/   (E4)  migration additive transmissions, Contracts/BillableSource.php, Extensions/BillableSources.php,
-                      ValueObjects/TransmissionSubject.php, Actions/QueueSourceTransmission.php, Enums/BillableLineType.php,
-                      ValueObjects/BillableLine.php, Actions/MakeBillableLine.php, Support/BillingHistory.php,
-                      Support/TransmissionLifecycle.php, Livewire/Transmissions.php + vue
+                      Transmissions/TransmissionSubject.php, Actions/QueueSourceTransmission.php, Enums/BillableLineType.php,
+                      Lines/BillableLine.php (+ amountExclTax()), Exports/ExportLineFormatter.php, Actions/MakeBillableLine.php, History/BillingHistory.php,
+                      Transmissions/TransmissionLifecycle.php, Livewire/Transmissions.php + vue
 app/ et racine         composer.json (path repository + require functional/sales), phpunit.xml (source), phpstan.neon (paths),
                       database/seeders/DatabaseSeeder.php (SalesPermissionSeeder), resources/views/layouts/app/sidebar.blade.php
 ```

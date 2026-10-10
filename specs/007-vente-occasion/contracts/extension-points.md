@@ -130,7 +130,7 @@ interface BillableSource
 ```
 
 ```php
-namespace Functional\Billing\ValueObjects;
+namespace Functional\Billing\Transmissions;
 
 final readonly class TransmissionSubject
 {
@@ -170,9 +170,9 @@ final class QueueSourceTransmission
 Changements dans billing :
 - migration additive sur `transmissions` (voir data-model) ;
 - `BillableLineType::UsedMachineSale = 'used_machine_sale'` ;
-- `BillableLine` : `reservationRef` et `bookingAgency` nullables ; nouveaux champs `sourceRef` et `saleDate` (nullables), présents dans `toArray()` et donc dans l'export (`Exports/ExportLineFormatter`) ; le montant reste `amountExclTax: ?Money` (forme de `bdef4c6`) ;
+- interface `Lines/BillableLine` : + `amountExclTax(): ?Money` ; la ligne de vente est une classe de sales (`SaleLine`) qui implémente l'interface ; `Exports/ExportLineFormatter` écrit une liste de colonnes fixe (+ `source_ref`, `sale_date`) ;
 - `MakeBillableLine` : si `source_type` est renseigné, délègue à `BillableSources::for($type)->line()` ;
-- `BillingHistory::record()` accepte un `Model` ; `TransmissionLifecycle` rattache l'activité à la réservation, ou au `historySubject` de la source ;
+- `History/BillingHistory::record()` accepte un `Model` ; `TransmissionLifecycle` rattache l'activité à la réservation, ou au `historySubject` de la source ;
 - écran `Transmissions` : pour une transmission de source, affiche `subject()` (libellé, lien, client, saisie de l'identifiant client) au lieu de la réservation ; chargement par lot (pas de requête dans une boucle) ;
 - `ReservationBillingSection` et `BillingStatement` inchangés (ils filtrent par réservation).
 

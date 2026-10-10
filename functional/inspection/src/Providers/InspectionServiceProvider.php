@@ -21,6 +21,13 @@ class InspectionServiceProvider extends LayerServiceProvider
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../../config/inspection.php', 'inspection');
+        $this->overrideConfigFrom(__DIR__.'/../../config/filesystems.php', 'filesystems');
+
+        $maxPhotoKilobytes = config()->integer('inspection.max_photo_kilobytes');
+        config([
+            'livewire.temporary_file_upload.rules' => ['required', 'file', "max:{$maxPhotoKilobytes}"],
+            'media-library.max_file_size' => $maxPhotoKilobytes * 1024,
+        ]);
         $this->app->singleton(DamageActions::class);
     }
 

@@ -88,18 +88,18 @@ class Photo extends Model implements HasMedia
      */
     public function prunable(): Builder
     {
-        $oneYearAgo = CarbonImmutable::now()->subYear();
+        $retentionStart = CarbonImmutable::now()->subDays(config()->integer('inspection.photo_retention_days'));
 
         return self::query()
             ->where(fn (Builder $photos): Builder => $photos
                 ->whereHas('reservation', fn (Builder $reservations): Builder => $reservations
                     ->where('status', ReservationStatus::Closed)
-                    ->where('returned_at', '<', $oneYearAgo))
+                    ->where('returned_at', '<', $retentionStart))
                 ->whereDoesntHave('reservationDamages', fn (Builder $damages): Builder => $damages
-                    ->where(fn (Builder $recentDamages): Builder => $recentDamages->whereNull('resolved_at')->orWhere('resolved_at', '>=', $oneYearAgo))))
+                    ->where(fn (Builder $recentDamages): Builder => $recentDamages->whereNull('resolved_at')->orWhere('resolved_at', '>=', $retentionStart))))
             ->orWhere(fn (Builder $photos): Builder => $photos
                 ->whereHas('reservation', fn (Builder $reservations): Builder => $reservations->where('status', ReservationStatus::Cancelled))
-                ->where('created_at', '<', $oneYearAgo));
+                ->where('created_at', '<', $retentionStart));
     }
 
     public function registerMediaCollections(): void

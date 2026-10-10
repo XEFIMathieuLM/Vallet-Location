@@ -4,6 +4,10 @@ includes:
     - vendor/xefi/phpstan-xefi-rules/extension.neon
 
 parameters:
+    configDirectories:
+        - %currentWorkingDirectory%/config
+        - %currentWorkingDirectory%/functional/*/config
+
     scanFiles:
         - faker_mixin.php
 

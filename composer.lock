@@ -1029,15 +1029,22 @@
             "dist": {
                 "type": "path",
                 "url": "./functional/inspection",
-                "reference": "9093f1812bf7bd4aee7397f7fae76f3bdc4dd1d6"
+                "reference": "e5e19011c7bab20037e02851be92e8b279e207f2"
             },
             "require": {
                 "bacon/bacon-qr-code": "^3.0",
                 "functional/booking": "*",
                 "functional/fleet": "*",
+                "laravel/framework": "^13.17",
                 "league/flysystem-aws-s3-v3": "^3.0",
+                "livewire/flux": "^2.13.1",
+                "livewire/livewire": "^4.1",
+                "lomkit/laravel-access-control": "^0.6.0",
+                "php": "^8.3",
+                "spatie/laravel-activitylog": "^5.1",
                 "spatie/laravel-medialibrary": "^11.23",
-                "xefi/laravel-osdd": "*"
+                "spatie/laravel-permission": "^8.3",
+                "xefi/laravel-osdd": "^2.0"
             },
             "type": "layer",
             "extra": {

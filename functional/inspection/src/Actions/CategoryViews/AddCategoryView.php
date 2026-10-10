@@ -21,7 +21,7 @@ class AddCategoryView
             return CategoryView::query()->create([
                 'machine_category_id' => $category->id,
                 'label' => $label,
-                'position' => (int) $views->max('position') + 1,
+                'position' => (int) CategoryView::query()->where('machine_category_id', $category->id)->max('position') + 1,
             ]);
         });
     }

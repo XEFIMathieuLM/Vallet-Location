@@ -83,7 +83,7 @@
         </flux:table>
     @endif
 
-    @if ($views->contains(fn ($view) => $view->photos->contains(fn ($photo) => $photo->step === \Functional\Inspection\Enums\InspectionStep::Return)))
+    @if ($canCompare)
         <div>
             <flux:button size="sm" icon="arrows-right-left" :href="route('inspection.comparison', $reservation)" wire:navigate>
                 {{ __('inspection::panel.compare') }}

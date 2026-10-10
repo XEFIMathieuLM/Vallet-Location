@@ -16,7 +16,7 @@ class RemoveCategoryView
         DB::transaction(function () use ($category, $position): void {
             $views = $this->editableCategoryViews->for($category);
 
-            if ($views->count() === 1) {
+            if (CategoryView::query()->where('machine_category_id', $category->id)->count() === 1) {
                 throw LastCategoryViewException::make();
             }
 

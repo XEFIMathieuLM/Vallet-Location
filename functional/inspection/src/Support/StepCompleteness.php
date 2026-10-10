@@ -19,6 +19,11 @@ final class StepCompleteness
         return $this->missingCountsBySteps[$step->value] ?? $this->viewsCount;
     }
 
+    public function hasPhotosFor(InspectionStep $step): bool
+    {
+        return $this->missingCount($step) < $this->viewsCount;
+    }
+
     public function isCompleteFor(InspectionStep $step): bool
     {
         return $this->viewsCount > 0 && $this->missingCount($step) === 0;

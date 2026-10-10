@@ -98,6 +98,7 @@ class PhotosPanel extends Component
             'activeSession' => $activeSession,
             'qrCode' => $this->token !== null ? app(QrCodeSvg::class)->for(route('inspection.phone', $this->token)) : null,
             'views' => $this->views(),
+            'canCompare' => app(ViewCompleteness::class)->for($this->reservation)->hasPhotosFor(InspectionStep::Return),
         ]);
     }
 

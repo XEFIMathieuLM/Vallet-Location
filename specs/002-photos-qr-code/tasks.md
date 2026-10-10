@@ -214,6 +214,14 @@ Les tâches T007 à T012 ne sont pas réalisées dans cette branche : génériqu
 - [X] T073 [US3] Écritures liées dans une transaction (K2) : tests d'abord dans `functional/inspection/tests/Feature/HistoryAtomicityTest.php` (si l'historique échoue, ni le dégât ni la révocation ne sont enregistrés) ; puis `ReportDamage` et `RevokePhotoSessions` encadrés par `DB::transaction`
 - [X] T074 Corriger le Constitution Check de `plan.md` (principe II) une fois T072 et T073 faits (F6)
 
+## Phase 10: Conformité à la constitution v1.0.0 (suite)
+
+**Purpose**: Constats K3, K4 et L1 du `/speckit-analyze` mené après la phase 9.
+
+- [X] T075 [US4] Agrégats calculés en base (K3, principe II) : tests d'abord dans `functional/inspection/tests/Feature/DatabaseAggregatesTest.php` ; puis `AddCategoryView` (position suivante par `max(position)` en SQL), `RemoveCategoryView` (« dernière vue » par `count(*)` en SQL) et `RevokePhotoSessions` (étapes par `select distinct`, nombre de sessions renvoyé par l'`update`) ne calculent plus rien en PHP
+- [X] T076 Tests Unit des calculs (K4, principe VI) : `functional/inspection/tests/Unit/StepCompletenessTest.php` (règles de complétude), `functional/inspection/tests/Unit/ViewCompletenessTest.php` (comptage SQL par étape) et `functional/inspection/tests/Unit/PhotoRetentionRuleTest.php` (photos retenues par `Photo::prunable()`)
+- [X] T077 [US3] Dans `PhotosPanel`, afficher « Comparer les photos » d'après `ViewCompleteness` (`hasPhotosFor(InspectionStep::Return)`) au lieu d'un parcours des photos en PHP (L1)
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies

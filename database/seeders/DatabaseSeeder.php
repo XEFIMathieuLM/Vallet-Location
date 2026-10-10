@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use Functional\Billing\Database\Seeders\BillingPermissionSeeder;
+use Functional\Billing\Database\Seeders\BillingSeeder;
 use Functional\Booking\Database\Seeders\BookingPermissionSeeder;
 use Functional\Booking\Database\Seeders\CustomerSeeder;
 use Functional\Booking\Database\Seeders\ReservationSeeder;
@@ -17,12 +19,12 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        $this->call([FleetPermissionSeeder::class, BookingPermissionSeeder::class, InspectionPermissionSeeder::class, PermissionSeeder::class, FleetSeeder::class]);
+        $this->call([FleetPermissionSeeder::class, BookingPermissionSeeder::class, InspectionPermissionSeeder::class, BillingPermissionSeeder::class, PermissionSeeder::class, FleetSeeder::class]);
 
         $employees = Agency::query()->orderBy('name')->get()
             ->map(fn (Agency $agency): User => User::factory()->employee()->for($agency)->create());
 
-        $this->call([CustomerSeeder::class, ReservationSeeder::class, InspectionSeeder::class]);
+        $this->call([CustomerSeeder::class, ReservationSeeder::class, InspectionSeeder::class, BillingSeeder::class]);
 
         $this->command->table(
             ['Agency', 'Employee e-mail'],

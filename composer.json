@@ -10,6 +10,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.5",
+        "functional/billing": "*",
         "functional/booking": "*",
         "functional/fleet": "*",
         "functional/inspection": "*",
@@ -53,6 +54,7 @@
         "psr-4": {
             "Tests\\": "tests/",
             "Functional\\Fleet\\Tests\\": "functional/fleet/tests/",
+            "Functional\\Billing\\Tests\\": "functional/billing/tests/",
             "Functional\\Booking\\Tests\\": "functional/booking/tests/",
             "Functional\\Inspection\\Tests\\": "functional/inspection/tests/"
         }

@@ -1,0 +1,49 @@
+<?php
+
+namespace Functional\Billing\Actions;
+
+use Functional\Billing\Enums\BillingHistoryEvent;
+use Functional\Billing\Enums\DamageOutcome;
+use Functional\Billing\Exceptions\InvalidDamageSettlementException;
+use Functional\Billing\History\BillingHistory;
+use Functional\Billing\Jobs\SendTransmissionJob;
+use Functional\Billing\Models\DamageSettlement;
+use Functional\Billing\Models\Transmission;
+use Functional\Billing\Money\Money;
+use Functional\Fleet\Contracts\AgencyMember;
+use Functional\Inspection\Models\Damage;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+
+final class BillDamage
+{
+    public function __construct(
+        private readonly SettleDamage $settleDamage,
+        private readonly BillingHistory $billingHistory,
+    ) {}
+
+    public function handle(Damage $damage, Money $amount, string $label, Model&AgencyMember $settler): DamageSettlement
+    {
+        if (! $amount->isPositive()) {
+            throw InvalidDamageSettlementException::amountNotPositive();
+        }
+
+        if (trim($label) === '') {
+            throw InvalidDamageSettlementException::labelMissing();
+        }
+
+        return DB::transaction(function () use ($damage, $amount, $label, $settler): DamageSettlement {
+            $damageSettlement = $this->settleDamage->handle($damage, DamageOutcome::Billed, ['amount' => $amount, 'label' => trim($label)], $settler);
+            $transmission = Transmission::query()->create(['damage_settlement_id' => $damageSettlement->id, 'reservation_id' => $damage->reservation_id]);
+
+            $this->billingHistory->record($damage->reservation, BillingHistoryEvent::DamageBilled, [
+                'damage' => $damage->id,
+                'label' => $damageSettlement->label,
+                'amount' => $amount->format(),
+            ]);
+            SendTransmissionJob::dispatch($transmission->id);
+
+            return $damageSettlement;
+        });
+    }
+}

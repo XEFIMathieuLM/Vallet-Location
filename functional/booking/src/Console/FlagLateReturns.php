@@ -26,7 +26,7 @@ final class FlagLateReturns extends Command
                 ->whereDate('reservations.end_date', '<', CarbonImmutable::today()))
             ->get();
 
-        $overdueMachines->each(fn (Machine $machine) => $refreshReservationConflicts->handle($machine));
+        $refreshReservationConflicts->handleMachines($overdueMachines);
 
         $this->info(trans_choice('booking::reservations.late_returns.flagged', $overdueMachines->count()));
 

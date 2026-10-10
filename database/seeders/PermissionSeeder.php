@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use Functional\Booking\Database\Seeders\BookingPermissionSeeder;
+use Functional\Fleet\Database\Seeders\FleetPermissionSeeder;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -11,7 +13,7 @@ class PermissionSeeder extends Seeder
 {
     public const EMPLOYEE_ROLE = 'salarie';
 
-    public const PERMISSIONS = ['machines.manage', 'reservations.manage', 'users.manage'];
+    public const PERMISSIONS = ['users.manage'];
 
     public function run(): void
     {
@@ -21,6 +23,8 @@ class PermissionSeeder extends Seeder
             Permission::findOrCreate($permissionName);
         }
 
-        Role::findOrCreate(self::EMPLOYEE_ROLE)->syncPermissions(self::PERMISSIONS);
+        Role::findOrCreate(self::EMPLOYEE_ROLE)->givePermissionTo(self::PERMISSIONS);
+
+        $this->call([FleetPermissionSeeder::class, BookingPermissionSeeder::class]);
     }
 }

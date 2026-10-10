@@ -65,7 +65,6 @@ Décisions techniques prises pour [plan.md](plan.md). Chaque entrée : décision
 - **Decision**: Laravel Sail (Docker). Services : PostgreSQL, Soketi, Mailpit. Queue `database` avec un worker Sail pour le broadcasting.
 - **Rationale**: le poste de développement a Docker et WSL mais pas PHP ni Composer. Sail fournit tout.
 - **Alternatives considered**: installer PHP et Composer sous Windows (environnement différent de la production).
-- **Note**: sur un poste avec Herd (PHP 8.4), Composer et PHPStan peuvent tourner en local ; tests et artisan restent dans Sail (PHP 8.5, PostgreSQL).
 
 ## R11 — Qualité
 

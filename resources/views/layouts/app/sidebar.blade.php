@@ -55,6 +55,14 @@
                     </flux:sidebar.group>
                 @endcan
 
+                @can(\Functional\Certification\Enums\CertificationPermission::Manage->value)
+                    <flux:sidebar.group :heading="__('certification::navigation.heading')" class="grid">
+                        <flux:sidebar.item icon="shield-check" :href="route('certification.machines')" :current="request()->routeIs('certification.machines*')" wire:navigate>
+                            {{ __('certification::navigation.reports') }}
+                        </flux:sidebar.item>
+                    </flux:sidebar.group>
+                @endcan
+
                 @can(\Functional\Fleet\Access\FleetPermission::ManageMachines->value)
                     <flux:sidebar.group :heading="__('fleet::machines.navigation.fleet')" class="grid">
                         <flux:sidebar.item icon="truck" :href="route('machines.index')" :current="request()->routeIs('machines.*')" wire:navigate>

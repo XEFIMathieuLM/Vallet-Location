@@ -1,5 +1,6 @@
 <?php
 
+use Functional\Portal\Access\PortalPermission;
 use Functional\Portal\Http\Controllers\LogoutController;
 use Functional\Portal\Http\Controllers\VerifyCustomerEmailController;
 use Functional\Portal\Livewire\Auth\ForgotPassword;
@@ -11,6 +12,7 @@ use Functional\Portal\Livewire\Customer\AccountSettings;
 use Functional\Portal\Livewire\Customer\MyRequests;
 use Functional\Portal\Livewire\Customer\MyReservations;
 use Functional\Portal\Livewire\Customer\Search;
+use Functional\Portal\Livewire\Staff\OnlineRequests;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('espace-client')->name('portal.')->group(function () {
@@ -36,4 +38,8 @@ Route::prefix('espace-client')->name('portal.')->group(function () {
         Route::livewire('reservations', MyReservations::class)->name('reservations');
         Route::livewire('compte', AccountSettings::class)->name('account');
     });
+});
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::livewire('demandes-en-ligne', OnlineRequests::class)->middleware('can:'.PortalPermission::HandleRequests->value)->name('portal.staff.requests');
 });

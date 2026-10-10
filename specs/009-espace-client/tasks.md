@@ -249,35 +249,35 @@ description: "Task list for the customer portal and online booking requests feat
 
 ### Tests d'abord
 
-- [ ] T040 [P] [US3] `functional/portal/tests/Feature/OnlineRequestsListTest.php` :
+- [X] T040 [P] [US3] `functional/portal/tests/Feature/OnlineRequestsListTest.php` :
   - scénario 1 : seules les demandes `pending`, triées par date de début, avec le client déclaré, le rattachement ou « compte non rattaché », la machine, l'agence, le commentaire, le prix et la date d'envoi ; filtre par agence ;
   - accès refusé sans `portal.handle-requests` ;
   - la liste écoute `echo-private:portal-requests,.reservation-request.changed` ;
   - FR-016 : le badge de la barre latérale affiche le nombre de demandes en attente, rien à zéro, et n'apparaît pas sans la permission.
-- [ ] T041 [P] [US3] `functional/portal/tests/Feature/ConfirmReservationRequestTest.php` :
+- [X] T041 [P] [US3] `functional/portal/tests/Feature/ConfirmReservationRequestTest.php` :
   - scénario 2 : compte rattaché, réservation `confirmed` pour sa fiche, auteur et agence du salarié, demande `confirmed` avec `reservation_id`, historique ;
   - scénario 3 : compte non rattaché, choix « fiche existante » parmi les fiches proposées par `SuggestedCustomers` (même e-mail ou même téléphone), puis rattachement et historique `account_attached` sur la fiche ;
   - scénario 3 bis : choix « créer la fiche », fiche créée avec le nom, le téléphone, l'e-mail et le type déclarés ;
   - scénario 4 : machine prise, en panne ou VGP insuffisante, refus de la 001 affiché, demande toujours `pending`, aucune fiche créée ;
   - scénario 5 : autre machine de la même catégorie acceptée ; machine d'une autre catégorie, `ConfirmationMachineMismatchException`.
-- [ ] T042 [P] [US3] `functional/portal/tests/Feature/RefuseReservationRequestTest.php` :
+- [X] T042 [P] [US3] `functional/portal/tests/Feature/RefuseReservationRequestTest.php` :
   - scénario 6 : `refused` avec motif, auteur, agence et date ;
   - scénario 7 : motif vide ou de plus de 500 caractères refusé ;
   - refuser une demande déjà décidée lève `IllegalReservationRequestTransitionException`.
-- [ ] T043 [P] [US3] `functional/portal/tests/Feature/RequestDecisionMailTest.php` :
+- [X] T043 [P] [US3] `functional/portal/tests/Feature/RequestDecisionMailTest.php` :
   - scénario 8 : avec `Notification::fake()`, `ReservationRequestDecided` part après une confirmation et après un refus ;
   - rendu des Mailables : machine réservée, dates, agence de retrait, motif ;
   - FR-021 : la décision est enregistrée même si l'envoi échoue (transport en erreur) ;
   - `customer_notified_at` posé après l'envoi ; un second passage du job n'envoie rien.
-- [ ] T044 [P] [US3] `functional/portal/tests/Feature/ConfirmationConcurrencyTest.php` :
+- [X] T044 [P] [US3] `functional/portal/tests/Feature/ConfirmationConcurrencyTest.php` :
   - scénario 9 : deux confirmations successives de la même demande, une réservation et la seconde refusée (verrou et état relus) ;
   - deux demandes d'un même compte non rattaché confirmées l'une après l'autre avec « créer la fiche » : une seule fiche, et la seconde confirmation réutilise la fiche rattachée ;
   - scénario 12 : rattacher un compte déjà rattaché lève `CustomerAccountAlreadyAttachedException`.
-- [ ] T045 [P] [US3] `functional/portal/tests/Feature/ReservationOriginSectionTest.php` :
+- [X] T045 [P] [US3] `functional/portal/tests/Feature/ReservationOriginSectionTest.php` :
   - scénario 11 : le détail d'une réservation issue d'une demande montre « Demande en ligne », la date, le compte et le commentaire ;
   - une réservation saisie au comptoir n'affiche rien ;
   - FR-022 : `ReservationDetailSections::isGuardedBy('portal.reservation-origin-section', $transition)` est faux pour toutes les transitions, et la sortie n'est pas bloquée par la section.
-- [ ] T046 [P] [US3] `tests/Feature/Portal/ConfirmedRequestFollowsExistingRulesTest.php`. Ce test vit au niveau de l'application, qui voit tous les layers. Scénario 10 et FR-023 :
+- [X] T046 [P] [US3] `tests/Feature/Portal/ConfirmedRequestFollowsExistingRulesTest.php`. Ce test vit au niveau de l'application, qui voit tous les layers. Scénario 10 et FR-023 :
   - réservation issue d'une demande : la sortie est refusée sans photos de départ (002) ;
   - réservation issue d'une demande d'un particulier : la sortie est refusée sans caution (004) ;
   - fiche grand compte : refusée sans bon de commande (006) ;
@@ -286,10 +286,10 @@ description: "Task list for the customer portal and online booking requests feat
 
 ### Implémentation
 
-- [ ] T047 [P] [US3] `functional/portal/src/Queries/SuggestedCustomers.php` : fiches de même e-mail (insensible à la casse) ou de même téléphone que le compte, au plus 10, plus une recherche par nom, e-mail ou téléphone. Une requête par appel.
-- [ ] T048 [P] [US3] `functional/portal/src/Data/CustomerChoice.php` (`CustomerChoiceKind::Existing` avec l'id de la fiche, ou `CustomerChoiceKind::Create`) et les exceptions `CustomerAccountAlreadyAttachedException` et `ConfirmationMachineMismatchException`.
-- [ ] T049 [US3] `functional/portal/src/Actions/AttachCustomerAccount.php` : `UPDATE … WHERE customer_id IS NULL`, exception si aucune ligne n'est mise à jour, historique `account_attached` sur la fiche.
-- [ ] T050 [US3] `functional/portal/src/Actions/ConfirmReservationRequest.php`, dans une transaction :
+- [X] T047 [P] [US3] `functional/portal/src/Queries/SuggestedCustomers.php` : fiches de même e-mail (insensible à la casse) ou de même téléphone que le compte, au plus 10, plus une recherche par nom, e-mail ou téléphone. Une requête par appel.
+- [X] T048 [P] [US3] `functional/portal/src/Data/CustomerChoice.php` (`CustomerChoiceKind::Existing` avec l'id de la fiche, ou `CustomerChoiceKind::Create`) et les exceptions `CustomerAccountAlreadyAttachedException` et `ConfirmationMachineMismatchException`.
+- [X] T049 [US3] `functional/portal/src/Actions/AttachCustomerAccount.php` : `UPDATE … WHERE customer_id IS NULL`, exception si aucune ligne n'est mise à jour, historique `account_attached` sur la fiche.
+- [X] T050 [US3] `functional/portal/src/Actions/ConfirmReservationRequest.php`, dans une transaction :
   - verrou de la demande, transition par l'état ;
   - verrou du compte ;
   - fiche résolue : imposée si le compte est rattaché, sinon `Customer` existante ou `NewCustomer` ;
@@ -298,16 +298,16 @@ description: "Task list for the customer portal and online booking requests feat
   - mise à jour de la demande (`reservation_id`, `decided_by`, `decided_agency_id`, `decided_at`) ;
   - `AttachCustomerAccount` si besoin ;
   - historique, `ReservationRequestChanged`, puis dispatch de `NotifyRequestDecisionJob` après commit.
-- [ ] T051 [US3] `functional/portal/src/Actions/RefuseReservationRequest.php` : verrou, motif obligatoire de 500 caractères au plus, historique, événement, job après commit.
-- [ ] T052 [US3] E-mails de décision :
+- [X] T051 [US3] `functional/portal/src/Actions/RefuseReservationRequest.php` : verrou, motif obligatoire de 500 caractères au plus, historique, événement, job après commit.
+- [X] T052 [US3] E-mails de décision :
   - `functional/portal/src/Jobs/NotifyRequestDecisionJob.php` (`ShouldBeUnique` par id ; relit la demande sous verrou ; ne fait rien si `customer_notified_at` est posé ; sinon notifie puis pose `customer_notified_at`) ;
   - notification `Notifications/ReservationRequestDecided.php`, dont `toMail()` rend `Mail/ReservationRequestConfirmedMail.php` ou `Mail/ReservationRequestRefusedMail.php` selon l'état ;
   - vues dans `resources/views/mail/`.
-- [ ] T053 [US3] `functional/portal/src/Queries/PendingRequests.php` (paginée par 20, filtre d'agence, chargements anticipés `account.customer`, `machine.category`, `machine.agency`) et le composant `functional/portal/src/Livewire/Staff/OnlineRequests.php` avec sa vue. Il écoute `portal-requests` et `fleet`, avec `wire:poll.60s` en secours.
-- [ ] T054 [US3] `functional/portal/src/Livewire/Staff/ConfirmRequestModal.php` (machines de la même catégorie via `AvailableMachinesQuery`, la demandée en tête ; choix de la fiche ; `DisplaysRefusals`) et `RefuseRequestModal.php`, avec leurs vues.
-- [ ] T055 [US3] `functional/portal/src/Livewire/Staff/PendingRequestsBadge.php` (un `count()`) et, dans `resources/views/layouts/app/sidebar.blade.php`, le groupe « Espace client » sous `@canany` des deux permissions. Pour cette phase, il contient l'entrée « Demandes en ligne » et son badge.
-- [ ] T056 [US3] `functional/portal/src/Livewire/Staff/ReservationOriginSection.php` et sa vue. Le composant est enregistré par `ReservationDetailSections::register('portal.reservation-origin-section', 5)`, sans transition gardée. La demande est lue par `reservation_id` en une requête.
-- [ ] T057 [US3] Route salarié `GET /demandes-en-ligne` (`portal.staff.requests`, `auth`, `verified`, `can:portal.handle-requests`) dans `functional/portal/routes/web.php`, et ajout de cette route au jeu de données de `SpaceSeparationTest`. T040 à T046 doivent passer.
+- [X] T053 [US3] `functional/portal/src/Queries/PendingRequests.php` (paginée par 20, filtre d'agence, chargements anticipés `account.customer`, `machine.category`, `machine.agency`) et le composant `functional/portal/src/Livewire/Staff/OnlineRequests.php` avec sa vue. Il écoute `portal-requests` et `fleet`, avec `wire:poll.60s` en secours.
+- [X] T054 [US3] `functional/portal/src/Livewire/Staff/ConfirmRequestModal.php` (machines de la même catégorie via `AvailableMachinesQuery`, la demandée en tête ; choix de la fiche ; `DisplaysRefusals`) et `RefuseRequestModal.php`, avec leurs vues.
+- [X] T055 [US3] `functional/portal/src/Livewire/Staff/PendingRequestsBadge.php` (un `count()`) et, dans `resources/views/layouts/app/sidebar.blade.php`, le groupe « Espace client » sous `@canany` des deux permissions. Pour cette phase, il contient l'entrée « Demandes en ligne » et son badge.
+- [X] T056 [US3] `functional/portal/src/Livewire/Staff/ReservationOriginSection.php` et sa vue. Le composant est enregistré par `ReservationDetailSections::register('portal.reservation-origin-section', 5)`, sans transition gardée. La demande est lue par `reservation_id` en une requête.
+- [X] T057 [US3] Route salarié `GET /demandes-en-ligne` (`portal.staff.requests`, `auth`, `verified`, `can:portal.handle-requests`) dans `functional/portal/routes/web.php`, et ajout de cette route au jeu de données de `SpaceSeparationTest`. T040 à T046 doivent passer.
 
 **Checkpoint**: T040 à T046 verts ; suite complète verte (non-régression des 001 à 008) ; `composer ci:check` vert ; commit « Espace client : traitement des demandes en agence ».
 

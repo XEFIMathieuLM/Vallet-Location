@@ -23,6 +23,7 @@ class SpaceSeparationTest extends TestCase
         yield 'réservations' => ['reservations.index'];
         yield 'planning' => ['planning.index'];
         yield 'parc' => ['machines.index'];
+        yield 'demandes en ligne' => ['portal.staff.requests'];
     }
 
     #[DataProvider('employeeRoutes')]

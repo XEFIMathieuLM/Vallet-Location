@@ -4,12 +4,16 @@ namespace Functional\Portal\Tests\Concerns;
 
 use Carbon\CarbonImmutable;
 use Functional\Booking\Models\Customer;
+use Functional\Fleet\Contracts\AgencyMember;
 use Functional\Fleet\Models\Agency;
 use Functional\Fleet\Models\Machine;
 use Functional\Fleet\Models\MachineCategory;
 use Functional\Fleet\Tests\Concerns\CreatesUsers;
+use Functional\Portal\Access\PortalPermission;
 use Functional\Portal\Models\CustomerAccount;
 use Functional\Portal\Models\ReservationRequest;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
 trait BuildsPortalFixtures
@@ -32,6 +36,11 @@ trait BuildsPortalFixtures
     protected function attachedCustomerAccount(?Customer $customer = null): CustomerAccount
     {
         return CustomerAccount::factory()->attachedTo($customer ?? Customer::factory()->create())->create();
+    }
+
+    protected function requestHandler(): Model&Authenticatable&AgencyMember
+    {
+        return $this->userWithPermissions(PortalPermission::HandleRequests);
     }
 
     protected function signInAsCustomerOnly(CustomerAccount $account): void

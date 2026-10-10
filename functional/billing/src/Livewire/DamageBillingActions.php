@@ -2,6 +2,7 @@
 
 namespace Functional\Billing\Livewire;
 
+use Flux\Flux;
 use Functional\Billing\Actions\BillDamage;
 use Functional\Billing\Actions\WaiveDamage;
 use Functional\Billing\Enums\BillingPermission;
@@ -40,7 +41,7 @@ class DamageBillingActions extends Component
         ]);
 
         $billDamage->handle($this->damage, Money::fromInput($this->amount), $this->label, Auth::user() ?? abort(401));
-        $this->settled();
+        $this->settled(__('billing::damages.billed_toast'));
     }
 
     public function waive(WaiveDamage $waiveDamage): void
@@ -50,7 +51,7 @@ class DamageBillingActions extends Component
         $this->validate(['waiverReason' => ['required', 'string', 'max:2000']], attributes: ['waiverReason' => __('billing::damages.waiver_reason')]);
 
         $waiveDamage->handle($this->damage, $this->waiverReason, Auth::user() ?? abort(401));
-        $this->settled();
+        $this->settled(__('billing::damages.waived_toast'));
     }
 
     public function render(): View
@@ -58,8 +59,9 @@ class DamageBillingActions extends Component
         return view('billing::livewire.damage-billing-actions');
     }
 
-    private function settled(): void
+    private function settled(string $successMessage): void
     {
+        Flux::toast(text: $successMessage, variant: 'success');
         $this->reset('amount', 'label', 'waiverReason');
         $this->js('$wire.$parent.$refresh()');
     }

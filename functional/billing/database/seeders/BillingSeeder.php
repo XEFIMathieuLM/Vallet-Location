@@ -25,6 +25,8 @@ use Illuminate\Support\Collection;
 
 class BillingSeeder extends Seeder
 {
+    private const SENT_RENTALS_RETURNED_DAYS_AGO = [1, 2, 3, 11, 4, 5];
+
     public function run(): void
     {
         $employee = User::query()->orderBy('id')->firstOrFail();
@@ -33,7 +35,7 @@ class BillingSeeder extends Seeder
         $customersWithAccount->each(fn (Customer $customer) => CustomerBillingAccount::factory()->for($customer)->create());
         $customersWithoutAccount = Customer::factory()->count(2)->create();
 
-        $sentRentals = $machines->take(6)->values()->map(fn (Machine $machine, int $position): Reservation => $this->closedRental($machine, $customersWithAccount[$position], 30 - $position * 4));
+        $sentRentals = $machines->take(6)->values()->map(fn (Machine $machine, int $position): Reservation => $this->closedRental($machine, $customersWithAccount[$position], self::SENT_RENTALS_RETURNED_DAYS_AGO[$position]));
         $sentRentals->each(fn (Reservation $reservation) => Transmission::factory()->sent()->create(['billable_period_id' => $this->finalPeriod($reservation)->id, 'reservation_id' => $reservation->id]));
 
         $runningRental = $this->runningRental($machines[6], $customersWithAccount[0]);

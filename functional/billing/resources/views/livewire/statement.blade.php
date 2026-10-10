@@ -14,11 +14,11 @@
     <div class="grid gap-4 sm:grid-cols-2">
         <flux:card>
             <flux:text>{{ __('billing::statement.transmitted_rentals') }}</flux:text>
-            <flux:heading size="xl">{{ $statementFigures->transmittedRentalsCount }}</flux:heading>
+            <flux:text class="mt-2 text-2xl font-semibold text-zinc-800 dark:text-white">{{ $statementFigures->transmittedRentalsCount }}</flux:text>
         </flux:card>
         <flux:card>
             <flux:text>{{ __('billing::statement.billed_damages') }}</flux:text>
-            <flux:heading size="xl">{{ __('billing::statement.amount', ['amount' => $statementFigures->billedDamagesTotal->format()]) }}</flux:heading>
+            <flux:text class="mt-2 text-2xl font-semibold text-zinc-800 dark:text-white">{{ __('billing::statement.amount', ['amount' => $statementFigures->billedDamagesTotal->format()]) }}</flux:text>
         </flux:card>
     </div>
 
@@ -35,7 +35,7 @@
                 ]) }}
             </flux:text>
         @empty
-            <flux:text>{{ __('billing::statement.none') }}</flux:text>
+            <flux:text>{{ __('billing::statement.no_waived_damage') }}</flux:text>
         @endforelse
     </section>
 
@@ -51,7 +51,7 @@
                 @endif
             </div>
         @empty
-            <flux:text>{{ __('billing::statement.none') }}</flux:text>
+            <flux:text>{{ __('billing::statement.no_unresolved_damage') }}</flux:text>
         @endforelse
     </section>
 </div>

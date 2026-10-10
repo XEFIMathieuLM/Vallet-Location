@@ -6,8 +6,10 @@ return [
     'amount' => 'Montant HT (€)',
     'label' => 'Libellé de la réparation',
     'waiver_reason' => 'Motif',
-    'confirm_bill' => 'Valider la refacturation',
-    'confirm_waive' => 'Valider',
+    'confirm_bill' => 'Transmettre la refacturation',
+    'confirm_waive' => 'Classer non refacturé',
+    'billed_toast' => 'Dégât refacturé : il est transmis au logiciel de facturation.',
+    'waived_toast' => 'Dégât classé non refacturé : le motif est conservé dans l\'historique.',
     'cancel' => 'Annuler',
     'amount_format' => 'Le montant doit être un nombre positif, avec au plus deux décimales (ex. 450 ou 450,50).',
     'section' => [

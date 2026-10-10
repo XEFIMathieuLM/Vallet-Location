@@ -101,6 +101,16 @@ class BillingStatementTest extends TestCase
         return array_column(DB::getQueryLog(), 'query');
     }
 
+    public function test_empty_sections_of_the_statement_explain_how_to_widen_it(): void
+    {
+        Livewire::test(Statement::class)
+            ->set('agencyId', Agency::factory()->create()->id)
+            ->set('month', '2026-11')
+            ->assertSee('Aucun dégât classé non refacturé')
+            ->assertSee('Changez d’agence ou de mois')
+            ->assertSee('Aucun dégât en attente');
+    }
+
     private function transmittedRental(Agency $agency, string $returnDate): Reservation
     {
         $returnedAt = CarbonImmutable::parse("{$returnDate} 17:00:00");

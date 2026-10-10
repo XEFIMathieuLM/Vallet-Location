@@ -56,7 +56,8 @@ class DamageBillingActionsScreensTest extends TestCase
             ->set('amount', '450,00')
             ->set('label', 'remplacement capot')
             ->call('bill')
-            ->assertHasNoErrors();
+            ->assertHasNoErrors()
+            ->assertDispatched('toast-show');
 
         $settlement = DamageSettlement::query()->where('damage_id', $this->damage->id)->sole();
         $this->assertSame(45000, $settlement->amount?->minorUnits);
@@ -88,5 +89,16 @@ class DamageBillingActionsScreensTest extends TestCase
             ->assertForbidden();
 
         $this->assertSame(0, DamageSettlement::query()->count());
+    }
+
+    public function test_waiving_confirms_with_an_explicit_label_and_a_success_message(): void
+    {
+        Livewire::test(DamageBillingActions::class, ['damage' => $this->damage])
+            ->assertSee('Classer non refacturé')
+            ->assertDontSee('>Valider<', false)
+            ->set('waiverReason', 'usure normale')
+            ->call('waive')
+            ->assertHasNoErrors()
+            ->assertDispatched('toast-show');
     }
 }

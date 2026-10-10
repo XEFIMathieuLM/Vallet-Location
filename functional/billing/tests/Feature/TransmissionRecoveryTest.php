@@ -88,6 +88,20 @@ class TransmissionRecoveryTest extends TestCase
             ->assertSuccessful();
     }
 
+    public function test_an_unreachable_software_is_shown_with_its_automatic_retry_and_the_raw_error_only_as_detail(): void
+    {
+        $this->actingAs($this->employee());
+        $this->fakeGateway()->switchTo(FakeGatewayMode::Unreachable);
+        $reservation = $this->inProgressReservation('2026-11-10 08:00:00');
+        $this->recordReturn($reservation, '2026-11-14 17:00:00');
+        CarbonImmutable::setTestNow('2026-11-15 18:00:00');
+
+        $this->get(route('billing.transmissions'))
+            ->assertOk()
+            ->assertSee('nouvelle tentative automatique le 14/11/2026 17:01')
+            ->assertSeeInOrder(['Détail technique', 'The billing software is unreachable.']);
+    }
+
     private function reconcileOn(string $moment): void
     {
         CarbonImmutable::setTestNow($moment);

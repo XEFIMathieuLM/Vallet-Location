@@ -242,11 +242,11 @@ Lire `design-patterns:state` avant T016.
 
 ### UI (skills `design`)
 
-- [ ] T081 [Conf] `accessibility` : libellé visible pour le champ « référence client » de l'écran des transmissions ; erreurs affichées par le composant d'erreur de Flux (variante sombre comprise) au lieu de `text-red-600` ; l'état d'une transmission n'est jamais porté par la seule couleur
-- [ ] T082 [Conf] `buttons` : un seul bouton primaire par contexte ; dans les actions d'un dégât, « Refacturer » et « Ne pas refacturer » restent secondaires tant qu'aucun formulaire n'est ouvert, et le formulaire ouvert n'a qu'un primaire ; tailles selon le contexte (liste dense : XS, carte : S)
-- [ ] T083 [Conf] `screen-states` : états vides avec une issue (relevé : changer d'agence ou de mois ; transmissions : lien vers le relevé) ; message de succès après refacturer, ne pas refacturer, relancer une transmission et enregistrer une référence client
-- [ ] T084 [Conf] `spacing` / `foundations` : espacements de l'échelle Xefi (4, 8, 16, 24, 32, 48 px ; pas de `space-y-3`) ; chiffres du relevé affichés en texte mis en valeur et non en titres ; échelle des titres alignée sur la convention de la 001 dès sa fusion
-- [ ] T085 [Conf] `ux-writing` : libellés explicites (« Classer non refacturé » au lieu de « Valider ») ; le message « injoignable » dit que la relance est automatique ; le motif brut renvoyé par le logiciel tiers n'est plus affiché tel quel : message maîtrisé et détail technique repliable
+- [X] T081 [Conf] `accessibility` : libellé visible pour le champ « référence client » de l'écran des transmissions ; erreurs affichées par le composant d'erreur de Flux (variante sombre comprise) au lieu de `text-red-600` ; l'état d'une transmission n'est jamais porté par la seule couleur
+- [X] T082 [Conf] `buttons` : un seul bouton primaire par contexte ; dans les actions d'un dégât, « Refacturer » et « Ne pas refacturer » restent secondaires tant qu'aucun formulaire n'est ouvert, et le formulaire ouvert n'a qu'un primaire ; tailles selon le contexte (liste dense : XS, carte : S)
+- [X] T083 [Conf] `screen-states` : états vides avec une issue (relevé : changer d'agence ou de mois ; transmissions : lien vers le relevé) ; message de succès après refacturer, ne pas refacturer, relancer une transmission et enregistrer une référence client
+- [X] T084 [Conf] `spacing` / `foundations` : espacements de l'échelle Xefi (4, 8, 16, 24, 32, 48 px ; pas de `space-y-3`) ; chiffres du relevé affichés en texte mis en valeur et non en titres ; échelle des titres alignée sur la convention de la 001 dès sa fusion — échelle de l'échelle Xefi et chiffres du relevé faits ; **reste à faire** : aligner les tailles de titres sur la convention de la 001 quand elle sera fusionnée dans cette branche
+- [X] T085 [Conf] `ux-writing` : libellés explicites (« Classer non refacturé » au lieu de « Valider ») ; le message « injoignable » dit que la relance est automatique ; le motif brut renvoyé par le logiciel tiers n'est plus affiché tel quel : message maîtrisé et détail technique repliable
 
 **Checkpoint** : la suite complète, PHPStan et Pint passent ; `migrate:fresh --seed` montre chaque état de la facturation.
 

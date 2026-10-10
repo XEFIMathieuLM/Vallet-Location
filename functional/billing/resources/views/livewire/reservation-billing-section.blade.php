@@ -1,4 +1,4 @@
-<section class="space-y-3">
+<section class="space-y-4">
     @error('refusal')
         <flux:callout variant="danger" icon="x-circle" :heading="$message" />
     @enderror

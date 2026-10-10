@@ -1,8 +1,8 @@
 <div x-data="{ mode: null }" class="space-y-2">
     @can(\Functional\Billing\Enums\BillingPermission::Manage->value)
         <div class="flex flex-wrap gap-2" x-show="mode === null">
-            <flux:button size="sm" icon="currency-euro" x-on:click="mode = 'bill'">{{ __('billing::damages.bill') }}</flux:button>
-            <flux:button size="sm" variant="ghost" x-on:click="mode = 'waive'">{{ __('billing::damages.waive') }}</flux:button>
+            <flux:button size="xs" icon="currency-euro" x-on:click="mode = 'bill'">{{ __('billing::damages.bill') }}</flux:button>
+            <flux:button size="xs" x-on:click="mode = 'waive'">{{ __('billing::damages.waive') }}</flux:button>
         </div>
 
         <form wire:submit="bill" x-show="mode === 'bill'" x-cloak class="flex flex-wrap items-end gap-2">
@@ -19,7 +19,7 @@
         </form>
 
         @error('refusal')
-            <flux:text size="sm" class="text-red-600">{{ $message }}</flux:text>
+            <flux:callout variant="danger" icon="x-circle" :heading="$message" />
         @enderror
     @endcan
 </div>

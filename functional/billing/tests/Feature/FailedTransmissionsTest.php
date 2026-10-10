@@ -43,7 +43,9 @@ class FailedTransmissionsTest extends TestCase
         Livewire::test(Transmissions::class)
             ->set("customerRefs.{$reservation->customer_id}", 'CLI-4521')
             ->call('saveCustomerRef', $reservation->customer_id)
+            ->assertDispatched('toast-show')
             ->call('retry', $transmission->id)
+            ->assertDispatched('toast-show')
             ->assertHasNoErrors()
             ->assertDontSee($reservation->machine->reference);
 

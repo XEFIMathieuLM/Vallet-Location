@@ -2,6 +2,7 @@
 
 namespace Functional\Billing\Livewire;
 
+use Flux\Flux;
 use Functional\Billing\Actions\CreateBillingExport;
 use Functional\Billing\Enums\BillingPermission;
 use Functional\Billing\Livewire\Concerns\DisplaysBillingRefusals;
@@ -19,7 +20,8 @@ class Exports extends Component
     {
         Gate::authorize(BillingPermission::Manage->value);
 
-        $createBillingExport->handle(Auth::user() ?? abort(401));
+        $billingExport = $createBillingExport->handle(Auth::user() ?? abort(401));
+        Flux::toast(text: trans_choice('billing::exports.created_toast', $billingExport->line_count, ['count' => $billingExport->line_count]), variant: 'success');
     }
 
     public function render(): View

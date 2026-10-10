@@ -27,7 +27,7 @@
                         <flux:table.cell>{{ $billingExport->creator->name }}</flux:table.cell>
                         <flux:table.cell>{{ trans_choice('billing::exports.line_count', $billingExport->line_count, ['count' => $billingExport->line_count]) }}</flux:table.cell>
                         <flux:table.cell>
-                            <flux:button size="sm" icon="document-arrow-down" :href="route('billing.exports.download', $billingExport)">{{ __('billing::exports.download') }}</flux:button>
+                            <flux:button size="xs" icon="document-arrow-down" :href="route('billing.exports.download', $billingExport)">{{ __('billing::exports.download') }}</flux:button>
                         </flux:table.cell>
                     </flux:table.row>
                 @endforeach

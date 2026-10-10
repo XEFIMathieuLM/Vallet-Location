@@ -2,6 +2,7 @@
 
 namespace Functional\Billing\Livewire;
 
+use Flux\Flux;
 use Functional\Billing\Actions\RetryTransmission;
 use Functional\Billing\Enums\BillingPermission;
 use Functional\Billing\Livewire\Concerns\DisplaysBillingRefusals;
@@ -27,6 +28,7 @@ class ReservationBillingSection extends Component
         Gate::authorize(BillingPermission::Manage->value);
 
         $retryTransmission->handle(Transmission::query()->whereBelongsTo($this->reservation)->findOrFail($transmissionId));
+        Flux::toast(text: __('billing::transmissions.screen.retried'), variant: 'success');
     }
 
     public function render(): View

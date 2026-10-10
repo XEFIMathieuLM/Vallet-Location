@@ -172,7 +172,7 @@ Chaque phase se termine par `composer ci:check` en code 0 (après `vendor/bin/ph
 
 ### Tests (écrits d'abord, en échec)
 
-- [ ] T021 [US2] `tests/Feature/Dashboard/AnomaliesTest.php` : un test par scénario de la US2.
+- [X] T021 [US2] `tests/Feature/Dashboard/AnomaliesTest.php` : un test par scénario de la US2.
   1. Fin il y a 3 jours, ligne avec « 3 jours de retard ».
   2. Conflit listé avec `ConflictReason::label()`.
   3. Une réservation annulée (motif effacé) disparaît après `$refresh`.
@@ -184,8 +184,8 @@ Chaque phase se termine par `composer ci:check` en code 0 (après `vendor/bin/ph
 
 ### Implémentation
 
-- [ ] T022 [US2] Ajouter à `app/Livewire/Dashboard/DayOperations.php` les sections `lateReturns` et `conflicts` (`DashboardSection::fromQuery()`).
-- [ ] T023 [US2] Ajouter les deux sections à `resources/views/livewire/dashboard/day-operations.blade.php` :
+- [X] T022 [US2] Ajouter à `app/Livewire/Dashboard/DayOperations.php` les sections `lateReturns` et `conflicts` (`DashboardSection::fromQuery()`).
+- [X] T023 [US2] Ajouter les deux sections à `resources/views/livewire/dashboard/day-operations.blade.php` :
   - « N jours de retard » avec `end_date->diffInDays($today)` et `trans_choice` ;
   - motif de conflit par `conflict_reason->label()`.
 

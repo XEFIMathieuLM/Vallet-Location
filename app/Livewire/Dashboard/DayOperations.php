@@ -40,6 +40,8 @@ class DayOperations extends Component
             'departures' => $this->section($dayOperations->departures($this->agencyId, $today)),
             'upcomingDepartures' => $this->section($dayOperations->upcomingDepartures($this->agencyId, $today, $upcomingDays)),
             'returns' => $this->section($dayOperations->returns($this->agencyId, $today)),
+            'lateReturns' => $this->section($dayOperations->lateReturns($this->agencyId, $today)),
+            'conflicts' => $this->section($dayOperations->conflicts($this->agencyId)),
         ]);
     }
 

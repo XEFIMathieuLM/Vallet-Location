@@ -8,13 +8,13 @@ use Functional\Billing\Calendar\BillingCalendar;
 use Functional\Billing\Enums\BillablePeriodKind;
 use Functional\Billing\Enums\TransmissionStatus;
 use Functional\Billing\Jobs\SendTransmissionJob;
+use Functional\Billing\Models\BillablePeriod;
 use Functional\Billing\Models\Transmission;
 use Functional\Booking\Enums\ReservationStatus;
 use Functional\Booking\Models\Reservation;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Query\Builder as QueryBuilder;
 
 final class ReconcileCommand extends Command
 {
@@ -29,11 +29,7 @@ final class ReconcileCommand extends Command
         Reservation::query()
             ->where('status', ReservationStatus::Closed)
             ->where('returned_at', '>=', $billingCalendar->goLiveDate()->setTimezone(config()->string('app.timezone')))
-            ->whereNotExists(fn (QueryBuilder $finalPeriods) => $finalPeriods
-                ->selectRaw('1')
-                ->from('billable_periods')
-                ->whereColumn('billable_periods.reservation_id', 'reservations.id')
-                ->where('billable_periods.kind', BillablePeriodKind::Final->value))
+            ->whereNotIn('id', BillablePeriod::query()->select('reservation_id')->where('kind', BillablePeriodKind::Final))
             ->chunkById(100, function (Collection $reservations) use ($recordFinalPeriod, &$caughtUpReservationsCount): void {
                 $reservations->each(function (Reservation $reservation) use ($recordFinalPeriod): void {
                     $this->line("Recording the final period of reservation #{$reservation->id}.");

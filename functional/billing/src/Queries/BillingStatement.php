@@ -12,7 +12,6 @@ use Functional\Billing\ValueObjects\StatementFigures;
 use Functional\Booking\Models\Reservation;
 use Functional\Inspection\Models\Damage;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Query\Builder as QueryBuilder;
 
 final class BillingStatement
 {
@@ -23,11 +22,8 @@ final class BillingStatement
         return new StatementFigures(
             transmittedRentalsCount: BillablePeriod::query()
                 ->whereBetween('end_date', [$firstDay->toDateString(), $lastDay->toDateString()])
-                ->whereExists(fn (QueryBuilder $transmissions) => $transmissions
-                    ->selectRaw('1')
-                    ->from('transmissions')
-                    ->whereColumn('transmissions.billable_period_id', 'billable_periods.id')
-                    ->whereIn('transmissions.status', [TransmissionStatus::Sent->value, TransmissionStatus::Exported->value]))
+                ->whereHas('transmission', fn (Builder $transmissions) => $transmissions
+                    ->whereIn('status', [TransmissionStatus::Sent, TransmissionStatus::Exported]))
                 ->when($agencyId !== null, fn (Builder $periods) => $periods->whereIn('reservation_id', $this->agencyReservationIds((int) $agencyId)))
                 ->distinct()
                 ->count('reservation_id'),
@@ -67,8 +63,7 @@ final class BillingStatement
     private function agencyReservationIds(int $agencyId): Builder
     {
         return Reservation::query()
-            ->select('reservations.id')
-            ->join('machines', 'machines.id', '=', 'reservations.machine_id')
-            ->where('machines.agency_id', $agencyId);
+            ->select('id')
+            ->whereRelation('machine', 'agency_id', $agencyId);
     }
 }

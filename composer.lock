@@ -878,9 +878,13 @@
             "dist": {
                 "type": "path",
                 "url": "./functional/inspection",
-                "reference": "bd7d1c677b1bf4e97dc04def2db96a2a5f70aec0"
+                "reference": "f5e636e6ebed21cead79f6d2ce34b1f8f6d276fc"
             },
             "require": {
+                "bacon/bacon-qr-code": "^3.0",
+                "functional/booking": "*",
+                "functional/fleet": "*",
+                "spatie/laravel-medialibrary": "^11.23",
                 "xefi/laravel-osdd": "*"
             },
             "type": "layer",

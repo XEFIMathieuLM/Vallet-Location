@@ -6,7 +6,9 @@
     "require": {
         "xefi/laravel-osdd": "*",
         "functional/booking": "*",
-        "functional/fleet": "*"
+        "functional/fleet": "*",
+        "bacon/bacon-qr-code": "^3.0",
+        "spatie/laravel-medialibrary": "^11.23"
     },
     "autoload": {
         "psr-4": {

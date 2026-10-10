@@ -11,4 +11,9 @@ final class StepNotOpenException extends RefusalException
     {
         return new self(__('inspection::photos.refusals.step_not_open', ['step' => $step->label()]));
     }
+
+    public static function forAnyStep(): self
+    {
+        return new self(__('inspection::photos.refusals.no_open_step'));
+    }
 }

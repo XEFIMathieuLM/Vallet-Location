@@ -79,17 +79,21 @@ Décisions de conception de la feature 005. Chaque décision est numérotée (C1
 
 ## C10 — Disponibilité de la sortie agrégée par section
 
-- **Decision demandée à la 001** : `ReservationDetail` garde `readinessBySteps[step][section] = bool` ; l'événement `reservation-transition-readiness` porte `step`, `section` et `is_ready` ; l'étape est prête quand toutes les sections qui se sont prononcées pour cette étape le sont (sans section enregistrée, les boutons restent actifs, comme aujourd'hui).
+- **Contrat livré par la 001 (commit `7423fc9`)** : une section qui conditionne une étape s'enregistre comme gardienne : `app(ReservationDetailSections::class)->register('certification.reservation-section', 30, ReservationTransition::Departure)`. Elle émet au `mount()` et à chaque changement `dispatch('reservation-transition-readiness', step: ReservationTransition::Departure->value, section: 'certification.reservation-section', is_ready: $isReady)`. L'étape est prête quand toutes les sections gardiennes ont répondu `true` ; une gardienne muette bloque. La section attestation émet donc **toujours** : `true` si la machine n'est pas soumise à VGP, avant la mise en service, ou si l'attestation est livrée ; `false` sinon.
 - **Rationale** : avec les photos (002), la caution (004) et l'attestation (005), le booléen unique actuel est écrasé par la dernière section qui parle ; le bouton peut s'activer alors qu'une autre condition bloque. Le refus serveur reste correct, mais l'interface ment.
-- **Arbitrage** : livré par la 001 dans son point d'extension (forme exacte transmise par la session de coordination) ; les sections de la 002 et de la 004 passent aussi `section`.
-- **Repli** : tant que la 001 n'agrège pas, `ReservationCertificateSection` n'émet pas de disponibilité ; elle affiche le blocage, et la garde refuse côté serveur avec le motif.
+- **Arbitrage** : livré par la 001 ; les sections de la 002 et de la 004 suivent le même contrat. Le refus serveur de la garde (C6) reste la seule garantie.
 
 ## C11 — Permission
 
-- **Decision** : `certification.manage` (déposer un rapport, renvoyer, enregistrer une remise, corriger l'e-mail depuis la section, voir la liste à traiter et télécharger un rapport), déclarée dans `CertificationPermissionSeeder` et attribuée au rôle salarié (`PermissionSeeder::EMPLOYEE_ROLE`), comme `billing.manage`.
+- **Decision** : enum `Functional\Certification\Enums\CertificationPermission` (`Manage = 'certification.manage'`), convention de la 001 corrigée (permissions en enums par layer) ; la permission (déposer un rapport, renvoyer, enregistrer une remise, corriger l'e-mail depuis la section, voir la liste à traiter et télécharger un rapport), créée par `CertificationPermissionSeeder` (le seeder de layer crée seulement) et attribuée au rôle salarié selon le mécanisme central de la 001 corrigée.
 - **Rationale** : principe V ; la spec ne prévoit pas de droits différenciés.
 
 ## C12 — Mise à jour à l'écran
 
 - **Decision** : `CertificateChanged` (`ShouldBroadcast`, `ShouldDispatchAfterCommit`) diffusé sur le canal privé `fleet` avec une charge utile explicite (`reservation_id`, `status`, `delivered_at`) à chaque changement d'état ; la section du détail et le bandeau d'alerte se rafraîchissent à sa réception.
 - **Rationale** : contrainte technique de la constitution (Soketi, canaux privés, charge utile explicite) ; le salarié voit l'attestation passer « envoyée » sans recharger, ce qui compte au comptoir.
+
+## C13 — Conventions de la 001 corrigée
+
+- **Decision** : aucune classe de `certification` n'importe `App\Models\User` ; l'auteur d'une action est typé `Authenticatable&AgencyMember` (contrat `Functional\Fleet\Contracts\AgencyMember`) ; les modèles qui gardent un auteur et son agence utilisent le trait `RecordsAuthorAgency` quand la forme s'y prête ; les tests créent les utilisateurs avec le trait `CreatesUsers`. Écrans : `x-empty-state` pour les listes vides, `x-loading-hint` pendant les actions, `flux:modal` pour la confirmation de remise, `Flux::toast` pour les confirmations de dépôt, de renvoi et de remise. Tests selon la constitution 1.0.1 : calcul en mémoire → Unit pur, lecture de la base → Feature.
+- **Rationale** : formes livrées par la 001 corrigée (session de coordination) ; les reprendre évite une seconde passe de conformité sur la 005.

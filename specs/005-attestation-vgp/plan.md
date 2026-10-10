@@ -40,14 +40,15 @@ Dépôt unique : l'application Laravel à la racine du dépôt (pas de `repos.ym
 - le registre `Functional\Booking\Extensions\ReservationTransitionGuards` et le contrat `ReservationTransitionGuard` (appelé dans la transaction de `DepartReservation`, réservation verrouillée) ;
 - le registre `ReservationDetailSections` et l'événement Livewire `reservation-transition-readiness` portant `step = ReservationTransition::Departure->value` ;
 - `abstract Functional\Fleet\Exceptions\RefusalException` (constructeur protégé, clé de traduction, `userMessage()`) et `AssertsRefusals::assertRefused` pour les tests ;
-- `Functional\Fleet\Actions\UpdateMachineVgp` (met à jour l'échéance et émet `MachineChanged`, qui recalcule les conflits).
+- `Functional\Fleet\Actions\UpdateMachineVgp` (met à jour l'échéance et émet `MachineChanged`, qui recalcule les conflits) ;
+- les conventions de la 001 corrigée : contrat `Functional\Fleet\Contracts\AgencyMember` (plus de `App\Models\User` dans les layers), trait `RecordsAuthorAgency`, trait de test `CreatesUsers`, permissions en enums par layer, composants `x-empty-state`, `x-loading-hint`, `flux:modal`, `Flux::toast` ([research.md](research.md) C13).
 
 Elle ne dépend pas de la 002 ni de la 003 ; elle se cumule avec leurs gardes de sortie (photos 002, caution 004) par le registre de la 001.
 
 **Points d'extension manquants dans la 001** (voir [research.md](research.md) C9, C10), arbitrés par la session de coordination :
 
 1. **Modification de l'e-mail d'un client** : action `UpdateCustomer::changeEmail()` et événement `CustomerChanged` (`ShouldDispatchAfterCommit`) dans `booking`. Sans eux, `certification` devrait écrire dans la table `customers` d'un autre layer (interdit par le principe I). **Livrés par cette feature** dans `booking` (phase 0, fichiers nouveaux uniquement), sous un nom générique que les features 004 et 006 réutiliseront.
-2. **Disponibilité d'une étape agrégée par section** : aujourd'hui `ReservationDetail::$readinessBySteps[$step]` garde le dernier booléen reçu, toutes sections confondues ; avec deux sections ou plus qui conditionnent la sortie (photos, caution, attestation), la dernière qui parle l'emporte. Il faut un état par section et par étape, l'étape étant prête quand toutes les sections qui se sont prononcées le sont. **Livrée par la 001** dans son point d'extension. En attendant, la section attestation n'émet pas de disponibilité et le refus serveur reste la garantie.
+2. **Disponibilité d'une étape agrégée par section** : aujourd'hui `ReservationDetail::$readinessBySteps[$step]` garde le dernier booléen reçu, toutes sections confondues ; avec deux sections ou plus qui conditionnent la sortie (photos, caution, attestation), la dernière qui parle l'emporte. Il faut un état par section et par étape, l'étape étant prête quand toutes les sections qui se sont prononcées le sont. **Livrée par la 001** (commit `7423fc9`) : la section attestation s'enregistre comme gardienne de la sortie et émet toujours sa disponibilité ([research.md](research.md) C10) ; le refus serveur reste la garantie.
 
 ## Constitution Check
 

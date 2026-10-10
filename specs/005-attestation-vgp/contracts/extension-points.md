@@ -6,7 +6,7 @@
 |---|---|---|
 | `ReservationChanged` (`ShouldDispatchAfterCommit`) | booking | `OpenCertificateOnReservationChanged` (listener en file, après commit) : si la mise en service est atteinte, la réservation confirmée et la machine soumise à VGP, ouvre l'attestation (idempotent) |
 | `ReservationTransitionGuards::register()` + `ReservationTransitionGuard` | booking | `CertificateDeliveredGuard::beforeDeparture()` refuse la sortie tant que l'attestation n'est pas livrée ; `beforeReturn()` sans effet |
-| `ReservationDetailSections::register()` | booking | section `certification.reservation-section`, position 30 |
+| `ReservationDetailSections::register()` | booking | section gardienne `certification.reservation-section`, position 30, étape `ReservationTransition::Departure` ; émet `reservation-transition-readiness` au mount et à chaque changement |
 | `RefusalException` (abstraite), `DisplaysRefusals`, `AssertsRefusals` | fleet | toutes les exceptions de refus de la feature en héritent (classes `final`, factories nommées) |
 | `UpdateMachineVgp` | fleet | report de l'échéance du rapport déposé sur la machine |
 
@@ -15,7 +15,7 @@
 ### 1. `UpdateCustomer::changeEmail()` et `CustomerChanged` (booking) — livrés par la 005 (phase 0) — [research.md](../research.md) C9
 
 ```text
-Functional\Booking\Actions\UpdateCustomer::changeEmail(User $author, Customer $customer, string $email): Customer
+Functional\Booking\Actions\UpdateCustomer::changeEmail(Authenticatable&AgencyMember $author, Customer $customer, string $email): Customer
   - refuse un e-mail vide ou invalide (RefusalException dédiée, traduite)
   - met à jour customers.email, journal d'activité sur le client
   - émet CustomerChanged après commit
@@ -32,7 +32,7 @@ ReservationDetail::$readinessBySteps : array<step, array<section, bool>>
 isReadyFor(step) : vrai si aucune section n'est enregistrée, sinon toutes les sections qui se sont prononcées pour step sont prêtes
 ```
 
-Repli tant qu'il n'est pas livré : la section attestation n'émet pas de disponibilité ; seul le refus serveur bloque.
+Livré par la 001 (`7423fc9`) : `register(name, position, ReservationTransition::Departure)` ; prêt quand toutes les gardiennes ont répondu `true`, une gardienne muette bloque. Voir [research.md](../research.md) C10.
 
 ## Exposés par `certification`
 

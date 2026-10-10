@@ -3,8 +3,7 @@
 namespace Functional\Fleet\Providers;
 
 use Functional\Fleet\Access\Controls\MachineControl;
-use Functional\Fleet\Contracts\MachineRetirementGuard;
-use Functional\Fleet\Guards\UnrestrictedRetirement;
+use Functional\Fleet\Extensions\MachineRetirementGuards;
 use Lomkit\Access\Access;
 use Xefi\LaravelOSDD\LayerServiceProvider;
 
@@ -12,7 +11,7 @@ class FleetServiceProvider extends LayerServiceProvider
 {
     public function register(): void
     {
-        $this->app->bindIf(MachineRetirementGuard::class, UnrestrictedRetirement::class);
+        $this->app->singleton(MachineRetirementGuards::class);
     }
 
     public function boot(): void

@@ -69,9 +69,9 @@ description: "Task list for the used machine sales feature"
 
 ### E2 — fleet : gardes de retrait en registre
 
-- [ ] T011 [P] Test `functional/fleet/tests/Feature/MachineRetirementGuardsTest.php` : deux gardes enregistrés sont tous deux appelés ; le refus de l'un annule le retrait ; sans garde, le retrait passe ; vérifier que `functional/booking/tests/Feature/MachineRetirementTest.php` reste vert
-- [ ] T012 Créer `functional/fleet/src/Extensions/MachineRetirementGuards.php` ; `functional/fleet/src/Actions/RetireMachine.php` dépend du registre et appelle tous les gardes ; `functional/fleet/src/Providers/FleetServiceProvider.php` : singleton du registre, suppression du `bindIf` ; supprimer `functional/fleet/src/Guards/UnrestrictedRetirement.php`
-- [ ] T013 `functional/booking/src/Providers/BookingServiceProvider.php` : remplacer `bind(MachineRetirementGuard::class, ActiveReservationsRetirementGuard::class)` par `$this->app->make(MachineRetirementGuards::class)->register(ActiveReservationsRetirementGuard::class)` dans `boot()`
+- [X] T011 [P] Test `functional/fleet/tests/Feature/MachineRetirementGuardsTest.php` : deux gardes enregistrés sont tous deux appelés ; le refus de l'un annule le retrait ; sans garde, le retrait passe ; vérifier que `functional/booking/tests/Feature/MachineRetirementTest.php` reste vert
+- [X] T012 Créer `functional/fleet/src/Extensions/MachineRetirementGuards.php` ; `functional/fleet/src/Actions/RetireMachine.php` dépend du registre et appelle tous les gardes ; `functional/fleet/src/Providers/FleetServiceProvider.php` : singleton du registre, suppression du `bindIf` ; supprimer `functional/fleet/src/Guards/UnrestrictedRetirement.php`
+- [X] T013 `functional/booking/src/Providers/BookingServiceProvider.php` : remplacer `bind(MachineRetirementGuard::class, ActiveReservationsRetirementGuard::class)` par `$this->app->make(MachineRetirementGuards::class)->register(ActiveReservationsRetirementGuard::class)` dans `boot()`
 
 ### E3 — fleet : badges de machine
 

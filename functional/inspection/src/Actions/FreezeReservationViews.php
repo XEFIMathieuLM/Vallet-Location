@@ -8,9 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class FreezeReservationViews
 {
-    public function __construct(private readonly ResolveRequiredViews $resolveRequiredViews)
-    {
-    }
+    public function __construct(private readonly ResolveRequiredViews $resolveRequiredViews) {}
 
     public function handle(Reservation $reservation): void
     {

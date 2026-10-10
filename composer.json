@@ -53,7 +53,8 @@
         "psr-4": {
             "Tests\\": "tests/",
             "Functional\\Fleet\\Tests\\": "functional/fleet/tests/",
-            "Functional\\Booking\\Tests\\": "functional/booking/tests/"
+            "Functional\\Booking\\Tests\\": "functional/booking/tests/",
+            "Functional\\Inspection\\Tests\\": "functional/inspection/tests/"
         }
     },
     "scripts": {

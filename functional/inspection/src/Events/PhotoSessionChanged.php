@@ -16,8 +16,7 @@ class PhotoSessionChanged implements ShouldBroadcast, ShouldDispatchAfterCommit
         public readonly int $reservationId,
         public readonly InspectionStep $step,
         public readonly bool $isActive,
-    ) {
-    }
+    ) {}
 
     public function broadcastOn(): PrivateChannel
     {

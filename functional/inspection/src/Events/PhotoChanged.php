@@ -17,8 +17,7 @@ class PhotoChanged implements ShouldBroadcast, ShouldDispatchAfterCommit
         public readonly InspectionStep $step,
         public readonly int $reservationViewId,
         public readonly int $missingViewsCount,
-    ) {
-    }
+    ) {}
 
     public function broadcastOn(): PrivateChannel
     {

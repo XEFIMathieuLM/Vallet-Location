@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maquette 3 — Espace client, recherche</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.1.11"></script>
+<style type="text/tailwindcss">
+    @theme {
+        --font-sans: 'Inter Tight', ui-sans-serif, system-ui, sans-serif;
+        --color-accent: #ffed00; --color-ink: #000; --color-body: #222; --color-charcoal: #333; --color-mute: #666;
+        --color-soft: #f7f7f7; --color-deep: #111; --color-hairline: #f2f2f2;
+    }
+    .display { @apply font-bold leading-[0.95]; }
+    .eyebrow { @apply text-[11px] font-bold uppercase tracking-[0.08em]; }
+</style>
+</head>
+<body class="bg-white font-sans text-ink antialiased">
+<header class="border-b border-hairline bg-white">
+    <div class="mx-auto flex h-[60px] max-w-[1440px] items-center gap-10 px-4 sm:px-10">
+        <a class="flex items-center gap-1.5">
+            <span class="text-[22px] font-extrabold leading-none tracking-tight">VALLET</span>
+            <span class="bg-black px-1.5 py-1 text-[9px] font-bold leading-none tracking-[0.2em] text-white">LOCATION</span>
+        </a>
+        <nav class="hidden h-full items-stretch text-[14.4px] font-bold md:flex">
+            <a class="flex items-center border-b-2 border-black px-4">Rechercher une machine</a>
+            <a class="flex items-center px-4 text-mute">Mes demandes</a>
+            <a class="flex items-center px-4 text-mute">Mes réservations</a>
+        </nav>
+        <div class="ml-auto flex items-center gap-3 text-[14px] font-bold">
+            <span class="hidden sm:inline">Chantiers Dupont</span>
+            <span class="flex size-10 items-center justify-center rounded-[2px] border border-black md:hidden">☰</span>
+            <span class="hidden size-9 items-center justify-center rounded-full bg-black text-[13px] text-white md:flex">CD</span>
+        </div>
+    </div>
+</header>
+
+<section class="bg-black text-white">
+    <div class="mx-auto max-w-[1440px] px-4 pb-14 pt-14 sm:px-10 sm:pb-20 sm:pt-20">
+        <p class="eyebrow text-white/70">Espace client</p>
+        <h1 class="display mt-4 max-w-3xl text-[40px] sm:text-[56px]">Rechercher une machine</h1>
+        <div class="mt-10 grid gap-6 sm:gap-8 md:grid-cols-4">
+            <label class="flex flex-col gap-1"><span class="text-[13px] font-semibold text-white/72">Catégorie</span><span class="flex h-12 items-center justify-between border-b border-white text-[16px]">Nacelle 12 m <span class="text-xs">▾</span></span></label>
+            <label class="flex flex-col gap-1"><span class="text-[13px] font-semibold text-white/72">Agence</span><span class="flex h-12 items-center justify-between border-b border-white text-[16px]">Lyon Est <span class="text-xs">▾</span></span></label>
+            <label class="flex flex-col gap-1"><span class="text-[13px] font-semibold text-white/72">Du</span><span class="flex h-12 items-center border-b border-white text-[16px]">19/10/2026</span></label>
+            <label class="flex flex-col gap-1"><span class="text-[13px] font-semibold text-white/72">Au</span><span class="flex h-12 items-center border-b border-white text-[16px]">23/10/2026</span></label>
+        </div>
+        <p class="mt-6 text-[14px] text-white/72">Prix indicatif ; le prix facturé est établi par votre agence.</p>
+    </div>
+</section>
+
+<main class="mx-auto max-w-[1440px] px-4 py-12 sm:px-10 sm:py-16">
+    <div class="flex items-end justify-between border-b-2 border-black pb-3">
+        <h2 class="display text-[24px]">3 machines disponibles</h2>
+        <p class="hidden text-[14px] text-mute sm:block">du 19 au 23 octobre · Lyon Est</p>
+    </div>
+    <div class="mt-8 grid gap-px bg-hairline sm:grid-cols-2 lg:grid-cols-3">
+        <article class="flex flex-col bg-white">
+            <div class="flex aspect-[16/9] items-end bg-soft p-6"><span class="display text-[72px] text-black/10">NAC</span></div>
+            <div class="flex flex-1 flex-col gap-4 p-6">
+                <div><h3 class="display text-[24px]">NAC112</h3><p class="mt-2 text-[14px] text-mute">Nacelle 12 m · agence Lyon Est</p></div>
+                <p class="text-[14px]">À partir de <span class="text-[20px] font-bold">145 € HT</span> / jour</p>
+                <a class="mt-auto flex h-12 items-center justify-between rounded-[2px] bg-black px-6 text-[14.4px] font-bold text-white">Demander cette machine <span>→</span></a>
+            </div>
+        </article>
+        <article class="flex flex-col bg-white">
+            <div class="flex aspect-[16/9] items-end bg-soft p-6"><span class="display text-[72px] text-black/10">NAC</span></div>
+            <div class="flex flex-1 flex-col gap-4 p-6">
+                <div class="flex items-start justify-between"><div><h3 class="display text-[24px]">NAC118</h3><p class="mt-2 text-[14px] text-mute">Nacelle 12 m · agence Lyon Est</p></div></div>
+                <p class="text-[14px]">À partir de <span class="text-[20px] font-bold">145 € HT</span> / jour</p>
+                <a class="mt-auto flex h-12 items-center justify-between rounded-[2px] bg-black px-6 text-[14.4px] font-bold text-white">Demander cette machine <span>→</span></a>
+            </div>
+        </article>
+        <article class="flex flex-col bg-white">
+            <div class="flex aspect-[16/9] items-end bg-soft p-6"><span class="display text-[72px] text-black/10">NAC</span></div>
+            <div class="flex flex-1 flex-col gap-4 p-6">
+                <div><h3 class="display text-[24px]">NAC140</h3><p class="mt-2 text-[14px] text-mute">Nacelle 12 m · agence Lyon Est</p></div>
+                <p class="text-[14px] font-bold">Prix sur demande</p>
+                <a class="mt-auto flex h-12 items-center justify-between rounded-[2px] bg-black px-6 text-[14.4px] font-bold text-white">Demander cette machine <span>→</span></a>
+            </div>
+        </article>
+    </div>
+</main>
+
+<footer class="bg-black text-white">
+    <div class="mx-auto grid max-w-[1440px] gap-10 px-4 py-16 sm:grid-cols-3 sm:px-10">
+        <div>
+            <a class="flex items-center gap-1.5">
+                <span class="text-[22px] font-extrabold leading-none tracking-tight">VALLET</span>
+                <span class="bg-white px-1.5 py-1 text-[9px] font-bold leading-none tracking-[0.2em] text-black">LOCATION</span>
+            </a>
+            <p class="mt-4 max-w-xs text-[14px] text-white/72">Location de matériel de chantier.</p>
+        </div>
+        <div class="flex flex-col gap-3 text-[14px]">
+            <p class="eyebrow text-white/72">Mon espace</p>
+            <a>Rechercher une machine</a><a>Mes demandes</a><a>Mes réservations</a><a>Mon compte</a>
+        </div>
+    </div>
+    <div class="mx-auto max-w-[1440px] border-t border-white/16 px-4 py-6 text-[12px] text-white/72 sm:px-10">© 2026 Vallet Location</div>
+</footer>
+</body>
+</html>

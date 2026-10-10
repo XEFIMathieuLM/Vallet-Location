@@ -26,6 +26,22 @@ return [
         'fail' => 'marquer en échec',
         'hand_deliver' => 'enregistrer la remise en main propre de',
     ],
+    'to_handle' => [
+        'title' => 'Attestations VGP à traiter',
+        'intro' => 'Attestations des réservations confirmées qui ne sont ni envoyées ni remises : en échec, sans e-mail, sans rapport, ou en attente d\'envoi depuis plus de :minutes minutes. Les départs les plus proches en premier.',
+        'empty_heading' => 'Aucune attestation à traiter',
+        'empty' => 'Toutes les attestations des réservations confirmées sont parties ou en cours d\'envoi.',
+        'departure' => 'Départ',
+        'reservation' => 'Réservation',
+        'customer' => 'Client',
+        'email' => 'Adresse',
+        'date' => 'Depuis le',
+        'reason' => 'État et motif',
+    ],
+    'alert' => [
+        'count' => '{1} :count attestation VGP à traiter|[2,*] :count attestations VGP à traiter',
+        'open' => 'Voir les attestations',
+    ],
     'refusals' => [
         'not_delivered' => [
             'awaiting_report' => 'Sortie refusée : attestation VGP non envoyée, rapport de VGP non déposé pour la machine.',

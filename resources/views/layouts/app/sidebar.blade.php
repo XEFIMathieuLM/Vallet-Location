@@ -60,6 +60,9 @@
                         <flux:sidebar.item icon="shield-check" :href="route('certification.machines')" :current="request()->routeIs('certification.machines*')" wire:navigate>
                             {{ __('certification::navigation.reports') }}
                         </flux:sidebar.item>
+                        <flux:sidebar.item icon="envelope" :href="route('certification.certificates')" :current="request()->routeIs('certification.certificates')" wire:navigate>
+                            {{ __('certification::navigation.certificates') }}
+                        </flux:sidebar.item>
                     </flux:sidebar.group>
                 @endcan
 

@@ -9,11 +9,13 @@ use Functional\Booking\Extensions\ReservationDetailSections;
 use Functional\Booking\Extensions\ReservationTransitionGuards;
 use Functional\Certification\Access\Controls\ReservationCertificateControl;
 use Functional\Certification\Access\Controls\VgpReportControl;
+use Functional\Certification\Console\ReconcileCommand;
 use Functional\Certification\Events\VgpReportDeposited;
 use Functional\Certification\Guards\CertificateDeliveredGuard;
 use Functional\Certification\Listeners\OpenCertificateOnReservationChanged;
 use Functional\Certification\Listeners\ResolveCertificatesOnCustomerChanged;
 use Functional\Certification\Listeners\ResolveCertificatesOnReportDeposited;
+use Functional\Certification\Livewire\CertificationAlert;
 use Functional\Certification\Livewire\CustomerEmailForm;
 use Functional\Certification\Livewire\HandDeliveryButton;
 use Functional\Certification\Livewire\ReservationCertificateSection;
@@ -39,6 +41,7 @@ class CertificationServiceProvider extends LayerServiceProvider
         (new Access)->addControls([new VgpReportControl, new ReservationCertificateControl]);
 
         Livewire::component(ReservationCertificateSection::NAME, ReservationCertificateSection::class);
+        Livewire::component(CertificationAlert::NAME, CertificationAlert::class);
         Livewire::component(CustomerEmailForm::NAME, CustomerEmailForm::class);
         Livewire::component(HandDeliveryButton::NAME, HandDeliveryButton::class);
         $this->app->make(ReservationTransitionGuards::class)->register(CertificateDeliveredGuard::class);
@@ -47,6 +50,13 @@ class CertificationServiceProvider extends LayerServiceProvider
         Event::listen(VgpReportDeposited::class, ResolveCertificatesOnReportDeposited::class);
         Event::listen(CustomerChanged::class, ResolveCertificatesOnCustomerChanged::class);
 
-        $this->withRouting(web: __DIR__.'/../../routes/web.php');
+        if ($this->app->runningInConsole()) {
+            $this->commands([ReconcileCommand::class]);
+        }
+
+        $this->withRouting(
+            web: __DIR__.'/../../routes/web.php',
+            commands: __DIR__.'/../../routes/console.php',
+        );
     }
 }

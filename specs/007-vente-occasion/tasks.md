@@ -199,11 +199,11 @@ description: "Task list for the used machine sales feature"
 
 ### Tests for User Story 4
 
-- [ ] T065 [P] [US4] `functional/sales/tests/Feature/SaleTransmissionReliabilityTest.php` (faux logiciel) : US4-1 (remise enregistrée, transmission en attente), US4-2 (`billing:reconcile` la transmet sans action), US4-3 (acheteur sans identifiant → échec « client inconnu » visible dans la liste des transmissions avec lien vers la vente), US4-4 (double envoi → une seule réception, même clé d'idempotence), US4-5 (export de secours : la vente y figure, passe « transmise par export »), FR-021 (la remise ne dépend pas du logiciel)
+- [X] T065 [P] [US4] `functional/sales/tests/Feature/SaleTransmissionReliabilityTest.php` (faux logiciel) : US4-1 (remise enregistrée, transmission en attente), US4-2 (`billing:reconcile` la transmet sans action), US4-3 (acheteur sans identifiant → échec « client inconnu » visible dans la liste des transmissions avec lien vers la vente), US4-4 (double envoi → une seule réception, même clé d'idempotence), US4-5 (export de secours : la vente y figure, passe « transmise par export »), FR-021 (la remise ne dépend pas du logiciel)
 
 ### Implementation for User Story 4
 
-- [ ] T066 [US4] Combler les écarts révélés par T065 dans `SaleBillableSource` et l'affichage de l'état de transmission de `SaleDetail` (aucune logique de relance dans sales : elle reste dans billing)
+- [X] T066 [US4] Combler les écarts révélés par T065 dans `SaleBillableSource` et l'affichage de l'état de transmission de `SaleDetail` (aucune logique de relance dans sales : elle reste dans billing)
 
 **Checkpoint**: zéro vente perdue ni dupliquée dans les scénarios de panne.
 

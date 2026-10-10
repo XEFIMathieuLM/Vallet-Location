@@ -5,7 +5,7 @@ Guide de vérification de bout en bout. Les règles sont dans [spec.md](spec.md)
 ## Prérequis
 
 - La feature 001 implémentée et l'application lancée avec Sail (PostgreSQL, Soketi, worker de file d'attente).
-- Les migrations et seeders de la 001 et de la 002 passés : 7 agences, catégories dont « Nacelle », des machines, un salarié par agence, et les données d'inspection de l'`InspectionSeeder` (une réservation par situation : départ en attente, location en cours, retours avec dégât traité ou non, réservation annulée).
+- Les migrations et seeders de la 001 et de la 002 passés : 7 agences, catégories dont « Nacelle », des machines, un salarié par agence, et l'historique de réservations de la 001 (`ReservationSeeder`), complété par l'`InspectionSeeder` : vues personnalisées d'une catégorie, deux locations en cours (dont une avec la prise de photos de retour engagée), trois retours (dégât non traité, dégât traité, sans dégât) et une réservation annulée pendant la prise de photos. Les adresses des salariés de démonstration sont affichées à la fin du seeding.
 - Un smartphone sur le même réseau que le poste (l'adresse IP du poste suffit : le champ d'envoi avec appareil photo fonctionne en HTTP), ou un tunnel HTTPS vers l'application.
 - Un chronomètre pour mesurer SC-003 et SC-004.
 

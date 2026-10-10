@@ -15,10 +15,13 @@ use Functional\Billing\Models\Transmission;
 use Functional\Billing\Money\Money;
 use Functional\Billing\Tests\Concerns\BuildsBillingFixtures;
 use Functional\Billing\Tests\Concerns\RecordsReservationLifecycle;
+use Functional\Inspection\Actions\ResolveDamage;
 use Functional\Inspection\Models\Damage;
 use Functional\Inspection\Queries\ReservationsToReinvoice;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
+use RuntimeException;
+use Spatie\Activitylog\Models\Activity;
 use Tests\TestCase;
 
 class DamageBillingTest extends TestCase
@@ -145,5 +148,20 @@ class DamageBillingTest extends TestCase
             ->assertSee('Non refacturé')
             ->assertSee('usure normale')
             ->assertSee($this->employee->name);
+    }
+
+    public function test_a_settlement_that_fails_midway_writes_nothing_and_sends_nothing(): void
+    {
+        $reservation = $this->closedReservation('2026-11-10 08:00:00', '2026-11-14 17:00:00');
+        $damage = $this->unresolvedDamage($reservation);
+        $this->mock(ResolveDamage::class)->shouldReceive('handle')->andThrow(new RuntimeException('Inspection unavailable'));
+
+        $this->assertThrows(fn () => app(BillDamage::class)->handle($damage, Money::fromStored(45000), 'remplacement capot', $this->employee), RuntimeException::class);
+
+        $this->assertSame(0, DamageSettlement::query()->count());
+        $this->assertSame(0, Transmission::query()->count());
+        $this->assertSame([], $this->fakeGateway()->received());
+        $this->assertFalse($damage->refresh()->isResolved());
+        $this->assertSame(0, Activity::query()->where('log_name', 'billing')->count());
     }
 }

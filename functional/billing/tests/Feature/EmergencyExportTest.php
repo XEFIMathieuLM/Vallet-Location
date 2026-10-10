@@ -120,6 +120,19 @@ class EmergencyExportTest extends TestCase
         $this->assertSame($queriesForTwoRentals, $this->countExportQueries($employee));
     }
 
+    public function test_a_file_that_cannot_be_written_changes_no_transmission_and_records_no_export(): void
+    {
+        $employee = $this->employee();
+        $transmissions = Transmission::factory()->count(2)->create();
+        config(['filesystems.disks.billing-exports' => ['driver' => 'local', 'root' => '/proc/billing-exports', 'throw' => true]]);
+        Storage::forgetDisk('billing-exports');
+
+        $this->assertThrows(fn () => app(CreateBillingExport::class)->handle($employee));
+
+        $this->assertSame(0, BillingExport::query()->count());
+        $transmissions->each(fn (Transmission $transmission) => $this->assertSame(TransmissionStatus::Pending, $transmission->refresh()->status));
+    }
+
     private function exportableRentalsWithDamage(int $count): void
     {
         foreach (range(1, $count) as $position) {

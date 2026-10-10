@@ -238,7 +238,7 @@ Lire `design-patterns:state` avant T016.
 - [X] T077 [Conf] `osdd` : `functional/billing/composer.json` déclare toutes ses dépendances (`functional/inspection`, `functional/booking`, `functional/fleet`, `spatie/simple-excel`, `spatie/laravel-activitylog`, `spatie/laravel-permission`, `lomkit/laravel-access-control`, `livewire/livewire`, `livewire/flux`, `xefi/faker-php-laravel` en dev)
 - [X] T078 [Conf] `aggregate-in-the-database` : `ReservationBillingSection` trie en SQL (`orderBy` sur la période via sous-requête) et filtre avec `has('billablePeriod')` au lieu de `whereNotNull` + `sortBy` en PHP
 - [X] T079 [Conf] Contrat d'écran : test d'abord, puis bouton « Relancer » d'une transmission en échec dans la section « Facturation » du détail de réservation (FR-010, [screens.md](contracts/screens.md)) ; aligner le libellé du relevé dans `screens.md` sur FR-018 (« locations transmises »)
-- [ ] T080 [Conf] Tests manquants : échec de l'écriture du fichier d'export (aucune transmission ne change d'état, aucun `BillingExport`), échec du règlement d'un dégât (rien d'écrit, rien envoyé), commande `billing:fake-gateway` (bascule de mode, liste des clés reçues, refus hors `local` / `testing`)
+- [X] T080 [Conf] Tests manquants : échec de l'écriture du fichier d'export (aucune transmission ne change d'état, aucun `BillingExport`), échec du règlement d'un dégât (rien d'écrit, rien envoyé), commande `billing:fake-gateway` (bascule de mode, liste des clés reçues, refus hors `local` / `testing`)
 
 ### UI (skills `design`)
 

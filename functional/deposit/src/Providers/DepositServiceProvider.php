@@ -10,6 +10,7 @@ use Functional\Booking\Extensions\ReservationTransitionGuards;
 use Functional\Deposit\Guards\DepositCollectedGuard;
 use Functional\Deposit\Livewire\ReservationDepositSection;
 use Functional\Deposit\Livewire\Section\CollectDepositForm;
+use Functional\Deposit\Livewire\Section\QualifyCustomerForm;
 use Livewire\Livewire;
 use Lomkit\Access\Access;
 use Xefi\LaravelOSDD\LayerServiceProvider;
@@ -31,6 +32,7 @@ class DepositServiceProvider extends LayerServiceProvider
 
         Livewire::component(ReservationDepositSection::NAME, ReservationDepositSection::class);
         Livewire::component(CollectDepositForm::NAME, CollectDepositForm::class);
+        Livewire::component(QualifyCustomerForm::NAME, QualifyCustomerForm::class);
         $this->app->make(ReservationDetailSections::class)->register(ReservationDepositSection::NAME, 30, ReservationTransition::Departure);
         $this->app->make(ReservationTransitionGuards::class)->register(DepositCollectedGuard::class);
 

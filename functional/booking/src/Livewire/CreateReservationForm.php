@@ -5,6 +5,7 @@ namespace Functional\Booking\Livewire;
 use Carbon\CarbonImmutable;
 use Functional\Booking\Actions\CreateReservation;
 use Functional\Booking\Data\NewCustomer;
+use Functional\Booking\Enums\CustomerType;
 use Functional\Booking\Models\Customer;
 use Functional\Fleet\Contracts\AgencyMember;
 use Functional\Fleet\Livewire\Concerns\DisplaysRefusals;
@@ -13,6 +14,8 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Enum;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\Url;
@@ -49,6 +52,8 @@ class CreateReservationForm extends Component
     public string $newCustomerPhone = '';
 
     public string $newCustomerEmail = '';
+
+    public string $newCustomerType = '';
 
     #[Computed]
     public function machine(): Machine
@@ -97,7 +102,7 @@ class CreateReservationForm extends Component
     }
 
     /**
-     * @return array<string, array<int, string>>
+     * @return array<string, array<int, string|Enum>>
      */
     protected function rules(): array
     {
@@ -113,6 +118,7 @@ class CreateReservationForm extends Component
             'newCustomerName' => ['required', 'string', 'max:255'],
             'newCustomerPhone' => ['nullable', 'required_without:newCustomerEmail', 'string', 'max:50'],
             'newCustomerEmail' => ['nullable', 'required_without:newCustomerPhone', 'email', 'max:255'],
+            'newCustomerType' => ['required', Rule::enum(CustomerType::class)],
         ];
     }
 
@@ -128,12 +134,13 @@ class CreateReservationForm extends Component
             'newCustomerName' => __('booking::reservations.fields.customer_name'),
             'newCustomerPhone' => __('booking::reservations.fields.customer_phone'),
             'newCustomerEmail' => __('booking::reservations.fields.customer_email'),
+            'newCustomerType' => __('booking::customers.fields.type'),
         ];
     }
 
     public function render(): View
     {
-        return view('booking::livewire.create-reservation-form')
+        return view('booking::livewire.create-reservation-form', ['customerTypes' => CustomerType::cases()])
             ->title(__('booking::reservations.form.title'));
     }
 
@@ -147,6 +154,7 @@ class CreateReservationForm extends Component
             name: $this->newCustomerName,
             phone: $this->newCustomerPhone !== '' ? $this->newCustomerPhone : null,
             email: $this->newCustomerEmail !== '' ? $this->newCustomerEmail : null,
+            type: CustomerType::from($this->newCustomerType),
         );
     }
 }

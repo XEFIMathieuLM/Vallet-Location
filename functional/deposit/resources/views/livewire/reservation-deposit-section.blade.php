@@ -1,4 +1,5 @@
 @php
+    use Functional\Booking\Enums\ReservationStatus;
     use Functional\Deposit\Access\DepositPermission;
     use Functional\Deposit\Enums\DepositSituationKind;
 @endphp
@@ -23,6 +24,9 @@
     @endif
 
     @can(DepositPermission::ManageDeposits->value)
+        @if ($reservation->status === ReservationStatus::Confirmed)
+            <livewire:deposit.qualify-customer-form :reservation="$reservation" :key="'qualify-customer-'.$reservation->id.'-'.($reservation->customer->type?->value ?? 'none')" />
+        @endif
         @if ($situation->kind === DepositSituationKind::ToCollect)
             <livewire:deposit.collect-deposit-form :reservation="$reservation" :key="'collect-deposit-'.$reservation->id" />
         @endif

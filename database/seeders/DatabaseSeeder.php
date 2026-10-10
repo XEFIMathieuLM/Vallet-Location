@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Functional\Billing\Database\Seeders\BillingPermissionSeeder;
+use Functional\Billing\Database\Seeders\BillingSeeder;
 use Functional\Fleet\Database\Seeders\FleetSeeder;
 use Functional\Fleet\Models\Agency;
 use Functional\Inspection\Database\Seeders\InspectionPermissionSeeder;
@@ -25,5 +26,7 @@ class DatabaseSeeder extends Seeder
                 ])
                 ->assignRole(PermissionSeeder::EMPLOYEE_ROLE);
         });
+
+        $this->call(BillingSeeder::class);
     }
 }

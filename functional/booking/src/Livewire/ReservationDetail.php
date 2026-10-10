@@ -49,9 +49,6 @@ class ReservationDetail extends Component
         $cancelReservation->handle($this->reservation);
     }
 
-    /**
-     * Livewire passes the event payload as named arguments, hence the snake_case parameter.
-     */
     #[On('reservation-transition-readiness')]
     public function updateTransitionReadiness(string $step, bool $is_ready): void
     {

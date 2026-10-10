@@ -40,25 +40,23 @@ Dépôt unique : l'application Laravel à la racine du dépôt (pas de `repos.ym
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-`.specify/memory/constitution.md` est toujours le modèle vide. Comme pour la 001, les conventions Xefi servent de portes :
+Vérifié contre la [constitution v1.0.0](../../.specify/memory/constitution.md) (ratifiée le 2026-10-10, après la conception de cette feature : la vérification ci-dessous porte sur le plan **et** sur le code livré).
 
-| Porte | Statut |
-|-------|--------|
-| Stack et layout OSDD de la 001, nouveau domaine = nouveau layer | ✅ P1 |
-| Sens de dépendance des layers respecté (`inspection → booking → fleet`) | ✅ P2, P3 (points d'extension) |
-| Packages recommandés plutôt que code maison (médias, QR code, audit) | ✅ P5, P7, data-model |
-| Contrôles par permission, jamais par nom de rôle | ✅ P12 |
-| Cycles de vie : State seulement si plusieurs états et transitions ; ici états dérivés ou à une transition | ✅ data-model (`PhotoSession`, `Damage`) |
-| Pas d'observers ; réactions par listeners (révocation à l'annulation) | ✅ data-model |
-| Rétention par `Prunable` (pas `MassPrunable`, fichiers à supprimer) | ✅ P9 |
-| Pas de cascade en base | ✅ data-model |
-| Garanties portées par le serveur (guard dans la transaction de sortie / retour) | ✅ P2 |
-| Données exposées publiquement réduites au strict nécessaire | ✅ [phone-link.md](contracts/phone-link.md) |
-| Fichiers de code < 200 lignes, code en anglais, textes traduits | à vérifier pendant l'implémentation |
+| Principe | Statut | Où |
+|----------|--------|----|
+| **I. Layers OSDD** — nouveau domaine = nouveau layer généré par `osdd:layer` ; sens `inspection → booking → fleet` ; points d'extension remplis depuis le service provider ; aucun fichier d'un autre layer modifié | ✅ | layer `functional/inspection` ; guards et sections réalisés dans la 001 (T079 à T084) ; registre `DamageActions` exposé à la 003 ; T065 (aucune référence à `inspection` dans `booking` ni `fleet`) |
+| **II. Garanties en base et au serveur** — refus serveur dans une transaction avec verrou ; contraintes en base ; pas de cascade ; agrégats en base | ✅ | `PhotosCompleteGuard` dans la transaction de sortie / retour ; `lockForUpdate()` sur la réservation pour l'ouverture d'une session, l'ajout et la suppression d'une photo (T068), sur la catégorie pour le réglage des vues, sur le dégât pour son traitement ; index uniques (`token_hash`, vue par catégorie, position par réservation) ; clés étrangères sans cascade ; vues manquantes et dégâts non traités comptés en SQL (`MissingViews`, `CountUnresolvedDamages`) |
+| **III. Cycles de vie explicites** — statuts en texte + enum ; pattern State seulement pour plusieurs états avec transitions interdites ; heure de Paris | ✅ | `InspectionStep`, `RevocationReason` en enums ; `PhotoSession` (une seule transition, la révocation) et `Damage` (signalé → traité) sans pattern State, justifié dans [data-model.md](data-model.md) ; `APP_TIMEZONE=Europe/Paris` ; aucun montant |
+| **IV. Effets de bord explicites, erreurs typées, systèmes externes isolés** | ✅ | pas d'observer : listener `RevokePhotoSessionsOnReservationChanged`, historique écrit par les actions ; pas de `try/catch` ; refus typés (sous-classes de `RefusalException`) ; stockage derrière le disque Laravel `photos` (local, S3, `Storage::fake` en test) ; purge par commande planifiée sur un état en base ; seules la grande version des photos (repli sur l'original) et les diffusions temps réel passent par la file, sans perte de donnée possible |
+| **V. Accès par permission** — permissions déclarées dans un seeder du layer et données au rôle salarié | ✅ | `InspectionPermissionSeeder` (`damages.manage`, `inspection_views.manage`) ; routes `can:` ; `DamageControl`, `CategoryViewControl` ; la page téléphone n'agit que par son jeton ([phone-link.md](contracts/phone-link.md)) |
+| **VI. Tests par scénario d'acceptation** — un test Feature par scénario, tests d'abord, factories, horloge contrôlée, PHPStan à zéro | ⚠️ | chaque scénario de US1 à US4 a son test Feature ; `travelTo()` / `setTestNow()` ; PHPStan sans erreur. **Écart** : tests de US2 écrits après le code (voir Complexity Tracking) |
+| **VII. Code simple et lisible** — anglais, textes traduits, fichiers < 200 lignes, pas de commentaire, packages justifiés | ✅ | textes dans `functional/inspection/resources/lang/fr` ; plus gros fichier de code 148 lignes ; paquets justifiés dans le Technical Context ; seuls les fichiers de configuration publiés par les paquets gardent leurs commentaires (voir Complexity Tracking) |
+| **Contraintes techniques** — stack, Docker, worker de file et planificateur en production | ✅ | temps réel Soketi sur canaux privés à charge utile explicite ([broadcast-events.md](contracts/broadcast-events.md)) ; worker et planificateur requis (temps réel, conversions, purge nocturne) |
+| **Workflow** — spec-kit dans l'ordre, prérequis déclarés, analyse sans problème critique, haut ou moyen avant l'implémentation | ⚠️ | prérequis 001 déclarés dans [tasks.md](tasks.md) ; analyses successives jusqu'à zéro problème critique ou haut. **Écart** : les parties indépendantes de la 001 ont été codées avant le premier `/speckit-analyze` (voir Complexity Tracking) |
 
-**Résultat** : aucune violation. La 001 recommandait `/speckit-constitution` avant la 2e feature : toujours pas fait. Non bloquant, mais c'est le bon moment pour inscrire ces principes.
+**Résultat** : aucune violation ouverte ; deux écarts de méthode, passés et documentés ci-dessous, sans effet sur le code livré.
 
-**Re-check post-design** : le modèle de données et les contrats respectent toutes les portes.
+**Re-check post-design et post-implémentation** : le modèle de données, les contrats et le code respectent les principes I à VII.
 
 ## Project Structure
 
@@ -121,4 +119,8 @@ compose.yaml                    # + S3 local (SeaweedFS, profil s3), facultatif
 
 ## Complexity Tracking
 
-Aucune violation à justifier.
+| Écart | Pourquoi | Effet et rattrapage |
+|-------|----------|---------------------|
+| Tests de US2 écrits après le code (principe VI) | `PhotosCompleteGuard::beforeReturn` et le figement au retour ont été codés avec US1, dont ils partagent le code | Aucun sur le comportement : T039 à T041 couvrent tous les scénarios de US2 et passent ; l'écart est signalé dans la PR |
+| Parties indépendantes codées avant le premier `/speckit-analyze` (workflow) | Reprise de la feature sur un autre poste, avant que le workflow strict soit rappelé | Régularisé : `/speckit-analyze` relancé à chaque étape jusqu'à zéro problème critique ou haut ; les constats (dont la faille de concurrence D1) ont été corrigés |
+| Commentaires dans `config/livewire.php` et `config/media-library.php` (principe VII) | Fichiers publiés tels quels par les paquets ; seules les valeurs utiles ont été modifiées | Toléré : ce ne sont pas des fichiers écrits pour le projet |

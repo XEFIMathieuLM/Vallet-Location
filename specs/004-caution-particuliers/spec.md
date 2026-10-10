@@ -159,7 +159,7 @@ Un salarié définit un montant de caution par défaut, et peut fixer pour chaqu
 **Type de client**
 
 - **FR-001**: Le système DOIT permettre de qualifier chaque client comme « particulier » ou « professionnel » ; ce type est obligatoire à la création d'un client.
-- **FR-002**: Les clients existant avant la mise en service DOIVENT apparaître « type à renseigner » et pouvoir être qualifiés depuis leur fiche et depuis la section « Caution » d'une de leurs réservations.
+- **FR-002**: Les clients existant avant la mise en service DOIVENT apparaître « type à renseigner » et pouvoir être qualifiés depuis la section « Caution » d'une de leurs réservations (l'outil n'a pas d'écran de fiche client).
 - **FR-003**: Le type « professionnel » NE DOIT PAS présumer de règles propres aux grands comptes (tarifs négociés, bon de commande), qui feront l'objet d'une spec séparée.
 
 **Encaissement et blocage de la sortie**
@@ -190,7 +190,7 @@ Un salarié définit un montant de caution par défaut, et peut fixer pour chaqu
 
 - **FR-019**: Le système DOIT présenter à toutes les agences la liste des cautions en attente d'action (à restituer, à solder, bloquées par un dégât), filtrable par agence, avec la réservation, le client, le montant, l'état et la date depuis laquelle la caution attend.
 - **FR-020**: Le système DOIT mettre en évidence les cautions à restituer ou à solder depuis plus de 7 jours.
-- **FR-021**: Le système DOIT enregistrer dans l'historique de la réservation chaque qualification du type de client, chaque encaissement, correction (motif, ancienne et nouvelle valeur), restitution (avec la confirmation « aucun dégât constaté ») et solde de caution, avec l'auteur, l'agence et la date.
+- **FR-021**: Le système DOIT enregistrer chaque qualification du type de client dans l'historique du client (ancien et nouveau type), et dans l'historique de la réservation chaque encaissement, correction (motif, ancienne et nouvelle valeur), restitution (avec la confirmation « aucun dégât constaté ») et solde de caution, avec l'auteur, l'agence et la date.
 - **FR-022**: Toutes ces actions sont ouvertes à tous les salariés dans cette version, chacune contrôlée par une autorisation dédiée.
 
 ### Key Entities

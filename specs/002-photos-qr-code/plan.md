@@ -34,7 +34,7 @@ Approche : un nouveau layer OSDD **`inspection`** au-dessus de `booking` et `fle
 
 Dépôt unique : l'application Laravel à la racine du dépôt (pas de `repos.yml`, comme pour la 001). Aucun autre dépôt touché.
 
-**Dépendance** : cette feature s'appuie sur deux points d'extension du layer `booking` (voir P2 et P3 de [research.md](research.md)). Génériques, ils sont réalisés **dans la 001**, avec les actions de sortie et de retour et l'écran de détail ; cette branche ne modifie aucun fichier de `booking`. Les parties d'`inspection` qui n'en dépendent pas démarrent dès la phase 2 de la 001 ; le blocage de la sortie et du retour attend sa phase 5 (voir [tasks.md](tasks.md#️-prérequis--feature-001)).
+**Dépendance** : cette feature s'appuie sur deux points d'extension du layer `booking` (voir P2 et P3 de [research.md](research.md)). Génériques, ils sont réalisés **dans la 001**, avec les actions de sortie et de retour et l'écran de détail ; cette branche ne modifie aucun fichier de `booking`. Les parties d'`inspection` qui n'en dépendent pas ont démarré dès la phase 2 de la 001 ; le blocage de la sortie et du retour s'appuie sur sa phase 5, désormais livrée (registres `Functional\Booking\Extensions\ReservationTransitionGuards` et `ReservationDetailSections`, voir [tasks.md](tasks.md#️-prérequis--feature-001)).
 
 ## Constitution Check
 
@@ -86,8 +86,8 @@ specs/002-photos-qr-code/
 functional/
 ├── booking/                          # 001 (points d'extension réalisés dans la 001)
 │   └── src/
-│       ├── Contracts/                # ReservationTransitionGuard (nouveau)
-│       ├── Support/                  # registres : guards, sections du détail (nouveau)
+│       ├── Contracts/                # ReservationTransitionGuard (001, T079)
+│       ├── Extensions/               # registres : guards, sections du détail (001, T080 et T083)
 │       ├── Actions/                  # DepartReservation, ReturnReservation : appellent les guards
 │       └── Livewire/                 # détail de réservation : rend les sections enregistrées
 └── inspection/                       # nouveau

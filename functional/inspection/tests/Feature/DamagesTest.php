@@ -18,6 +18,7 @@ use Functional\Inspection\Models\Photo;
 use Functional\Inspection\Models\ReservationView;
 use Functional\Inspection\Support\DamageActions;
 use Functional\Inspection\Tests\Concerns\BuildsPhotoSessions;
+use Functional\Inspection\Tests\Concerns\WithoutDamageActions;
 use Functional\Inspection\Tests\Fixtures\FakeDamageAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -25,7 +26,7 @@ use Tests\TestCase;
 
 class DamagesTest extends TestCase
 {
-    use BuildsPhotoSessions, RefreshDatabase;
+    use BuildsPhotoSessions, RefreshDatabase, WithoutDamageActions;
 
     private User $employee;
 

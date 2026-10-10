@@ -9,6 +9,7 @@ use Functional\Billing\Console\CloseMonthsCommand;
 use Functional\Billing\Console\FakeGatewayCommand;
 use Functional\Billing\Console\ReconcileCommand;
 use Functional\Billing\Contracts\BillingGateway;
+use Functional\Billing\Exceptions\FakeBillingGatewayNotAllowedException;
 use Functional\Billing\Exceptions\UnknownBillingGatewayException;
 use Functional\Billing\Gateways\FakeBillingGateway;
 use Functional\Billing\Listeners\RecordFinalPeriodOnReservationClosed;
@@ -30,8 +31,16 @@ class BillingServiceProvider extends LayerServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../../config/billing.php', 'billing');
         $this->app->singleton(FakeBillingGateway::class);
         $this->app->bind(BillingGateway::class, function (): BillingGateway {
-            $gatewayName = config()->string('billing.gateway');
-            $gatewayClass = config()->array('billing.gateways')[$gatewayName] ?? throw UnknownBillingGatewayException::named($gatewayName);
+            $gatewayName = config('billing.gateway');
+            $gatewayClass = is_string($gatewayName) ? config()->array('billing.gateways')[$gatewayName] ?? null : null;
+
+            if (! is_string($gatewayClass)) {
+                throw UnknownBillingGatewayException::named(is_string($gatewayName) ? $gatewayName : '');
+            }
+
+            if ($gatewayClass === FakeBillingGateway::class && ! $this->app->environment(['local', 'testing'])) {
+                throw FakeBillingGatewayNotAllowedException::in($this->app->environment());
+            }
 
             return $this->app->make($gatewayClass);
         });

@@ -52,6 +52,7 @@ class CreateReservationFormTest extends TestCase
     {
         $this->openForm('2026-11-10', '2026-11-14')
             ->set('isNewCustomer', true)
+            ->set('newCustomerType', 'professional')
             ->set('newCustomerName', 'BTP Savoie')
             ->set('newCustomerEmail', 'contact@btp-savoie.test')
             ->call('save')
@@ -65,6 +66,7 @@ class CreateReservationFormTest extends TestCase
     {
         $this->openForm('2026-11-10', '2026-11-14')
             ->set('isNewCustomer', true)
+            ->set('newCustomerType', 'professional')
             ->set('newCustomerName', 'BTP Savoie')
             ->call('save')
             ->assertHasErrors(['newCustomerPhone', 'newCustomerEmail']);
@@ -82,6 +84,7 @@ class CreateReservationFormTest extends TestCase
 
         $this->openForm('2026-11-13', '2026-11-16')
             ->set('isNewCustomer', true)
+            ->set('newCustomerType', 'professional')
             ->set('newCustomerName', 'BTP Savoie')
             ->set('newCustomerPhone', '0450000000')
             ->call('save')

@@ -13,8 +13,10 @@
         "functional/billing": "*",
         "functional/booking": "*",
         "functional/certification": "*",
+        "functional/deposit": "*",
         "functional/fleet": "*",
         "functional/inspection": "*",
+        "functional/sales": "*",
         "laravel/chisel": "^0.1.0",
         "laravel/fortify": "^1.37.2",
         "laravel/framework": "^13.17",
@@ -58,7 +60,9 @@
             "Functional\\Billing\\Tests\\": "functional/billing/tests/",
             "Functional\\Booking\\Tests\\": "functional/booking/tests/",
             "Functional\\Certification\\Tests\\": "functional/certification/tests/",
-            "Functional\\Inspection\\Tests\\": "functional/inspection/tests/"
+            "Functional\\Deposit\\Tests\\": "functional/deposit/tests/",
+            "Functional\\Inspection\\Tests\\": "functional/inspection/tests/",
+            "Functional\\Sales\\Tests\\": "functional/sales/tests/"
         }
     },
     "scripts": {

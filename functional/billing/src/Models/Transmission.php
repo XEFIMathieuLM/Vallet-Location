@@ -4,6 +4,7 @@ namespace Functional\Billing\Models;
 
 use Carbon\CarbonImmutable;
 use Functional\Billing\Database\Factories\TransmissionFactory;
+use Functional\Billing\Enums\BillableLineType;
 use Functional\Billing\Enums\TransmissionFailureReason;
 use Functional\Billing\Enums\TransmissionStatus;
 use Functional\Billing\States\TransmissionState;
@@ -23,7 +24,9 @@ use Lomkit\Access\Controls\HasControl;
  * @property string $uuid
  * @property int|null $billable_period_id
  * @property int|null $damage_settlement_id
- * @property int $reservation_id
+ * @property int|null $reservation_id
+ * @property BillableLineType|null $source_type
+ * @property int|null $source_id
  * @property TransmissionStatus $status
  * @property int $attempts
  * @property CarbonImmutable|null $next_attempt_at
@@ -37,12 +40,12 @@ use Lomkit\Access\Controls\HasControl;
  * @property CarbonImmutable $created_at
  * @property-read BillablePeriod|null $billablePeriod
  * @property-read DamageSettlement|null $damageSettlement
- * @property-read Reservation $reservation
+ * @property-read Reservation|null $reservation
  * @property-read BillingExport|null $export
  * @property-read CustomerBillingAccount|null $customerBillingAccount
  */
 #[Fillable([
-    'billable_period_id', 'damage_settlement_id', 'reservation_id', 'status', 'attempts', 'next_attempt_at',
+    'billable_period_id', 'damage_settlement_id', 'source_type', 'source_id', 'reservation_id', 'status', 'attempts', 'next_attempt_at',
     'last_attempt_at', 'sent_at', 'failure_reason', 'last_error', 'external_ref', 'billing_export_id', 'reserved_until',
 ])]
 #[UseFactory(TransmissionFactory::class)]
@@ -71,6 +74,7 @@ class Transmission extends Model
     {
         return [
             'status' => TransmissionStatus::class,
+            'source_type' => BillableLineType::class,
             'failure_reason' => TransmissionFailureReason::class,
             'next_attempt_at' => 'immutable_datetime',
             'last_attempt_at' => 'immutable_datetime',

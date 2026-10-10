@@ -22,6 +22,8 @@
             <directory>functional/inspection/src</directory>
             <directory>functional/billing/src</directory>
             <directory>functional/certification/src</directory>
+            <directory>functional/deposit/src</directory>
+            <directory>functional/sales/src</directory>
         </include>
     </source>
     <php>

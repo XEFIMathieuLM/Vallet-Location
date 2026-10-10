@@ -9,10 +9,12 @@ use Functional\Booking\Models\Reservation;
 use Functional\Booking\Planning\PlanningCellKind;
 use Functional\Booking\Planning\PlanningGrid;
 use Functional\Fleet\Enums\MachineStatus;
+use Functional\Fleet\Extensions\MachineBadges;
 use Functional\Fleet\Models\Agency;
 use Functional\Fleet\Models\Machine;
 use Functional\Fleet\Models\MachineCategory;
 use Functional\Fleet\Tests\Concerns\CreatesUsers;
+use Functional\Fleet\Tests\Doubles\StubMachineBadgeProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -87,6 +89,20 @@ class PlanningTest extends TestCase
             ->assertSee('16/11');
 
         $this->actingAs($this->employee())->get(route('planning.index'))->assertOk();
+    }
+
+    public function test_the_planning_shows_the_registered_machine_badges_and_listens_to_their_events(): void
+    {
+        $this->seedPermissions();
+        app(MachineBadges::class)->register(StubMachineBadgeProvider::class);
+        Machine::factory()->create(['reference' => 'NAC-0042']);
+
+        Livewire::actingAs($this->employee())
+            ->withQueryParams(['du' => '2026-11-10', 'au' => '2026-11-16'])
+            ->test(Planning::class)
+            ->assertSee('Badge de test')
+            ->dispatch(StubMachineBadgeProvider::LISTENER)
+            ->assertOk();
     }
 
     private function grid(string $startDate, string $endDate, ?MachineCategory $category = null, ?Agency $agency = null): PlanningGrid

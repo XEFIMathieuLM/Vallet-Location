@@ -6,11 +6,11 @@ use Carbon\CarbonImmutable;
 use Functional\Fleet\Actions\CreateMachine;
 use Functional\Fleet\Actions\RetireMachine;
 use Functional\Fleet\Actions\UpdateMachine;
-use Functional\Fleet\Contracts\MachineRetirementGuard;
 use Functional\Fleet\Data\MachineAttributes;
 use Functional\Fleet\Enums\MachineStatus;
 use Functional\Fleet\Enums\MachineTransition;
 use Functional\Fleet\Exceptions\DuplicateMachineReferenceException;
+use Functional\Fleet\Extensions\MachineRetirementGuards;
 use Functional\Fleet\Livewire\MachineIndex;
 use Functional\Fleet\Models\Agency;
 use Functional\Fleet\Models\Machine;
@@ -74,7 +74,7 @@ class ManageMachinesTest extends TestCase
 
     public function test_retiring_a_machine_is_refused_when_the_retirement_guard_refuses(): void
     {
-        $this->app->instance(MachineRetirementGuard::class, new RefusingRetirementGuard);
+        app(MachineRetirementGuards::class)->register(RefusingRetirementGuard::class);
         $machine = Machine::factory()->create();
 
         $refusal = rescue(fn () => app(RetireMachine::class)->handle($machine), fn ($exception) => $exception, report: false);
@@ -127,7 +127,7 @@ class ManageMachinesTest extends TestCase
     public function test_a_refused_retirement_is_displayed_on_the_fleet_screen(): void
     {
         $this->seedPermissions();
-        $this->app->instance(MachineRetirementGuard::class, new RefusingRetirementGuard);
+        app(MachineRetirementGuards::class)->register(RefusingRetirementGuard::class);
         $machine = Machine::factory()->create();
 
         Livewire::actingAs($this->employee())

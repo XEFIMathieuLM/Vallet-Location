@@ -35,6 +35,13 @@ parameters:
         - functional/certification/database/
         - functional/certification/routes/
         - functional/certification/config/
+        - functional/deposit/src/
+        - functional/deposit/database/
+        - functional/deposit/routes/
+        - functional/deposit/config/
+        - functional/sales/src/
+        - functional/sales/database/
+        - functional/sales/routes/
 
     level: 7
 

@@ -7,6 +7,7 @@ use Functional\Fleet\Actions\ChangeMachineStatus;
 use Functional\Fleet\Actions\RetireMachine;
 use Functional\Fleet\Enums\MachineStatus;
 use Functional\Fleet\Enums\MachineTransition;
+use Functional\Fleet\Livewire\Concerns\DisplaysMachineBadges;
 use Functional\Fleet\Livewire\Concerns\DisplaysRefusals;
 use Functional\Fleet\Models\Agency;
 use Functional\Fleet\Models\Machine;
@@ -27,7 +28,7 @@ use Livewire\WithPagination;
  */
 class MachineIndex extends Component
 {
-    use DisplaysRefusals, WithPagination;
+    use DisplaysMachineBadges, DisplaysRefusals, WithPagination;
 
     private const PER_PAGE = 50;
 
@@ -116,6 +117,7 @@ class MachineIndex extends Component
             'categories' => MachineCategory::query()->orderBy('name')->get(),
             'agencies' => Agency::query()->orderBy('name')->get(),
             'statuses' => MachineStatus::cases(),
+            'machineBadges' => $this->badgesFor($this->machines->items()),
         ])->title(__('fleet::machines.index.title'));
     }
 }

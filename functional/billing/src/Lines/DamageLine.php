@@ -38,6 +38,11 @@ final readonly class DamageLine implements BillableLine
         return $this->rentalContext->customerRef;
     }
 
+    public function amountExclTax(): Money
+    {
+        return $this->amountExclTax;
+    }
+
     public function toArray(): array
     {
         $rentalContext = $this->rentalContext->toArray();

@@ -52,10 +52,15 @@ class CertificationDemoSeeder extends Seeder
 
     private function certificate(Reservation $reservation, CertificateStatus $status, ?VgpReport $report, Model $employee): void
     {
-        $certificate = ReservationCertificate::factory()->for($reservation)->withStatus($report === null ? CertificateStatus::AwaitingReport : $status)->create([
-            'last_failure_reason' => $status === CertificateStatus::Failed ? DispatchFailureReason::InvalidAddress : null,
+        $demoStatus = $report === null ? CertificateStatus::AwaitingReport : $status;
+        $certificate = ReservationCertificate::query()->updateOrCreate(['reservation_id' => $reservation->id], [
+            'status' => $demoStatus,
+            'attempts' => $demoStatus === CertificateStatus::Failed ? 1 : 0,
+            'last_failure_reason' => $demoStatus === CertificateStatus::Failed ? DispatchFailureReason::InvalidAddress : null,
             'status_changed_at' => CarbonImmutable::now()->subHours(2),
+            'delivered_at' => $demoStatus->isDelivered() ? CarbonImmutable::now()->subHours(2) : null,
         ]);
+        $certificate->dispatches()->delete();
 
         if ($report === null || ! in_array($certificate->status, [CertificateStatus::Sent, CertificateStatus::Failed, CertificateStatus::HandDelivered], true)) {
             return;

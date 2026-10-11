@@ -49,6 +49,10 @@ for (const [vp, size] of Object.entries(viewports)) {
     }
     const page = await context.newPage();
 
+    if (wanted('00')) {
+        await page.goto(`${base}/`);
+        await shoot(page, '00-accueil', vp);
+    }
     if (wanted('01')) {
         await page.goto(`${base}/login`);
         await shoot(page, '01-connexion', vp);

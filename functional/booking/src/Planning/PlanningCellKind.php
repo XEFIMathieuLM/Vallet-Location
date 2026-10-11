@@ -24,10 +24,10 @@ enum PlanningCellKind: string
     {
         return match ($this) {
             self::Free => 'bg-transparent',
-            self::Reserved => 'bg-blue-600 text-white',
-            self::Workshop => 'bg-amber-300 text-zinc-900',
-            self::OutOfOrder => 'bg-red-600 text-white',
-            self::VgpInvalid => 'bg-zinc-300 text-zinc-900 dark:bg-zinc-500 dark:text-white',
+            self::Reserved => 'bg-black text-white dark:bg-white dark:text-black',
+            self::Workshop => 'bg-amber-300 text-black',
+            self::OutOfOrder => 'bg-red-500 text-black',
+            self::VgpInvalid => 'bg-zinc-200 text-zinc-800 dark:bg-zinc-600 dark:text-white',
         };
     }
 }

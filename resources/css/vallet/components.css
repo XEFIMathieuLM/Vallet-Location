@@ -1,0 +1,146 @@
+@utility display-xl {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 0.95;
+
+    @media (width >= 40rem) {
+        font-size: 3.5rem;
+    }
+}
+
+@utility display-lg {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 0.95;
+
+    @media (width >= 40rem) {
+        font-size: 2.5rem;
+    }
+}
+
+@utility display-md {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 0.95;
+}
+
+@utility heading-lg {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 0.95;
+}
+
+@utility heading-md {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 0.95;
+}
+
+@utility heading-sm {
+    font-size: 1.125rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+@utility eyebrow {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    line-height: 1.45;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+body {
+    font-feature-settings: 'ss01', 'cv11';
+}
+
+:where(a, button, summary, input, select, textarea, [tabindex], [role='button'], ui-checkbox, ui-radio, ui-switch):focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+
+[data-flux-heading] {
+    font-weight: 700;
+    letter-spacing: 0;
+}
+
+:is(input, select, textarea)[data-flux-control]:not([type='checkbox'], [type='radio']) {
+    border-width: 0 0 1px;
+    border-color: var(--color-zinc-950);
+    border-radius: 0;
+    background-color: transparent;
+    box-shadow: none;
+
+    &:focus {
+        outline: none;
+        border-bottom-width: 2px;
+        background-color: var(--color-zinc-50);
+    }
+
+    &[data-invalid] {
+        border-color: var(--color-red-600);
+    }
+
+    &:disabled {
+        border-color: var(--color-zinc-300);
+    }
+
+    @media (width < 40rem) {
+        min-height: 2.75rem;
+    }
+}
+
+[data-flux-checkbox-indicator] {
+    border-radius: var(--radius-xs);
+}
+
+:is([data-flux-checkbox-indicator], [data-flux-radio-indicator], [data-flux-switch]) {
+    --color-accent: var(--color-zinc-950);
+    --color-accent-foreground: #ffffff;
+}
+
+:is(ui-radio[data-flux-radio-cards], [data-flux-radio-segmented], [data-flux-radio-group-segmented]) {
+    border-radius: 0;
+}
+
+[data-flux-card] {
+    border-radius: 0;
+    border-color: var(--color-zinc-200);
+    box-shadow: none;
+}
+
+[data-flux-callout] {
+    border-radius: 0;
+    border-width: 0 0 0 4px;
+    border-color: var(--callout-icon, var(--color-zinc-950));
+}
+
+[data-flux-badge] {
+    border-radius: 9999px;
+    font-weight: 600;
+}
+
+[data-flux-table] {
+    border-top: 2px solid var(--color-zinc-950);
+}
+
+[data-flux-column] {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-zinc-500);
+}
+
+[data-flux-cell] {
+    border-color: var(--color-zinc-100);
+}
+
+:is([data-flux-menu], [data-flux-menu-item], [data-flux-tooltip-content], [data-flux-toast-dialog], ui-modal dialog, [data-flux-navbar] a, [data-flux-sidebar-item], [data-flux-sidebar-group] > button) {
+    border-radius: 0;
+}
+
+[data-flux-navbar] a[data-current] {
+    font-weight: 700;
+    color: var(--color-zinc-950);
+}

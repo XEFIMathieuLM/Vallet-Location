@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 160" fill="currentColor" {{ $attributes }}>
+  <rect x="30" y="112" width="132" height="18"/>
+  <rect x="44" y="104" width="104" height="10"/>
+  <circle cx="58" cy="136" r="15"/><circle cx="134" cy="136" r="15"/>
+  <rect x="66" y="88" width="56" height="18"/>
+  <rect x="44" y="92" width="24" height="14"/>
+  <path d="M104 92 L176 40" stroke="currentColor" stroke-width="11" stroke-linecap="square" fill="none"/>
+  <path d="M176 40 L200 22" stroke="currentColor" stroke-width="7" stroke-linecap="square" fill="none"/>
+  <rect x="190" y="8" width="40" height="5"/>
+  <rect x="190" y="26" width="40" height="12"/>
+  <rect x="190" y="8" width="4" height="22"/><rect x="226" y="8" width="4" height="22"/><rect x="208" y="8" width="3" height="22"/>
+</svg>

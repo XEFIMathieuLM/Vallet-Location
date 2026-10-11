@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maquette 1 v3 — Tableau de bord illustré</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.1.11"></script>
+<style type="text/tailwindcss">
+    @theme {
+        --font-sans: 'Inter Tight', ui-sans-serif, system-ui, sans-serif;
+        --color-accent: #ffed00; --color-ink: #000; --color-body: #222; --color-charcoal: #333; --color-mute: #666;
+        --color-soft: #f7f7f7; --color-deep: #111; --color-hairline: #f2f2f2;
+        --color-danger: #be6464; --color-warning: #f0ad4e; --color-success: #8dc572; --color-info: #337ab7;
+    }
+    .display { @apply font-bold leading-[0.95]; }
+    .eyebrow { @apply text-[11px] font-bold uppercase tracking-[0.08em]; }
+    .nav-item { @apply flex h-10 items-center px-3 text-white/80; }
+    .row { @apply flex items-start justify-between gap-3 border-t py-3; }
+</style>
+</head>
+<body class="bg-white font-sans text-ink antialiased">
+<div class="flex min-h-screen">
+    <aside class="flex w-64 shrink-0 flex-col bg-black text-white">
+        <div class="flex h-[60px] items-center gap-1.5 px-6">
+            <span class="text-[22px] font-extrabold leading-none tracking-tight">VALLET</span>
+            <span class="bg-white px-1.5 py-1 text-[9px] font-bold leading-none tracking-[0.2em] text-black">LOCATION</span>
+        </div>
+        <nav class="flex flex-1 flex-col gap-5 overflow-y-auto px-3 py-4 text-[14px]">
+            <div class="flex flex-col">
+                <a class="flex h-10 items-center bg-white px-3 font-bold text-black">Tableau de bord</a>
+                <a class="nav-item">Dégâts</a><a class="nav-item">Vues photos</a>
+            </div>
+            <div class="flex flex-col"><p class="eyebrow px-3 pb-1 text-white/55">Réservations</p>
+                <a class="nav-item">Disponibilités</a><a class="nav-item">Réservations</a><a class="nav-item">Planning</a>
+            </div>
+            <div class="flex flex-col"><p class="eyebrow px-3 pb-1 text-white/55">Facturation</p>
+                <a class="nav-item">Transmissions</a><a class="nav-item">Exports de secours</a><a class="nav-item">Relevé</a>
+            </div>
+            <div class="flex flex-col"><p class="eyebrow px-3 pb-1 text-white/55">Cautions</p>
+                <a class="nav-item">En attente</a><a class="nav-item">Montants</a>
+            </div>
+            <div class="flex flex-col"><p class="eyebrow px-3 pb-1 text-white/55">Espace client</p>
+                <a class="nav-item justify-between">Demandes en ligne <span class="rounded-full bg-accent px-2 py-0.5 text-[11px] font-bold text-black">3</span></a>
+                <a class="nav-item">Prix indicatifs</a>
+            </div>
+            <p class="px-3 text-[12px] text-white/55">… Vente d'occasion, VGP, Grands comptes, Parc, Salariés</p>
+        </nav>
+        <div class="flex items-center gap-3 border-t border-white/16 px-6 py-4">
+            <span class="flex size-9 items-center justify-center rounded-full bg-white text-[13px] font-bold text-black">SL</span>
+            <div class="min-w-0 text-[13px] leading-tight"><p class="font-bold">Salarié Lyon Est</p><p class="truncate text-white/70">lyon-est@vallet.test</p></div>
+        </div>
+    </aside>
+
+    <main class="min-w-0 flex-1">
+        <header class="flex h-[60px] items-center justify-between border-b border-hairline px-10 text-[14px]">
+            <p class="font-semibold">Tableau de bord <span class="font-normal text-mute">· samedi 10 octobre 2026</span></p>
+            <label class="flex items-center gap-3"><span class="eyebrow text-mute">Agence</span>
+                <span class="flex h-9 items-center gap-2 rounded-full border border-black px-4 text-[13px] font-semibold">Lyon Est <span class="text-[10px]">▾</span></span>
+            </label>
+        </header>
+
+        <div class="flex flex-col gap-14 px-10 pb-16 pt-10">
+            <section class="grid grid-cols-[1fr_560px] items-stretch gap-0">
+                <div class="flex flex-col justify-end bg-soft p-10">
+                    <p class="eyebrow text-mute">Lyon Est · samedi 10 octobre</p>
+                    <h1 class="display mt-3 text-[56px]">Bonjour, voici<br>votre journée.</h1>
+                    <p class="mt-6 max-w-md text-[18px] leading-[1.5] text-body">3 départs, 1 retour et 2 retours en retard aujourd'hui.</p>
+                </div>
+                <div class="relative overflow-hidden bg-black p-10 text-white">
+                    <div class="absolute bottom-10 left-10 right-10 flex items-end gap-6">
+                        <div class="w-[300px] text-white"><svg aria-hidden="true" class="h-full w-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 160" fill="currentColor">
+  <rect x="30" y="112" width="132" height="18"/>
+  <rect x="44" y="104" width="104" height="10"/>
+  <circle cx="58" cy="136" r="15"/><circle cx="134" cy="136" r="15"/>
+  <rect x="66" y="88" width="56" height="18"/>
+  <rect x="44" y="92" width="24" height="14"/>
+  <path d="M104 92 L176 40" stroke="currentColor" stroke-width="11" stroke-linecap="square" fill="none"/>
+  <path d="M176 40 L200 22" stroke="currentColor" stroke-width="7" stroke-linecap="square" fill="none"/>
+  <rect x="190" y="8" width="40" height="5"/>
+  <rect x="190" y="26" width="40" height="12"/>
+  <rect x="190" y="8" width="4" height="22"/><rect x="226" y="8" width="4" height="22"/><rect x="208" y="8" width="3" height="22"/>
+</svg>
+</div>
+                        <div class="w-[170px] text-white"><svg aria-hidden="true" class="h-full w-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 160" fill="currentColor">
+  <rect x="22" y="118" width="130" height="26" rx="13"/>
+  <rect x="34" y="104" width="106" height="14"/>
+  <rect x="40" y="80" width="62" height="26"/>
+  <path fill-rule="evenodd" d="M58 30 H100 L106 82 H58 Z M66 38 V66 H96 L93 38 Z"/>
+  <rect x="100" y="84" width="30" height="20"/>
+  <path d="M122 88 L176 44" stroke="currentColor" stroke-width="11" stroke-linecap="square" fill="none"/>
+  <path d="M176 44 L200 102" stroke="currentColor" stroke-width="9" stroke-linecap="square" fill="none"/>
+  <path d="M188 98 H222 L210 128 H196 Z"/>
+  <rect x="2" y="128" width="22" height="10"/>
+</svg>
+</div>
+                    </div>
+                    <div class="absolute bottom-10 left-10 right-10 h-[3px] bg-white"></div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="display text-[24px]">Opérations</h2>
+                <div class="mt-5 grid grid-cols-2 gap-4">
+                    <article class="flex flex-col bg-accent p-6 text-black">
+                        <div class="flex items-start justify-between"><p class="eyebrow">Retours en retard</p><p class="display text-[48px]">2</p></div>
+                        <div class="mt-6 flex flex-col">
+                            <a class="row border-black/15 items-center"><span class="flex items-center gap-4"><span class="flex size-14 shrink-0 items-center justify-center bg-black/8 p-2"><svg aria-hidden="true" class="h-full w-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 160" fill="currentColor">
+  <rect x="22" y="118" width="130" height="26" rx="13"/>
+  <rect x="34" y="104" width="106" height="14"/>
+  <rect x="40" y="80" width="62" height="26"/>
+  <path fill-rule="evenodd" d="M58 30 H100 L106 82 H58 Z M66 38 V66 H96 L93 38 Z"/>
+  <rect x="100" y="84" width="30" height="20"/>
+  <path d="M122 88 L176 44" stroke="currentColor" stroke-width="11" stroke-linecap="square" fill="none"/>
+  <path d="M176 44 L200 102" stroke="currentColor" stroke-width="9" stroke-linecap="square" fill="none"/>
+  <path d="M188 98 H222 L210 128 H196 Z"/>
+  <rect x="2" y="128" width="22" height="10"/>
+</svg>
+</span><span><span class="block font-bold">MINI07 · Mini-pelle 1,8 t</span><span class="text-[13px]">Constructions Alpes</span></span></span></span><span class="whitespace-nowrap rounded-full bg-black px-2.5 py-1 text-[11px] font-bold text-white">3 j de retard</span></a>
+                            <a class="row border-black/15 items-center"><span class="flex items-center gap-4"><span class="flex size-14 shrink-0 items-center justify-center bg-black/8 p-2"><svg aria-hidden="true" class="h-full w-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 160" fill="currentColor">
+  <circle cx="58" cy="118" r="30"/>
+  <rect x="24" y="78" width="70" height="10"/>
+  <rect x="80" y="86" width="118" height="26"/>
+  <circle cx="182" cy="124" r="22"/>
+  <rect x="120" y="70" width="70" height="18"/>
+  <rect x="124" y="28" width="62" height="7"/>
+  <rect x="126" y="34" width="5" height="38"/><rect x="179" y="34" width="5" height="38"/>
+  <rect x="146" y="50" width="20" height="22"/>
+</svg>
+</span><span><span class="block font-bold">COMP30 · Compacteur</span><span class="text-[13px]">Facades Martin</span></span></span></span><span class="whitespace-nowrap rounded-full bg-black px-2.5 py-1 text-[11px] font-bold text-white">1 j de retard</span></a>
+                        </div>
+                    </article>
+                    <article class="flex flex-col bg-soft p-6">
+                        <div class="flex items-start justify-between"><p class="eyebrow text-mute">Départs du jour</p><p class="display text-[48px]">3</p></div>
+                        <div class="mt-6 flex flex-col">
+                            <a class="row border-black/10 items-center"><span class="flex items-center gap-4"><span class="flex size-14 shrink-0 items-center justify-center bg-white p-2"><svg aria-hidden="true" class="h-full w-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 160" fill="currentColor">
+  <circle cx="58" cy="118" r="30"/>
+  <rect x="24" y="78" width="70" height="10"/>
+  <rect x="80" y="86" width="118" height="26"/>
+  <circle cx="182" cy="124" r="22"/>
+  <rect x="120" y="70" width="70" height="18"/>
+  <rect x="124" y="28" width="62" height="7"/>
+  <rect x="126" y="34" width="5" height="38"/><rect x="179" y="34" width="5" height="38"/>
+  <rect x="146" y="50" width="20" height="22"/>
+</svg>
+</span><span><span class="block font-bold">COMP21 · Compacteur</span><span class="text-[13px] text-mute">M. Pereira</span></span></span><span class="whitespace-nowrap text-[13px] text-charcoal">12/10 → 12/10</span></a>
+                            <a class="row border-black/10 items-center"><span class="flex items-center gap-4"><span class="flex size-14 shrink-0 items-center justify-center bg-white p-2"><svg aria-hidden="true" class="h-full w-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 160" fill="currentColor">
+  <rect x="30" y="112" width="132" height="18"/>
+  <rect x="44" y="104" width="104" height="10"/>
+  <circle cx="58" cy="136" r="15"/><circle cx="134" cy="136" r="15"/>
+  <rect x="66" y="88" width="56" height="18"/>
+  <rect x="44" y="92" width="24" height="14"/>
+  <path d="M104 92 L176 40" stroke="currentColor" stroke-width="11" stroke-linecap="square" fill="none"/>
+  <path d="M176 40 L200 22" stroke="currentColor" stroke-width="7" stroke-linecap="square" fill="none"/>
+  <rect x="190" y="8" width="40" height="5"/>
+  <rect x="190" y="26" width="40" height="12"/>
+  <rect x="190" y="8" width="4" height="22"/><rect x="226" y="8" width="4" height="22"/><rect x="208" y="8" width="3" height="22"/>
+</svg>
+</span><span><span class="block font-bold">NAC140 · Nacelle 12 m</span><span class="text-[13px] text-mute">BTP Rhone</span></span></span><span class="whitespace-nowrap text-[13px] text-charcoal">19/10 → 23/10</span></a>
+                            <a class="row border-black/10 items-center"><span class="flex items-center gap-4"><span class="flex size-14 shrink-0 items-center justify-center bg-white p-2"><svg aria-hidden="true" class="h-full w-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 160" fill="currentColor">
+  <rect x="22" y="118" width="130" height="26" rx="13"/>
+  <rect x="34" y="104" width="106" height="14"/>
+  <rect x="40" y="80" width="62" height="26"/>
+  <path fill-rule="evenodd" d="M58 30 H100 L106 82 H58 Z M66 38 V66 H96 L93 38 Z"/>
+  <rect x="100" y="84" width="30" height="20"/>
+  <path d="M122 88 L176 44" stroke="currentColor" stroke-width="11" stroke-linecap="square" fill="none"/>
+  <path d="M176 44 L200 102" stroke="currentColor" stroke-width="9" stroke-linecap="square" fill="none"/>
+  <path d="M188 98 H222 L210 128 H196 Z"/>
+  <rect x="2" y="128" width="22" height="10"/>
+</svg>
+</span><span><span class="block font-bold">MINI12 · Mini-pelle 1,8 t</span><span class="text-[13px] text-mute">Artisan Ferreira</span></span></span><span class="whitespace-nowrap text-[13px] text-charcoal">13/10 → 14/10</span></a>
+                        </div>
+                    </article>
+                    <article class="flex flex-col bg-soft p-6">
+                        <div class="flex items-start justify-between"><p class="eyebrow text-mute">Retours du jour</p><p class="display text-[48px]">1</p></div>
+                        <div class="mt-6 flex flex-col">
+                            <a class="row border-black/10 items-center"><span class="flex items-center gap-4"><span class="flex size-14 shrink-0 items-center justify-center bg-white p-2"><svg aria-hidden="true" class="h-full w-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 160" fill="currentColor">
+  <rect x="30" y="112" width="132" height="18"/>
+  <rect x="44" y="104" width="104" height="10"/>
+  <circle cx="58" cy="136" r="15"/><circle cx="134" cy="136" r="15"/>
+  <rect x="66" y="88" width="56" height="18"/>
+  <rect x="44" y="92" width="24" height="14"/>
+  <path d="M104 92 L176 40" stroke="currentColor" stroke-width="11" stroke-linecap="square" fill="none"/>
+  <path d="M176 40 L200 22" stroke="currentColor" stroke-width="7" stroke-linecap="square" fill="none"/>
+  <rect x="190" y="8" width="40" height="5"/>
+  <rect x="190" y="26" width="40" height="12"/>
+  <rect x="190" y="8" width="4" height="22"/><rect x="226" y="8" width="4" height="22"/><rect x="208" y="8" width="3" height="22"/>
+</svg>
+</span><span><span class="block font-bold">NAC112 · Nacelle 12 m</span><span class="text-[13px] text-mute">BTP Rhone</span></span></span><span class="whitespace-nowrap text-[13px] text-charcoal">14/10 → 18/10</span></a>
+                        </div>
+                    </article>
+                    <article class="flex flex-col bg-soft p-6">
+                        <div class="flex items-start justify-between"><p class="eyebrow text-mute">En conflit</p><p class="display text-[48px] text-mute">0</p></div>
+                        <p class="mt-6 border-t border-black/10 pt-3 text-[14px] text-mute">Aucune réservation en conflit.</p>
+                    </article>
+                </div>
+            </section>
+
+            <section class="bg-black p-8 pb-2 text-white">
+                <div class="flex items-end justify-between"><h2 class="display text-[24px]">À traiter</h2><p class="text-[13px] text-white/72">Toutes agences</p></div>
+                <div class="mt-6 -mx-8 grid grid-cols-3 gap-px border-t border-white/16 bg-white/16">
+                    <a class="flex items-center justify-between gap-4 bg-black p-5 px-6"><span class="font-semibold">Transmissions à traiter</span><span class="flex min-w-12 items-center justify-center bg-accent px-3 py-1 text-[24px] font-bold text-black">4</span></a>
+                    <a class="flex items-center justify-between gap-4 bg-black p-5 px-6"><span class="font-semibold">Attestations VGP à traiter</span><span class="flex min-w-12 items-center justify-center bg-accent px-3 py-1 text-[24px] font-bold text-black">1</span></a>
+                    <a class="flex items-center justify-between gap-4 bg-black p-5 px-6"><span class="font-semibold">Cautions en attente</span><span class="text-[24px] font-bold">2</span></a>
+                    <a class="flex items-center justify-between gap-4 bg-black p-5 px-6 text-white/72"><span>Bons de commande manquants</span><span class="text-[24px] font-bold">0</span></a>
+                    <a class="flex items-center justify-between gap-4 bg-black p-5 px-6 text-white/72"><span>Dégâts à traiter</span><span class="text-[24px] font-bold">0</span></a>
+                    <a class="flex items-center justify-between gap-4 bg-black p-5 px-6 text-white/72"><span>Ventes en retard</span><span class="text-[24px] font-bold">0</span></a>
+                </div>
+            </section>
+
+            <section>
+                <div class="flex items-end justify-between"><h2 class="display text-[24px]">Départs des 7 prochains jours</h2><a class="text-[14px] font-bold underline underline-offset-4">Voir toutes les réservations</a></div>
+                <div class="mt-5 grid grid-cols-7 border-t-2 border-black">
+                    <script>
+                        const ICON = {NAC:`<svg aria-hidden="true" class="h-full w-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 160" fill="currentColor">
+  <rect x="30" y="112" width="132" height="18"/>
+  <rect x="44" y="104" width="104" height="10"/>
+  <circle cx="58" cy="136" r="15"/><circle cx="134" cy="136" r="15"/>
+  <rect x="66" y="88" width="56" height="18"/>
+  <rect x="44" y="92" width="24" height="14"/>
+  <path d="M104 92 L176 40" stroke="currentColor" stroke-width="11" stroke-linecap="square" fill="none"/>
+  <path d="M176 40 L200 22" stroke="currentColor" stroke-width="7" stroke-linecap="square" fill="none"/>
+  <rect x="190" y="8" width="40" height="5"/>
+  <rect x="190" y="26" width="40" height="12"/>
+  <rect x="190" y="8" width="4" height="22"/><rect x="226" y="8" width="4" height="22"/><rect x="208" y="8" width="3" height="22"/>
+</svg>
+`,MIN:`<svg aria-hidden="true" class="h-full w-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 160" fill="currentColor">
+  <rect x="22" y="118" width="130" height="26" rx="13"/>
+  <rect x="34" y="104" width="106" height="14"/>
+  <rect x="40" y="80" width="62" height="26"/>
+  <path fill-rule="evenodd" d="M58 30 H100 L106 82 H58 Z M66 38 V66 H96 L93 38 Z"/>
+  <rect x="100" y="84" width="30" height="20"/>
+  <path d="M122 88 L176 44" stroke="currentColor" stroke-width="11" stroke-linecap="square" fill="none"/>
+  <path d="M176 44 L200 102" stroke="currentColor" stroke-width="9" stroke-linecap="square" fill="none"/>
+  <path d="M188 98 H222 L210 128 H196 Z"/>
+  <rect x="2" y="128" width="22" height="10"/>
+</svg>
+`,COM:`<svg aria-hidden="true" class="h-full w-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 160" fill="currentColor">
+  <circle cx="58" cy="118" r="30"/>
+  <rect x="24" y="78" width="70" height="10"/>
+  <rect x="80" y="86" width="118" height="26"/>
+  <circle cx="182" cy="124" r="22"/>
+  <rect x="120" y="70" width="70" height="18"/>
+  <rect x="124" y="28" width="62" height="7"/>
+  <rect x="126" y="34" width="5" height="38"/><rect x="179" y="34" width="5" height="38"/>
+  <rect x="146" y="50" width="20" height="22"/>
+</svg>
+`,ECH:`<svg aria-hidden="true" class="h-full w-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 160" fill="currentColor">
+  <rect x="34" y="10" width="6" height="134"/><rect x="104" y="10" width="6" height="134"/><rect x="174" y="10" width="6" height="134"/>
+  <rect x="28" y="140" width="158" height="6"/>
+  <rect x="34" y="52" width="146" height="8"/><rect x="34" y="96" width="146" height="8"/><rect x="34" y="10" width="146" height="4"/>
+  <path d="M40 140 L104 104 M110 96 L174 60 M40 96 L104 60 M110 52 L174 14" stroke="currentColor" stroke-width="4" fill="none"/>
+  <rect x="28" y="30" width="6" height="2"/><rect x="180" y="30" width="18" height="4"/><rect x="194" y="30" width="4" height="114"/><rect x="186" y="140" width="20" height="6"/>
+</svg>
+`};
+                        const days = [['Dim.','11',[]],['Lun.','12',[['COMP21','M. Pereira']]],['Mar.','13',[['MINI12','Artisan Ferreira']]],['Mer.','14',[['NAC112','BTP Rhone'],['ECH41','Sols Dauphiné']]],['Jeu.','15',[]],['Ven.','16',[['NAC201','Facades Martin']]],['Sam.','17',[]]];
+                        document.write(days.map(([d,n,items],i)=>`<div class="flex min-h-40 flex-col gap-2 ${i?'border-l border-hairline':''} p-3"><p class="flex items-baseline gap-2"><span class="text-[13px] text-mute">${d}</span><span class="display text-[24px]">${n}</span></p>${items.length?items.map(([r,c])=>`<a class="block bg-soft p-3 text-[13px]"><span class="mb-2 block h-10 w-16">${ICON[r.slice(0,3)]}</span><span class="block font-bold">${r}</span><span class="text-mute">${c}</span></a>`).join(''):'<p class="text-[13px] text-mute">—</p>'}</div>`).join(''));
+                    </script>
+                </div>
+            </section>
+
+            <div class="grid grid-cols-2 gap-10">
+                <section>
+                    <div class="flex items-end justify-between"><h2 class="display text-[24px]">État du parc</h2><p class="text-[14px] text-mute">5 machines</p></div>
+                    <div class="mt-5 flex h-3 w-full">
+                        <span class="bg-success" style="width:60%"></span><span class="bg-info" style="width:20%"></span><span class="bg-warning" style="width:20%"></span>
+                    </div>
+                    <div class="mt-4 grid grid-cols-4 border-t-2 border-black">
+                        <a class="flex flex-col gap-3 py-4 pr-4"><span class="flex items-center gap-2 text-[13px] font-semibold"><span class="size-2.5 rounded-full bg-success"></span>Disponible</span><span class="display text-[40px]">3</span></a>
+                        <a class="flex flex-col gap-3 border-l border-hairline p-4"><span class="flex items-center gap-2 text-[13px] font-semibold"><span class="size-2.5 rounded-full bg-info"></span>Sortie</span><span class="display text-[40px]">1</span></a>
+                        <a class="flex flex-col gap-3 border-l border-hairline p-4"><span class="flex items-center gap-2 text-[13px] font-semibold"><span class="size-2.5 rounded-full bg-warning"></span>Atelier</span><span class="display text-[40px]">1</span></a>
+                        <a class="flex flex-col gap-3 border-l border-hairline p-4 text-mute"><span class="flex items-center gap-2 text-[13px] font-semibold"><span class="size-2.5 rounded-full bg-danger"></span>En panne</span><span class="display text-[40px]">0</span></a>
+                    </div>
+                </section>
+                <section>
+                    <div class="flex items-end justify-between"><h2 class="display text-[24px]">VGP à surveiller</h2><a class="text-[14px] font-bold underline underline-offset-4">Voir tout</a></div>
+                    <div class="mt-5 border-t-2 border-black">
+                        <a class="flex items-center justify-between gap-4 border-b border-hairline py-4"><span><span class="block font-bold">NAC089 · Nacelle 16 m</span><span class="text-[13px] text-mute">Disponible · Lyon Est</span></span></span><span class="whitespace-nowrap rounded-full bg-[#f6e3e3] px-3 py-1 text-[12px] font-semibold text-[#8a3434]">Expirée le 05/09/2026</span></a>
+                        <a class="flex items-center justify-between gap-4 border-b border-hairline py-4"><span><span class="block font-bold">NAC118 · Nacelle 12 m</span><span class="text-[13px] text-mute">Disponible · Annecy</span></span></span><span class="whitespace-nowrap rounded-full bg-[#fcefdc] px-3 py-1 text-[12px] font-semibold text-[#7a4d0b]">Expire dans 5 jours</span></a>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

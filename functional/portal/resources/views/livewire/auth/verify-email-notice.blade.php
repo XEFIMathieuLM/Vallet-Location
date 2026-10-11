@@ -9,7 +9,7 @@
         {{ __('portal::auth.verify.resend') }}
     </flux:button>
 
-    <form method="POST" action="{{ route('portal.logout') }}" class="text-center">
+    <form method="POST" action="{{ route('portal.logout') }}">
         @csrf
         <flux:button type="submit" variant="ghost" size="sm">{{ __('portal::navigation.logout') }}</flux:button>
     </form>

@@ -1,13 +1,14 @@
 <div class="flex flex-col gap-6">
     <x-page-heading :title="__('booking::reservations.list.title')" />
 
-    <div class="grid items-end gap-4 md:grid-cols-5">
-        <flux:select wire:model.live="status" :label="__('booking::reservations.fields.status')">
-            <flux:select.option value="">{{ __('booking::reservations.list.all_statuses') }}</flux:select.option>
-            @foreach ($statuses as $statusOption)
-                <flux:select.option :value="$statusOption->value">{{ $statusOption->label() }}</flux:select.option>
-            @endforeach
-        </flux:select>
+    <flux:radio.group wire:model.live="status" :label="__('booking::reservations.fields.status')" variant="pills">
+        <flux:radio value="" :label="__('booking::reservations.list.all_statuses')" />
+        @foreach ($statuses as $statusOption)
+            <flux:radio :value="$statusOption->value" :label="$statusOption->label()" />
+        @endforeach
+    </flux:radio.group>
+
+    <div class="grid items-end gap-4 md:grid-cols-4">
 
         <flux:select wire:model.live="agencyId" :label="__('booking::reservations.fields.agency')">
             <flux:select.option value="">{{ __('booking::reservations.availability.all_agencies') }}</flux:select.option>

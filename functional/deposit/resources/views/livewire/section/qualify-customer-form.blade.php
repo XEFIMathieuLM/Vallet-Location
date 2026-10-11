@@ -28,7 +28,7 @@
                     </flux:modal.close>
                     @foreach ($customerTypes as $customerType)
                         @if ($customerType !== $currentType)
-                            <flux:button variant="primary" wire:click="qualify('{{ $customerType->value }}')">{{ $customerType->label() }}</flux:button>
+                            <flux:button variant="filled" wire:click="qualify('{{ $customerType->value }}')">{{ $customerType->label() }}</flux:button>
                         @endif
                     @endforeach
                 </div>

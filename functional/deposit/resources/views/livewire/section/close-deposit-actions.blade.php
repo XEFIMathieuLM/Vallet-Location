@@ -13,7 +13,7 @@
                 <flux:checkbox wire:model="isNoDamageConfirmed" :label="__('deposit::section.no_damage_confirmation')" />
             @endif
             <div class="flex items-center gap-2">
-                <flux:button type="submit" variant="primary" icon="arrow-uturn-left">{{ __('deposit::section.refund', ['amount' => $deposit->amount->format()]) }}</flux:button>
+                <flux:button type="submit" variant="filled" icon="arrow-uturn-left">{{ __('deposit::section.refund', ['amount' => $deposit->amount->format()]) }}</flux:button>
                 <x-loading-hint wire:target="refund" />
             </div>
         </form>
@@ -26,7 +26,7 @@
         </dl>
         <flux:text size="sm">{{ __('deposit::section.retention_help') }}</flux:text>
         <div class="flex items-center gap-2">
-            <flux:button variant="primary" wire:click="settle">{{ __('deposit::section.settle') }}</flux:button>
+            <flux:button variant="filled" wire:click="settle">{{ __('deposit::section.settle') }}</flux:button>
             <x-loading-hint wire:target="settle" />
         </div>
     @endif

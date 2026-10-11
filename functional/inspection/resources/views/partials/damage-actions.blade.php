@@ -14,7 +14,7 @@
                     <flux:modal.close>
                         <flux:button variant="ghost">{{ __('screens.cancel') }}</flux:button>
                     </flux:modal.close>
-                    <flux:button variant="primary" wire:click="resolveDamage({{ $damage->id }})">{{ __('inspection::damages.resolve') }}</flux:button>
+                    <flux:button variant="filled" wire:click="resolveDamage({{ $damage->id }})">{{ __('inspection::damages.resolve') }}</flux:button>
                 </div>
             </div>
         </flux:modal>

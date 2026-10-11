@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 160" fill="currentColor" {{ $attributes }}>
+  <circle cx="58" cy="118" r="30"/>
+  <rect x="24" y="78" width="70" height="10"/>
+  <rect x="80" y="86" width="118" height="26"/>
+  <circle cx="182" cy="124" r="22"/>
+  <rect x="120" y="70" width="70" height="18"/>
+  <rect x="124" y="28" width="62" height="7"/>
+  <rect x="126" y="34" width="5" height="38"/><rect x="179" y="34" width="5" height="38"/>
+  <rect x="146" y="50" width="20" height="22"/>
+</svg>

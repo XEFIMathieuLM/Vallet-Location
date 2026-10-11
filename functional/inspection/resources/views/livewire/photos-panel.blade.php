@@ -1,4 +1,4 @@
-<section class="flex flex-col gap-4 rounded-xl border border-zinc-200 p-4 dark:border-zinc-700">
+<section class="flex flex-col gap-4 rounded-none border border-zinc-200 p-4 dark:border-white/16">
     <div class="flex flex-wrap items-center justify-between gap-2">
         <x-section-heading :title="__('inspection::panel.title')" />
 
@@ -24,7 +24,7 @@
     @elseif ($activeSession !== null)
         <div class="flex flex-wrap items-center gap-4">
             @if ($qrCode !== null)
-                <div class="rounded-lg bg-white p-2" role="img" aria-label="{{ __('inspection::panel.qr_label', ['step' => $openStep->label()]) }}">{!! $qrCode !!}</div>
+                <div class="rounded-none bg-white p-2" role="img" aria-label="{{ __('inspection::panel.qr_label', ['step' => $openStep->label()]) }}">{!! $qrCode !!}</div>
             @endif
             <div
                 class="flex flex-col gap-2"

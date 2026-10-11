@@ -56,7 +56,7 @@
                         </flux:table.cell>
                         <flux:table.cell align="end">
                             <div class="flex flex-col items-end gap-2">
-                                <flux:button size="sm" variant="primary" icon="check" wire:click="startConfirming({{ $reservationRequest->id }})">{{ __('portal::staff.requests.confirm') }}</flux:button>
+                                <flux:button size="sm" variant="filled" icon="check" wire:click="startConfirming({{ $reservationRequest->id }})">{{ __('portal::staff.requests.confirm') }}</flux:button>
                                 <flux:button size="sm" variant="ghost" icon="x-mark" wire:click="startRefusing({{ $reservationRequest->id }})">{{ __('portal::staff.requests.refuse') }}</flux:button>
                             </div>
                         </flux:table.cell>

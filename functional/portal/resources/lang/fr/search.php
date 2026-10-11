@@ -15,6 +15,7 @@ return [
     'price_on_request' => 'Prix sur demande',
     'price_notice' => 'Prix indicatif ; le prix facturé est établi par votre agence.',
     'request' => 'Demander cette machine',
+    'results_count' => '{1} :count machine disponible|[2,*] :count machines disponibles',
     'request_title' => 'Envoyer une demande de réservation',
     'machine' => 'Machine',
     'period' => 'Période',

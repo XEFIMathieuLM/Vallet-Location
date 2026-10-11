@@ -1,9 +1,11 @@
-<div class="flex flex-col gap-6">
-    <x-page-heading :title="__('portal::navigation.requests')">
-        <x-slot:actions>
-            <flux:button size="sm" icon="magnifying-glass" :href="route('portal.search')" wire:navigate>{{ __('portal::requests.new') }}</flux:button>
-        </x-slot:actions>
-    </x-page-heading>
+<div class="flex flex-col">
+    <x-portal::hero :title="__('portal::navigation.requests')">
+        <div>
+            <flux:button icon="magnifying-glass" :href="route('portal.search')" wire:navigate>{{ __('portal::requests.new') }}</flux:button>
+        </div>
+    </x-portal::hero>
+
+    <div class="mx-auto flex w-full max-w-[90rem] flex-col gap-6 px-4 py-12 sm:px-10">
 
     @if (session('request-sent'))
         <flux:callout variant="success" icon="check-circle" :heading="session('request-sent')" />
@@ -16,11 +18,14 @@
     @if ($reservationRequests->isEmpty())
         <x-empty-state :heading="__('portal::requests.empty')" :description="__('portal::requests.empty_help')" />
     @else
-        <div class="flex flex-col gap-4">
+        <div class="flex flex-col border-t-2 border-zinc-950">
             @foreach ($reservationRequests as $reservationRequest)
-                <flux:card wire:key="request-{{ $reservationRequest->id }}" class="flex flex-col gap-2">
+                <article wire:key="request-{{ $reservationRequest->id }}" class="flex flex-col gap-2 border-b border-zinc-100 py-6">
                     <div class="flex flex-wrap items-center justify-between gap-2">
-                        <flux:heading size="lg">{{ $reservationRequest->machine->reference }} · {{ $reservationRequest->machine->category->name }}</flux:heading>
+                        <h2 class="heading-md flex items-center gap-3" data-flux-heading>
+                            <x-fleet::pictogram :category="$reservationRequest->machine->category->name" class="h-6 w-9 shrink-0" />
+                            {{ $reservationRequest->machine->reference }} · {{ $reservationRequest->machine->category->name }}
+                        </h2>
                         <flux:badge size="sm" :color="$reservationRequest->status->color()">{{ $reservationRequest->status->label() }}</flux:badge>
                     </div>
                     <flux:text>
@@ -56,9 +61,10 @@
                             </div>
                         </flux:modal>
                     @endif
-                </flux:card>
+                </article>
             @endforeach
         </div>
         <flux:pagination :paginator="$reservationRequests" />
     @endif
+    </div>
 </div>

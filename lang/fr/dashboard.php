@@ -2,6 +2,16 @@
 
 return [
     'title' => 'Tableau de bord',
+    'welcome' => [
+        'title' => 'Bonjour, voici votre journée.',
+        'summary' => ':departures, :returns et :late aujourd\'hui.',
+        'departures' => '{0} aucun départ|{1} :count départ|[2,*] :count départs',
+        'returns' => '{0} aucun retour|{1} :count retour|[2,*] :count retours',
+        'late' => '{0} aucun retour en retard|{1} :count retour en retard|[2,*] :count retours en retard',
+    ],
+    'upcoming' => [
+        'no_departure' => 'Aucun départ',
+    ],
     'agency' => [
         'label' => 'Agence',
         'all' => 'Toutes les agences',
@@ -42,6 +52,7 @@ return [
     ],
     'fleet' => [
         'heading' => 'État du parc',
+        'total' => '{0} Aucune machine|{1} :count machine|[2,*] :count machines',
     ],
     'vgp' => [
         'heading' => 'VGP à surveiller',

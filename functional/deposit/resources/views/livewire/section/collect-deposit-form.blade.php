@@ -4,7 +4,7 @@
     @enderror
 
     <flux:modal.trigger name="collect-deposit">
-        <flux:button variant="primary" icon="banknotes">{{ __('deposit::section.collect') }}</flux:button>
+        <flux:button variant="filled" icon="banknotes">{{ __('deposit::section.collect') }}</flux:button>
     </flux:modal.trigger>
 
     <flux:modal name="collect-deposit" class="max-w-md">

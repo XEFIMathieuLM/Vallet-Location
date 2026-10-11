@@ -1,10 +1,13 @@
 <div class="flex max-w-2xl flex-col gap-6">
     <x-page-heading :title="__('booking::reservations.form.title')" />
 
-    <flux:card class="flex flex-col gap-1">
-        <x-section-heading level="4" :title="$this->machine->reference" />
-        <flux:text>{{ $this->machine->category->name }} · {{ __('booking::reservations.fields.home_agency') }} : {{ $this->machine->agency->name }}</flux:text>
-    </flux:card>
+    <div class="flex items-center gap-5 bg-zinc-50 p-5 dark:bg-zinc-900">
+        <x-fleet::pictogram :category="$this->machine->category->name" class="h-12 w-18 shrink-0" />
+        <div class="flex flex-col gap-1">
+            <x-section-heading level="4" :title="$this->machine->reference" />
+            <flux:text>{{ $this->machine->category->name }} · {{ __('booking::reservations.fields.home_agency') }} : {{ $this->machine->agency->name }}</flux:text>
+        </div>
+    </div>
 
     @error('refusal')
         <flux:callout variant="danger" icon="x-circle" :heading="$message" />
@@ -50,7 +53,7 @@
             @endforeach
         @endif
 
-        <div class="flex gap-2">
+        <div class="flex flex-wrap gap-2">
             <flux:button type="submit" variant="primary">{{ __('booking::reservations.form.confirm') }}</flux:button>
             <flux:button :href="route('availability.index')" wire:navigate variant="ghost">{{ __('booking::reservations.form.back') }}</flux:button>
         </div>

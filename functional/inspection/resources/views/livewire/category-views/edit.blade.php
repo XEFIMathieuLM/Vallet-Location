@@ -15,7 +15,7 @@
         <flux:callout variant="danger" icon="x-circle" :heading="$message" />
     @enderror
 
-    <ol class="flex flex-col divide-y divide-zinc-200 rounded-lg border border-zinc-200 dark:divide-zinc-700 dark:border-zinc-700">
+    <ol class="flex flex-col divide-y divide-zinc-200 rounded-none border border-zinc-200 dark:divide-zinc-700 dark:border-white/16">
         @foreach ($labels as $offset => $label)
             @php($position = $offset + 1)
             <li wire:key="view-{{ $position }}-{{ $label }}" class="flex items-center gap-2 p-4">

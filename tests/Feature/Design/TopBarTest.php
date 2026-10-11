@@ -16,11 +16,11 @@ class TopBarTest extends TestCase
         $this->seedPermissions();
         $this->travelTo(CarbonImmutable::parse('2026-10-10 08:00', 'Europe/Paris'));
 
-        $response = $this->actingAs($this->employee())->get(route('reservations.index'));
+        $response = $this->actingAs($this->employee())->get(route('planning.index'));
 
         $response->assertOk()
             ->assertSee('data-top-bar', escape: false)
-            ->assertSeeInOrder([__('booking::reservations.list.title'), 'samedi 10 octobre 2026'])
+            ->assertSeeInOrder([__('booking::reservations.planning.title'), 'samedi 10 octobre 2026'])
             ->assertSee('id="top-bar-actions"', escape: false);
     }
 }

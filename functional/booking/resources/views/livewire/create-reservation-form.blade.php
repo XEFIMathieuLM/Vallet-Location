@@ -53,7 +53,7 @@
             @endforeach
         @endif
 
-        <div class="flex gap-2">
+        <div class="flex flex-wrap gap-2">
             <flux:button type="submit" variant="primary">{{ __('booking::reservations.form.confirm') }}</flux:button>
             <flux:button :href="route('availability.index')" wire:navigate variant="ghost">{{ __('booking::reservations.form.back') }}</flux:button>
         </div>

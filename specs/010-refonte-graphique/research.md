@@ -194,6 +194,10 @@ Textes nouveaux, en français dans les fichiers de traduction, tous issus de don
 | `portal::navigation.footer.copyright` | « © :year Vallet Location » |
 | `portal::search.results_count` | « :count machine(s) disponible(s) » |
 | `welcome.*` | accueil `/` : titre, deux tuiles, accroche |
+| `auth.staff_space` | « Espace salariés » (surtitre des pages de connexion salariés) |
+| `portal::navigation.hero_eyebrow` | « Espace client » (surtitre des bandeaux de l'espace client) |
+| `portal::navigation.footer.tagline` | « Location de matériel de chantier. » |
+| `portal::navigation.footer.heading` | « Mon espace » |
 
 Les libellés existants ne changent pas. La date de la barre de 60 px n'est pas un texte : elle est formatée par `isoFormat('dddd D MMMM YYYY')` en locale `fr`.
 

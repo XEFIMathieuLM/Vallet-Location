@@ -79,9 +79,9 @@ $classes = Flux::classes()
                 ? 'w-11 sm:w-8'
                 : ($iconLeading && $iconLeading !== '' ? 'ps-2' : 'ps-3') . ' ' . ($iconTrailing && $iconTrailing !== '' ? 'pe-2' : 'pe-3')
         ),
-        'xs' => 'h-6 text-xs gap-1' . ' ' . (
+        'xs' => 'h-11 sm:h-6 text-xs gap-1' . ' ' . (
             $square
-                ? 'w-6'
+                ? 'w-11 sm:w-6'
                 : ($iconLeading && $iconLeading !== '' ? 'ps-1' : 'ps-2') . ' ' . ($iconTrailing && $iconTrailing !== '' ? 'pe-1' : 'pe-2')
         ),
     })

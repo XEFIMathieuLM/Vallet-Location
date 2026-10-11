@@ -19,7 +19,7 @@ const staffPages = [
     ['11-grands-comptes', '/grands-comptes'],
     ['12-demandes-en-ligne', '/demandes-en-ligne'],
     ['13-machines', '/machines'],
-    ['14-nouvelle-reservation', '/reservations/nouvelle'],
+    ['14-nouvelle-reservation', '/reservations/nouvelle?machine=1&du=2026-10-26&au=2026-10-28'],
     ['15-parametres', '/settings/profile'],
 ];
 const portalPages = [

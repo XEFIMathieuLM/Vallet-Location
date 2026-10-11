@@ -2,6 +2,7 @@
 @import '../../vendor/livewire/flux/dist/flux.css';
 @import './vallet/tokens.css';
 @import './vallet/components.css';
+@import './vallet/layout.css';
 @import './vallet/dark.css';
 
 @source '../views';

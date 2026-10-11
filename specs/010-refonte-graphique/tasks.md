@@ -342,15 +342,15 @@ description: "Task list for the full visual redesign (feature 010)"
 
 ## Phase 10: Polish & Cross-Cutting Concerns
 
-- [ ] T068 Écrire `tests/Feature/Design/BrandingTest.php` (SC-007, FR-011). Rendre `home`, `login`, `dashboard`, `planning.index`, `reservations.show`, `portal.login`, `portal.search` et les deux e-mails de T065 : aucun ne contient « Renault », « NouvelR » ni « Laravel » (insensible à la casse), et tous contiennent le logotype.
-- [ ] T069 Audit du jaune et du focus :
+- [X] T068 Écrire `tests/Feature/Design/BrandingTest.php` (SC-007, FR-011). Rendre `home`, `login`, `dashboard`, `planning.index`, `reservations.show`, `portal.login`, `portal.search` et les deux e-mails de T065 : aucun ne contient « Renault », « NouvelR » ni « Laravel » (insensible à la casse), et tous contiennent le logotype.
+- [X] T069 Audit du jaune et du focus :
   - `grep -rn "text-accent\b\|text-yellow\|text-\[#ffed00\]" resources functional` ne renvoie rien hors du logotype ;
   - au clavier, focus visible sur les fonds blanc, noir et jaune (tableau de bord, recherche client, connexion) ;
   - cibles de 44 px sur téléphone.
-- [ ] T070 Captures après complètes dans `specs/010-refonte-graphique/captures/apres/` (38 captures + accueil `/`), plus tableau de bord, planning et détail de réservation en sombre ; aucun `OVERFLOW` (SC-001, SC-002).
-- [ ] T071 `vendor/bin/phpstan clear-result-cache`, puis `composer ci:check` code 0. Lister dans le dernier commit les assertions de tests existants adaptées (SC-005).
-- [ ] T072 Lancer `/speckit-converge` ; répéter l'implémentation et la convergence jusqu'à « Converged ».
-- [ ] T073 Envoyer le STATUT final à la coordinatrice (« STATUT 010 | … »), avec les chemins des captures après.
+- [X] T070 Captures après complètes dans `specs/010-refonte-graphique/captures/apres/` (38 captures + accueil `/`), plus tableau de bord, planning et détail de réservation en sombre ; aucun `OVERFLOW` (SC-001, SC-002).
+- [X] T071 `vendor/bin/phpstan clear-result-cache`, puis `composer ci:check` code 0. Lister dans le dernier commit les assertions de tests existants adaptées (SC-005).
+- [X] T072 Lancer `/speckit-converge` ; répéter l'implémentation et la convergence jusqu'à « Converged ».
+- [X] T073 Envoyer le STATUT final à la coordinatrice (« STATUT 010 | … »), avec les chemins des captures après.
 
 ---
 
@@ -379,3 +379,12 @@ T053 sales    |  T054 certification  |  T055 accounts + portal staff  |  T056 fl
 2. **Identité** : US2. Puis US3 (tableau de bord) et US4 (espace client), les deux vitrines.
 3. **Exhaustivité** : US5, US6 et US7. Puis Polish, captures après et convergence.
 4. Un commit par phase, `composer ci:check` code 0 avant chaque commit, aucun push : la coordinatrice pousse et ouvre la PR.
+
+## Phase 11: Convergence
+
+- [X] T074 CRITICAL : ramener `resources/css/vallet/components.css` (205 lignes) sous 200 lignes en déplaçant les règles de la colonne de navigation, de l'avatar et des sections du détail de réservation dans `resources/css/vallet/layout.css`, importé par `resources/css/app.css` per Constitution VII (contradicts)
+- [X] T075 CRITICAL : ramener `resources/views/vendor/mail/html/themes/vallet.css` (293 lignes) sous 200 lignes en retirant les règles inutilisées par les e-mails de l'outil (boutons verts et rouges, panneaux, sous-texte non utilisés) et en compactant les déclarations per Constitution VII (contradicts)
+- [X] T076 Porter à 44 px sur téléphone les boutons `xs` (`resources/views/flux/button/index.blade.php`, `h-11 sm:h-6`) et les entrées de la colonne de navigation (`resources/css/vallet/components.css`) per FR-009 (partial)
+- [X] T077 Présenter le filtre de statut de `functional/booking/resources/views/livewire/reservation-list.blade.php` en pastilles (`flux:radio.group variant="pills"`, même `wire:model.live="status"`, même option « Tous les statuts ») per plan: contracts/screens.md (partial)
+- [X] T078 Capturer le menu de navigation ouvert à 375 px et vérifier l'accès aux 20 entrées per US2/AC5 (partial)
+- [X] T079 Compléter la liste des textes ajoutés de `specs/010-refonte-graphique/research.md` (R12) avec `auth.staff_space`, `portal::navigation.hero_eyebrow`, `portal::navigation.footer.tagline` et `portal::navigation.footer.heading` per FR-017 (partial)

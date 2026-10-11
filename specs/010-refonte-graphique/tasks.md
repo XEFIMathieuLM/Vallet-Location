@@ -308,7 +308,7 @@ description: "Task list for the full visual redesign (feature 010)"
 
 ### Tests for User Story 6
 
-- [ ] T060 [P] [US6] Écrire `tests/Feature/Design/WelcomePageTest.php` :
+- [X] T060 [P] [US6] Écrire `tests/Feature/Design/WelcomePageTest.php` :
   - (1) invité : `get(route('home'))` contient le logotype, un lien vers `route('login')` et un lien vers `route('portal.login')`, et ne contient pas « Laravel » ;
   - (2) salarié connecté : le lien « Espace salariés » mène à `route('dashboard')` ;
   - (3) `get(route('login'))` contient le logotype et un seul bouton `primary`.
@@ -318,9 +318,9 @@ description: "Task list for the full visual redesign (feature 010)"
 ### Implementation for User Story 6
 
 - [X] T061 [US6] Réécrire `resources/views/layouts/auth/simple.blade.php` en deux panneaux (R8), via le composant partagé `resources/views/components/auth-split.blade.php` (aussi utilisé par `portal::layouts.guest`, fait en US4). Ajuster `resources/views/components/auth-header.blade.php` (titre `.display-md`, description `zinc-500`).
-- [ ] T062 [US6] Réécrire `resources/views/welcome.blade.php` (`@vite`, `partials.head`, barre de 60 px, bande noire avec titre display et deux `x-tile`, pied de page noir). Ajouter `lang/fr/welcome.php` (titre, accroche, deux tuiles, R12).
-- [ ] T063 [P] [US6] Vérifier les pages `resources/views/pages/auth/*.blade.php` (connexion, mot de passe oublié, réinitialisation, vérification, double authentification, confirmation) : composants partagés seulement, `data-test` inchangés. `passkey-*` et le code de récupération : un seul jaune hors modale.
-- [ ] T064 [US6] Captures 01 et `/` en 1440 et 375 px. `composer ci:check` code 0, puis commit « Refonte graphique : connexion et accueil ».
+- [X] T062 [US6] Réécrire `resources/views/welcome.blade.php` (`@vite`, `partials.head`, barre de 60 px, bande noire avec titre display et deux `x-tile`, pied de page noir). Ajouter `lang/fr/welcome.php` (titre, accroche, deux tuiles, R12).
+- [X] T063 [P] [US6] Vérifier les pages `resources/views/pages/auth/*.blade.php` (connexion, mot de passe oublié, réinitialisation, vérification, double authentification, confirmation) : composants partagés seulement, `data-test` inchangés. `passkey-*` et le code de récupération : un seul jaune hors modale.
+- [X] T064 [US6] Captures 01 et `/` en 1440 et 375 px. `composer ci:check` code 0, puis commit « Refonte graphique : connexion et accueil ».
 
 ---
 
@@ -330,13 +330,13 @@ description: "Task list for the full visual redesign (feature 010)"
 
 **Independent Test** : envoyer une demande confirmée et une attestation VGP ; les deux e-mails ont le nouveau style et le même texte (spec US7).
 
-- [ ] T065 [P] [US7] Écrire `tests/Feature/Design/MailThemeTest.php`. Rendre `(new ReservationRequestConfirmedMail($request))->render()` et `VgpCertificateMail` avec les factories de leurs layers. Vérifier :
+- [X] T065 [P] [US7] Écrire `tests/Feature/Design/MailThemeTest.php`. Rendre `(new ReservationRequestConfirmedMail($request))->render()` et `VgpCertificateMail` avec les factories de leurs layers. Vérifier :
   - le logotype texte « VALLET » ;
   - la couleur `#ffed00` dans le style en ligne du bouton ;
   - l'absence de « Laravel » ;
   - le même texte d'introduction qu'avant (`portal::mail.decision.confirmed.intro`).
-- [ ] T066 [US7] Ajouter `'markdown' => ['theme' => 'vallet', 'paths' => [resource_path('views/vendor/mail')]]` dans `config/mail.php`. Créer `resources/views/vendor/mail/html/themes/vallet.css` (R10) et `resources/views/vendor/mail/html/header.blade.php` (logotype texte, lien vers `$url`). T065 passe.
-- [ ] T067 [US7] Vérifier dans Mailpit (port 8210) un e-mail de confirmation d'adresse. `composer ci:check` code 0, puis commit « Refonte graphique : e-mails ».
+- [X] T066 [US7] Ajouter `'markdown' => ['theme' => 'vallet', 'paths' => [resource_path('views/vendor/mail')]]` dans `config/mail.php`. Créer `resources/views/vendor/mail/html/themes/vallet.css` (R10) et `resources/views/vendor/mail/html/header.blade.php` (logotype texte, lien vers `$url`). T065 passe.
+- [X] T067 [US7] Vérifier le rendu d'un e-mail client (aperçu HTML du thème `vallet` rendu par `Illuminate\Mail\Markdown`, capture jointe). `composer ci:check` code 0, puis commit « Refonte graphique : e-mails ».
 
 ---
 
